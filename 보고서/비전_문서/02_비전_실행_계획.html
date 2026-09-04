@@ -1,0 +1,309 @@
+<title>비전 파트 실행 계획</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500;600&family=Noto+Serif+KR:wght@500;600;700&display=swap">
+
+<style>
+:root{
+  --ground:#F2F4F6; --surface:#FFFFFF; --surface-alt:#E8ECEF;
+  --ink:#16202B; --ink-soft:#3D4A57; --muted:#6B7784;
+  --rule:#D3DAE0; --rule-soft:#E4E9ED;
+  --accent:#216580; --accent-soft:#DCEAF0;
+  --safe:#35705A; --safe-soft:#DEEDE6;
+  --warn:#9C5A22; --warn-soft:#F5E7D8;
+  --danger:#9E3437; --danger-soft:#F6E0E0;
+  --shadow:0 1px 2px rgba(22,32,43,.05),0 8px 24px -16px rgba(22,32,43,.18);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0E141A; --surface:#161E26; --surface-alt:#1E2831;
+  --ink:#E4EAEF; --ink-soft:#B6C1CB; --muted:#8593A0;
+  --rule:#2C3945; --rule-soft:#222D38;
+  --accent:#6FB4D0; --accent-soft:#17323F;
+  --safe:#74BE9E; --safe-soft:#142B23;
+  --warn:#D69A5F; --warn-soft:#2E2318;
+  --danger:#DE8386; --danger-soft:#331B1D;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -16px rgba(0,0,0,.7);
+}}
+:root[data-theme="dark"]{
+  --ground:#0E141A; --surface:#161E26; --surface-alt:#1E2831;
+  --ink:#E4EAEF; --ink-soft:#B6C1CB; --muted:#8593A0;
+  --rule:#2C3945; --rule-soft:#222D38;
+  --accent:#6FB4D0; --accent-soft:#17323F;
+  --safe:#74BE9E; --safe-soft:#142B23;
+  --warn:#D69A5F; --warn-soft:#2E2318;
+  --danger:#DE8386; --danger-soft:#331B1D;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -16px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Sans KR",system-ui,"Malgun Gothic",sans-serif;
+  line-height:1.72;-webkit-font-smoothing:antialiased}
+.wrap{max-width:60rem;margin:0 auto;padding:clamp(2.4rem,6vw,4.5rem) clamp(1.1rem,4vw,2.4rem) 6rem}
+
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:1.5rem;margin-bottom:1.6rem}
+.kicker{font-family:"IBM Plex Mono",monospace;font-size:.7rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.85rem}
+h1{font-family:"Noto Serif KR",Georgia,serif;font-weight:700;
+  font-size:clamp(1.85rem,5.5vw,2.8rem);line-height:1.2;letter-spacing:-.015em;
+  margin:0 0 .65rem;text-wrap:balance}
+.standfirst{color:var(--ink-soft);font-size:1.02rem;max-width:42rem;margin:0;font-weight:300}
+.now{margin-top:1.3rem;display:inline-flex;align-items:center;gap:.6rem;
+  background:var(--accent-soft);color:var(--accent);padding:.4rem .8rem;border-radius:3px;
+  font-family:"IBM Plex Mono",monospace;font-size:.78rem;font-weight:500}
+
+h2.sec{font-family:"Noto Serif KR",Georgia,serif;font-weight:600;
+  font-size:clamp(1.25rem,3.2vw,1.55rem);margin:3rem 0 .3rem;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:.88rem;margin:0 0 1.1rem}
+p{max-width:42rem}
+
+.block{margin:1.2rem 0;background:var(--surface);border:1px solid var(--rule);
+  border-radius:3px;box-shadow:var(--shadow);overflow:hidden}
+.block-head{font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);padding:.65rem 1rem;
+  border-bottom:1px solid var(--rule-soft);background:var(--surface-alt)}
+.block-body{padding:.9rem 1rem;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.87rem}
+th,td{padding:.5rem .65rem;text-align:left;vertical-align:top}
+thead th{font-family:"IBM Plex Mono",monospace;font-size:.67rem;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--muted);font-weight:500;border-bottom:1px solid var(--rule)}
+tbody td{border-bottom:1px solid var(--rule-soft)}
+tbody tr:last-child td{border-bottom:none}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+code{font-family:"IBM Plex Mono",monospace;font-size:.86em;background:var(--surface-alt);
+  padding:.1em .35em;border-radius:2px}
+
+.chip{font-family:"IBM Plex Mono",monospace;font-size:.67rem;padding:.14rem .45rem;
+  border-radius:2px;white-space:nowrap;font-weight:500}
+.c-done{background:var(--safe-soft);color:var(--safe)}
+.c-part{background:var(--warn-soft);color:var(--warn)}
+.c-none{background:var(--danger-soft);color:var(--danger)}
+
+/* 간트 */
+.gantt{font-family:"IBM Plex Mono",monospace;font-size:.72rem;min-width:34rem}
+.grow{display:grid;grid-template-columns:9.5rem repeat(15,1fr);align-items:center;gap:2px 0;
+  margin-bottom:3px}
+.grow .lab{padding-right:.6rem;font-size:.74rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grow .wk{height:1.55rem;background:var(--rule-soft);border-radius:1px}
+.grow .wk.on{background:var(--accent)}
+.grow .wk.on.mine{background:var(--accent)}
+.grow .wk.on.other{background:var(--rule);opacity:.85}
+.grow .wk.cur{outline:2px solid var(--warn);outline-offset:-2px;z-index:1}
+.ghead{display:grid;grid-template-columns:9.5rem repeat(15,1fr);
+  font-size:.64rem;color:var(--muted);margin-bottom:.35rem;text-align:center}
+.ghead .lab{text-align:left}
+.legend{display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:.8rem;font-size:.76rem;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:.4rem}
+.sw{width:15px;height:9px;border-radius:1px}
+
+/* 주차 계획 */
+.phase{margin:1.4rem 0;border-left:3px solid var(--accent);padding-left:1.1rem}
+.phase.next{border-left-color:var(--warn)}
+.phase.later{border-left-color:var(--rule)}
+.ptitle{font-family:"IBM Plex Mono",monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.15rem}
+.phase.next .ptitle{color:var(--warn)}
+.phase.later .ptitle{color:var(--muted)}
+.phase h3{font-family:"Noto Serif KR",Georgia,serif;font-weight:600;font-size:1.1rem;
+  margin:0 0 .6rem}
+.tasks{margin:0;padding:0;list-style:none;display:grid;gap:.5rem}
+.tasks li{display:flex;gap:.7rem;font-size:.92rem;align-items:baseline}
+.tasks .who{font-family:"IBM Plex Mono",monospace;font-size:.66rem;color:var(--muted);
+  min-width:3.5rem;padding-top:.15rem}
+
+.note{margin:1.1rem 0;padding:.85rem 1rem;border-left:3px solid var(--accent);
+  background:var(--surface);font-size:.92rem;color:var(--ink-soft)}
+.note.risk{border-left-color:var(--danger)}
+.note b{color:var(--ink)}
+.note .lbl{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent);display:block;margin-bottom:.3rem}
+.note.risk .lbl{color:var(--danger)}
+footer{margin-top:3rem;padding-top:1.4rem;border-top:1px solid var(--rule);
+  font-size:.78rem;color:var(--muted);font-family:"IBM Plex Mono",monospace}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <div class="kicker">고령 인구 밀집 지역 실시간 정찰 자율 드론 관제 시스템</div>
+  <h1>비전 파트 실행 계획</h1>
+  <p class="standfirst">주제발표 일정표(15주)와 주제제안서 분담에 맞춘 객체 탐지·비전 담당 계획. 현재 진척과 아직 약속만 한 항목을 함께 적었다.</p>
+  <div class="now">현재 1주차 · 09/02 — 탐지 모델 구간(3~5주)까지 2주</div>
+</header>
+
+<h2 class="sec">약속 대비 현재</h2>
+<p class="sub">발표자료 슬라이드 11·13·14에 명시한 비전 파트 산출물 기준</p>
+
+<div class="block">
+  <div class="block-body">
+    <table>
+      <thead><tr><th>발표자료가 약속한 것</th><th>현재</th><th>근거 / 남은 일</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>탐지 모델 파인튜닝</strong></td>
+          <td><span class="chip c-done">완료</span></td>
+          <td>여름 mAP50 <strong>0.641</strong> · 겨울 <strong>0.922</strong> · 쓰러진 사람 발견 0.531 (기성 대비 11배)</td>
+        </tr>
+        <tr>
+          <td><strong>인식·추적 파이프라인</strong></td>
+          <td><span class="chip c-part">부분</span></td>
+          <td>광학흐름 운용 중. ByteTrack·BoT-SORT는 <strong>코드만 있고 측정 안 함</strong></td>
+        </tr>
+        <tr>
+          <td><strong>실시간 추론 최적화</strong></td>
+          <td><span class="chip c-part">재정의됨</span></td>
+          <td>YOLO 단독 38 FPS로 병목이 아님을 확인. <strong>실제 병목은 렌더링·이미지 전송</strong></td>
+        </tr>
+        <tr>
+          <td><strong>좌표 변환</strong> (슬라이드 13)</td>
+          <td><span class="chip c-done">완료</span></td>
+          <td>자세 안정 시 오차 <strong>0.50 m</strong>. 짐벌이 없어 기울면 6.8~10.9 m까지 벌어짐 → 자세 게이트로 대응</td>
+        </tr>
+        <tr>
+          <td><strong>오차타원</strong> (슬라이드 13)</td>
+          <td><span class="chip c-none">미착수</span></td>
+          <td>코드에 흔적 없음. <strong>발표에서 명시한 산출물</strong></td>
+        </tr>
+        <tr>
+          <td><strong>중앙 AI 서버 추론</strong> (슬라이드 10·13)</td>
+          <td><span class="chip c-none">미착수</span></td>
+          <td>현재 노트북 로컬 실행. 구조도와 실제가 다름</td>
+        </tr>
+        <tr>
+          <td><strong>쓰러짐 탐지</strong> (슬라이드 11)</td>
+          <td><span class="chip c-part">발견만</span></td>
+          <td>쓰러진 사람을 <em>찾는</em> 것은 됨(0.531). <em>자세를 판정</em>하는 것은 5회 시도 후 F1 0.5 미만</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="note">
+  <span class="lbl">종합</span>
+  <b>일정보다 앞서 있다.</b> 지금은 1주차(환경 구축)인데, 3~5주에 배정된 탐지 모델의 본체가 이미 끝나 있다.
+  대신 <b>오차타원과 중앙 서버 추론</b> 두 가지가 발표에서 약속만 하고 손대지 않은 상태다. 남은 여유를 여기에 쓴다.
+</div>
+
+<h2 class="sec">일정 — 발표자료 15주 계획</h2>
+<p class="sub">진한 칸이 비전 파트가 주도하는 구간. 의존관계상 <strong>탐지 모델이 늦어지면 이후 전부가 밀린다</strong></p>
+
+<div class="block">
+  <div class="block-body">
+    <div class="gantt">
+      <div class="ghead"><div class="lab">작업</div>
+        <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div><div>6</div><div>7</div><div>8</div>
+        <div>9</div><div>10</div><div>11</div><div>12</div><div>13</div><div>14</div><div>15</div></div>
+
+      <div class="grow"><div class="lab">환경 구축</div>
+        <div class="wk on other cur"></div><div class="wk on other"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div></div>
+
+      <div class="grow"><div class="lab">탐지 모델 ★</div>
+        <div class="wk"></div><div class="wk"></div><div class="wk on mine"></div><div class="wk on mine"></div><div class="wk on mine"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div></div>
+
+      <div class="grow"><div class="lab">상황지도/계획</div>
+        <div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk on other"></div><div class="wk on other"></div><div class="wk on other"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div></div>
+
+      <div class="grow"><div class="lab">HW 연동</div>
+        <div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk on other"></div><div class="wk on other"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div></div>
+
+      <div class="grow"><div class="lab">통합 테스트</div>
+        <div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk on other"></div><div class="wk on other"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div></div>
+
+      <div class="grow"><div class="lab">마무리·시연</div>
+        <div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk"></div><div class="wk on other"></div><div class="wk on other"></div><div class="wk on other"></div></div>
+    </div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--accent)"></i>비전 주도</span>
+      <span><i class="sw" style="background:var(--rule)"></i>타 파트 주도</span>
+      <span><i class="sw" style="outline:2px solid var(--warn);outline-offset:-2px"></i>현재 주차</span>
+      <span>1주차 시작 09/01 · 종료 12/09</span>
+    </div>
+  </div>
+</div>
+
+<h2 class="sec">주차별 과제</h2>
+
+<div class="phase">
+  <div class="ptitle">지금 ~ 2주차 · 09/02 – 09/14</div>
+  <h3>학습 준비와 요구사항명세서</h3>
+  <ul class="tasks">
+    <li><span class="who">전달</span><span><strong>NOMAD 원본 42명 다운로드 요청</strong> — 선정 목록은 <code>metrics/nomad_actor_selection.csv</code>. 연령 5구간 균등·동양계 12명·색 분산. <strong>이게 늦으면 3주차 학습이 시작되지 않는다</strong></span></li>
+    <li><span class="who">비전</span><span><code>nomad_prep.py</code>에 <strong>활동 가중 샘플링</strong> 추가 — 지금은 걷는 사람이 53.8%, 요구조자는 20.7%뿐이다. 과제와 어긋난다</span></li>
+    <li><span class="who">비전</span><span><strong>ByteTrack·BoT-SORT A/B 측정</strong> — 코드는 이미 있다(<code>tracker_ab.py</code>). 20분</span></li>
+    <li><span class="who">비전</span><span><strong>고도 30m 실비행 검증</strong> — 크기 곡선상 성능 손실 없이 통과 폭이 2배가 된다</span></li>
+    <li><span class="who">문서</span><span><strong>SRS 비전 요구사항 작성</strong> — 09/16 발표. 실측 근거가 있으므로 검증 가능한 형태로 쓸 수 있다</span></li>
+    <li><span class="who">협의</span><span><strong>MissionMap 인터페이스 합의</strong>(이시원) — 좌표 형식·갱신 주기·스냅샷 전달. 없으면 SRS를 못 쓴다</span></li>
+  </ul>
+</div>
+
+<div class="phase next">
+  <div class="ptitle">3 ~ 5주차 · 09/15 – 10/05 · 비전 주도 구간</div>
+  <h3>탐지 모델 확정과 미구현 약속 해소</h3>
+  <ul class="tasks">
+    <li><span class="who">학습</span><span><strong>yolo11s / yolo11m @ imgsz 1280 학습</strong>(RTX 4080) — 원본이 1280×720인데 960으로 줄여 쓰고 있어 객체 26~32%가 64px 미만이다. 1280이면 0~12%로 떨어진다</span></li>
+    <li><span class="who">평가</span><span><code>eval_domain</code>·<code>eval_scale</code>로 3자 비교 후 <strong>시연 모델 확정</strong>. 속도는 변별력이 없다(요건의 9~12배) — 정확도로만 고른다</span></li>
+    <li><span class="who">구현</span><span><strong>오차타원</strong> — 발표에서 약속했고 아직 없다. 고도·자세·깊이 오차를 공분산으로 전파해 지도에 신뢰구간으로 표시</span></li>
+    <li><span class="who">구현</span><span><strong>추론 서비스 분리</strong> — 슬라이드 10의 "중앙 AI 서버" 구조. 구조 정리이면서 동시에 <strong>큰 모델을 쓰기 위한 전제조건</strong>이다</span></li>
+    <li><span class="who">시도</span><span>자세 판정 재시도 — <code>--target-px 200</code>으로 크게 만들어 학습. 실패한 크롭이 97px였고 운용 고도 16m에서는 200px다. <strong>되면 보너스, 안 되면 접는다</strong></span></li>
+  </ul>
+</div>
+
+<div class="phase later">
+  <div class="ptitle">6 ~ 8주차 · 10/06 – 10/26</div>
+  <h3>상황지도 연동 (이시원 주도 · 비전은 공급)</h3>
+  <ul class="tasks">
+    <li><span class="who">비전</span><span>탐지 결과를 <strong>MissionMap 규격</strong>으로 공급 — 현재 WGS84 위경도 + KML로 내보내고 있다</span></li>
+    <li><span class="who">비전</span><span>병합 규칙 조정 — 병합 반경 3.0 m는 시험 배치 최소 간격 3.23 m가 상한이다. 실제 운용 밀도에 맞춰 재조정</span></li>
+    <li><span class="who">비전</span><span>미관측 구역 정보 제공 — 8층 지도의 coverage 층을 계획기가 쓸 수 있게</span></li>
+  </ul>
+</div>
+
+<div class="phase later">
+  <div class="ptitle">9 ~ 10주차 · 10/27 – 11/09</div>
+  <h3>실기체 이식 (서성훈 주도 · 비전은 카메라·좌표)</h3>
+  <ul class="tasks">
+    <li><span class="who">비전</span><span><strong>렌즈 교체 후 카메라 보정</strong> — <code>fx, fy, cx, cy</code>와 왜곡계수 재측정. 화각 실측이 54°에서 벗어나면 운용 조건표 전체를 다시 계산해야 한다</span></li>
+    <li><span class="who">비전</span><span><strong>깊이 없는 좌표 변환</strong> — 시뮬레이터는 DepthPlanar를 쓰지만 실기체에는 깊이 카메라가 없다. 평지 가정 + 고도 방식으로 교체하고 오차를 재측정</span></li>
+    <li><span class="who">비전</span><span>실기체 자세 게이트 재조정 — 시뮬레이터 값(기울기 6°·흔들림 1.5°)은 F450 응답으로 다시 잡아야 한다</span></li>
+  </ul>
+</div>
+
+<div class="phase later">
+  <div class="ptitle">11 ~ 15주차 · 11/10 – 12/09</div>
+  <h3>통합 테스트와 시연</h3>
+  <ul class="tasks">
+    <li><span class="who">공동</span><span>실기체 통합 비행 — 탐지 → 좌표 → 지도 → 재계획 폐루프 확인</span></li>
+    <li><span class="who">비전</span><span>시연용 성능 지표 정리 — 도메인별·고도별 수치를 발표 가능한 형태로</span></li>
+    <li><span class="who">공동</span><span>시연 리허설 · 최종보고서</span></li>
+  </ul>
+</div>
+
+<h2 class="sec">위험 요소</h2>
+
+<div class="note risk">
+  <span class="lbl">1 · 데이터 확보가 크리티컬 패스</span>
+  NOMAD 원본이 개발 노트북에 없다(JSON 4개만 남음). 이것이 3주차 학습·자세 재시도·고도별 실측 <b>세 가지를 동시에 막고 있다.</b> 용량이 커서 다운로드에도 시간이 걸린다 — <b>이번 주 안에 시작해야 한다.</b>
+</div>
+
+<div class="note risk">
+  <span class="lbl">2 · 비행 허가 리드타임</span>
+  실외 비행에는 비행승인·항공촬영허가가 필요하고 <b>처리에 수 주</b>가 걸린다. 9~10주차 실기체 연동에 맞추려면 지금 절차를 시작해야 한다. 주제제안서 2.3에서 이 항목이 "드론 4종 자격증"으로만 축소돼 있다.
+</div>
+
+<div class="note risk">
+  <span class="lbl">3 · 실기체에 깊이 센서가 없다</span>
+  좌표 변환이 시뮬레이터의 DepthPlanar에 의존하고 있다. 실기체는 TF02-Pro 단일 지점 센서(전방)뿐이라 <b>평지 가정으로 갈아타야 하고, 그때 정확도가 달라진다.</b> 9주차가 아니라 미리 준비해 두는 편이 안전하다.
+</div>
+
+<div class="note">
+  <span class="lbl">4 · 자세 판정은 약속하지 않는다</span>
+  발표자료 슬라이드 11은 "쓰러짐·실종자 탐지"라고 적었다. <b>쓰러진 사람을 찾는 것은 되지만 자세를 자동 판정하는 것은 5회 시도 후에도 F1 0.5 미만</b>이다. 관측 해상도(97×63px)에 정보가 부족한 것이 원인이다.
+  SRS에는 <b>"탐지 + 스냅샷 제공"</b>으로 쓰고, 자세 판단은 관제 화면에서 사람이 하도록 두는 것이 정확하다.
+</div>
+
+<footer>
+  근거 — 캡스톤디자인_주제발표.pptx(슬라이드 11·13·14·15) · 1. 주제제안서(서성훈,이시원,정서인).hwpx · 운용구조_및_예산안_v2.0.docx · drone_dev/metrics/
+</footer>
+
+</div>

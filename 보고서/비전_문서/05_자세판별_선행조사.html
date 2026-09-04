@@ -1,0 +1,288 @@
+<title>항공 자세 판별 선행 조사</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500;600&family=Noto+Serif+KR:wght@500;600;700&display=swap">
+
+<style>
+:root{
+  --ground:#F2F4F6; --surface:#FFFFFF; --surface-alt:#E8ECEF;
+  --ink:#16202B; --ink-soft:#3D4A57; --muted:#6B7784;
+  --rule:#D3DAE0; --rule-soft:#E4E9ED;
+  --accent:#216580; --accent-soft:#DCEAF0;
+  --safe:#35705A; --safe-soft:#DEEDE6;
+  --warn:#9C5A22; --warn-soft:#F5E7D8;
+  --danger:#9E3437; --danger-soft:#F6E0E0;
+  --shadow:0 1px 2px rgba(22,32,43,.05),0 8px 24px -16px rgba(22,32,43,.18);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0E141A; --surface:#161E26; --surface-alt:#1E2831;
+  --ink:#E4EAEF; --ink-soft:#B6C1CB; --muted:#8593A0;
+  --rule:#2C3945; --rule-soft:#222D38;
+  --accent:#6FB4D0; --accent-soft:#17323F;
+  --safe:#74BE9E; --safe-soft:#142B23;
+  --warn:#D69A5F; --warn-soft:#2E2318;
+  --danger:#DE8386; --danger-soft:#331B1D;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -16px rgba(0,0,0,.7);
+}}
+:root[data-theme="dark"]{
+  --ground:#0E141A; --surface:#161E26; --surface-alt:#1E2831;
+  --ink:#E4EAEF; --ink-soft:#B6C1CB; --muted:#8593A0;
+  --rule:#2C3945; --rule-soft:#222D38;
+  --accent:#6FB4D0; --accent-soft:#17323F;
+  --safe:#74BE9E; --safe-soft:#142B23;
+  --warn:#D69A5F; --warn-soft:#2E2318;
+  --danger:#DE8386; --danger-soft:#331B1D;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -16px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Sans KR",system-ui,"Malgun Gothic",sans-serif;
+  line-height:1.72;-webkit-font-smoothing:antialiased}
+.wrap{max-width:56rem;margin:0 auto;padding:clamp(2.4rem,6vw,4.5rem) clamp(1.1rem,4vw,2.4rem) 6rem}
+
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:1.5rem;margin-bottom:1.6rem}
+.kicker{font-family:"IBM Plex Mono",monospace;font-size:.7rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.85rem}
+h1{font-family:"Noto Serif KR",Georgia,serif;font-weight:700;
+  font-size:clamp(1.85rem,5.5vw,2.8rem);line-height:1.2;letter-spacing:-.015em;
+  margin:0 0 .65rem;text-wrap:balance}
+.standfirst{color:var(--ink-soft);font-size:1.02rem;max-width:42rem;margin:0;font-weight:300}
+
+h2.sec{font-family:"Noto Serif KR",Georgia,serif;font-weight:600;
+  font-size:clamp(1.2rem,3.2vw,1.5rem);margin:2.8rem 0 .25rem;letter-spacing:-.01em}
+.secnum{font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--accent);letter-spacing:.12em}
+.sub{color:var(--muted);font-size:.88rem;margin:0 0 1.1rem}
+p{max-width:42rem;margin:0 0 .9rem}
+strong{font-weight:600}
+em{font-style:normal;border-bottom:1.5px solid var(--accent);padding-bottom:1px}
+code{font-family:"IBM Plex Mono",monospace;font-size:.86em;background:var(--surface-alt);
+  padding:.1em .35em;border-radius:2px}
+
+/* 자료 카드 */
+.src{background:var(--surface);border:1px solid var(--rule);border-radius:3px;
+  box-shadow:var(--shadow);margin:0 0 1.1rem;overflow:hidden}
+.src-head{padding:.75rem 1rem;background:var(--surface-alt);border-bottom:1px solid var(--rule-soft)}
+.src-title{font-weight:600;font-size:.98rem;margin:0 0 .2rem;line-height:1.4}
+.src-meta{font-family:"IBM Plex Mono",monospace;font-size:.68rem;color:var(--muted)}
+.src-body{padding:.85rem 1rem}
+.src-body dl{margin:0;display:grid;grid-template-columns:5.4rem 1fr;gap:.4rem .9rem;font-size:.9rem}
+.src-body dt{font-family:"IBM Plex Mono",monospace;font-size:.65rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);padding-top:.28rem}
+.src-body dd{margin:0;color:var(--ink-soft)}
+.src-body dd b{color:var(--ink);font-weight:600}
+.src-link{display:inline-block;margin-top:.6rem;font-family:"IBM Plex Mono",monospace;
+  font-size:.72rem;color:var(--accent);text-decoration:none;border-bottom:1px solid currentColor}
+.src-link:hover{opacity:.75}
+
+.block{margin:1.1rem 0;background:var(--surface);border:1px solid var(--rule);
+  border-radius:3px;box-shadow:var(--shadow);overflow:hidden}
+.block-head{font-family:"IBM Plex Mono",monospace;font-size:.67rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);padding:.6rem 1rem;
+  border-bottom:1px solid var(--rule-soft);background:var(--surface-alt)}
+.block-body{padding:.85rem 1rem;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.86rem}
+th,td{padding:.45rem .6rem;text-align:left;vertical-align:top}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+thead th{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--muted);font-weight:500;border-bottom:1px solid var(--rule)}
+tbody td{border-bottom:1px solid var(--rule-soft)}
+tbody tr:last-child td{border-bottom:none}
+.chip{font-family:"IBM Plex Mono",monospace;font-size:.65rem;padding:.14rem .45rem;
+  border-radius:2px;font-weight:500;white-space:nowrap}
+.c-yes{background:var(--safe-soft);color:var(--safe)}
+.c-no{background:var(--danger-soft);color:var(--danger)}
+.c-unk{background:var(--warn-soft);color:var(--warn)}
+
+.note{margin:1.1rem 0;padding:.85rem 1rem;border-left:3px solid var(--accent);
+  background:var(--surface);font-size:.91rem;color:var(--ink-soft)}
+.note.warn{border-left-color:var(--warn)}
+.note.good{border-left-color:var(--safe)}
+.note b{color:var(--ink)}
+.note .lbl{font-family:"IBM Plex Mono",monospace;font-size:.65rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent);display:block;margin-bottom:.3rem}
+.note.warn .lbl{color:var(--warn)} .note.good .lbl{color:var(--safe)}
+
+footer{margin-top:3rem;padding-top:1.3rem;border-top:1px solid var(--rule);
+  font-size:.77rem;color:var(--muted);font-family:"IBM Plex Mono",monospace}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:560px){.src-body dl{grid-template-columns:1fr;gap:.15rem}
+  .src-body dt{padding-top:.5rem}}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <div class="kicker">비전 파트 · 선행 조사</div>
+  <h1>항공 자세 판별 선행 조사</h1>
+  <p class="standfirst">항공 시점에서 사람의 자세(누움/서있음)를 판별한 선행 사례와 데이터셋을 원문 기준으로 정리했다. 우리 여섯 차례 실패와 무엇이 달랐는지를 가리는 것이 목적이다.</p>
+</header>
+
+<h2 class="sec"><span class="secnum">01</span> 왜 조사했나</h2>
+
+<p>자세 자동 판별을 여섯 차례 시도해 모두 실패했다. 마지막 시도는 관측 해상도를 97 px → 200 px 로 <strong>두 배</strong> 키웠는데도 <code>fallen</code> mAP50 이 0.058 에 그쳤다.</p>
+
+<p>다만 <em>우리가 실패했다는 것이 불가능하다는 증거는 아니다.</em> 성공 사례가 있다면 조건이 무엇이 달랐는지 알아야 다음 판단을 할 수 있다.</p>
+
+<h2 class="sec"><span class="secnum">02</span> 데이터셋</h2>
+<p class="sub">자세 라벨을 가진 항공 데이터가 실제로 있는가</p>
+
+<article class="src">
+  <div class="src-head">
+    <p class="src-title">SARD — Search And Rescue Image Dataset for Person Detection</p>
+    <p class="src-meta">Sambolek &amp; Ivasic-Kos · 2021-03 · DOI 10.21227/ahxm-k331</p>
+  </div>
+  <div class="src-body"><dl>
+    <dt>규모</dt><dd>영상 약 35분에서 추출한 <b>1,981장</b> 수작업 라벨 · 사람 6,525개</dd>
+    <dt>해상도</dt><dd><b>1920 × 1080</b> — 우리 실기체와 동일</dd>
+    <dt>클래스</dt><dd><b>Standing · Walking · Running · Sitting · Lying · Not Defined</b><br>자세가 <b>클래스로 분리돼 있다.</b> 우리가 찾던 형태다</dd>
+    <dt>배우</dt><dd>지친 사람과 부상자, 그리고 자연 속 일반적 움직임(달리기·걷기·서기·앉기·눕기)을 연기</dd>
+    <dt>배경</dt><dd>자갈길 · 채석장 · 낮은 풀 · 높은 풀 · 숲 그늘. 확장본(Corr)은 안개·눈·얼음과 항공 촬영 모션블러 포함</dd>
+    <dt>형식</dt><dd>LabelImg 로 만든 경계 상자 + 클래스</dd>
+    <dt>용량</dt><dd>4.43 GB (SARD-fixed.zip)</dd>
+    <dt>고도</dt><dd><b>명시되지 않음</b> — 확인 필요</dd>
+    <dt>입수</dt><dd>IEEE DataPort(구독 필요) · Kaggle(무료)</dd>
+  </dl>
+  <a class="src-link" href="https://ieee-dataport.org/documents/search-and-rescue-image-dataset-person-detection-sard">IEEE DataPort 원문</a>
+  &nbsp;<a class="src-link" href="https://www.kaggle.com/datasets/nikolasgegenava/sard-search-and-rescue">Kaggle</a>
+  </div>
+</article>
+
+<div class="note good">
+  <span class="lbl">핵심 발견</span>
+  <b>SARD 는 자세를 클래스로 라벨링했다.</b> 우리가 쓴 NOMAD 는 Walking / Hiding / Laying 3분법이라 앉은 사람이 모호했고, Okutama 는 자세 라벨이 있지만 배포 영상 절반이 프레임 밀림 문제가 있었다. SARD 는 <b>해상도(1920×1080)까지 우리 실기체와 같다.</b>
+</div>
+
+<div class="block">
+  <div class="block-head">우리가 검토한 항공 데이터셋 비교</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>데이터셋</th><th class="n">규모</th><th>해상도</th><th>자세 라벨</th><th>상태</th></tr></thead>
+      <tbody>
+        <tr><td><b>SARD</b></td><td class="n">1,981장</td><td><b>1920×1080</b></td><td><span class="chip c-yes">6클래스</span></td><td>미입수</td></tr>
+        <tr><td>NOMAD</td><td class="n">42,825프레임</td><td>5472×3078</td><td><span class="chip c-unk">3분법</span></td><td>원본 없음</td></tr>
+        <tr><td>Okutama-Action</td><td class="n">43시퀀스</td><td>3840×2160</td><td><span class="chip c-yes">12행동</span></td><td>영상 10개만 · 5개 프레임 밀림</td></tr>
+        <tr><td>WiSARD</td><td class="n">—</td><td>—</td><td><span class="chip c-no">없음</span></td><td>보유 (탐지용)</td></tr>
+        <tr><td>UAV-Human</td><td class="n">22,476장</td><td>1920×1080</td><td><span class="chip c-yes">17키포인트</span></td><td>미입수</td></tr>
+        <tr><td>HERIDAL</td><td class="n">1,647장</td><td>고해상도</td><td><span class="chip c-no">없음</span></td><td>미입수</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h2 class="sec"><span class="secnum">03</span> 선행 성공 사례</h2>
+<p class="sub">자세 판별이 실제로 된 보고들</p>
+
+<article class="src">
+  <div class="src-head">
+    <p class="src-title">Automatic Person Detection in Search and Rescue Operations Using Deep CNN Detectors</p>
+    <p class="src-meta">Sambolek &amp; Ivasic-Kos · IEEE Access 9 (2021) 37905–37922 · DOI 10.1109/ACCESS.2021.3063681</p>
+  </div>
+  <div class="src-body"><dl>
+    <dt>내용</dt><dd>SARD 데이터셋을 만들고 YOLOv4 · SSD · Faster R-CNN 을 비교</dd>
+    <dt>결과</dt><dd><b>YOLOv4 가 Faster R-CNN 과 SSD 보다 정확도가 크게 높음.</b> 저자들은 SAR 운용에 YOLOv4 를 제안</dd>
+    <dt>한계</dt><dd>클래스별(자세별) 성능 수치는 검색으로 확보하지 못했다. <b>전문 확인 필요</b></dd>
+  </dl>
+  <a class="src-link" href="https://www.researchgate.net/publication/349824546_Automatic_Person_Detection_in_Search_and_Rescue_Operations_Using_Deep_CNN_Detectors">ResearchGate</a>
+  </div>
+</article>
+
+<article class="src">
+  <div class="src-head">
+    <p class="src-title">YOLOv7-W6 기반 재난 피해자 식별</p>
+    <p class="src-meta">재난 의료 구조 관점 · 검색 요약 기준</p>
+  </div>
+  <div class="src-body"><dl>
+    <dt>방식</dt><dd>"fall-down" 자세를 <b>긴급 피해자 식별의 핵심 특징</b>으로 정의하고 클래스로 학습</dd>
+    <dt>결과</dt><dd>mAP@0.5 <b>0.960</b> · 추론 5.1 ms</dd>
+    <dt>주의</dt><dd><b>촬영 고도가 명시되지 않았다.</b> 재난 의료 현장 데이터라 지상 근접 촬영일 가능성이 높다 — 그렇다면 우리 조건(30 m 하향)과 직접 비교할 수 없다</dd>
+  </dl></div>
+</article>
+
+<article class="src">
+  <div class="src-head">
+    <p class="src-title">YOLOv11-Pose 키포인트 + SVM 이진 분류</p>
+    <p class="src-meta">낙상 탐지 · 검색 요약 기준</p>
+  </div>
+  <div class="src-body"><dl>
+    <dt>구조</dt><dd>사람 추적 → <b>17개 신체 키포인트 추정</b> → 그 특징으로 SVM 학습 → 서있음/누움 이진 분류</dd>
+    <dt>결과</dt><dd>정밀도 <b>88.8%</b> · 재현율 <b>94.1%</b> · F1 <b>91.4%</b></dd>
+    <dt>주의</dt><dd>낙상 탐지 데이터셋 기준이다. <b>실내·지상 촬영일 가능성이 높다</b></dd>
+  </dl>
+  <a class="src-link" href="https://www.ultralytics.com/blog/how-to-use-ultralytics-yolo11-for-pose-estimation">YOLO11-Pose 공식 가이드</a>
+  </div>
+</article>
+
+<div class="note warn">
+  <span class="lbl">조사의 한계 — 반드시 알고 인용할 것</span>
+  <b>세 사례 모두 촬영 고도가 확인되지 않았다.</b> 자세 판별이 "된다"는 보고는 있지만, 그것이 <b>30 m 상공 하향 시점</b>에서도 되는지는 이 조사로 답할 수 없다.
+  발표에서 "선행 연구가 0.96 을 달성했다"고 인용하면 <b>"그건 몇 미터에서 찍은 건가요"</b> 에 답할 수 없다. 전문 확인 전에는 근거로 쓰지 말아야 한다.
+</div>
+
+<h2 class="sec"><span class="secnum">04</span> 우리 시도와 무엇이 달랐나</h2>
+
+<div class="block">
+  <div class="block-head">구조 비교</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th></th><th>우리 시도 1~6차</th><th>선행 성공 사례</th></tr></thead>
+      <tbody>
+        <tr><td><b>구조</b></td><td>크롭 → CNN → 쓰러짐 여부</td><td><b>크롭 → 키포인트 17개 → SVM</b></td></tr>
+        <tr><td><b>판단 근거</b></td><td>CNN 이 알아서 학습</td><td><b>관절 위치의 기하</b> (몸통 축 각도)</td></tr>
+        <tr><td><b>중간 표현</b></td><td>없음 (end-to-end)</td><td>키포인트라는 <b>해석 가능한 중간 단계</b></td></tr>
+        <tr><td><b>필요 데이터</b></td><td>자세 라벨 대량</td><td>키포인트 라벨 + 소량의 자세 라벨</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<p>우리는 여섯 번 모두 <strong>같은 구조</strong>였다 — 방식만 바꿨을 뿐(학습률, 데이터, 해상도, 합성 데이터) <em>크롭을 보고 CNN 이 직접 판단</em>하는 틀은 한 번도 벗어나지 않았다.</p>
+
+<div class="note">
+  <span class="lbl">4차 시도에 대한 정정</span>
+  4차에서 <code>yolo11s-pose</code> 를 써 재현율 0.2 를 얻고 "키포인트도 안 된다"고 결론지었다. 그러나 그것은 <b>COCO 사전학습 그대로</b> 항공 영상에 적용한 것이었고, <b>SVM 분류 단계도 없었다.</b>
+  선행 사례의 구조는 <b>항공 데이터로 파인튜닝한 키포인트 + 별도 분류기</b>다. 같은 방식을 시도했다고 볼 수 없다.
+</div>
+
+<h2 class="sec"><span class="secnum">05</span> 다음에 할 수 있는 것</h2>
+
+<div class="block">
+  <div class="block-body">
+    <table>
+      <thead><tr><th class="n">순위</th><th>방안</th><th>필요한 것</th><th>근거</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="n">1</td>
+          <td><b>SARD 로 자세 6클래스 학습</b></td>
+          <td>Kaggle 다운로드 (4.43 GB)</td>
+          <td>해상도가 우리 실기체와 같고 자세가 이미 클래스로 나뉘어 있다. <b>가장 직접적</b></td>
+        </tr>
+        <tr>
+          <td class="n">2</td>
+          <td><b>키포인트 2단 구조</b></td>
+          <td>UAV-Human 키포인트 22,476장</td>
+          <td>선행 성공 사례가 쓴 구조. 기하 판단이라 적은 데이터로도 될 수 있다</td>
+        </tr>
+        <tr>
+          <td class="n">3</td>
+          <td>선행 논문 전문 확인</td>
+          <td>IEEE Access 접근</td>
+          <td>촬영 고도를 확인해야 우리 조건에 적용 가능한지 판단된다</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="note">
+  <span class="lbl">일정과의 관계</span>
+  요구사항명세서 발표가 <b>9월 16일</b>이고 탐지 모델 구간은 <b>3~5주차</b>다. 자세 판별은 이 일정의 필수 경로가 아니다.
+  현재 명세는 자세 판정을 <b>범위에서 제외</b>하고 "탐지 + 스냅샷 제공"으로 쓰여 있으며, 그것만으로도 시스템은 성립한다 — 쓰러진 사람을 <i>발견</i>하는 성능은 기성 모델 대비 <b>11배</b>로 이미 검증됐다.
+  <br><br>
+  따라서 위 세 방안은 <b>차별점을 더하는 선택</b>이지 필수가 아니다. 되면 발표의 강력한 카드가 되고, 안 되면 지금 명세대로 간다.
+</div>
+
+<footer>
+  조사일 2026-09-04 · 원문 링크는 각 카드 하단 참조 · 고도 미확인 항목은 전문 확인 전 인용 금지
+</footer>
+
+</div>

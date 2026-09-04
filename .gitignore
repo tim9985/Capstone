@@ -1,0 +1,8 @@
+# 대용량·산출물은 올리지 않는다
+*.zip
+*.mp4
+*.mov
+*.pt
+__pycache__/
+.DS_Store
+Thumbs.db

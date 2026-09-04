@@ -1,0 +1,402 @@
+<title>비전 요구사항 명세</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500;600&family=Noto+Serif+KR:wght@500;600;700&display=swap">
+
+<style>
+:root{
+  --ground:#F2F4F6; --surface:#FFFFFF; --surface-alt:#E8ECEF;
+  --ink:#16202B; --ink-soft:#3D4A57; --muted:#6B7784;
+  --rule:#D3DAE0; --rule-soft:#E4E9ED;
+  --accent:#216580; --accent-soft:#DCEAF0;
+  --safe:#35705A; --safe-soft:#DEEDE6;
+  --warn:#9C5A22; --warn-soft:#F5E7D8;
+  --danger:#9E3437; --danger-soft:#F6E0E0;
+  --shadow:0 1px 2px rgba(22,32,43,.05),0 8px 24px -16px rgba(22,32,43,.18);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0E141A; --surface:#161E26; --surface-alt:#1E2831;
+  --ink:#E4EAEF; --ink-soft:#B6C1CB; --muted:#8593A0;
+  --rule:#2C3945; --rule-soft:#222D38;
+  --accent:#6FB4D0; --accent-soft:#17323F;
+  --safe:#74BE9E; --safe-soft:#142B23;
+  --warn:#D69A5F; --warn-soft:#2E2318;
+  --danger:#DE8386; --danger-soft:#331B1D;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -16px rgba(0,0,0,.7);
+}}
+:root[data-theme="dark"]{
+  --ground:#0E141A; --surface:#161E26; --surface-alt:#1E2831;
+  --ink:#E4EAEF; --ink-soft:#B6C1CB; --muted:#8593A0;
+  --rule:#2C3945; --rule-soft:#222D38;
+  --accent:#6FB4D0; --accent-soft:#17323F;
+  --safe:#74BE9E; --safe-soft:#142B23;
+  --warn:#D69A5F; --warn-soft:#2E2318;
+  --danger:#DE8386; --danger-soft:#331B1D;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -16px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Sans KR",system-ui,"Malgun Gothic",sans-serif;
+  line-height:1.72;-webkit-font-smoothing:antialiased}
+.wrap{max-width:58rem;margin:0 auto;padding:clamp(2.4rem,6vw,4.5rem) clamp(1.1rem,4vw,2.4rem) 6rem}
+
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:1.5rem;margin-bottom:1.4rem}
+.kicker{font-family:"IBM Plex Mono",monospace;font-size:.7rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.85rem}
+h1{font-family:"Noto Serif KR",Georgia,serif;font-weight:700;
+  font-size:clamp(1.85rem,5.5vw,2.8rem);line-height:1.2;letter-spacing:-.015em;
+  margin:0 0 .65rem;text-wrap:balance}
+.standfirst{color:var(--ink-soft);font-size:1.02rem;max-width:42rem;margin:0;font-weight:300}
+.meta{margin-top:1.2rem;display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;
+  font-family:"IBM Plex Mono",monospace;font-size:.73rem;color:var(--muted)}
+
+h2.sec{font-family:"Noto Serif KR",Georgia,serif;font-weight:600;
+  font-size:clamp(1.2rem,3.2vw,1.5rem);margin:3rem 0 .25rem;letter-spacing:-.01em}
+.secnum{font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--accent);
+  letter-spacing:.12em}
+.sub{color:var(--muted);font-size:.88rem;margin:0 0 1.1rem}
+p{max-width:42rem;margin:0 0 .9rem}
+
+/* 요구사항 카드 */
+.req{background:var(--surface);border:1px solid var(--rule);border-radius:3px;
+  box-shadow:var(--shadow);margin:0 0 1rem;overflow:hidden}
+.req-head{display:flex;align-items:baseline;gap:.75rem;flex-wrap:wrap;
+  padding:.75rem 1rem;background:var(--surface-alt);border-bottom:1px solid var(--rule-soft)}
+.rid{font-family:"IBM Plex Mono",monospace;font-size:.74rem;font-weight:600;
+  color:var(--accent);letter-spacing:.04em;white-space:nowrap}
+.rtitle{font-weight:600;font-size:.97rem;flex:1;min-width:12rem}
+.chip{font-family:"IBM Plex Mono",monospace;font-size:.65rem;padding:.15rem .45rem;
+  border-radius:2px;font-weight:500;white-space:nowrap}
+.c-done{background:var(--safe-soft);color:var(--safe)}
+.c-part{background:var(--warn-soft);color:var(--warn)}
+.c-none{background:var(--danger-soft);color:var(--danger)}
+.req-body{padding:.85rem 1rem}
+.req-body dl{margin:0;display:grid;grid-template-columns:4.6rem 1fr;gap:.4rem .9rem;
+  font-size:.9rem}
+.req-body dt{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);padding-top:.28rem}
+.req-body dd{margin:0;color:var(--ink-soft)}
+.req-body dd b{color:var(--ink);font-weight:600}
+code{font-family:"IBM Plex Mono",monospace;font-size:.86em;background:var(--surface-alt);
+  padding:.1em .35em;border-radius:2px}
+
+.block{margin:1.1rem 0;background:var(--surface);border:1px solid var(--rule);
+  border-radius:3px;box-shadow:var(--shadow);overflow:hidden}
+.block-head{font-family:"IBM Plex Mono",monospace;font-size:.67rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);padding:.6rem 1rem;
+  border-bottom:1px solid var(--rule-soft);background:var(--surface-alt)}
+.block-body{padding:.85rem 1rem;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.86rem}
+th,td{padding:.45rem .6rem;text-align:left;vertical-align:top}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+thead th{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--muted);font-weight:500;border-bottom:1px solid var(--rule)}
+tbody td{border-bottom:1px solid var(--rule-soft)}
+tbody tr:last-child td{border-bottom:none}
+
+.note{margin:1.1rem 0;padding:.85rem 1rem;border-left:3px solid var(--accent);
+  background:var(--surface);font-size:.91rem;color:var(--ink-soft)}
+.note.warn{border-left-color:var(--warn)}
+.note.danger{border-left-color:var(--danger)}
+.note b{color:var(--ink)}
+.note .lbl{font-family:"IBM Plex Mono",monospace;font-size:.65rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent);display:block;margin-bottom:.3rem}
+.note.warn .lbl{color:var(--warn)} .note.danger .lbl{color:var(--danger)}
+
+.flow{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;
+  font-family:"IBM Plex Mono",monospace;font-size:.75rem;margin:.4rem 0}
+.flow b{background:var(--accent-soft);color:var(--accent);padding:.2rem .5rem;
+  border-radius:2px;font-weight:500}
+.flow i{color:var(--muted);font-style:normal}
+
+footer{margin-top:3rem;padding-top:1.3rem;border-top:1px solid var(--rule);
+  font-size:.77rem;color:var(--muted);font-family:"IBM Plex Mono",monospace}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:560px){.req-body dl{grid-template-columns:1fr;gap:.15rem}
+  .req-body dt{padding-top:.5rem}}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <div class="kicker">고령 인구 밀집 지역 실시간 정찰 자율 드론 관제 시스템</div>
+  <h1>비전 요구사항 명세</h1>
+  <p class="standfirst">객체 탐지·비전 파트의 요구사항. 모든 항목에 <strong>측정으로 확인한 근거와 검증 방법</strong>을 붙였고, 현재 달성 여부를 함께 적었다.</p>
+  <div class="meta">
+    <span>담당 정서인</span>
+    <span>기준 모델 yolov8s_stage1_all</span>
+    <span>2026-09-04</span>
+  </div>
+</header>
+
+<h2 class="sec"><span class="secnum">01</span> 범위와 경계</h2>
+<p class="sub">이 문서가 규정하는 것과 규정하지 않는 것</p>
+
+<p>비전 파트는 <strong>드론 하향 영상에서 사람을 찾아 실좌표로 보고하는 것</strong>까지를 책임진다. 비행 제어(서성훈)와 상황지도·임무 계획(이시원)은 이 문서의 범위 밖이며, 경계는 아래 인터페이스로 정의한다.</p>
+
+<div class="flow">
+  <b>영상 · 자세</b><i>→</i><b>탐지</b><i>→</i><b>추적</b><i>→</i><b>좌표 변환</b><i>→</i><b>병합·신고</b><i>→</i><b>MissionMap</b>
+</div>
+
+<div class="block">
+  <div class="block-head">인터페이스</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>방향</th><th>항목</th><th>형식</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="3"><b>입력</b></td><td>하향 카메라 영상</td><td>1920×1080 · 고정 하향 90°</td></tr>
+        <tr><td><b>기체 자세</b> (roll·pitch·yaw)</td><td>MAVLink ATTITUDE</td></tr>
+        <tr><td>기체 위치·고도</td><td>MAVLink 로컬 NED</td></tr>
+        <tr><td rowspan="3"><b>출력</b></td><td>탐지 대상 좌표</td><td>WGS84 위경도 + 신뢰도 + 관측 횟수</td></tr>
+        <tr><td>탐지 스냅샷</td><td>경계 상자 오버레이 이미지</td></tr>
+        <tr><td>미관측 구역</td><td>상황지도 coverage 층</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="note warn">
+  <span class="lbl">자세 입력이 필수인 이유</span>
+  짐벌이 없어 카메라가 기체와 함께 기운다. 자세를 받지 못하면 <b>핵심 출력인 실좌표가 최대 10.9 m 틀린다</b>(실측). 이는 선택 사항이 아니라 전제 조건이다.
+</div>
+
+<h2 class="sec"><span class="secnum">02</span> 기능 요구사항</h2>
+<p class="sub">FR-V-01 ~ 08</p>
+
+<article class="req">
+  <div class="req-head"><span class="rid">FR-V-01</span><span class="rtitle">항공 영상에서 사람을 탐지한다</span><span class="chip c-done">달성</span></div>
+  <div class="req-body"><dl>
+    <dt>내용</dt><dd>드론 하향 영상의 각 프레임에서 사람의 경계 상자와 신뢰도를 산출한다. 쓰러진 사람과 초목에 부분적으로 가려진 사람을 포함한다.</dd>
+    <dt>검증</dt><dd>NOMAD(여름)·WiSARD(겨울) 검증셋에서 <code>eval_domain.py</code> 로 도메인별 mAP50 측정</dd>
+    <dt>기준</dt><dd>겨울 mAP50 <b>0.85 이상</b> · 여름 mAP50 <b>0.60 이상</b></dd>
+    <dt>현재</dt><dd>겨울 <b>0.922</b> · 여름 <b>0.641</b> · 쓰러진 사람 발견 <b>0.531</b></dd>
+  </dl></div>
+</article>
+
+<article class="req">
+  <div class="req-head"><span class="rid">FR-V-02</span><span class="rtitle">탐지 사이에도 대상 식별을 유지한다</span><span class="chip c-done">달성</span></div>
+  <div class="req-body"><dl>
+    <dt>내용</dt><dd>매 프레임 추론하지 않고도 대상마다 고유 ID 를 유지해, 같은 사람이 여러 명으로 중복 신고되지 않게 한다.</dd>
+    <dt>근거</dt><dd>탐지 2 Hz + 추적 10 Hz 구조로 연산을 약 8배 절감한다. 다만 <b>추적 프레임의 좌표는 신고하지 않는다</b> — 광학흐름으로 밀어 놓은 상자는 표류해 위치 산포가 7.6 m 까지 벌어졌다(실측).</dd>
+    <dt>검증</dt><dd>시뮬레이터 비행에서 track_id 유지 길이와 중복 신고 수 측정</dd>
+  </dl></div>
+</article>
+
+<article class="req">
+  <div class="req-head"><span class="rid">FR-V-03</span><span class="rtitle">화면 좌표를 실좌표로 변환한다</span><span class="chip c-done">달성</span></div>
+  <div class="req-body"><dl>
+    <dt>내용</dt><dd>탐지 위치(픽셀)를 기체 GPS·고도·<b>자세</b>와 결합해 WGS84 위경도로 환산한다.</dd>
+    <dt>검증</dt><dd>시뮬레이터 정답 좌표와 비교(<code>coord_validate.py</code>). 같은 대상을 여러 자세에서 관측한 결과의 산포로도 확인</dd>
+    <dt>기준</dt><dd>기울기 6° 이하 프레임에서 오차 <b>2 m 이내</b></dd>
+    <dt>현재</dt><dd>기울기 2°대 산포 <b>0.24~0.70 m</b> · 자세 보정 없을 때 4.40 m</dd>
+  </dl></div>
+</article>
+
+<article class="req">
+  <div class="req-head"><span class="rid">FR-V-04</span><span class="rtitle">자세가 불안정한 프레임은 좌표 신고에서 제외한다</span><span class="chip c-done">달성</span></div>
+  <div class="req-body"><dl>
+    <dt>내용</dt><dd>기체 기울기 또는 촬영 중 자세 변화가 기준을 넘으면 <b>탐지는 수행하되 좌표는 신고하지 않는다.</b> 대상은 안정 구간에서 다시 관측된다.</dd>
+    <dt>근거</dt><dd>짐벌이 없어 기울면 화면 중앙이 <code>고도 × tan(기울기)</code> 만큼 밀린다. 자세를 알면 상쇄되지만 <b>촬영 순간의 자세를 정확히 알 수 없다</b> — 실측 산포가 기울기 2°대 0.24~0.70 m, 20°대 6.8~10.9 m</dd>
+    <dt>기준</dt><dd>기울기 ≤ <b>6°</b> AND 촬영 중 자세 변화 ≤ <b>1.5°</b></dd>
+  </dl></div>
+</article>
+
+<article class="req">
+  <div class="req-head"><span class="rid">FR-V-05</span><span class="rtitle">반복 관측을 한 대상으로 병합해 신고한다</span><span class="chip c-done">달성</span></div>
+  <div class="req-body"><dl>
+    <dt>내용</dt><dd>같은 사람을 여러 번 관측한 결과를 하나로 묶어 중앙값 위치로 신고한다. 관측 횟수가 기준 미만이면 <b>미확인 후보</b>로 분류한다.</dd>
+    <dt>기준</dt><dd>병합 반경 <b>3.0 m</b> · 최소 관측 3회</dd>
+    <dt>근거</dt><dd>병합 반경을 더 키우면 <b>서로 다른 사람이 하나로 뭉친다</b> — 시험 배치의 최소 간격이 3.23 m 였다</dd>
+    <dt>검증</dt><dd><code>merge_tune.py</code> 로 병합 반경·최소 관측 횟수를 정답 좌표 대비 격자 탐색</dd>
+  </dl></div>
+</article>
+
+<article class="req">
+  <div class="req-head"><span class="rid">FR-V-06</span><span class="rtitle">탐지 결과를 지도 표준 형식으로 내보낸다</span><span class="chip c-done">달성</span></div>
+  <div class="req-body"><dl>
+    <dt>내용</dt><dd>확인 대상과 미확인 후보를 신뢰도·관측 횟수·최초 관측 시각과 함께 KML 로 출력한다. 비행 경로도 함께 기록한다.</dd>
+    <dt>근거</dt><dd>원점 좌표를 <code>settings.json</code> 의 <code>OriginGeopoint</code> 에서 읽어 하드코딩하지 않는다 — 실기체 이식 시 설정 한 줄만 바꾸면 된다</dd>
+    <dt>검증</dt><dd>XML 유효성 + 지도 소프트웨어에서 열어 위치 확인</dd>
+  </dl></div>
+</article>
+
+<article class="req">
+  <div class="req-head"><span class="rid">FR-V-07</span><span class="rtitle">탐지 시 해당 장면 스냅샷을 제공한다</span><span class="chip c-part">부분</span></div>
+  <div class="req-body"><dl>
+    <dt>내용</dt><dd>탐지 발생 시 경계 상자와 신뢰도가 표시된 이미지를 관제 화면으로 전달한다. <b>쓰러졌는지 여부의 최종 판단은 운영자가 이 이미지로 한다</b>(→ 05절).</dd>
+    <dt>검증</dt><dd>시뮬레이터 비행에서 탐지 건별 스냅샷 생성 여부 확인</dd>
+    <dt>현재</dt><dd>이미지 저장은 구현됨. <b>관제 화면 전달 규약은 미합의</b></dd>
+  </dl></div>
+</article>
+
+<article class="req">
+  <div class="req-head"><span class="rid">FR-V-08</span><span class="rtitle">미관측 구역 정보를 상황지도에 제공한다</span><span class="chip c-done">달성</span></div>
+  <div class="req-body"><dl>
+    <dt>내용</dt><dd>어느 구역을 아직 보지 않았는지를 계획기가 쓸 수 있는 형태로 갱신한다. 다층 상황지도의 coverage 층에 해당한다.</dd>
+    <dt>검증</dt><dd>시뮬레이터 정찰 후 미관측 비율 측정</dd>
+    <dt>현재</dt><dd>사각 경로 1회 순찰 시 미관측 <b>12~21%</b></dd>
+  </dl></div>
+</article>
+
+<h2 class="sec"><span class="secnum">03</span> 비기능 요구사항</h2>
+<p class="sub">NFR-V-01 ~ 06</p>
+
+<article class="req">
+  <div class="req-head"><span class="rid">NFR-V-01</span><span class="rtitle">처리 속도는 초당 5장 이상</span><span class="chip c-done">달성</span></div>
+  <div class="req-body"><dl>
+    <dt>검증</dt><dd><code>bench_models.py</code> 로 시연 장비에서 추론 FPS 측정</dd>
+    <dt>현재</dt><dd>RTX 4080 SUPER 실측 <b>45~61 FPS</b> (요건의 9~12배)</dd>
+    <dt>주의</dt><dd>비행 루프 실측은 3.3~5.9 FPS 인데 <b>병목은 추론이 아니라 렌더링·이미지 전송</b>이다. 모델을 키워도 루프 속도는 거의 변하지 않는다</dd>
+  </dl></div>
+</article>
+
+<article class="req">
+  <div class="req-head"><span class="rid">NFR-V-02</span><span class="rtitle">운용 고도는 20~40 m</span><span class="chip c-done">달성</span></div>
+  <div class="req-body"><dl>
+    <dt>근거</dt><dd>사람이 36 px 이상 보이는 한 성능 저하가 8% 이내다. 40 m 에서 누운 사람이 80 px 이라 여유가 크다. 고도를 올리면 <b>1회 통과 폭이 넓어져 같은 구역을 빨리 훑는다</b></dd>
+    <dt>검증</dt><dd><code>eval_scale.py</code> 로 사람 픽셀 크기별 성능 곡선 측정</dd>
+    <dt>현재</dt><dd>36 px(환산 88 m)까지 확인. 24 px(환산 132 m)에서 붕괴</dd>
+  </dl></div>
+</article>
+
+<article class="req">
+  <div class="req-head"><span class="rid">NFR-V-03</span><span class="rtitle">탐지 대상은 입력 영상에서 36 px 이상</span><span class="chip c-done">달성</span></div>
+  <div class="req-body"><dl>
+    <dt>근거</dt><dd>여름 기준 97 px → 36 px 에서 mAP50 0.575 → 0.520(−8%)로 완만하지만, <b>24 px 에서 0.325 로 37% 붕괴</b>한다</dd>
+    <dt>주의</dt><dd>붕괴 지점은 배경에 따라 다르다. 겨울(눈)은 24 px 에서도 재현율 0.713 을 유지하지만 <b>여름(초목)은 0.387 로 무너진다</b> — 여름 기준으로 잡아야 안전하다</dd>
+  </dl></div>
+</article>
+
+<article class="req">
+  <div class="req-head"><span class="rid">NFR-V-04</span><span class="rtitle">신뢰도 임계값은 재현율 우선으로 정한다</span><span class="chip c-done">달성</span></div>
+  <div class="req-body"><dl>
+    <dt>내용</dt><dd>재난 탐색에서는 <b>놓치는 것이 훨씬 비싼 오류</b>다. 못 찾은 사람은 되돌릴 수 없지만 잘못 신고한 것은 운영자가 확인하면 된다. 따라서 F1 이 아니라 <b>재현율에 2배 가중한 F2</b> 로 운용점을 정한다.</dd>
+    <dt>기준</dt><dd><code>conf = 0.15</code></dd>
+    <dt>근거</dt><dd>0.25 → 0.15 로 낮추면 쓰러진 사람 발견 0.531 → <b>0.608</b>, 배경 오탐 장당 0.72 → 0.99. 늘어난 오탐은 추적기가 3프레임 안에 폐기한다</dd>
+  </dl></div>
+</article>
+
+<article class="req">
+  <div class="req-head"><span class="rid">NFR-V-05</span><span class="rtitle">추론은 중앙 서버에서 수행한다</span><span class="chip c-none">미구현</span></div>
+  <div class="req-body"><dl>
+    <dt>내용</dt><dd>게이트웨이(Raspberry Pi 4B)는 영상·MAVLink 중계와 안전 상태기계만 담당하고 AI 를 실행하지 않는다.</dd>
+    <dt>근거</dt><dd>구조상의 이유만이 아니다. 개발 노트북(VRAM 4 GB)에서는 <b>imgsz 1280 학습·추론이 불가능</b>해, 추론 분리가 더 나은 모델을 쓰기 위한 전제조건이다</dd>
+    <dt>현재</dt><dd>노트북 로컬 실행 중. 발표자료 구조도와 실제가 다르다</dd>
+  </dl></div>
+</article>
+
+<article class="req">
+  <div class="req-head"><span class="rid">NFR-V-06</span><span class="rtitle">사람이 없는 구역에서의 오탐을 관리한다</span><span class="chip c-done">달성</span></div>
+  <div class="req-body"><dl>
+    <dt>검증</dt><dd>사람이 0명인 배경 영상 289장으로 장당 오탐 건수 측정</dd>
+    <dt>현재</dt><dd><code>conf 0.15</code> 에서 장당 0.99건. 한 프레임만 반짝하는 것은 추적 게이트가 걸러 <b>지도까지 올라가지 않는다</b></dd>
+  </dl></div>
+</article>
+
+<h2 class="sec"><span class="secnum">04</span> 제약 조건</h2>
+<p class="sub">설계 선택이 아니라 하드웨어·환경에서 오는 제약</p>
+
+<div class="block">
+  <div class="block-body">
+    <table>
+      <thead><tr><th>제약</th><th>영향</th><th>대응</th></tr></thead>
+      <tbody>
+        <tr><td><b>짐벌 없음</b> (고정 하향 90°)</td><td>기체가 기울면 카메라도 기울어 좌표가 밀린다</td><td>FR-V-04 자세 게이트 · 경사각 제한</td></tr>
+        <tr><td><b>깊이 센서 없음</b></td><td>시뮬레이터는 DepthPlanar 를 쓰지만 실기체에는 없다(TF02-Pro 는 전방 단일 지점)</td><td>평지 가정 + 고도 방식으로 교체 필요 <b>(미착수)</b></td></tr>
+        <tr><td>화각 <b>54°</b> · 1920×1080</td><td>예산안 5.5 mm 렌즈로 확정. v2.0 문서의 "60°"는 <b>대각선</b>이다</td><td>운용 조건표를 54° 기준으로 재계산 완료</td></tr>
+        <tr><td>개발 GPU <b>VRAM 4 GB</b></td><td>imgsz 1280 학습 불가</td><td>학습은 팀 장비(RTX 4080 SUPER 16 GB)에서</td></tr>
+        <tr><td>영상 링크 대역폭</td><td>H.264 압축으로 화질 저하</td><td>비트레이트 하한 <b>미측정</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h2 class="sec"><span class="secnum">05</span> 범위에서 제외한 것</h2>
+<p class="sub">약속하지 않는 기능과 그 근거</p>
+
+<div class="note danger">
+  <span class="lbl">자세 자동 판정 — 제외</span>
+  <b>"쓰러졌는지 여부"를 시스템이 자동 판정하지 않는다.</b> 여섯 차례 접근을 바꿔 시도했으나 모두 실용 수준에 이르지 못했다.
+  탐지 결과 스냅샷을 관제 화면에 제공하고(FR-V-07), <b>최종 판단은 운영자가 한다.</b>
+</div>
+
+<div class="block">
+  <div class="block-head">자세 판정 시도 기록</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th class="n">차수</th><th>방식</th><th class="n">관측 크기</th><th class="n">쓰러짐 성능</th></tr></thead>
+      <tbody>
+        <tr><td class="n">1</td><td>2클래스 탐지기 (lr 0.01)</td><td class="n">97 px</td><td class="n">재현율 0.153</td></tr>
+        <tr><td class="n">2</td><td>별도 분류기</td><td class="n">97 px</td><td class="n">F1 0.297</td></tr>
+        <tr><td class="n">3</td><td>합성 데이터 혼합</td><td class="n">97 px</td><td class="n">F1 0.37~0.47</td></tr>
+        <tr><td class="n">4</td><td>키포인트 (COCO 사전학습)</td><td class="n">97 px</td><td class="n">재현율 0.2</td></tr>
+        <tr><td class="n">5</td><td>2클래스 탐지기 (lr 0.001)</td><td class="n">97 px</td><td class="n">mAP50 0.341</td></tr>
+        <tr><td class="n">6</td><td>Okutama 2클래스</td><td class="n"><b>200 px</b></td><td class="n"><b>mAP50 0.058</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<p>6차에서 관측 해상도를 <strong>2배로 키웠는데도</strong> 개선되지 않았다. 같은 모델이 <code>person</code> 은 mAP50 0.621 로 잘 찾으면서 <code>fallen</code> 은 0.058 이라, <em>사람을 찾는 것과 자세를 가리는 것은 다른 난이도의 문제</em>임이 확인됐다.</p>
+
+<div class="note">
+  <span class="lbl">그래도 시스템은 성립한다</span>
+  이 시스템의 가치는 <b>아무도 순찰하지 않는 구역에서 사람을 찾아내는 것</b>이다. 쓰러진 사람을 <i>발견</i>하는 것은 이미 검증됐다 — 기성 모델 대비 <b>11배</b>(0.048 → 0.531). 사람이 스냅샷을 0.5초 보면 자세는 즉시 판단된다.
+</div>
+
+<div class="note warn">
+  <span class="lbl">인상착의 식별 — 제외</span>
+  하향 시점에서는 <b>선 사람의 하의가 원리적으로 보이지 않고</b>(어깨가 하반신을 가림), 고도 30 m 에서 누운 사람의 상의 영역이 약 27×27 px 에 불과하다. 의류 속성 라벨을 가진 항공 데이터도 없다.
+</div>
+
+<h2 class="sec"><span class="secnum">06</span> 검증 방법</h2>
+<p class="sub">각 요구사항을 무엇으로 재는가</p>
+
+<div class="block">
+  <div class="block-body">
+    <table>
+      <thead><tr><th>도구</th><th>측정 대상</th><th>관련 요구사항</th></tr></thead>
+      <tbody>
+        <tr><td><code>eval_domain.py</code></td><td>계절·데이터셋별 mAP50 · 재현율</td><td>FR-V-01</td></tr>
+        <tr><td><code>eval_scale.py</code></td><td>사람 픽셀 크기별 성능 곡선</td><td>NFR-V-02 · 03</td></tr>
+        <tr><td><code>eval_altitude.py</code></td><td>촬영 거리별 성능</td><td>NFR-V-02</td></tr>
+        <tr><td><code>tune_threshold.py</code></td><td>F2 기준 운용 임계값</td><td>NFR-V-04</td></tr>
+        <tr><td><code>bench_models.py</code></td><td>추론 FPS · VRAM</td><td>NFR-V-01</td></tr>
+        <tr><td><code>merge_tune.py</code></td><td>병합 반경 · 최소 관측 횟수</td><td>FR-V-05</td></tr>
+        <tr><td><code>coord_validate.py</code></td><td>좌표 변환 오차</td><td>FR-V-03</td></tr>
+        <tr><td><code>run_experiment.py --patrol</code></td><td>통합 비행 (탐지→좌표→지도→KML)</td><td>FR-V-02 · 04 · 06 · 08</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="note warn">
+  <span class="lbl">평가 시 반드시 지킬 것</span>
+  <b>학습·평가 imgsz 를 맞춘다.</b> 960 으로 학습한 모델을 1280 으로 평가하면 조건이 달라져 숫자가 왜곡된다.
+  그리고 <b>클래스별로 나눠 본다</b> — 6차 시도의 전체 mAP50 0.444 는 <code>person</code> 이 끌어올린 값이라, 합계만 봤다면 "개선됐다"고 오독할 뻔했다.
+</div>
+
+<h2 class="sec"><span class="secnum">07</span> 미해결 항목</h2>
+<p class="sub">이 명세를 확정하려면 남은 것</p>
+
+<div class="block">
+  <div class="block-body">
+    <table>
+      <thead><tr><th>항목</th><th>필요한 것</th><th>담당</th></tr></thead>
+      <tbody>
+        <tr><td><b>MissionMap 인터페이스 합의</b></td><td>좌표 형식·갱신 주기·스냅샷 전달 규약. 현재 WGS84 + KML 로 출력 중</td><td>이시원</td></tr>
+        <tr><td><b>추론 서비스 분리</b> (NFR-V-05)</td><td>중앙 서버 배포 구조. 큰 모델을 쓰기 위한 전제조건</td><td>비전</td></tr>
+        <tr><td><b>오차타원</b></td><td>발표자료에 명시했으나 미구현. 고도·자세·깊이 오차를 공분산으로 전파</td><td>비전</td></tr>
+        <tr><td><b>깊이 없는 좌표 변환</b></td><td>실기체에 깊이 센서가 없다. 평지 가정 방식으로 교체 후 오차 재측정</td><td>비전</td></tr>
+        <tr><td><b>렌즈 실측 화각</b></td><td>계산값 54°에서 벗어나면 운용 조건표 전체 재계산</td><td>서성훈</td></tr>
+        <tr><td><b>영상 링크 비트레이트 하한</b></td><td>몇 Mbps 이하에서 탐지가 무너지는지 미측정</td><td>서성훈</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<footer>
+  근거 자료 — drone_dev/metrics/*.csv · MODELS.md · 드론_사양_및_예산_기준서.md · 운용구조_및_예산안_v2.0.docx · 캡스톤디자인_주제발표.pptx
+</footer>
+
+</div>

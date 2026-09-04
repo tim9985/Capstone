@@ -1,0 +1,471 @@
+<title>파인튜닝 실행서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500;600&family=Noto+Serif+KR:wght@500;600;700&display=swap">
+
+<style>
+:root {
+  --ground:#F2F4F6; --surface:#FFFFFF; --surface-alt:#E8ECEF;
+  --ink:#16202B; --ink-soft:#3D4A57; --muted:#6B7784;
+  --rule:#D3DAE0; --rule-soft:#E4E9ED;
+  --accent:#216580; --accent-soft:#DCEAF0;
+  --safe:#35705A; --safe-soft:#DEEDE6;
+  --warn:#9C5A22; --warn-soft:#F5E7D8;
+  --danger:#9E3437; --danger-soft:#F6E0E0;
+  --code-bg:#EDF1F3;
+  --shadow:0 1px 2px rgba(22,32,43,.05), 0 8px 24px -16px rgba(22,32,43,.18);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:#0E141A; --surface:#161E26; --surface-alt:#1E2831;
+    --ink:#E4EAEF; --ink-soft:#B6C1CB; --muted:#8593A0;
+    --rule:#2C3945; --rule-soft:#222D38;
+    --accent:#6FB4D0; --accent-soft:#17323F;
+    --safe:#74BE9E; --safe-soft:#142B23;
+    --warn:#D69A5F; --warn-soft:#2E2318;
+    --danger:#DE8386; --danger-soft:#331B1D;
+    --code-bg:#111921;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -16px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"] {
+  --ground:#0E141A; --surface:#161E26; --surface-alt:#1E2831;
+  --ink:#E4EAEF; --ink-soft:#B6C1CB; --muted:#8593A0;
+  --rule:#2C3945; --rule-soft:#222D38;
+  --accent:#6FB4D0; --accent-soft:#17323F;
+  --safe:#74BE9E; --safe-soft:#142B23;
+  --warn:#D69A5F; --warn-soft:#2E2318;
+  --danger:#DE8386; --danger-soft:#331B1D;
+  --code-bg:#111921;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -16px rgba(0,0,0,.7);
+}
+* { box-sizing:border-box; }
+body {
+  background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans KR", system-ui, "Malgun Gothic", sans-serif;
+  line-height:1.75; -webkit-font-smoothing:antialiased;
+}
+.wrap { max-width:56rem; margin:0 auto; padding:clamp(2.5rem,6vw,5rem) clamp(1.1rem,4vw,2.5rem) 6rem; }
+
+.masthead { border-bottom:2px solid var(--ink); padding-bottom:1.6rem; margin-bottom:2.2rem; }
+.kicker { font-family:"IBM Plex Mono",monospace; font-size:.7rem; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--accent); margin-bottom:.9rem; }
+h1 { font-family:"Noto Serif KR",Georgia,serif; font-weight:700;
+  font-size:clamp(1.9rem,5.5vw,2.9rem); line-height:1.2; letter-spacing:-.015em;
+  margin:0 0 .7rem; text-wrap:balance; }
+.standfirst { color:var(--ink-soft); font-size:1.03rem; max-width:42rem; margin:0; font-weight:300; }
+
+.overview { background:var(--surface); border:1px solid var(--rule); border-radius:3px;
+  padding:1.2rem 1.4rem; margin-bottom:3rem; }
+.overview h2 { font-family:"IBM Plex Mono",monospace; font-size:.7rem; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--muted); margin:0 0 .9rem; font-weight:500; }
+.flow { display:flex; flex-wrap:wrap; gap:.4rem; align-items:center;
+  font-family:"IBM Plex Mono",monospace; font-size:.76rem; }
+.flow b { background:var(--accent-soft); color:var(--accent); padding:.22rem .55rem;
+  border-radius:2px; font-weight:500; }
+.flow i { color:var(--muted); font-style:normal; }
+
+/* 단계 */
+.step { display:grid; grid-template-columns:3.3rem 1fr; gap:0 1.3rem;
+  margin-bottom:3.2rem; scroll-margin-top:1.5rem; }
+.spine { position:relative; }
+.num { font-family:"IBM Plex Mono",monospace; font-size:.95rem; font-weight:600;
+  color:var(--surface); background:var(--accent); width:2.1rem; height:2.1rem;
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-variant-numeric:tabular-nums; }
+.spine::after { content:""; position:absolute; left:1.05rem; top:2.5rem; bottom:-3.2rem;
+  width:1px; background:var(--rule); }
+.step:last-of-type .spine::after { display:none; }
+.body { min-width:0; }
+h2.title { font-family:"Noto Serif KR",Georgia,serif; font-weight:600;
+  font-size:clamp(1.2rem,3vw,1.5rem); line-height:1.35; margin:.05rem 0 .3rem;
+  letter-spacing:-.01em; text-wrap:balance; }
+.role { font-family:"IBM Plex Mono",monospace; font-size:.68rem; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--muted); margin-bottom:.9rem; }
+.step p { margin:0 0 .9rem; max-width:40rem; }
+strong { font-weight:600; }
+em { font-style:normal; border-bottom:1.5px solid var(--accent); padding-bottom:1px; }
+
+code { font-family:"IBM Plex Mono",monospace; font-size:.87em; background:var(--code-bg);
+  padding:.1em .35em; border-radius:2px; }
+pre { font-family:"IBM Plex Mono",monospace; font-size:.82rem; line-height:1.7;
+  background:var(--code-bg); border:1px solid var(--rule-soft); border-radius:3px;
+  padding:.85rem 1rem; overflow-x:auto; margin:1rem 0; color:var(--ink); }
+pre .c { color:var(--muted); }
+pre .k { color:var(--accent); }
+
+.block { margin:1.2rem 0; background:var(--surface); border:1px solid var(--rule);
+  border-radius:3px; box-shadow:var(--shadow); overflow:hidden; }
+.block-head { font-family:"IBM Plex Mono",monospace; font-size:.68rem; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--muted); padding:.65rem 1rem;
+  border-bottom:1px solid var(--rule-soft); background:var(--surface-alt); }
+.block-body { padding:.9rem 1rem; overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:.86rem; }
+th,td { padding:.45rem .65rem; text-align:left; vertical-align:top; }
+td.n, th.n { text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+thead th { font-family:"IBM Plex Mono",monospace; font-size:.67rem; letter-spacing:.07em;
+  text-transform:uppercase; color:var(--muted); font-weight:500; border-bottom:1px solid var(--rule); }
+tbody td { border-bottom:1px solid var(--rule-soft); }
+tbody tr:last-child td { border-bottom:none; }
+td code { white-space:nowrap; }
+
+.why { margin:1.1rem 0; padding:.85rem 1rem; border-left:3px solid var(--accent);
+  background:var(--surface); font-size:.92rem; color:var(--ink-soft); }
+.why.trap { border-left-color:var(--danger); }
+.why.tip  { border-left-color:var(--safe); }
+.why b { color:var(--ink); }
+.why .lbl { font-family:"IBM Plex Mono",monospace; font-size:.66rem; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--accent); display:block; margin-bottom:.35rem; }
+.why.trap .lbl { color:var(--danger); }
+.why.tip  .lbl { color:var(--safe); }
+
+.closing { margin-top:3.5rem; padding-top:1.8rem; border-top:2px solid var(--ink); }
+.closing h2 { font-family:"Noto Serif KR",Georgia,serif; font-weight:600; font-size:1.3rem; margin:0 0 1rem; }
+footer { margin-top:2.5rem; font-size:.79rem; color:var(--muted); font-family:"IBM Plex Mono",monospace; }
+a:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+@media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
+@media (max-width:560px){ .step{grid-template-columns:2.4rem 1fr; gap:0 .9rem} .spine::after{left:.75rem} .num{width:1.5rem;height:1.5rem;font-size:.75rem} }
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <div class="kicker">자율 정찰 드론 · 비전 파트</div>
+  <h1>파인튜닝 실행서</h1>
+  <p class="standfirst">공개 사전학습 모델을 항공뷰 요구조자 탐지기로 바꾸는 전 과정. 실제로 사용한 설정값과 그 과정에서 겪은 실패를 함께 적었다.</p>
+</header>
+
+<section class="overview">
+  <h2>전체 흐름</h2>
+  <div class="flow">
+    <b>원본</b><i>→</i><b>리샘플링</b><i>→</i><b>분할</b><i>→</i><b>data.yaml</b><i>→</i>
+    <b>시작 가중치</b><i>→</i><b>학습</b><i>→</i><b>평가</b><i>→</i><b>임계값</b><i>→</i><b>배포</b>
+  </div>
+</section>
+
+<!-- 0 -->
+<article class="step">
+  <div class="spine"><div class="num">0</div></div>
+  <div class="body">
+    <h2 class="title">파인튜닝이 정확히 무엇을 하는가</h2>
+    <div class="role">목적</div>
+    <p>YOLOv8s는 COCO 80개 클래스로 이미 학습돼 있다. 거기에는 <code>person</code>도 있다. 그런데 그 <code>person</code>은 <strong>지상에서 정면으로 찍은 서 있는 사람</strong>이다. 우리가 찾아야 하는 것은 <strong>30m 상공에서 내려다본, 풀숲에 반쯤 가려 누워 있는 사람</strong>이다.</p>
+    <p>파인튜닝은 <em>모서리·질감·사람 형태를 알아보는 능력은 남기고, 판단 기준만 우리 상황으로 옮기는 것</em>이다. 처음부터 학습하지 않는 이유가 여기 있다 — 11,615장으로는 "무엇이 물체인가"부터 배울 수 없다.</p>
+    <div class="block">
+      <div class="block-head">기성 모델을 그대로 썼을 때 (실측)</div>
+      <div class="block-body">
+        <table>
+          <thead><tr><th>모델</th><th class="n">여름 mAP50</th><th class="n">겨울 mAP50</th><th class="n">쓰러진 사람</th></tr></thead>
+          <tbody>
+            <tr><td>기성 VisDrone</td><td class="n">0.133</td><td class="n">0.544</td><td class="n">0.048</td></tr>
+            <tr><td><strong>파인튜닝 후</strong></td><td class="n"><strong>0.641</strong></td><td class="n"><strong>0.922</strong></td><td class="n"><strong>0.531</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p>쓰러진 사람 발견율이 <strong>0.048 → 0.531, 11배</strong>다. 이것이 파인튜닝으로 얻은 전부이자 이 작업의 존재 이유다.</p>
+  </div>
+</article>
+
+<!-- 1 -->
+<article class="step">
+  <div class="spine"><div class="num">1</div></div>
+  <div class="body">
+    <h2 class="title">원본 확보</h2>
+    <div class="role">입력 — 공개 항공 데이터셋</div>
+    <div class="block">
+      <div class="block-head">사용한 원본</div>
+      <div class="block-body">
+        <table>
+          <thead><tr><th>데이터셋</th><th>내용</th><th>계절</th></tr></thead>
+          <tbody>
+            <tr><td><strong>NOMAD</strong></td><td>배우 100명 · 42,825프레임 · 5472×3078 · 거리 10~90m · 가림 정도 10단계 라벨</td><td>여름</td></tr>
+            <tr><td><strong>WiSARD</strong></td><td>비행 단위 폴더 · 수색구조 촬영</td><td>9월 · 1월</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="why">
+      <span class="lbl">왜 이 둘인가</span>
+      항공 시점이면서 <b>쓰러진 자세</b>가 실제로 들어 있는 공개 데이터가 드물다. VisDrone은 항공뷰지만 도심 교통 데이터라 사람 클래스 성능이 낮다 — 공개 모델 카드 기준 car 72.4 대 <b>people 14.2</b>.
+    </div>
+  </div>
+</article>
+
+<!-- 2 -->
+<article class="step">
+  <div class="spine"><div class="num">2</div></div>
+  <div class="body">
+    <h2 class="title">리샘플링 변환 — 가장 중요한 단계</h2>
+    <div class="role"><code>nomad_prep.py</code> · <code>wisard_prep.py</code></div>
+    <p>원본을 그대로 넣으면 <strong>학습이 안 된다.</strong> NOMAD 원본은 5472×3078이고 사람은 거리에 따라 27~233px로 제각각이다. 이걸 추론 해상도 960으로 축소하면 사람이 10px 이하로 뭉개진다.</p>
+    <p>그래서 <em>사람 크기를 목표 픽셀에 맞춰 리샘플링한 뒤 1280×720 창을 잘라낸다.</em></p>
+    <div class="block">
+      <div class="block-head">거리별 배율 · 실측 중앙값 기준</div>
+      <div class="block-body">
+        <table>
+          <thead><tr><th>거리</th><th class="n">원본 사람 크기</th><th class="n">필요 배율</th><th>판정</th></tr></thead>
+          <tbody>
+            <tr><td>a10 (10m)</td><td class="n">233 px</td><td class="n">0.40배 축소</td><td>최상 — 정보 손실 없음</td></tr>
+            <tr><td>a30 (30m)</td><td class="n">78 px</td><td class="n">1.2배 확대</td><td>최적</td></tr>
+            <tr><td>a50 (50m)</td><td class="n">47 px</td><td class="n">2.0배 확대</td><td>한계</td></tr>
+            <tr><td>a70 / a90</td><td class="n">—</td><td class="n">2.8~3.5배</td><td>기본 제외 — 없는 디테일을 늘리는 셈</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p>목표는 <strong>GSD 1.804 cm/px · 사람 약 94px</strong>이다. 이 값은 "고도 20m · 화각 60° · 1280px"이라는 당시 운용 가정에서 나왔다.</p>
+    <div class="why tip">
+      <span class="lbl">여기서 지터를 준다</span>
+      목표 크기에 정확히 맞추지 않고 <b>크기와 크롭 위치에 무작위 폭</b>을 준다. 그래야 사람이 항상 화면 중앙에 같은 크기로 오는 편향이 생기지 않는다.
+    </div>
+    <div class="why trap">
+      <span class="lbl">부작용 — 알고 있어야 한다</span>
+      크기를 맞추는 순간 <b>거리 정보가 지워진다.</b> 변환 후 a10과 a30의 사람 크기는 97px 대 98px로 사실상 같다. 그래서 이 데이터로는 "고도가 높아 작게 찍히면 성능이 떨어지는가"를 <b>잴 수 없다.</b>
+    </div>
+    <p>변환 결과는 <strong>11,615장 · 객체 18,132개 · 클래스 1개</strong>다.</p>
+  </div>
+</article>
+
+<!-- 3 -->
+<article class="step">
+  <div class="spine"><div class="num">3</div></div>
+  <div class="body">
+    <h2 class="title">train / val 분할</h2>
+    <div class="role">배우 단위 · 비행 단위</div>
+    <p>영상에서 뽑은 데이터를 <strong>프레임 단위로 무작위 분할하면 성능이 크게 부풀려진다.</strong> 연속 프레임은 서로 거의 같은 그림이라, 같은 장면이 학습과 검증 양쪽에 들어간다. 일반화가 아니라 <em>기억</em>을 측정하게 된다.</p>
+    <div class="block">
+      <div class="block-head">실제 검증셋 구성</div>
+      <div class="block-body">
+        <table>
+          <thead><tr><th>출처</th><th>검증으로 뺀 것</th></tr></thead>
+          <tbody>
+            <tr><td>NOMAD</td><td>배우 <strong>004 · 008 · 014 · 018</strong> — 학습에 한 프레임도 안 들어감</td></tr>
+            <tr><td>WiSARD 9월</td><td>비행 2개 통째로</td></tr>
+            <tr><td>WiSARD 1월</td><td>비행이 하나뿐이라 <strong>시간순 뒤 30%</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="why">
+      <span class="lbl">1월이 특수한 이유</span>
+      겨울 비행분이 하나뿐이라 비행 단위로 뺄 수가 없다. 대신 <b>시간순으로 뒤쪽 30%</b>를 잘라 쓴다. 앞뒤가 시간적으로 떨어져 있어 프레임 무작위 분할보다 훨씬 정직하다.
+    </div>
+  </div>
+</article>
+
+<!-- 4 -->
+<article class="step">
+  <div class="spine"><div class="num">4</div></div>
+  <div class="body">
+    <h2 class="title">data.yaml 작성</h2>
+    <div class="role"><code>configs/data_all.yaml</code></div>
+<pre><span class="c"># NOMAD(배우1~30) + WiSARD(9월·1월) 통합</span>
+<span class="k">train:</span>
+  - .../data/det/nomad_actor01_10/images/train
+  - .../data/det/nomad_actor11_20/images/train
+  - .../data/det/nomad_actor21_30/images/train
+  - .../data/det/wisard/images/train
+<span class="k">val:</span>
+  - .../data/det/nomad_actor01_10/images/val
+  - .../data/det/nomad_actor11_20/images/val
+  - .../data/det/wisard/images/val
+<span class="k">nc:</span> 1
+<span class="k">names:</span> ['person']</pre>
+    <p>라벨은 이미지와 <strong>같은 이름의 <code>.txt</code></strong>로, <code>images/</code>를 <code>labels/</code>로 바꾼 경로에 둔다. ultralytics가 이 규칙으로 자동 탐색한다.</p>
+    <div class="why">
+      <span class="lbl">왜 1클래스인가</span>
+      "정상 / 쓰러짐" 2클래스를 시도했다가 실패했다. 클래스를 늘리자 <b>박스 손실이 1.2 → 1.9로 악화</b>됐고 쓰러짐 재현율은 0.153에 그쳤다. 지금은 <b>사람을 찾는 일</b>만 시키고, 쓰러짐 판단은 하지 않는다.
+    </div>
+  </div>
+</article>
+
+<!-- 5 -->
+<article class="step">
+  <div class="spine"><div class="num">5</div></div>
+  <div class="body">
+    <h2 class="title">시작 가중치 선택</h2>
+    <div class="role">COCO 사전학습 → 우리 데이터</div>
+    <p><code>yolov8s.pt</code>(COCO 사전학습)에서 시작한다. 무작위 초기화에서 시작하면 11,615장으로는 "무엇이 물체인가"조차 배우지 못한다.</p>
+    <div class="why">
+      <span class="lbl">2단계 구조</span>
+      <b>stage 1</b>은 실사(NOMAD+WiSARD)로 본 학습을 한다. <b>stage 2</b>는 stage 1 결과에서 이어받아 시뮬레이터 합성 데이터를 섞는다. stage 2는 이어 학습이므로 <b>증강을 약하게, 학습률도 <code>lr0 0.002</code>로 낮게</b> 준다 — 이미 잘 하는 모델을 흔들지 않기 위해서다.
+    </div>
+  </div>
+</article>
+
+<!-- 6 -->
+<article class="step">
+  <div class="spine"><div class="num">6</div></div>
+  <div class="body">
+    <h2 class="title">하이퍼파라미터</h2>
+    <div class="role">실제 사용값 — <code>runs_person/stage1_all/args.yaml</code></div>
+    <div class="block">
+      <div class="block-head">학습 설정</div>
+      <div class="block-body">
+        <table>
+          <thead><tr><th>항목</th><th class="n">값</th><th>의미와 선택 이유</th></tr></thead>
+          <tbody>
+            <tr><td><code>imgsz</code></td><td class="n">960</td><td>추론 해상도. 원본이 1280이라 <strong>0.75배로 줄여</strong> 넣는 셈 — VRAM 4GB 제약</td></tr>
+            <tr><td><code>epochs</code></td><td class="n">60</td><td>전체 데이터를 60번 반복</td></tr>
+            <tr><td><code>batch</code></td><td class="n">8</td><td><code>-1</code>로 두면 VRAM에 맞춰 자동. 4GB에서 8이 잡혔다</td></tr>
+            <tr><td><code>patience</code></td><td class="n">15</td><td>15에폭 동안 개선이 없으면 <strong>조기 종료</strong></td></tr>
+            <tr><td><code>lr0</code></td><td class="n">0.01</td><td>시작 학습률</td></tr>
+            <tr><td><code>lrf</code></td><td class="n">0.01</td><td>끝 학습률 = <code>lr0 × lrf</code>. 학습이 진행될수록 조금씩 움직인다</td></tr>
+            <tr><td><code>warmup_epochs</code></td><td class="n">3</td><td>처음 3에폭은 학습률을 0에서 서서히 올린다. <strong>초반 지표 등락의 원인</strong></td></tr>
+            <tr><td><code>momentum</code></td><td class="n">0.937</td><td>이전 갱신 방향을 유지하는 관성</td></tr>
+            <tr><td><code>weight_decay</code></td><td class="n">0.0005</td><td>가중치가 커지는 것을 억제 — 과적합 방지</td></tr>
+            <tr><td><code>amp</code></td><td class="n">true</td><td>16비트 혼합 정밀도. <strong>4GB에서는 필수</strong></td></tr>
+            <tr><td><code>cache</code></td><td class="n">false</td><td>데이터를 RAM에 올리면 오히려 불안정했다</td></tr>
+            <tr><td><code>seed</code></td><td class="n">42</td><td>재현 가능하게 고정</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block-head">증강 설정 — stage 1</div>
+      <div class="block-body">
+        <table>
+          <thead><tr><th>항목</th><th class="n">값</th><th>가르치는 것</th></tr></thead>
+          <tbody>
+            <tr><td><code>scale</code></td><td class="n">0.5</td><td>0.5~1.5배로 흔든다 → <strong>크기 불변성</strong></td></tr>
+            <tr><td><code>mosaic</code></td><td class="n">1.0</td><td>4장을 이어 붙여 크기·맥락을 다양화</td></tr>
+            <tr><td><code>close_mosaic</code></td><td class="n">10</td><td>마지막 10에폭은 <strong>모자이크를 끈다</strong></td></tr>
+            <tr><td><code>degrees</code></td><td class="n">10.0</td><td>항공뷰는 방향이 일정하지 않다</td></tr>
+            <tr><td><code>translate</code></td><td class="n">0.15</td><td>위치를 흔들어 중앙 편향 제거</td></tr>
+            <tr><td><code>fliplr</code></td><td class="n">0.5</td><td>절반 확률로 좌우 반전</td></tr>
+            <tr><td><code>hsv_h / s / v</code></td><td class="n">0.02 / 0.8 / 0.5</td><td>색조·채도·명도. <strong>기본보다 강하게</strong> — 단일 계절·정오 촬영이라 조명 다양성을 억지로 만든다</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="why trap">
+      <span class="lbl">증강은 데이터를 늘리지 않는다</span>
+      파일은 여전히 11,615장이다. 매 에폭 <b>같은 이미지를 다르게 변형해 보여줄 뿐</b>이고, 늘어나는 것은 정보가 아니라 <b>"이건 바뀌어도 답이 안 바뀐다"는 제약</b>이다. 없는 정보는 만들어내지 못한다 — 자세 분류가 그래서 실패했다.
+    </div>
+    <div class="why">
+      <span class="lbl">close_mosaic 이 있는 이유</span>
+      모자이크는 <b>현실에 존재하지 않는 합성 이미지</b>다. 끝까지 켜두면 학습 분포와 추론 분포가 어긋난 채로 끝난다. 마지막 구간에서 꺼 진짜 이미지로 마무리한다.
+    </div>
+  </div>
+</article>
+
+<!-- 7 -->
+<article class="step">
+  <div class="spine"><div class="num">7</div></div>
+  <div class="body">
+    <h2 class="title">학습 실행과 로그 읽는 법</h2>
+    <div class="role"><code>train_person.py</code></div>
+<pre>python train_person.py --stage 1 --imgsz 960 --batch -1 --name stage1_all
+<span class="c"># 다른 셸에서 진행 확인</span>
+python train_status.py --name stage1_all --watch</pre>
+    <div class="block">
+      <div class="block-head">손실 세 가지</div>
+      <div class="block-body">
+        <table>
+          <thead><tr><th>이름</th><th>재는 것</th></tr></thead>
+          <tbody>
+            <tr><td><code>box_loss</code></td><td>박스 위치가 얼마나 어긋났나</td></tr>
+            <tr><td><code>cls_loss</code></td><td>클래스를 맞췄나 (우리는 1클래스라 낮게 유지된다)</td></tr>
+            <tr><td><code>dfl_loss</code></td><td>박스 경계를 확률분포로 예측하는 부분의 오차</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="block">
+      <div class="block-head">실제 학습 추이 · stage1_all</div>
+      <div class="block-body">
+        <table>
+          <thead><tr><th class="n">에폭</th><th class="n">mAP50</th><th class="n">box_loss</th><th>읽는 법</th></tr></thead>
+          <tbody>
+            <tr><td class="n">1</td><td class="n">0.747</td><td class="n">1.498</td><td>워밍업 구간</td></tr>
+            <tr><td class="n">2</td><td class="n">0.806</td><td class="n">1.200</td><td>급상승</td></tr>
+            <tr><td class="n">3</td><td class="n">0.761</td><td class="n">1.156</td><td><strong>떨어진다 — 정상</strong></td></tr>
+            <tr><td class="n">4</td><td class="n">0.744</td><td class="n">1.126</td><td>계속 흔들린다</td></tr>
+            <tr><td class="n">8</td><td class="n">0.821</td><td class="n">0.996</td><td>안정화 시작</td></tr>
+            <tr><td class="n">16</td><td class="n">0.824</td><td class="n">0.873</td><td>완만한 개선</td></tr>
+            <tr><td class="n">32</td><td class="n">0.835</td><td class="n">0.750</td><td>최고점</td></tr>
+            <tr><td class="n">34</td><td class="n">0.816</td><td class="n">0.642</td><td>VRAM 부족으로 중단</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="why trap">
+      <span class="lbl">초반 지표로 판단하지 말 것</span>
+      2에폭 0.806에서 3에폭 0.761로 떨어진다. <code>warmup_epochs 3</code> 때문에 학습률이 아직 올라가는 중이라 정상이다. 다른 학습에서는 <b>2에폭 0.551 → 3에폭 0.310</b>까지 떨어졌다가 최종 0.606으로 회복한 적도 있다. <b>여기서 중단하면 잘못된 판단이다.</b>
+    </div>
+    <div class="why">
+      <span class="lbl">best.pt 와 last.pt</span>
+      <code>best.pt</code>는 <b>검증 성능이 가장 좋았던 에폭</b>, <code>last.pt</code>는 마지막 에폭이다. 배포용은 <code>best.pt</code>다. 학습이 중단돼도 <code>best.pt</code>는 남으므로 34에폭에서 끊긴 이 학습도 쓸 수 있었다.
+    </div>
+    <div class="why trap">
+      <span class="lbl">VRAM 부족</span>
+      4GB에서는 자주 겪는다. 대응은 <code>PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True</code>, 그리고 GPU를 쓰는 다른 프로그램(브라우저 포함) 종료. <code>--resume</code>으로 <code>last.pt</code>에서 이어받을 수 있다.
+    </div>
+  </div>
+</article>
+
+<!-- 8 -->
+<article class="step">
+  <div class="spine"><div class="num">8</div></div>
+  <div class="body">
+    <h2 class="title">평가 — 도메인을 나눠서</h2>
+    <div class="role"><code>eval_domain.py</code> · <code>eval_scale.py</code> · <code>eval_altitude.py</code></div>
+    <p>전체 검증셋 하나로 mAP를 내면 <strong>어디서 실패하는지 알 수 없다.</strong> 우리 모델은 여름 0.641, 겨울 0.922로 <strong>격차가 0.28</strong>이다. 평균만 봤다면 "여름이 약점"이라는 개선 방향을 못 잡았을 것이다.</p>
+    <div class="why tip">
+      <span class="lbl">사람이 0명인 검증셋의 쓸모</span>
+      WiSARD 9월분 289장에는 사람이 없다. mAP는 항상 0.0이 나오는데 고장이 아니라 <b>오탐 측정 전용</b>이다. "사람 없는 배경에서 몇 건이나 잘못 신고하는가"를 여기서 잰다.
+    </div>
+    <p>우선순위는 <strong>재현율 &gt; mAP50 &gt; 정밀도 &gt; mAP50-95</strong> 순이다. 재난 탐색에서는 놓치는 쪽이 훨씬 비싼 오류이고, 박스 위치 정밀도(mAP50-95)는 3m 반경으로 병합해 신고하므로 영향이 작다.</p>
+    <div class="why trap">
+      <span class="lbl">평가 imgsz 를 학습값과 맞출 것</span>
+      960으로 학습한 모델을 1280으로 평가하면 조건이 달라져 숫자가 왜곡된다. 모델을 비교할 때는 <b>반드시 같은 imgsz</b>로 재야 한다.
+    </div>
+  </div>
+</article>
+
+<!-- 9 -->
+<article class="step">
+  <div class="spine"><div class="num">9</div></div>
+  <div class="body">
+    <h2 class="title">임계값 결정과 배포</h2>
+    <div class="role"><code>tune_threshold.py</code> → <code>weights/</code></div>
+    <p>학습이 끝나도 <strong>신뢰도 임계값을 정해야</strong> 쓸 수 있다. 여기서 F1을 쓰면 안 된다 — 정밀도와 재현율을 같은 무게로 보기 때문이다. 우리는 <em>재현율에 2배 가중한 F2</em>를 쓴다.</p>
+    <div class="block">
+      <div class="block-head">임계값 0.25 → 0.15</div>
+      <div class="block-body">
+        <table>
+          <thead><tr><th>항목</th><th class="n">0.25</th><th class="n">0.15</th><th>판단</th></tr></thead>
+          <tbody>
+            <tr><td>쓰러진 사람 발견</td><td class="n">0.531</td><td class="n">0.608</td><td>+0.077 얻음</td></tr>
+            <tr><td>배경 오탐 (장당)</td><td class="n">0.72</td><td class="n">0.99</td><td>+0.27 잃음</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p>늘어난 오탐은 <strong>추적기가 흡수</strong>한다. 한 프레임만 반짝하는 탐지는 3프레임 안에 폐기돼 지도까지 올라가지 않는다.</p>
+<pre><span class="c"># best.pt 를 운용 위치로 복사</span>
+weights/yolov8s_stage1_all.pt   <span class="c">← 여기서부터 실제 비행에 쓰인다</span></pre>
+  </div>
+</article>
+
+<section class="closing">
+  <h2>이 과정에서 실제로 실패한 것들</h2>
+  <div class="block">
+    <div class="block-body">
+      <table>
+        <thead><tr><th>시도</th><th>결과</th><th>원인</th></tr></thead>
+        <tbody>
+          <tr><td>자세 2클래스 탐지기</td><td>쓰러짐 재현율 0.153</td><td>기본 <code>lr0 0.01</code>이 사전학습 특징을 파괴</td></tr>
+          <tr><td>별도 자세 분류기</td><td>F1 0.297</td><td>97×63px에 자세 단서가 부족</td></tr>
+          <tr><td>합성 데이터 혼합 분류기</td><td>F1 0.37~0.47</td><td>같은 이유. 증강·데이터로 해결 안 됨</td></tr>
+          <tr><td>초반 지표 보고 중단</td><td>잘못된 판단</td><td>워밍업 구간의 등락을 성능 저하로 오독</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <p style="margin-top:1.2rem;max-width:40rem">공통점이 있다. <strong>파인튜닝으로 해결되는 문제와 안 되는 문제가 나뉜다.</strong> "이 사람을 찾아라"는 학습으로 11배 좋아졌지만, "이 사람이 누워 있는지 판단하라"는 아무리 학습해도 0.5를 못 넘었다. 관측 해상도에 정보가 없으면 학습은 그것을 만들어내지 못한다.</p>
+  <footer>기준 모델 yolov8s_stage1_all · 학습 11,615장 / 객체 18,132개 / 1클래스 · imgsz 960 · RTX 3050 4GB</footer>
+</section>
+
+</div>

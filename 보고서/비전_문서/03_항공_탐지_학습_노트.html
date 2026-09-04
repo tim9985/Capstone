@@ -1,0 +1,568 @@
+<title>항공 탐지 학습 노트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@300;400;500;600&family=Noto+Serif+KR:wght@500;600;700&display=swap">
+
+<style>
+:root {
+  --ground:      #F2F4F6;
+  --surface:     #FFFFFF;
+  --surface-alt: #E8ECEF;
+  --ink:         #16202B;
+  --ink-soft:    #3D4A57;
+  --muted:       #6B7784;
+  --rule:        #D3DAE0;
+  --rule-soft:   #E4E9ED;
+  --accent:      #216580;
+  --accent-soft: #DCEAF0;
+  --safe:        #35705A;
+  --safe-soft:   #DEEDE6;
+  --warn:        #9C5A22;
+  --warn-soft:   #F5E7D8;
+  --danger:      #9E3437;
+  --danger-soft: #F6E0E0;
+  --shadow:      0 1px 2px rgba(22,32,43,.05), 0 8px 24px -16px rgba(22,32,43,.18);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:      #0E141A;
+    --surface:     #161E26;
+    --surface-alt: #1E2831;
+    --ink:         #E4EAEF;
+    --ink-soft:    #B6C1CB;
+    --muted:       #8593A0;
+    --rule:        #2C3945;
+    --rule-soft:   #222D38;
+    --accent:      #6FB4D0;
+    --accent-soft: #17323F;
+    --safe:        #74BE9E;
+    --safe-soft:   #142B23;
+    --warn:        #D69A5F;
+    --warn-soft:   #2E2318;
+    --danger:      #DE8386;
+    --danger-soft: #331B1D;
+    --shadow:      0 1px 2px rgba(0,0,0,.3), 0 8px 24px -16px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"] {
+  --ground:      #0E141A;
+  --surface:     #161E26;
+  --surface-alt: #1E2831;
+  --ink:         #E4EAEF;
+  --ink-soft:    #B6C1CB;
+  --muted:       #8593A0;
+  --rule:        #2C3945;
+  --rule-soft:   #222D38;
+  --accent:      #6FB4D0;
+  --accent-soft: #17323F;
+  --safe:        #74BE9E;
+  --safe-soft:   #142B23;
+  --warn:        #D69A5F;
+  --warn-soft:   #2E2318;
+  --danger:      #DE8386;
+  --danger-soft: #331B1D;
+  --shadow:      0 1px 2px rgba(0,0,0,.3), 0 8px 24px -16px rgba(0,0,0,.7);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: "IBM Plex Sans KR", system-ui, -apple-system, "Malgun Gothic", sans-serif;
+  font-weight: 400;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 53rem;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 6vw, 5rem) clamp(1.15rem, 4vw, 2.5rem) 6rem;
+}
+
+/* ── 머리 ───────────────────────────────── */
+.masthead { border-bottom: 2px solid var(--ink); padding-bottom: 1.6rem; margin-bottom: 2.5rem; }
+.kicker {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .7rem; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: .9rem;
+}
+h1 {
+  font-family: "Noto Serif KR", Georgia, serif;
+  font-weight: 700; font-size: clamp(1.9rem, 5.5vw, 2.9rem);
+  line-height: 1.2; letter-spacing: -.015em; margin: 0 0 .7rem;
+  text-wrap: balance;
+}
+.standfirst { color: var(--ink-soft); font-size: 1.03rem; max-width: 40rem; margin: 0; font-weight: 300; }
+.meta {
+  margin-top: 1.4rem; display: flex; flex-wrap: wrap; gap: .5rem 1.5rem;
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .74rem; color: var(--muted);
+}
+
+/* ── 목차 ───────────────────────────────── */
+.toc {
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 3px;
+  padding: 1.3rem 1.5rem; margin-bottom: 3.2rem;
+}
+.toc h2 {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .7rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted); margin: 0 0 .9rem; font-weight: 500;
+}
+.toc ol { margin: 0; padding: 0; list-style: none; display: grid; gap: .45rem; }
+.toc a { color: var(--ink-soft); text-decoration: none; font-size: .93rem; display: flex; gap: .7rem; align-items: baseline; }
+.toc a:hover, .toc a:focus-visible { color: var(--accent); }
+.toc .n {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .72rem;
+  color: var(--muted); min-width: 1.6rem; font-variant-numeric: tabular-nums;
+}
+
+/* ── 개념 항목 ───────────────────────────── */
+.concept { margin: 0 0 3.4rem; scroll-margin-top: 1.5rem; }
+.tagline { display: flex; align-items: center; gap: .7rem; margin-bottom: .55rem; }
+.domain {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .66rem; letter-spacing: .12em; text-transform: uppercase;
+  padding: .18rem .5rem; border-radius: 2px; font-weight: 500;
+}
+.d-geo  { background: var(--accent-soft); color: var(--accent); }
+.d-data { background: var(--warn-soft);   color: var(--warn); }
+.d-eval { background: var(--safe-soft);   color: var(--safe); }
+.d-train{ background: var(--danger-soft); color: var(--danger); }
+.idx {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .72rem; color: var(--muted); font-variant-numeric: tabular-nums;
+}
+h2.title {
+  font-family: "Noto Serif KR", Georgia, serif;
+  font-weight: 600; font-size: clamp(1.25rem, 3.2vw, 1.55rem); line-height: 1.35;
+  margin: 0 0 .8rem; letter-spacing: -.01em; text-wrap: balance;
+}
+.concept p { margin: 0 0 1rem; max-width: 40rem; }
+.concept p:last-child { margin-bottom: 0; }
+strong { font-weight: 600; color: var(--ink); }
+em { font-style: normal; border-bottom: 1.5px solid var(--accent); padding-bottom: 1px; }
+
+code {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .87em; background: var(--surface-alt); padding: .1em .35em;
+  border-radius: 2px; color: var(--ink);
+}
+
+/* ── 데이터 블록 ─────────────────────────── */
+.block {
+  margin: 1.4rem 0; background: var(--surface); border: 1px solid var(--rule);
+  border-radius: 3px; box-shadow: var(--shadow); overflow: hidden;
+}
+.block-head {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .68rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); padding: .7rem 1.1rem; border-bottom: 1px solid var(--rule-soft);
+  background: var(--surface-alt);
+}
+.block-body { padding: 1.1rem; overflow-x: auto; }
+
+.formula {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .93rem; line-height: 2.1; color: var(--ink); white-space: pre;
+}
+.formula .hi { color: var(--accent); font-weight: 500; }
+
+table { width: 100%; border-collapse: collapse; font-size: .87rem; }
+th, td { padding: .5rem .7rem; text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+thead th {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .68rem; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--rule);
+}
+tbody td { border-bottom: 1px solid var(--rule-soft); font-variant-numeric: tabular-nums; }
+tbody tr:last-child td { border-bottom: none; }
+tr.mark td { background: var(--danger-soft); }
+tr.good td { background: var(--safe-soft); }
+.tag {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .68rem;
+  padding: .1rem .4rem; border-radius: 2px;
+}
+.t-safe { background: var(--safe-soft); color: var(--safe); }
+.t-warn { background: var(--warn-soft); color: var(--warn); }
+.t-bad  { background: var(--danger-soft); color: var(--danger); }
+
+/* ── 경고/요점 ──────────────────────────── */
+.note {
+  margin: 1.4rem 0; padding: .95rem 1.1rem; border-left: 3px solid var(--accent);
+  background: var(--surface); font-size: .93rem; color: var(--ink-soft);
+}
+.note.warn   { border-left-color: var(--warn); }
+.note.danger { border-left-color: var(--danger); }
+.note b { color: var(--ink); font-weight: 600; }
+
+/* ── 차트 ───────────────────────────────── */
+.chart { width: 100%; height: auto; display: block; }
+.chart text { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10px; fill: var(--muted); }
+.chart .axis  { stroke: var(--rule); stroke-width: 1; }
+.chart .grid  { stroke: var(--rule-soft); stroke-width: 1; }
+.chart .lineA { fill: none; stroke: var(--accent); stroke-width: 2.2; }
+.chart .lineB { fill: none; stroke: var(--warn);   stroke-width: 2.2; stroke-dasharray: 5 3; }
+.chart .dot   { fill: var(--surface); stroke-width: 2; }
+.chart .zone  { fill: var(--danger); opacity: .09; }
+.chart .zlbl  { fill: var(--danger); font-size: 9px; }
+.legend { display: flex; gap: 1.3rem; flex-wrap: wrap; margin-top: .7rem; font-size: .78rem; color: var(--muted); }
+.legend span { display: flex; align-items: center; gap: .4rem; }
+.swatch { width: 16px; height: 2.5px; border-radius: 2px; }
+
+/* ── 마무리 ─────────────────────────────── */
+.closing {
+  margin-top: 4rem; padding-top: 1.8rem; border-top: 2px solid var(--ink);
+}
+.closing h2 {
+  font-family: "Noto Serif KR", Georgia, serif; font-weight: 600;
+  font-size: 1.3rem; margin: 0 0 1rem;
+}
+.rules { display: grid; gap: .8rem; margin: 0; padding: 0; list-style: none; }
+.rules li {
+  display: flex; gap: .85rem; align-items: baseline;
+  padding-bottom: .8rem; border-bottom: 1px solid var(--rule-soft); font-size: .95rem;
+}
+.rules li:last-child { border-bottom: none; }
+.rules .k {
+  font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .7rem;
+  color: var(--accent); min-width: 3.6rem; letter-spacing: .06em;
+}
+footer { margin-top: 3rem; font-size: .8rem; color: var(--muted); font-family: "IBM Plex Mono", ui-monospace, monospace; }
+
+a:focus-visible, .toc a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <div class="kicker">자율 정찰 드론 · 비전 파트</div>
+  <h1>항공 탐지 학습 노트</h1>
+  <p class="standfirst">항공뷰에서 쓰러진 사람을 찾는 모델을 학습·평가할 때, 모르면 반드시 틀리는 개념들. 모든 수치는 이 프로젝트에서 직접 측정한 값이다.</p>
+  <div class="meta">
+    <span>모델 yolov8s_stage1_all</span>
+    <span>학습 11,615장 · 객체 18,132개 · 1클래스</span>
+    <span>2026-09</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <h2>목차</h2>
+  <ol>
+    <li><a href="#c1"><span class="n">기하</span> 고도·화각·해상도는 변수 하나다</a></li>
+    <li><a href="#c2"><span class="n">기하</span> 성능은 서서히 안 떨어진다 — 절벽이 있다</a></li>
+    <li><a href="#c3"><span class="n">학습</span> imgsz는 두 가지를 뜻한다</a></li>
+    <li><a href="#c4"><span class="n">학습</span> 크기 견고성은 증강이 만든다</a></li>
+    <li><a href="#c5"><span class="n">데이터</span> 분할은 배우·비행 단위로</a></li>
+    <li><a href="#c6"><span class="n">데이터</span> 우리 데이터는 크기가 지워져 있다</a></li>
+    <li><a href="#c7"><span class="n">평가</span> 평균은 격차를 숨긴다</a></li>
+    <li><a href="#c8"><span class="n">평가</span> 어떤 지표를 볼 것인가</a></li>
+    <li><a href="#c9"><span class="n">평가</span> 임계값은 F2로 고른다</a></li>
+    <li><a href="#c10"><span class="n">학습</span> 모델 크기는 데이터가 정한다</a></li>
+    <li><a href="#c11"><span class="n">학습</span> 학습률이 사전학습을 파괴한다</a></li>
+  </ol>
+</nav>
+
+<!-- 1 -->
+<article class="concept" id="c1">
+  <div class="tagline"><span class="domain d-geo">기하</span><span class="idx">01</span></div>
+  <h2 class="title">고도·화각·해상도는 변수 하나다</h2>
+  <p>이 셋을 독립된 선택지로 두고 조합을 실험하면 시간을 버린다. 셋은 <strong>하나의 값을 조절하는 손잡이 세 개</strong>일 뿐이다.</p>
+
+  <div class="block">
+    <div class="block-head">지상 표본 거리 (GSD)</div>
+    <div class="block-body">
+<div class="formula">지상 폭 <span class="hi">W</span> = 2 × 고도 × tan(화각 ÷ 2)
+<span class="hi">GSD</span>   = W ÷ 가로 픽셀수
+사람 픽셀 = 실제 크기 ÷ GSD</div>
+    </div>
+  </div>
+
+  <p>모델이 보는 것은 결국 <em>사람이 몇 픽셀이냐</em> 하나다. 고도를 두 배로 올리든, 화각을 두 배로 넓히든, 해상도를 절반으로 줄이든 — 모델 입장에서는 <strong>같은 일</strong>이 벌어진다.</p>
+  <p>우리 프로젝트에서 화각(54°)과 센서 해상도(1920×1080)는 예산안으로 확정됐다. 그러니 실제 자유 변수는 <strong>고도</strong> 하나, 그리고 학습·추론에서 정하는 <strong>imgsz</strong> 하나뿐이다.</p>
+</article>
+
+<!-- 2 -->
+<article class="concept" id="c2">
+  <div class="tagline"><span class="domain d-geo">기하</span><span class="idx">02</span></div>
+  <h2 class="title">성능은 서서히 안 떨어진다 — 절벽이 있다</h2>
+  <p>"고도를 올리면 조금씩 나빠지겠지"는 틀렸다. 넓은 구간에서 <strong>거의 변하지 않다가, 어느 지점에서 무너진다.</strong></p>
+
+  <div class="block">
+    <div class="block-head">사람 픽셀 크기별 성능 · 실측</div>
+    <div class="block-body">
+      <svg class="chart" viewBox="0 0 620 250" role="img" aria-label="사람 픽셀 크기에 따른 mAP50 곡선. 36픽셀까지 완만하다가 24픽셀에서 급락한다.">
+        <rect class="zone" x="52" y="20" width="82" height="180"></rect>
+        <text class="zlbl" x="58" y="35">붕괴 구간</text>
+
+        <line class="axis" x1="52" y1="200" x2="600" y2="200"></line>
+        <line class="axis" x1="52" y1="20"  x2="52"  y2="200"></line>
+        <line class="grid" x1="52" y1="155" x2="600" y2="155"></line>
+        <line class="grid" x1="52" y1="110" x2="600" y2="110"></line>
+        <line class="grid" x1="52" y1="65"  x2="600" y2="65"></line>
+
+        <text x="44" y="204" text-anchor="end">0.3</text>
+        <text x="44" y="159" text-anchor="end">0.5</text>
+        <text x="44" y="114" text-anchor="end">0.7</text>
+        <text x="44" y="69"  text-anchor="end">0.9</text>
+
+        <!-- x: 24→93, 36→175, 48→257, 73→421, 97→576 -->
+        <polyline class="lineB" points="93,200 175,155 257,155 421,144 576,143"></polyline>
+        <polyline class="lineA" points="93,99 175,84 257,74 421,79 576,69"></polyline>
+
+        <circle class="dot" cx="93"  cy="200" r="3.5" stroke="var(--warn)"></circle>
+        <circle class="dot" cx="175" cy="155" r="3.5" stroke="var(--warn)"></circle>
+        <circle class="dot" cx="257" cy="155" r="3.5" stroke="var(--warn)"></circle>
+        <circle class="dot" cx="421" cy="144" r="3.5" stroke="var(--warn)"></circle>
+        <circle class="dot" cx="576" cy="143" r="3.5" stroke="var(--warn)"></circle>
+        <circle class="dot" cx="93"  cy="99"  r="3.5" stroke="var(--accent)"></circle>
+        <circle class="dot" cx="175" cy="84"  r="3.5" stroke="var(--accent)"></circle>
+        <circle class="dot" cx="257" cy="74"  r="3.5" stroke="var(--accent)"></circle>
+        <circle class="dot" cx="421" cy="79"  r="3.5" stroke="var(--accent)"></circle>
+        <circle class="dot" cx="576" cy="69"  r="3.5" stroke="var(--accent)"></circle>
+
+        <text x="93"  y="219" text-anchor="middle">24px</text>
+        <text x="175" y="219" text-anchor="middle">36px</text>
+        <text x="257" y="219" text-anchor="middle">48px</text>
+        <text x="421" y="219" text-anchor="middle">73px</text>
+        <text x="576" y="219" text-anchor="middle">97px</text>
+        <text x="93"  y="236" text-anchor="middle">132m</text>
+        <text x="175" y="236" text-anchor="middle">88m</text>
+        <text x="257" y="236" text-anchor="middle">66m</text>
+        <text x="421" y="236" text-anchor="middle">44m</text>
+        <text x="576" y="236" text-anchor="middle">33m</text>
+      </svg>
+      <div class="legend">
+        <span><i class="swatch" style="background:var(--accent)"></i>겨울 mAP50</span>
+        <span><i class="swatch" style="background:var(--warn)"></i>여름 mAP50</span>
+        <span>아래 축 = 실기체(54°·1920px) 환산 고도</span>
+      </div>
+    </div>
+  </div>
+
+  <p>여름 기준으로 97px에서 36px까지 <strong>0.575 → 0.520</strong>, 겨우 8% 떨어진다. 그런데 24px에서 <strong>0.325</strong>로 <strong>37% 붕괴</strong>한다. 24픽셀 안에는 사람이라는 증거가 물리적으로 부족하다.</p>
+
+  <div class="note danger">
+    <b>기준서의 "탐지 하한 20px"은 위험하다.</b> 20px 근처는 이미 절벽 안쪽이다. 안전 하한은 <b>36px</b>로 잡아야 한다.
+  </div>
+
+  <p>뒤집어 보면 좋은 소식이다. 우리 운용 고도 20~40m는 사람이 80~160px로 보이는 구간이라 <strong>성능 걱정 구간이 전혀 아니다.</strong> 고도를 올리면 통과 폭이 넓어져 같은 구역을 훨씬 빨리 훑는다.</p>
+</article>
+
+<!-- 3 -->
+<article class="concept" id="c3">
+  <div class="tagline"><span class="domain d-train">학습</span><span class="idx">03</span></div>
+  <h2 class="title">imgsz는 두 가지를 뜻한다</h2>
+  <p><strong>센서 해상도</strong>와 <strong>추론 해상도</strong>는 다른 것이다. 우리 학습 이미지 원본은 1280×720인데 <code>imgsz 960</code>으로 학습했다. 즉 매 이미지를 <strong>0.75배로 줄여</strong> 넣었고, 선형 25%의 정보를 버렸다.</p>
+  <p>그 결과 객체의 26~32%가 64px 미만으로 들어갔다. <code>imgsz 1280</code>으로 올리면 이 비율이 0~12%로 떨어진다. VRAM 4GB에서는 불가능했던 실험이라 아직 못 해봤다.</p>
+
+  <div class="note">
+    <b>학습 imgsz가 곡선의 중심을 정한다.</b> 960으로 학습한 모델은 사람 73px 근처가 중심이고, 1280으로 학습하면 97px가 중심이 된다. 같은 데이터라도 <b>절벽 위치가 달라진다</b> — 그래서 모델을 바꾸면 크기 곡선을 다시 재야 한다.
+  </div>
+
+  <p>그리고 비교할 때는 <strong>평가 imgsz를 반드시 맞춰야 한다.</strong> 960으로 학습한 모델을 1280으로 평가하면 학습 조건과 달라져 숫자가 왜곡된다.</p>
+</article>
+
+<!-- 4 -->
+<article class="concept" id="c4">
+  <div class="tagline"><span class="domain d-train">학습</span><span class="idx">04</span></div>
+  <h2 class="title">크기 견고성은 증강이 만든다</h2>
+  <p>앞의 곡선이 넓은 구간에서 평평한 것은 모델이 똑똑해서가 아니라 <strong>학습 중에 이미 다양한 크기를 봤기 때문</strong>이다.</p>
+
+  <div class="block">
+    <div class="block-head">실제 적용된 증강</div>
+    <div class="block-body">
+      <table>
+        <thead><tr><th>설정</th><th>값</th><th style="text-align:left">효과</th></tr></thead>
+        <tbody>
+          <tr><td><code>scale</code></td><td>0.5</td><td style="text-align:left">매 스텝 0.5~1.5배 무작위 확대·축소</td></tr>
+          <tr><td><code>mosaic</code></td><td>1.0</td><td style="text-align:left">4장을 합쳐 크기·맥락 다양화</td></tr>
+          <tr><td><code>degrees</code></td><td>10.0</td><td style="text-align:left">항공뷰는 방향이 일정하지 않다</td></tr>
+          <tr><td><code>close_mosaic</code></td><td>10</td><td style="text-align:left">마지막 10에폭은 모자이크를 끈다</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p><code>close_mosaic</code>이 중요하다. 모자이크는 실제 추론에서 절대 나타나지 않는 합성 이미지라, 끝까지 켜두면 <strong>학습 분포와 추론 분포가 어긋난 채로 끝난다.</strong> 마지막 구간에서 꺼서 진짜 이미지로 마무리한다.</p>
+</article>
+
+<!-- 5 -->
+<article class="concept" id="c5">
+  <div class="tagline"><span class="domain d-data">데이터</span><span class="idx">05</span></div>
+  <h2 class="title">분할은 배우·비행 단위로</h2>
+  <p>영상에서 뽑은 데이터셋에서 <strong>프레임 단위로 무작위 분할하면 성능이 크게 부풀려진다.</strong> 연속 프레임은 서로 거의 같은 그림이라, 같은 장면이 학습과 검증 양쪽에 들어가기 때문이다. 모델이 일반화한 게 아니라 <strong>본 것을 기억한 것</strong>이다.</p>
+
+  <div class="block">
+    <div class="block-head">우리 분할 기준</div>
+    <div class="block-body">
+      <table>
+        <thead><tr><th>데이터셋</th><th style="text-align:left">분할 단위</th><th style="text-align:left">이유</th></tr></thead>
+        <tbody>
+          <tr><td>NOMAD</td><td style="text-align:left">배우(Actor)</td><td style="text-align:left">같은 사람이 양쪽에 없도록</td></tr>
+          <tr><td>WiSARD</td><td style="text-align:left">비행(flight)</td><td style="text-align:left">같은 촬영분이 양쪽에 없도록</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="note warn">
+    <b>폴더 이름이 곧 분할 키다.</b> WiSARD의 <code>200704_Baker_FLIR_IR_1</code> 같은 이름을 바꾸면 train/val 분할과 촬영 월 판별이 함께 깨진다.
+  </div>
+</article>
+
+<!-- 6 -->
+<article class="concept" id="c6">
+  <div class="tagline"><span class="domain d-data">데이터</span><span class="idx">06</span></div>
+  <h2 class="title">우리 데이터는 크기가 지워져 있다</h2>
+  <p>NOMAD 원본은 5472×3078이고 촬영 거리에 따라 사람이 27~233px로 제각각이다. 그대로 넣으면 추론 해상도로 축소될 때 뭉개진다. 그래서 <code>nomad_prep.py</code>가 <strong>사람 크기를 목표 픽셀(약 97px)로 맞춰 리샘플링</strong>한 뒤 잘라냈다.</p>
+  <p>결과적으로 10m에서 찍은 것과 30m에서 찍은 것의 <strong>사람 크기가 똑같아졌다</strong> — 실측 97px 대 98px. 이것이 무엇을 뜻하는지 정확히 알아야 한다.</p>
+
+  <div class="block">
+    <div class="block-head">잴 수 있는 것 / 없는 것</div>
+    <div class="block-body">
+      <table>
+        <thead><tr><th style="text-align:left">질문</th><th>가능</th></tr></thead>
+        <tbody>
+          <tr><td style="text-align:left">고도가 높아 <b>작게 찍히면</b> 성능이 떨어지나</td><td><span class="tag t-bad">불가</span></td></tr>
+          <tr><td style="text-align:left"><b>같은 크기</b>일 때 멀리서 찍은 게 불리한가</td><td><span class="tag t-safe">가능</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p>두 번째를 실제로 재봤다. 10m와 30m에서 <strong>mAP50 0.559 대 0.579</strong> — 오히려 멀리서 찍은 쪽이 근소하게 높았고, 정밀도는 0.729 대 0.816으로 뚜렷이 좋았다.</p>
+  <p>즉 <em>이 구간에서 광학 정보량 손실은 무시할 수준</em>이다. 크기만 확보되면 고도는 올려도 된다.</p>
+</article>
+
+<!-- 7 -->
+<article class="concept" id="c7">
+  <div class="tagline"><span class="domain d-eval">평가</span><span class="idx">07</span></div>
+  <h2 class="title">평균은 격차를 숨긴다</h2>
+  <p>전체 검증셋 하나로 mAP를 내면 <strong>어디서 실패하는지 알 수 없다.</strong> 도메인을 나눠 재야 한다.</p>
+
+  <div class="block">
+    <div class="block-head">도메인 분리 평가 · 실측</div>
+    <div class="block-body">
+      <table>
+        <thead><tr><th style="text-align:left">모델</th><th>여름 mAP50</th><th>겨울 mAP50</th><th>쓰러진 사람</th></tr></thead>
+        <tbody>
+          <tr><td style="text-align:left">기성 VisDrone</td><td>0.133</td><td>0.544</td><td>0.048</td></tr>
+          <tr class="good"><td style="text-align:left"><b>통합 (운용 중)</b></td><td><b>0.641</b></td><td><b>0.922</b></td><td><b>0.531</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p>여름과 겨울의 격차가 <strong>0.28</strong>이다. 평균만 봤다면 이 차이를 못 봤을 것이고, "여름이 약점"이라는 개선 방향도 못 잡았을 것이다.</p>
+
+  <div class="note">
+    <b>사람이 0명인 검증셋도 쓸모가 있다.</b> WiSARD 9월분 289장에는 사람이 없다. mAP는 항상 0.0으로 나오는데 고장이 아니다 — <b>오탐 측정 전용</b> 도메인이다. "사람 없는 배경에서 몇 건이나 잘못 신고하는가"를 여기서 잰다.
+  </div>
+</article>
+
+<!-- 8 -->
+<article class="concept" id="c8">
+  <div class="tagline"><span class="domain d-eval">평가</span><span class="idx">08</span></div>
+  <h2 class="title">어떤 지표를 볼 것인가</h2>
+  <p>지표마다 재는 것이 다르다. 우리 용도에서 중요도가 같지 않다.</p>
+
+  <div class="block">
+    <div class="block-head">지표별 의미와 우선순위</div>
+    <div class="block-body">
+      <table>
+        <thead><tr><th style="text-align:left">지표</th><th style="text-align:left">재는 것</th><th>우선순위</th></tr></thead>
+        <tbody>
+          <tr><td style="text-align:left"><b>재현율</b></td><td style="text-align:left">실제 있는 사람 중 몇 %를 찾았나</td><td><span class="tag t-safe">최우선</span></td></tr>
+          <tr><td style="text-align:left">mAP50</td><td style="text-align:left">박스가 절반만 겹쳐도 인정한 종합 점수</td><td><span class="tag t-safe">중요</span></td></tr>
+          <tr><td style="text-align:left">정밀도</td><td style="text-align:left">신고한 것 중 몇 %가 진짜였나</td><td><span class="tag t-warn">보조</span></td></tr>
+          <tr><td style="text-align:left">mAP50-95</td><td style="text-align:left">박스 위치가 얼마나 정확한가</td><td><span class="tag t-warn">낮음</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p>재난 탐색에서 <strong>놓치는 것이 훨씬 비싼 오류</strong>다. 못 찾은 사람은 되돌릴 수 없지만, 잘못 신고한 것은 사람이 확인하면 그만이다. 그래서 재현율이 최우선이다.</p>
+  <p>mAP50-95는 박스가 몇 픽셀 어긋나는지를 본다. 우리는 탐지 위치를 <strong>3m 반경으로 병합</strong>해서 신고하므로, 박스 몇 픽셀 차이는 결과에 거의 영향이 없다.</p>
+</article>
+
+<!-- 9 -->
+<article class="concept" id="c9">
+  <div class="tagline"><span class="domain d-eval">평가</span><span class="idx">09</span></div>
+  <h2 class="title">임계값은 F2로 고른다</h2>
+  <p>신뢰도 임계값을 낮추면 더 많이 찾지만 오탐도 는다. 어디서 끊을지를 <strong>F1으로 정하면 안 된다</strong> — F1은 정밀도와 재현율을 같은 무게로 본다.</p>
+  <p>우리는 <strong>F2</strong>를 쓴다. 재현율에 2배 가중을 준 지표다. 그 최대 구간이 <code>conf 0.10~0.15</code>였고, 운용값으로 <strong>0.15</strong>를 택했다.</p>
+
+  <div class="block">
+    <div class="block-head">임계값을 0.25에서 0.15로 낮춘 결과</div>
+    <div class="block-body">
+      <table>
+        <thead><tr><th style="text-align:left">항목</th><th>0.25</th><th>0.15</th><th style="text-align:left">판단</th></tr></thead>
+        <tbody>
+          <tr><td style="text-align:left">쓰러진 사람 발견</td><td>0.531</td><td>0.608</td><td style="text-align:left"><span class="tag t-safe">+0.077 얻음</span></td></tr>
+          <tr><td style="text-align:left">배경 오탐 (장당)</td><td>0.72</td><td>0.99</td><td style="text-align:left"><span class="tag t-warn">+0.27 잃음</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p>늘어난 오탐은 추적기가 흡수한다. 한 프레임만 반짝하는 탐지는 <strong>3프레임 안에 폐기</strong>되므로 지도까지 올라가지 않는다.</p>
+</article>
+
+<!-- 10 -->
+<article class="concept" id="c10">
+  <div class="tagline"><span class="domain d-train">학습</span><span class="idx">10</span></div>
+  <h2 class="title">모델 크기는 데이터가 정한다</h2>
+  <p>"최신·최대 모델이 낫겠지"는 우리 상황에서 성립하지 않는다. 학습 데이터가 <strong>11,615장 · 객체 18,132개 · 클래스 1개</strong>다.</p>
+  <p>공개 벤치마크의 성능 차이는 <strong>COCO 80클래스</strong>를 감당하려고 만든 용량에서 나온다. 1클래스 소규모 데이터에서는 그 용량이 <strong>과적합 위험</strong>으로만 남는다.</p>
+
+  <div class="note">
+    <b>속도도 변별력이 아니었다.</b> RTX 4080 SUPER 실측에서 yolo11s 56.5 FPS, yolo11m <b>60.8</b> FPS — 연산량이 3.2배인데 더 빨랐다. 이 크기의 모델은 GPU가 놀고, 실제 시간은 전처리·NMS·파이썬 오버헤드가 잡아먹는다. 요건(5 FPS)의 9~12배라 <b>정확도로만 고르면 된다.</b>
+  </div>
+
+  <p>판단 기준은 이렇게 잡는다. <strong>m이 s보다 뚜렷이 좋으면</strong> 용량이 도움이 된다는 신호이니 l도 볼 가치가 있다. <strong>비슷하거나 나쁘면</strong> 용량은 이미 포화이고 더 키우는 것은 시간 낭비다.</p>
+</article>
+
+<!-- 11 -->
+<article class="concept" id="c11">
+  <div class="tagline"><span class="domain d-train">학습</span><span class="idx">11</span></div>
+  <h2 class="title">학습률이 사전학습을 파괴한다</h2>
+  <p>파인튜닝에서 학습률을 처음부터 학습할 때처럼 크게 주면, 사전학습으로 얻은 특징이 <strong>초기 몇 에폭 만에 망가진다.</strong> 파국적 망각(catastrophic forgetting)이다.</p>
+
+  <div class="block">
+    <div class="block-head">실제로 겪은 실패 · 자세 2클래스 시도</div>
+    <div class="block-body">
+      <table>
+        <thead><tr><th style="text-align:left">증상</th><th style="text-align:left">결과</th></tr></thead>
+        <tbody>
+          <tr><td style="text-align:left">기본 <code>lr0 = 0.01</code>로 파인튜닝</td><td style="text-align:left">박스 손실 1.2 → <b>1.9</b>로 <b>악화</b></td></tr>
+          <tr><td style="text-align:left">쓰러짐 재현율</td><td style="text-align:left">0.153에 그침</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p>여기서 얻은 구조적 교훈이 하나 더 있다. 잘 되는 탐지기를 건드려 클래스를 늘리는 것보다, <strong>탐지기는 그대로 두고 분류기를 뒤에 붙이는 편</strong>이 안전하다. 겨울 mAP50 0.922를 낸 모델을 위험에 빠뜨리지 않는다.</p>
+
+  <div class="note warn">
+    <b>중간 지표만 보고 중단하지 말 것.</b> 한 학습에서 2에폭 0.551 → 3에폭 <b>0.310</b>으로 떨어졌다가 최종 0.606으로 회복한 적이 있다. 학습률 워밍업과 스케줄 때문에 초반 등락은 정상이다.
+  </div>
+</article>
+
+<section class="closing">
+  <h2>요약 — 실행 규칙</h2>
+  <ul class="rules">
+    <li><span class="k">기하</span><span>고도·화각·해상도를 따로 실험하지 말 것. <b>사람 픽셀 크기</b> 하나로 환원해서 보면 된다.</span></li>
+    <li><span class="k">고도</span><span>안전 하한은 <b>36px</b>. 운용 고도 20~40m는 80~160px 구간이라 여유가 크다. 고도를 올리는 편이 탐색 속도에 이득이다.</span></li>
+    <li><span class="k">평가</span><span>도메인을 나눠 재고, <b>재현율</b>을 최우선으로 본다. 평가 imgsz는 학습값과 맞춘다.</span></li>
+    <li><span class="k">데이터</span><span>배우·비행 단위 분할을 지킨다. 프레임 단위로 다시 섞으면 수치가 부풀려진다.</span></li>
+    <li><span class="k">모델</span><span>데이터가 11,615장·1클래스다. 크게 갈수록 좋아진다는 보장이 없다. <b>재보고 정한다.</b></span></li>
+    <li><span class="k">기록</span><span>모델을 바꾸면 <b>크기 곡선을 다시 잰다</b>. 학습 imgsz가 절벽 위치를 옮긴다.</span></li>
+  </ul>
+  <footer>측정 도구 — eval_domain.py (도메인별) · eval_altitude.py (촬영 거리별) · eval_scale.py (크기 곡선) · bench_models.py (속도·VRAM)</footer>
+</section>
+
+</div>
