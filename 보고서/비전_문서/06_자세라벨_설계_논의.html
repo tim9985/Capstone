@@ -1,0 +1,518 @@
+<title>자세 라벨 설계 검토</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500;600&family=Noto+Serif+KR:wght@500;600;700&display=swap">
+
+<style>
+:root{
+  --ground:#F2F4F6; --surface:#FFFFFF; --surface-alt:#E8ECEF;
+  --ink:#16202B; --ink-soft:#3D4A57; --muted:#6B7784;
+  --rule:#D3DAE0; --rule-soft:#E4E9ED;
+  --accent:#216580; --accent-soft:#DCEAF0;
+  --safe:#35705A; --safe-soft:#DEEDE6;
+  --warn:#9C5A22; --warn-soft:#F5E7D8;
+  --danger:#9E3437; --danger-soft:#F6E0E0;
+  --shadow:0 1px 2px rgba(22,32,43,.05),0 8px 24px -16px rgba(22,32,43,.18);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0E141A; --surface:#161E26; --surface-alt:#1E2831;
+  --ink:#E4EAEF; --ink-soft:#B6C1CB; --muted:#8593A0;
+  --rule:#2C3945; --rule-soft:#222D38;
+  --accent:#6FB4D0; --accent-soft:#17323F;
+  --safe:#74BE9E; --safe-soft:#142B23;
+  --warn:#D69A5F; --warn-soft:#2E2318;
+  --danger:#DE8386; --danger-soft:#331B1D;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -16px rgba(0,0,0,.7);
+}}
+:root[data-theme="dark"]{
+  --ground:#0E141A; --surface:#161E26; --surface-alt:#1E2831;
+  --ink:#E4EAEF; --ink-soft:#B6C1CB; --muted:#8593A0;
+  --rule:#2C3945; --rule-soft:#222D38;
+  --accent:#6FB4D0; --accent-soft:#17323F;
+  --safe:#74BE9E; --safe-soft:#142B23;
+  --warn:#D69A5F; --warn-soft:#2E2318;
+  --danger:#DE8386; --danger-soft:#331B1D;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -16px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Sans KR",system-ui,"Malgun Gothic",sans-serif;
+  line-height:1.72;-webkit-font-smoothing:antialiased}
+.wrap{max-width:58rem;margin:0 auto;padding:clamp(2.4rem,6vw,4.5rem) clamp(1.1rem,4vw,2.4rem) 6rem}
+
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:1.5rem;margin-bottom:1.4rem}
+.kicker{font-family:"IBM Plex Mono",monospace;font-size:.7rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.85rem}
+h1{font-family:"Noto Serif KR",Georgia,serif;font-weight:700;
+  font-size:clamp(1.85rem,5.5vw,2.8rem);line-height:1.2;letter-spacing:-.015em;
+  margin:0 0 .65rem;text-wrap:balance}
+.standfirst{color:var(--ink-soft);font-size:1.02rem;max-width:42rem;margin:0;font-weight:300}
+.meta{margin-top:1.2rem;font-family:"IBM Plex Mono",monospace;font-size:.73rem;color:var(--muted)}
+
+h2.sec{font-family:"Noto Serif KR",Georgia,serif;font-weight:600;
+  font-size:clamp(1.2rem,3.2vw,1.5rem);margin:2.9rem 0 .25rem;letter-spacing:-.01em;
+  padding-top:.9rem;border-top:1px solid var(--rule)}
+h3{font-size:1.02rem;font-weight:600;margin:1.6rem 0 .45rem}
+.secnum{font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--accent);letter-spacing:.12em;
+  display:block;margin-bottom:.15rem}
+.sub{color:var(--muted);font-size:.88rem;margin:0 0 1.1rem}
+p{max-width:43rem;margin:0 0 .9rem}
+strong{font-weight:600}
+em{font-style:normal;border-bottom:1.5px solid var(--accent);padding-bottom:1px}
+code{font-family:"IBM Plex Mono",monospace;font-size:.86em;background:var(--surface-alt);
+  padding:.1em .35em;border-radius:2px}
+pre{font-family:"IBM Plex Mono",monospace;font-size:.82rem;line-height:1.7;
+  background:var(--surface-alt);border:1px solid var(--rule-soft);border-radius:3px;
+  padding:.8rem 1rem;overflow-x:auto;margin:1rem 0}
+
+.block{margin:1.1rem 0;background:var(--surface);border:1px solid var(--rule);
+  border-radius:3px;box-shadow:var(--shadow);overflow:hidden}
+.block-head{font-family:"IBM Plex Mono",monospace;font-size:.67rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);padding:.6rem 1rem;
+  border-bottom:1px solid var(--rule-soft);background:var(--surface-alt)}
+.block-head b{color:var(--ink);font-weight:600}
+.block-body{padding:.85rem 1rem;overflow-x:auto}
+.block-foot{padding:.55rem 1rem;border-top:1px solid var(--rule-soft);
+  font-family:"IBM Plex Mono",monospace;font-size:.68rem;color:var(--muted);line-height:1.7}
+.block-foot b{color:var(--ink-soft)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th,td{padding:.42rem .55rem;text-align:left;vertical-align:top;white-space:nowrap}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+thead th{font-family:"IBM Plex Mono",monospace;font-size:.65rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);font-weight:500;border-bottom:1px solid var(--rule)}
+tbody td{border-bottom:1px solid var(--rule-soft)}
+tbody tr:last-child td{border-bottom:none}
+tr.hi td{background:var(--accent-soft);font-weight:500}
+tr.bad td{background:var(--danger-soft)}
+tr.tot td{border-top:1px solid var(--rule);font-weight:600}
+.up{color:var(--safe)} .down{color:var(--danger)}
+
+.note{margin:1.1rem 0;padding:.85rem 1rem;border-left:3px solid var(--accent);
+  background:var(--surface);font-size:.91rem;color:var(--ink-soft)}
+.note.warn{border-left-color:var(--warn)}
+.note.danger{border-left-color:var(--danger)}
+.note.good{border-left-color:var(--safe)}
+.note b{color:var(--ink)}
+.note .lbl{font-family:"IBM Plex Mono",monospace;font-size:.65rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent);display:block;margin-bottom:.3rem}
+.note.warn .lbl{color:var(--warn)} .note.danger .lbl{color:var(--danger)}
+.note.good .lbl{color:var(--safe)}
+
+.decision{background:var(--surface);border:1px solid var(--rule);border-left:4px solid var(--warn);
+  border-radius:3px;box-shadow:var(--shadow);margin:0 0 1rem;overflow:hidden}
+.decision-head{padding:.7rem 1rem;background:var(--warn-soft);
+  display:flex;gap:.7rem;align-items:baseline;flex-wrap:wrap}
+.did{font-family:"IBM Plex Mono",monospace;font-size:.72rem;font-weight:600;color:var(--warn)}
+.dtitle{font-weight:600;font-size:.97rem;flex:1;min-width:12rem}
+.decision-body{padding:.85rem 1rem}
+.decision-body dl{margin:0;display:grid;grid-template-columns:4.8rem 1fr;gap:.4rem .9rem;font-size:.9rem}
+.decision-body dt{font-family:"IBM Plex Mono",monospace;font-size:.65rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);padding-top:.28rem}
+.decision-body dd{margin:0;color:var(--ink-soft)}
+.decision-body dd b{color:var(--ink)}
+
+footer{margin-top:3rem;padding-top:1.3rem;border-top:1px solid var(--rule);
+  font-size:.77rem;color:var(--muted);font-family:"IBM Plex Mono",monospace;line-height:1.9}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:560px){.decision-body dl{grid-template-columns:1fr;gap:.15rem}
+  .decision-body dt{padding-top:.5rem}}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <div class="kicker">비전 파트 · 팀 논의용 · 문서 06</div>
+  <h1>자세 라벨 설계 검토</h1>
+  <p class="standfirst">쓰러짐 판별이 일곱 번째 시도에서 처음 성공했다. 다만 그 모델을 실제로 쓰려면 라벨 설계를 다시 잡아야 한다. 측정값 전부와, 팀이 정해야 할 네 가지를 정리했다.</p>
+  <div class="meta">2026-09-04 · 정서인(객체 탐지·비전) · 결정 필요 4건</div>
+</header>
+
+<h2 class="sec"><span class="secnum">01</span> 요약</h2>
+
+<div class="block">
+  <div class="block-head">한 장으로 보는 현황</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>항목</th><th class="n">수치</th><th>해석</th></tr></thead>
+      <tbody>
+        <tr class="hi"><td>SARD-2 쓰러짐 재현율 (검증)</td><td class="n">0.972</td><td>같은 도메인에서는 거의 다 잡는다</td></tr>
+        <tr class="hi"><td>SARD-2 쓰러짐 재현율 (미사용 test)</td><td class="n">0.974</td><td>과적합이 아니다</td></tr>
+        <tr class="bad"><td>Okutama 쓰러짐 재현율</td><td class="n">0.088</td><td>다른 도메인에서 무너진다</td></tr>
+        <tr class="bad"><td>NOMAD 쓰러짐 재현율</td><td class="n">0.163</td><td>다른 도메인에서 무너진다</td></tr>
+        <tr class="bad"><td>사람 발견율 (NOMAD) — 원본 → 자세모델</td><td class="n">0.667 → 0.290</td><td>기존 강건성을 잃었다</td></tr>
+        <tr class="bad"><td>사람 발견율 (WiSARD) — 원본 → 자세모델</td><td class="n">0.884 → 0.754</td><td>기존 강건성을 잃었다</td></tr>
+        <tr><td>NOMAD 전환구간 제외 시 잔존 fallen</td><td class="n">89.1%</td><td>라벨 정리 비용이 작다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">전부 실측 · 출처는 각 절과 문서 하단 참조</div>
+</div>
+
+<p><strong>결론</strong> — SARD-2 단독 학습은 못 쓴다. 세 데이터를 합쳐 다시 학습해야 하고, 합치려면 클래스 체계를 통일해야 한다. 그 과정에서 <em>우리가 만든 NOMAD 자세 라벨의 결함</em>이 드러났다.</p>
+
+<h2 class="sec"><span class="secnum">02</span> 일곱 번의 시도 — 전체 수치</h2>
+
+<div class="block">
+  <div class="block-head">자세 분류 시도 기록 · <b>쓰러짐 클래스 기준</b></div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th class="n">#</th><th>방식</th><th>데이터</th><th class="n">정밀도</th><th class="n">재현율</th><th class="n">mAP50</th><th>실행</th></tr></thead>
+      <tbody>
+        <tr><td class="n">1</td><td>2클래스 탐지기 · lr 0.01</td><td>NOMAD 7,624</td><td class="n">0.347</td><td class="n">0.153</td><td class="n">0.147</td><td><code>pose2</code></td></tr>
+        <tr><td class="n">2</td><td>별도 분류기 (crop 분류)</td><td>NOMAD</td><td class="n">0.530</td><td class="n">0.416</td><td class="n">F1 0.467</td><td><code>pose_cls</code></td></tr>
+        <tr><td class="n">3</td><td>합성 데이터 혼합</td><td>NOMAD + 합성</td><td class="n">0.475</td><td class="n">0.407</td><td class="n">F1 0.438</td><td><code>pose_cls_mixed</code></td></tr>
+        <tr><td class="n">4</td><td>키포인트 (사전학습 그대로)</td><td>—</td><td class="n">—</td><td class="n">~0.2</td><td class="n">—</td><td>사전 점검</td></tr>
+        <tr><td class="n">5</td><td>2클래스 탐지기 · lr 0.001</td><td>NOMAD 7,624</td><td class="n">0.276</td><td class="n">0.177</td><td class="n">0.103</td><td><code>pose2_lr001_cont</code></td></tr>
+        <tr><td class="n">6</td><td>2클래스 · 관측 200 px</td><td>Okutama 3,730</td><td class="n">0.412</td><td class="n">0.147</td><td class="n">0.219</td><td><code>okutama_pose200</code></td></tr>
+        <tr class="hi"><td class="n">7</td><td><b>6클래스</b></td><td><b>SARD-2 1,386</b></td><td class="n"><b>0.881</b></td><td class="n"><b>0.972</b></td><td class="n"><b>0.964</b></td><td><code>sard2_pose6</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">2·3번은 탐지기가 아닌 분류기라 mAP 대신 최적 F1(임계값 0.3) 기준</div>
+</div>
+
+<h3>7차 — SARD-2 6클래스 전체 결과</h3>
+
+<div class="block">
+  <div class="block-head">yolov8s · imgsz 960 · 30 epoch · 검증 396장 / 1,312개</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>클래스</th><th class="n">개수</th><th class="n">정밀도</th><th class="n">재현율</th><th class="n">mAP50</th><th class="n">mAP50-95</th></tr></thead>
+      <tbody>
+        <tr class="hi"><td><b>laying_down</b></td><td class="n">322</td><td class="n">0.881</td><td class="n">0.972</td><td class="n">0.964</td><td class="n">0.688</td></tr>
+        <tr><td>seated</td><td class="n">138</td><td class="n">0.866</td><td class="n">0.906</td><td class="n">0.937</td><td class="n">0.611</td></tr>
+        <tr><td>not_defined</td><td class="n">189</td><td class="n">0.773</td><td class="n">0.751</td><td class="n">0.820</td><td class="n">0.457</td></tr>
+        <tr><td>stands</td><td class="n">372</td><td class="n">0.697</td><td class="n">0.839</td><td class="n">0.813</td><td class="n">0.506</td></tr>
+        <tr><td>Walking</td><td class="n">266</td><td class="n">0.685</td><td class="n">0.818</td><td class="n">0.812</td><td class="n">0.503</td></tr>
+        <tr><td>Running</td><td class="n">25</td><td class="n">0.561</td><td class="n">0.257</td><td class="n">0.312</td><td class="n">0.151</td></tr>
+        <tr class="tot"><td>전체</td><td class="n">1,312</td><td class="n">0.744</td><td class="n">0.757</td><td class="n">0.776</td><td class="n">0.486</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">미사용 test 198장 / 618개 재측정 → laying_down mAP50 <b>0.963</b> · 재현율 <b>0.974</b> · 추론 8.3 ms/장</div>
+</div>
+
+<div class="note good">
+  <span class="lbl">뒤집힌 결론</span>
+  <b>"항공뷰에서 쓰러짐 판별은 원리적으로 불가능"이라는 판단은 틀렸다.</b>
+  해상도 탓도 아니었다 — 6차에서 관측 크기를 97 px 에서 200 px 로 두 배 키웠는데도 재현율 0.147 이었다.
+  차이를 만든 것은 <b>라벨 품질과 클래스 설계</b>다. 특히 <code>seated</code> 0.906 과
+  <code>not_defined</code> 0.751 을 별도 클래스로 둔 것이 <code>laying_down</code> 의 경계를 선명하게 했을 가능성이 높다.
+</div>
+
+<h3>SARD-2 데이터 구성</h3>
+
+<div class="block">
+  <div class="block-body">
+    <table>
+      <thead><tr><th>분할</th><th class="n">이미지</th><th class="n">라벨</th><th class="n">Running</th><th class="n">Walking</th><th class="n">laying</th><th class="n">not_def</th><th class="n">seated</th><th class="n">stands</th></tr></thead>
+      <tbody>
+        <tr><td>train</td><td class="n">1,386</td><td class="n">4,424</td><td class="n">44</td><td class="n">907</td><td class="n">1,096</td><td class="n">698</td><td class="n">414</td><td class="n">1,265</td></tr>
+        <tr><td>valid</td><td class="n">396</td><td class="n">1,312</td><td class="n">25</td><td class="n">266</td><td class="n">322</td><td class="n">189</td><td class="n">138</td><td class="n">372</td></tr>
+        <tr><td>test</td><td class="n">198</td><td class="n">618</td><td class="n">9</td><td class="n">115</td><td class="n">151</td><td class="n">89</td><td class="n">69</td><td class="n">185</td></tr>
+        <tr class="tot"><td>합계</td><td class="n">1,980</td><td class="n">6,354</td><td class="n">78</td><td class="n">1,288</td><td class="n">1,569</td><td class="n">976</td><td class="n">621</td><td class="n">1,822</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot"><code>not_defined</code> 는 전체의 <b>15.4%</b> (976/6,354) · <code>Running</code> 은 78개뿐이라 0.257 은 데이터 부족 탓</div>
+</div>
+
+<h2 class="sec"><span class="secnum">03</span> 문제 1 — 도메인이 바뀌면 무너진다</h2>
+
+<div class="block">
+  <div class="block-head">6클래스 예측을 2클래스로 접어 다른 정답셋과 대조 · <code>eval_cross_domain.py</code></div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>평가셋</th><th>도메인 특성</th><th class="n">쓰러짐 재현율</th><th class="n">쓰러짐 정밀도</th></tr></thead>
+      <tbody>
+        <tr class="hi"><td>SARD-2 valid</td><td>동일 (훈련 촬영)</td><td class="n">0.972</td><td class="n">0.871</td></tr>
+        <tr class="hi"><td>SARD-2 test</td><td>동일</td><td class="n">0.974</td><td class="n">0.813</td></tr>
+        <tr class="bad"><td>Okutama-Action</td><td>일본 공원 · 다른 기체</td><td class="n">0.088</td><td class="n">0.096</td></tr>
+        <tr class="bad"><td>NOMAD</td><td>미국 농장 · 여름 · 초목</td><td class="n">0.163</td><td class="n">0.236</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">매핑 — laying_down→fallen · Walking/stands/seated/Running→person · not_defined 는 평가 제외 · IoU 0.3 그리디 매칭</div>
+</div>
+
+<p><strong>0.97 에서 0.09 로 떨어진다.</strong> 즉 현재 모델이 배운 것은 "사람의 자세"가 아니라 "이 촬영 조건에서의 쓰러진 사람"에 가깝다.</p>
+
+<h2 class="sec"><span class="secnum">04</span> 문제 2 — 기존 모델의 강건성을 잃었다</h2>
+
+<p>SARD-2 학습은 <code>stage1_all</code>(계절·가림 강건성을 확보해 현재 운용 중인 모델)에서 이어받았는데, <strong>그 지식이 지워졌다.</strong> 자세를 빼고 <em>사람을 찾기라도 하는가</em>만 봐도 그렇다.</p>
+
+<div class="block">
+  <div class="block-head">클래스 무관 사람 발견율</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>모델</th><th class="n">NOMAD 여름</th><th class="n">WiSARD 겨울</th></tr></thead>
+      <tbody>
+        <tr><td><b>stage1_all</b> (운용 중)</td><td class="n"><b>0.667</b></td><td class="n"><b>0.884</b></td></tr>
+        <tr><td>sard2_pose6 (자세 모델)</td><td class="n">0.290</td><td class="n">0.754</td></tr>
+        <tr class="tot"><td>변화</td><td class="n down">−56.5%</td><td class="n down">−14.7%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h3>참고 — 운용 모델이 원래 내던 성능</h3>
+
+<div class="block">
+  <div class="block-head">도메인별 1클래스 성능 (mAP50) · <code>metrics/eval_domain.csv</code></div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>모델</th><th>학습 데이터</th><th class="n">NOMAD 여름<br>1,198장</th><th class="n">WiSARD 1월<br>1,282장</th><th class="n">통합<br>2,769장</th></tr></thead>
+      <tbody>
+        <tr><td>visdrone_baseline</td><td>VisDrone (기성)</td><td class="n">0.133</td><td class="n">0.544</td><td class="n">0.428</td></tr>
+        <tr><td>nomad30</td><td>NOMAD 단독</td><td class="n">0.644</td><td class="n">0.242</td><td class="n">0.329</td></tr>
+        <tr class="hi"><td><b>stage1_all</b></td><td>NOMAD + WiSARD 14,342</td><td class="n"><b>0.641</b></td><td class="n"><b>0.922</b></td><td class="n"><b>0.850</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot"><b>nomad30 행이 이번 사태의 전례다</b> — 한 도메인만 학습하면 다른 도메인이 0.544 → 0.242 로 무너진다</div>
+</div>
+
+<div class="note danger">
+  <span class="lbl">파국적 망각 · 이미 겪은 문제</span>
+  학습률을 <code>0.001</code> 로 낮췄는데도 이렇게 됐다. <b>학습률만으로는 못 막는다.</b>
+  위 표의 <code>nomad30</code> → <code>stage1_all</code> 에서 이미 답을 찾았다 —
+  <b>원래 도메인의 데이터를 학습에 함께 남기는 것</b>이다.
+  즉 SARD-2 단독이 아니라 <b>통합 학습</b>이 필요하다.
+</div>
+
+<h2 class="sec"><span class="secnum">05</span> 합치려니 우리 라벨의 결함이 드러났다</h2>
+
+<p>NOMAD 는 자세 라벨이 아니라 <em>활동 구간</em>(프레임 범위)만 제공한다. <code>make_pose_dataset.py</code> 에서 이렇게 변환했다.</p>
+
+<pre>cls = 1 if "Laying" in act else 0    # 구간 안이면 무조건 fallen</pre>
+
+<p><strong>구간 경계의 전환 동작 — 눕는 중, 일어나는 중 — 이 전부 <code>fallen</code> 으로 들어간다.</strong> 애매한 상태를 처리하지 않았다.</p>
+
+<div class="note warn">
+  <span class="lbl">왜 문제인가</span>
+  반쯤 구부린 자세를 "누움"이라고 배우면 <b>결정 경계가 흐려진다.</b> 운용에서 몸을 굽힌 사람을
+  계속 쓰러짐으로 오탐하고, 반대로 진짜 쓰러진 자세의 특징은 희석된다.
+  <b>1·5차 시도가 재현율 0.153 / 0.177 에 머문 원인 중 하나로 의심된다.</b>
+</div>
+
+<h3>전환 구간을 빼는 비용</h3>
+
+<div class="block">
+  <div class="block-head">NOMAD <code>Laying</code> 구간 앞뒤를 잘라냈을 때</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>제외 폭</th><th class="n">남는 fallen 프레임</th><th class="n">비율</th><th class="n">ambiguous 로 이동</th></tr></thead>
+      <tbody>
+        <tr><td>0 (현재)</td><td class="n">109,591</td><td class="n">100%</td><td class="n">0</td></tr>
+        <tr class="hi"><td><b>15프레임 (0.5초)</b></td><td class="n"><b>97,665</b></td><td class="n"><b>89.1%</b></td><td class="n">11,926</td></tr>
+        <tr><td>30프레임 (1.0초)</td><td class="n">86,103</td><td class="n">78.6%</td><td class="n">23,488</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot"><code>Laying</code> 구간 398개 · 길이 중앙값 <b>210프레임(7.0초)</b> · 하위 10% 분위 60프레임(2.0초)</div>
+</div>
+
+<p>구간 중앙값이 7초라 앞뒤 0.5초씩 잘라내도 <strong>89% 가 남는다.</strong></p>
+
+<h3>SARD-2 는 이 문제를 이미 처리했다</h3>
+
+<p>SARD-2 의 <code>not_defined</code> 는 전체의 <strong>15.4%(976개)</strong> 다. 샘플을 열어보니 <strong>웅크림·구부림·엎드림</strong> 같은 중간 자세와 가려짐·과소 크기가 섞여 있었고, 클래스별 상자 크기 중앙값도 <strong>43 px 로 가장 작다</strong>(전체 중앙값 61 px).</p>
+
+<p><em>제작자가 애매한 것을 억지로 분류하지 않고 별도 라벨로 남긴 것이다.</em> 그리고 그 클래스 자체도 mAP50 0.820 으로 학습이 됐다 — <strong>"애매함"은 학습 가능한 범주다.</strong></p>
+
+<h2 class="sec"><span class="secnum">06</span> 제안 — 3클래스 통합</h2>
+
+<div class="block">
+  <div class="block-head">클래스 매핑안</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>출처</th><th>원 라벨</th><th>제안</th><th class="n">예상 라벨수</th><th>근거</th></tr></thead>
+      <tbody>
+        <tr><td rowspan="3">SARD-2</td><td><code>laying_down</code></td><td><b>fallen</b></td><td class="n">1,096</td><td>사람이 직접 라벨링</td></tr>
+        <tr><td><code>Walking·stands·seated·Running</code></td><td><b>person</b></td><td class="n">2,630</td><td>사람이 직접 라벨링</td></tr>
+        <tr><td><code>not_defined</code></td><td><b>ambiguous</b></td><td class="n">698</td><td>제작자가 애매하다고 판정</td></tr>
+        <tr><td rowspan="3">NOMAD</td><td><code>Laying</code> (전환 제외)</td><td><b>fallen</b></td><td class="n">~2,200</td><td>활동 라벨 + 경계 정리</td></tr>
+        <tr><td><code>Walking·Hiding</code></td><td><b>person</b></td><td class="n">~5,400</td><td>활동 라벨</td></tr>
+        <tr><td>구간 경계 ±0.5초</td><td><b>ambiguous</b></td><td class="n">~270</td><td>눕는 중 · 일어나는 중</td></tr>
+        <tr><td>WiSARD</td><td>(자세 라벨 없음)</td><td><b>ambiguous</b></td><td class="n">13,235</td><td>D-1 참조</td></tr>
+        <tr class="tot"><td colspan="2">합계 · 학습 이미지 약 15,700장</td><td colspan="2">person ~8,000 · fallen ~3,300 · ambiguous ~14,200</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h3>운용에서의 처리</h3>
+
+<pre>fallen     → 요구조자 신고 · 지도에 표시
+person     → 정상 기록
+ambiguous  → 판단 보류 → 스냅샷을 관제 화면으로 (사람이 판단)</pre>
+
+<div class="note">
+  <span class="lbl">이미 있는 설계와 맞물린다</span>
+  <code>ambiguous</code> 는 SRS 의 <b>FR-V-07(탐지 스냅샷 제공)</b> 과 정확히 대응한다.
+  모델이 자신 없는 경우를 사람에게 넘기는 안전 장치이고, 재난 탐색에서는 이것이 정직한 설계다.
+</div>
+
+<div class="note warn">
+  <span class="lbl">라벨을 지우면 안 된다</span>
+  전환 구간을 <b>버리는 것과 <code>ambiguous</code> 로 보내는 것은 다르다.</b>
+  NOMAD 크롭은 1인 1장이라, 라벨만 지우면 모델은 "거기 사람이 없다"고 배운다 —
+  <b>미탐지를 학습시키는 셈이라 더 나쁘다.</b>
+</div>
+
+<h2 class="sec"><span class="secnum">07</span> 팀이 정해야 할 것</h2>
+<p class="sub">각 항목에 조사 결과와 제 의견을 붙였다</p>
+
+<article class="decision">
+  <div class="decision-head"><span class="did">D-1</span><span class="dtitle">WiSARD 13,235개를 어느 클래스로 넣을 것인가</span></div>
+  <div class="decision-body"><dl>
+    <dt>상황</dt><dd>WiSARD 에는 자세 라벨이 없다. 샘플은 대부분 눈밭에서 걷거나 장비를 다루는 <b>구조대원</b>이지만 누운 형태도 섞여 있다.</dd>
+    <dt>조사</dt><dd>가로세로비로 걸러 보려 했으나 <b>기준이 성립하지 않았다.</b><br>
+      · NOMAD 진짜 <code>fallen</code> 중 <b>59.4%</b> 가 세로로 길다(ar≤1.0) — 하향 시점에선 누워도 각도에 따라 세로로 보인다<br>
+      · NOMAD <code>fallen</code> 중 ar&gt;1.5 는 <b>17.8%</b> 뿐<br>
+      · WiSARD 는 ar≤1.0 이 <b>78.9%</b>, ar&gt;1.5 가 <b>8.9%</b> — 어느 쪽으로도 판정 불가</dd>
+    <dt>선택지</dt><dd><b>가) 전부 person</b> — 8.9%의 누운 형태를 "정상"이라 가르침. <b>요구조자를 놓치는 방향</b>의 오류<br>
+      <b>나) 전부 ambiguous</b> — 정직하지만 <code>ambiguous</code> 가 최다 클래스(~14,200, 전체의 56%)가 됨<br>
+      <b>다) 직접 라벨링</b> — 13,235개는 현실적으로 무리</dd>
+    <dt>의견</dt><dd><b>나) 권장.</b> WiSARD 의 역할은 겨울·눈 도메인에서 <b>사람을 찾는 능력</b>(mAP50 0.922)을 유지하는 것이지 자세를 가르치는 게 아니다. <code>ambiguous</code> 로 들어가도 <b>상자 위치는 정답</b>이므로 탐지 능력은 그대로 학습된다.</dd>
+  </dl></div>
+</article>
+
+<article class="decision">
+  <div class="decision-head"><span class="did">D-2</span><span class="dtitle">전환 구간을 얼마나 잘라낼 것인가</span></div>
+  <div class="decision-body"><dl>
+    <dt>선택지</dt><dd>0.5초 — fallen <b>89.1%</b> 유지 (97,665개)<br>1.0초 — fallen <b>78.6%</b> 유지 (86,103개)</dd>
+    <dt>의견</dt><dd><b>0.5초 권장.</b> 구간 중앙값 7초 대비 충분한 여유이고, 1초까지 자르면 <b>하위 10% 분위(2.0초) 구간이 통째로 사라진다.</b></dd>
+  </dl></div>
+</article>
+
+<article class="decision">
+  <div class="decision-head"><span class="did">D-3</span><span class="dtitle">seated 를 별도 클래스로 남길 것인가</span></div>
+  <div class="decision-body"><dl>
+    <dt>상황</dt><dd>SARD-2 에서 <code>seated</code> 단독 성능이 <b>mAP50 0.937 / 재현율 0.906</b> 으로 높다. 앉은 사람과 누운 사람의 구분이 1~6차에서 우리가 어려워하던 지점이라, 이 분리가 <b>성공 요인</b>일 가능성이 있다.</dd>
+    <dt>문제</dt><dd>NOMAD·WiSARD 에 대응 라벨이 없다. 남기면 SARD-2 에서만 학습되는 클래스가 되고, 다시 도메인 편향이 생긴다.</dd>
+    <dt>의견</dt><dd><b>우선 person 으로 합치기를 권장.</b> 통합 학습 결과 <code>fallen</code> 재현율이 0.7 에 못 미치면 4클래스(person/seated/fallen/ambiguous)로 재시도할 값어치가 있다.</dd>
+  </dl></div>
+</article>
+
+<article class="decision">
+  <div class="decision-head"><span class="did">D-4</span><span class="dtitle">SRS 를 고칠 것인가 — 9/16 발표와 직결</span></div>
+  <div class="decision-body"><dl>
+    <dt>상황</dt><dd>현재 SRS 05절은 자세 자동 판정을 <b>범위 제외</b>로 명시하고 여섯 차례 실패를 근거로 달아 두었다. <b>그 근거가 뒤집혔다.</b></dd>
+    <dt>선택지</dt><dd><b>가) 그대로 둔다</b> — 통합 학습 결과가 아직 없으므로 안전<br>
+      <b>나) 요구사항으로 승격</b> — 근거는 재현율 0.972. 다만 <b>도메인 이전이 0.088</b> 인 상태라 위험<br>
+      <b>다) 조건부로 기술</b> — "SARD 조건에서 재현율 0.972 확인, 도메인 일반화는 검증 중"</dd>
+    <dt>의견</dt><dd><b>다) 권장.</b> 성과를 숨길 이유가 없고, 한계를 함께 적으면 정직하다. 통합 학습 결과가 나오면 가) 또는 나)로 확정한다.</dd>
+  </dl></div>
+</article>
+
+<h2 class="sec"><span class="secnum">08</span> 결정 후 할 일</h2>
+
+<div class="block">
+  <div class="block-body">
+    <table>
+      <thead><tr><th class="n">순서</th><th>작업</th><th>산출물</th><th class="n">예상</th></tr></thead>
+      <tbody>
+        <tr><td class="n">1</td><td><code>make_pose_dataset.py</code> 3클래스 + <code>--trim-frames</code> 추가</td><td>코드</td><td class="n">반나절</td></tr>
+        <tr><td class="n">2</td><td>SARD-2 · NOMAD · WiSARD 통합 데이터셋 생성</td><td>~15,700장</td><td class="n">1시간</td></tr>
+        <tr><td class="n">3</td><td>통합 학습 (yolov8s · imgsz 960)</td><td>가중치</td><td class="n">수 시간</td></tr>
+        <tr><td class="n">4</td><td>도메인별 재측정 — <b>자세 성능과 탐지 강건성 둘 다</b></td><td>metrics CSV</td><td class="n">30분</td></tr>
+        <tr><td class="n">5</td><td>결과에 따라 SRS 05절 확정</td><td>문서 01 갱신</td><td class="n">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h3>합격 기준 제안</h3>
+
+<div class="block">
+  <div class="block-body">
+    <table>
+      <thead><tr><th>지표</th><th class="n">현재</th><th class="n">목표</th><th>의미</th></tr></thead>
+      <tbody>
+        <tr><td>NOMAD 사람 발견율</td><td class="n">0.290</td><td class="n">≥ 0.60</td><td>기존 강건성 회복 (원본 0.667)</td></tr>
+        <tr><td>WiSARD 사람 발견율</td><td class="n">0.754</td><td class="n">≥ 0.85</td><td>기존 강건성 회복 (원본 0.884)</td></tr>
+        <tr><td>SARD 쓰러짐 재현율</td><td class="n">0.972</td><td class="n">≥ 0.90</td><td>자세 능력 유지</td></tr>
+        <tr><td>NOMAD 쓰러짐 재현율</td><td class="n">0.163</td><td class="n">≥ 0.50</td><td>도메인 이전 확보</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">넷 중 앞의 둘이 우선 — <b>자세를 얻으려고 탐지를 잃으면 손해다</b></div>
+</div>
+
+<div class="note">
+  <span class="lbl">일정과의 관계</span>
+  요구사항명세서 발표는 <b>9월 16일</b>, 탐지 모델 구간은 3~5주차다. 자세 판별은 <b>필수 경로가 아니며</b>,
+  현재 명세대로 "탐지 + 스냅샷 제공"만으로도 시스템은 성립한다.
+  이 검토는 차별점을 더하기 위한 것이다. 다만 성공하면 발표에서 가장 강한 카드가 된다.
+</div>
+
+<h2 class="sec"><span class="secnum">09</span> 부록 — 관련 실측치</h2>
+
+<h3>관측 크기(고도)에 따른 탐지 성능</h3>
+
+<div class="block">
+  <div class="block-head"><code>stage1_all</code> · <code>metrics/eval_scale.csv</code></div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th class="n">imgsz</th><th class="n">사람 px</th><th class="n">환산 고도</th><th class="n">NOMAD mAP50</th><th class="n">NOMAD 재현율</th><th class="n">WiSARD mAP50</th><th class="n">WiSARD 재현율</th></tr></thead>
+      <tbody>
+        <tr><td class="n">1280</td><td class="n">97.0</td><td class="n">33 m</td><td class="n">0.575</td><td class="n">0.622</td><td class="n">0.836</td><td class="n">0.788</td></tr>
+        <tr class="hi"><td class="n">960</td><td class="n">72.8</td><td class="n">44 m</td><td class="n">0.568</td><td class="n">0.612</td><td class="n">0.882</td><td class="n">0.824</td></tr>
+        <tr><td class="n">640</td><td class="n">48.5</td><td class="n">66 m</td><td class="n">0.520</td><td class="n">0.563</td><td class="n">0.862</td><td class="n">0.814</td></tr>
+        <tr><td class="n">480</td><td class="n">36.4</td><td class="n">88 m</td><td class="n">0.520</td><td class="n">0.567</td><td class="n">0.819</td><td class="n">0.755</td></tr>
+        <tr class="bad"><td class="n">320</td><td class="n">24.2</td><td class="n">132 m</td><td class="n">0.325</td><td class="n">0.387</td><td class="n">0.750</td><td class="n">0.713</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">성능은 서서히 떨어지지 않고 <b>36 px 아래에서 절벽</b>을 만난다 · 운용 고도 16 m 는 충분한 여유</div>
+</div>
+
+<h3>임계값별 쓰러짐 재현율 — 자세 라벨 없이도 관측된 신호</h3>
+
+<div class="block">
+  <div class="block-head"><code>stage1_all</code> 1클래스 · <code>metrics/threshold_tuning.csv</code></div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th class="n">conf</th><th class="n">여름 재현율</th><th class="n">겨울 F1</th><th class="n">누운 사람 재현율</th><th class="n">배경 오탐/장</th></tr></thead>
+      <tbody>
+        <tr><td class="n">0.05</td><td class="n">0.706</td><td class="n">0.807</td><td class="n">0.675</td><td class="n">1.44</td></tr>
+        <tr><td class="n">0.10</td><td class="n">0.684</td><td class="n">0.838</td><td class="n">0.641</td><td class="n">1.17</td></tr>
+        <tr class="hi"><td class="n">0.15</td><td class="n">0.663</td><td class="n">0.849</td><td class="n">0.608</td><td class="n">0.99</td></tr>
+        <tr><td class="n">0.25</td><td class="n">0.618</td><td class="n">0.863</td><td class="n">0.531</td><td class="n">0.72</td></tr>
+        <tr><td class="n">0.50</td><td class="n">0.533</td><td class="n">0.881</td><td class="n">0.440</td><td class="n">0.45</td></tr>
+        <tr><td class="n">0.80</td><td class="n">0.305</td><td class="n">0.841</td><td class="n">0.220</td><td class="n">0.04</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot"><b>누운 사람은 임계값에 특히 민감하다</b> — 0.25 → 0.15 로 낮추면 재현율 0.531 → 0.608. 자세 라벨 없이도 낮은 확신으로 잡히고 있었다는 뜻</div>
+</div>
+
+<h3>NOMAD 활동별 재현율</h3>
+
+<div class="block">
+  <div class="block-head">conf 0.25 · <code>metrics/eval_domain.csv</code></div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>활동</th><th class="n">장수</th><th class="n">기성</th><th class="n">NOMAD 전용</th><th class="n">stage1_all</th></tr></thead>
+      <tbody>
+        <tr><td>Walking</td><td class="n">270</td><td class="n">0.504</td><td class="n">0.889</td><td class="n">0.870</td></tr>
+        <tr><td>Hiding</td><td class="n">719</td><td class="n">0.096</td><td class="n">0.556</td><td class="n">0.548</td></tr>
+        <tr class="bad"><td>Hiding (Laying)</td><td class="n">209</td><td class="n">0.048</td><td class="n">0.617</td><td class="n">0.531</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">기성 모델은 <b>누운 사람을 사실상 못 본다(0.048)</b> — 지상 시점 학습의 한계</div>
+</div>
+
+<footer>
+  근거 —<br>
+  runs_person/sard2_pose6 · logs/sard2_train.log (7차 6클래스)<br>
+  runs_person/{pose2, pose2_lr001_cont, pose_cls, pose_cls_mixed, okutama_pose200} (1~6차)<br>
+  metrics/{eval_domain, eval_scale, threshold_tuning, pose_cls_eval, pose_cls_mixed_eval}.csv<br>
+  eval_cross_domain.py (교차 도메인) · drone_dev/MODELS.md<br><br>
+  데이터 — SARD-2(Kaggle, CC BY 4.0) · NOMAD · WiSARD · Okutama-Action(CC BY-NC-SA 3.0)<br>
+  ※ NOMAD·WiSARD·Okutama 는 연구용 라이선스로 재배포 불가
+</footer>
+
+</div>
