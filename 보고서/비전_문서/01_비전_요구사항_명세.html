@@ -125,7 +125,7 @@ footer{margin-top:3rem;padding-top:1.3rem;border-top:1px solid var(--rule);
   <div class="meta">
     <span>담당 정서인</span>
     <span>기준 모델 yolov8s_stage1_all</span>
-    <span>2026-09-04</span>
+    <span>2026-09-04 작성 · 2026-09-05 개정(05절)</span>
   </div>
 </header>
 
@@ -312,36 +312,69 @@ footer{margin-top:3rem;padding-top:1.3rem;border-top:1px solid var(--rule);
 </div>
 
 <h2 class="sec"><span class="secnum">05</span> 범위에서 제외한 것</h2>
-<p class="sub">약속하지 않는 기능과 그 근거</p>
+<p class="sub">약속하지 않는 기능과 그 근거 · 자세 판정은 9/5 개정</p>
 
-<div class="note danger">
-  <span class="lbl">자세 자동 판정 — 제외</span>
-  <b>"쓰러졌는지 여부"를 시스템이 자동 판정하지 않는다.</b> 여섯 차례 접근을 바꿔 시도했으나 모두 실용 수준에 이르지 못했다.
-  탐지 결과 스냅샷을 관제 화면에 제공하고(FR-V-07), <b>최종 판단은 운영자가 한다.</b>
+<div class="note warn">
+  <span class="lbl">자세 자동 판정 — 조건부 · 요구사항 아님</span>
+  <b>쓰러짐 자동 판정을 이 시스템이 보장하지 않는다.</b> 다만 초판에서 "원리적으로 불가능"으로 적었던 근거는
+  <b>뒤집혔다.</b> 촬영 조건이 맞고 자세 라벨이 사람 손으로 붙은 데이터에서는 <b>재현율 0.987</b> 이 나온다.
+  문제는 <b>도메인이 바뀌면 무너진다는 것</b>이다(0.987 → 0.070). 그래서 성능을 약속하지 않되,
+  확인된 사실과 한계를 함께 적는다. 운용은 지금도 <b>탐지 + 스냅샷 제공</b>(FR-V-07)으로 성립한다.
 </div>
 
 <div class="block">
-  <div class="block-head">자세 판정 시도 기록</div>
+  <div class="block-head">자세 판정 시도 기록 — <b>쓰러짐 클래스 기준</b></div>
   <div class="block-body">
     <table>
-      <thead><tr><th class="n">차수</th><th>방식</th><th class="n">관측 크기</th><th class="n">쓰러짐 성능</th></tr></thead>
+      <thead><tr><th class="n">차수</th><th>방식</th><th>학습 데이터</th><th class="n">쓰러짐 성능</th></tr></thead>
       <tbody>
-        <tr><td class="n">1</td><td>2클래스 탐지기 (lr 0.01)</td><td class="n">97 px</td><td class="n">재현율 0.153</td></tr>
-        <tr><td class="n">2</td><td>별도 분류기</td><td class="n">97 px</td><td class="n">F1 0.297</td></tr>
-        <tr><td class="n">3</td><td>합성 데이터 혼합</td><td class="n">97 px</td><td class="n">F1 0.37~0.47</td></tr>
-        <tr><td class="n">4</td><td>키포인트 (COCO 사전학습)</td><td class="n">97 px</td><td class="n">재현율 0.2</td></tr>
-        <tr><td class="n">5</td><td>2클래스 탐지기 (lr 0.001)</td><td class="n">97 px</td><td class="n">mAP50 0.341</td></tr>
-        <tr><td class="n">6</td><td>Okutama 2클래스</td><td class="n"><b>200 px</b></td><td class="n"><b>mAP50 0.058</b></td></tr>
+        <tr><td class="n">1</td><td>2클래스 탐지기 (lr 0.01)</td><td>NOMAD</td><td class="n">재현율 0.153</td></tr>
+        <tr><td class="n">2</td><td>별도 분류기</td><td>NOMAD</td><td class="n">F1 0.467</td></tr>
+        <tr><td class="n">3</td><td>합성 데이터 혼합</td><td>NOMAD + AirSim</td><td class="n">F1 0.438</td></tr>
+        <tr><td class="n">4</td><td>키포인트 (COCO 사전학습)</td><td>—</td><td class="n">재현율 0.2</td></tr>
+        <tr><td class="n">5</td><td>2클래스 탐지기 (lr 0.001)</td><td>NOMAD</td><td class="n">재현율 0.177</td></tr>
+        <tr><td class="n">6</td><td>2클래스 · 관측 200 px</td><td>Okutama</td><td class="n">재현율 0.147</td></tr>
+        <tr><td class="n">7</td><td>6클래스</td><td>SARD</td><td class="n">재현율 0.960</td></tr>
+        <tr><td class="n">8</td><td>3클래스 + 백본 동결</td><td>SARD + NOMAD</td><td class="n">재현율 0.974</td></tr>
+        <tr class="hi"><td class="n"><b>9</b></td><td><b>3클래스 · not_defined 제외</b></td><td><b>SARD + NOMAD</b></td><td class="n"><b>재현율 0.987</b></td></tr>
       </tbody>
     </table>
   </div>
+  <div class="block-foot">7~9차는 SARD test 분할(미사용, 151개) 기준 · 1~6차는 각 도메인 검증셋 기준</div>
 </div>
 
-<p>6차에서 관측 해상도를 <strong>2배로 키웠는데도</strong> 개선되지 않았다. 같은 모델이 <code>person</code> 은 mAP50 0.621 로 잘 찾으면서 <code>fallen</code> 은 0.058 이라, <em>사람을 찾는 것과 자세를 가리는 것은 다른 난이도의 문제</em>임이 확인됐다.</p>
+<p>1~6차가 실패한 원인은 해상도가 아니라 <strong>라벨이었다.</strong> 6차에서 관측 크기를 97 px 에서
+200 px 로 두 배 키웠는데도 재현율 0.147 이었다. 반면 <em>사람이 직접 자세를 붙인</em> SARD 로 학습하자
+바로 0.96 을 넘겼다. NOMAD·Okutama 의 자세 라벨은 활동 구간에서 우리가 변환한 것이라,
+눕는 중·일어나는 중이 <code>fallen</code> 에 섞여 있었다.</p>
+
+<div class="block">
+  <div class="block-head">그런데 도메인이 바뀌면 무너진다 — 9차 모델 실측</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>평가셋</th><th>자세 라벨 출처</th><th class="n">쓰러짐 재현율</th></tr></thead>
+      <tbody>
+        <tr class="hi"><td>SARD test</td><td>사람 주석</td><td class="n">0.987</td></tr>
+        <tr><td>NOMAD</td><td>활동 구간 변환</td><td class="n">0.254</td></tr>
+        <tr class="bad"><td>Okutama (미학습)</td><td>사람 주석</td><td class="n">0.070</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">각 도메인에 <b>특화 학습한</b> 모델도 NOMAD 0.177 · Okutama 0.147 에 그쳤다 — 라벨 품질의 천장으로 보인다</div>
+</div>
+
+<div class="note good">
+  <span class="lbl">그래도 시스템은 성립한다</span>
+  이 시스템의 가치는 <b>아무도 순찰하지 않는 구역에서 사람을 찾아내는 것</b>이다.
+  쓰러진 사람을 <i>발견</i>하는 것은 이미 검증됐다 — 기성 모델 대비 <b>11배</b>(0.048 → 0.531).
+  사람이 스냅샷을 0.5초 보면 자세는 즉시 판단된다. 자동 판정은 <b>차별점이지 전제가 아니다.</b>
+</div>
 
 <div class="note">
-  <span class="lbl">그래도 시스템은 성립한다</span>
-  이 시스템의 가치는 <b>아무도 순찰하지 않는 구역에서 사람을 찾아내는 것</b>이다. 쓰러진 사람을 <i>발견</i>하는 것은 이미 검증됐다 — 기성 모델 대비 <b>11배</b>(0.048 → 0.531). 사람이 스냅샷을 0.5초 보면 자세는 즉시 판단된다.
+  <span class="lbl">발표에서 말할 수 있는 것 / 없는 것</span>
+  <b>말할 수 있다</b> — "사람이 자세를 라벨링한 데이터에서 쓰러짐 재현율 0.987, 추론 20.6 ms(1280×720, 48.6 fps)".<br>
+  <b>말하면 안 된다</b> — "쓰러진 사람을 자동으로 찾아냅니다". 미학습 도메인에서 0.070 이다.<br>
+  선행 연구 CloudTrack(ICRA 2025)의 42.77% 와 <b>나란히 비교해서도 안 된다</b> — 그쪽은 제로샷이고 우리는 지도학습이라 과제가 다르다.
 </div>
 
 <div class="note warn">

@@ -109,8 +109,8 @@ footer{margin-top:3rem;padding-top:1.3rem;border-top:1px solid var(--rule);
 <header class="masthead">
   <div class="kicker">비전 파트 · 문서 07 · 실험 기록</div>
   <h1>자세 3클래스 실험 기록</h1>
-  <p class="standfirst">쓰러짐 판별과 탐지 강건성을 동시에 얻으려는 시도의 하루치 기록. 무엇을 재서 무엇을 알았고, 어디서 틀렸는지를 수치와 함께 남긴다.</p>
-  <div class="meta">2026-09-05 · 정서인(객체 탐지·비전)</div>
+  <p class="standfirst">쓰러짐 판별과 탐지 강건성을 동시에 얻으려는 시도의 하루치 기록. 실험 두 번, 실영상 검증, 데이터셋 재평가, 그리고 준비만 하고 접은 증강까지 — 무엇을 재서 무엇을 알았고 어디서 틀렸는지를 수치와 함께 남긴다.</p>
+  <div class="meta">2026-09-05 · 정서인(객체 탐지·비전) · 실험 8·9차 · Copy-Paste 준비</div>
 </header>
 
 <h2 class="sec"><span class="secnum">01</span> 오늘의 결론 먼저</h2>
@@ -122,11 +122,13 @@ footer{margin-top:3rem;padding-top:1.3rem;border-top:1px solid var(--rule);
       <thead><tr><th>항목</th><th>결과</th></tr></thead>
       <tbody>
         <tr class="good"><td>교환관계 해소</td><td><b>자세를 얻으려 탐지를 잃는 문제를 크게 완화했다</b> — 망각 폭 −39%/−30% → −11%/−10%</td></tr>
-        <tr class="good"><td>자세 성능</td><td>SARD 쓰러짐 재현율 <b>0.974</b> — 역대 최고</td></tr>
+        <tr class="good"><td>자세 성능</td><td>SARD test 쓰러짐 재현율 <b>0.974</b>(8차) · <b>0.987</b>(9차) — 역대 최고</td></tr>
         <tr class="good"><td>미학습 도메인 탐지</td><td>Okutama <b>0.682</b> — 원본 모델(0.633)보다 높다</td></tr>
         <tr class="good"><td>실시간성</td><td>1280×720 에서 <b>20.6 ms / 48.6 fps</b> — 30 fps 충족</td></tr>
-        <tr class="bad"><td>미해결 ①</td><td><code>ambiguous</code> 가 <b>벤치·가방 등 물체에 오탐</b> — 실영상 탐지의 47.3%</td></tr>
+        <tr class="bad"><td>미해결 ①</td><td><code>ambiguous</code> 가 <b>벤치·가방 등 물체에 오탐</b> — 실영상 탐지의 47.3%. 원인은 규명(10절)했으나 해법은 미채택</td></tr>
         <tr class="bad"><td>미해결 ②</td><td>NOMAD·WiSARD 탐지가 원본 대비 <b>−10%</b> 남음</td></tr>
+        <tr class="bad"><td>미해결 ③</td><td>도메인 이전 — Okutama 쓰러짐 <b>0.070~0.091</b>. 라벨 품질의 천장으로 추정</td></tr>
+        <tr><td>운용 모델</td><td><b>8차 <code>pose3_sn_freeze</code></b> — 9차는 재현율 손해로 기각(10절)</td></tr>
       </tbody>
     </table>
   </div>
@@ -460,6 +462,143 @@ footer{margin-top:3rem;padding-top:1.3rem;border-top:1px solid var(--rule);
     </table>
   </div>
   <div class="block-foot">수정 — <code>okutama_align.py</code> · <code>okutama_prep.py</code> 의 파일 탐색을 <code>rglob</code> 로 (영상 10→40편)</div>
+</div>
+
+<h2 class="sec"><span class="secnum">10</span> 9차 실험 — <code>not_defined</code> 제외</h2>
+
+<p class="sub">05절에서 진단한 <code>ambiguous</code> 물체 오탐의 원인을 검증한 실험</p>
+
+<p><strong>가설</strong> — 벤치·가방에 상자가 붙는 원인은 <code>ambiguous</code> 에 넣은 SARD
+<code>not_defined</code> 다. 그 클래스에는 애매한 자세뿐 아니라 <em>가려짐·과소 크기</em>가 섞여 있어
+(상자 크기 중앙값 43 px, 6클래스 중 최소) 모델이 "흐릿한 덩어리"를 배웠다.</p>
+
+<p><strong>방법</strong> — <code>not_defined</code> 887개를 클래스에서 빼고 <b>배경으로</b> 돌렸다.
+나머지 설정은 8차와 동일하게 두어 변수를 하나로 고정했다. 3시간 21분, 35에폭.</p>
+
+<div class="block">
+  <div class="block-head">가설은 맞았다 — 오탐이 줄었다</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>지표</th><th class="n">8차 <code>pose3_sn</code></th><th class="n">9차 <code>pose3_nd</code></th><th class="n">변화</th></tr></thead>
+      <tbody>
+        <tr class="good"><td>실영상 <code>ambiguous</code> 탐지 수</td><td class="n">2,012 (47.3%)</td><td class="n">839 (29.6%)</td><td class="n up">−58%</td></tr>
+        <tr class="good"><td>NOMAD 정밀도</td><td class="n">0.656</td><td class="n">0.707</td><td class="n up">+0.051</td></tr>
+        <tr class="good"><td>WiSARD 정밀도</td><td class="n">0.891</td><td class="n">0.903</td><td class="n up">+0.012</td></tr>
+        <tr class="good"><td>Okutama 정밀도</td><td class="n">0.628</td><td class="n">0.680</td><td class="n up">+0.052</td></tr>
+        <tr class="good"><td><b>SARD test 쓰러짐 재현율</b></td><td class="n">0.974</td><td class="n"><b>0.987</b></td><td class="n up">역대 최고</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="block">
+  <div class="block-head">그런데 사람을 더 놓친다 — 채택 불가</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>발견율</th><th class="n"><code>stage1_all</code></th><th class="n">8차</th><th class="n">9차</th></tr></thead>
+      <tbody>
+        <tr class="bad"><td>NOMAD</td><td class="n">0.663</td><td class="n">0.589</td><td class="n">0.503</td></tr>
+        <tr><td>WiSARD</td><td class="n">0.897</td><td class="n">0.804</td><td class="n">0.829</td></tr>
+        <tr><td>Okutama (미학습)</td><td class="n">0.633</td><td class="n">0.682</td><td class="n">0.669</td></tr>
+        <tr class="bad"><td>SARD test</td><td class="n">—</td><td class="n">0.951</td><td class="n">0.890</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">NOMAD 발견율 <b>−0.086</b> · 실험 착수 전에 정해 둔 기준("재현율이 떨어지면 채택 불가")에 걸린다</div>
+</div>
+
+<div class="note danger">
+  <span class="lbl">판정 — 채택하지 않는다</span>
+  재난 탐색에서 <b>요구조자를 못 찾는 비용</b>이 <b>벤치를 잘못 잡는 비용</b>보다 훨씬 크다.
+  오탐은 관제사가 한 번 보고 넘기면 되지만 미탐지는 되돌릴 수 없다.
+  다만 <b>원인 진단은 확정됐으므로</b>, 전부 배경으로 돌리는 대신
+  <b>크기 기준을 둔 절충안</b>(예: 일정 크기 이상 <code>not_defined</code> 만 배경 처리)이 다음 후보로 남는다.
+</div>
+
+<h2 class="sec"><span class="secnum">11</span> Copy-Paste 증강 — 준비 후 보류</h2>
+
+<p>쓰러진 사람의 다양성을 늘리려 Copy-Paste 증강(Ghiasi 외, CVPR 2021)을 준비했다.
+인스턴스를 오려 다른 배경에 붙여 <em>"자세 × 배경" 조합</em>을 늘리는 방법이다.</p>
+
+<h3>파이프라인은 완성했다</h3>
+
+<div class="block">
+  <div class="block-body">
+    <table>
+      <thead><tr><th>도구</th><th>역할</th></tr></thead>
+      <tbody>
+        <tr><td><code>extract_instances.py</code></td><td>상자 → SAM 마스크 → RGBA 인스턴스. 품질 5종 검사</td></tr>
+        <tr><td><code>dedup_instances.py</code></td><td>모양·색 지문으로 사실상 같은 것 제거 (회전 8방향 최소 거리)</td></tr>
+        <tr><td><code>copy_paste.py</code></td><td>크기·겹침·그림자·늦가을 색변환을 처리해 합성</td></tr>
+        <tr><td><code>label_review.py</code></td><td>클래스별 조각 모음판으로 눈 검수</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">품질 검사 — 면적비 0.30~0.72 · 테두리 접촉 · 종횡비 6:1 · 볼록성 0.45 · 원본 60 px 하한</div>
+</div>
+
+<h3>그런데 원천이 다양하지 않았다</h3>
+
+<div class="block">
+  <div class="block-head">인스턴스 은행 (중복 제거 후)</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>출처</th><th class="n">추출</th><th class="n">중복 제거 후</th><th class="n">서로 다른 인물</th></tr></thead>
+      <tbody>
+        <tr><td>SARD</td><td class="n">662</td><td class="n">376</td><td class="n">~8명</td></tr>
+        <tr class="bad"><td>Okutama</td><td class="n">417</td><td class="n">149</td><td class="n">~6명</td></tr>
+        <tr class="hi"><td><b>NOMAD</b></td><td class="n">878</td><td class="n">591</td><td class="n"><b>~30명</b></td></tr>
+        <tr class="tot"><td>합계</td><td class="n">1,957</td><td class="n">1,116</td><td class="n">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="note warn">
+  <span class="lbl">검수판을 안 봤으면 놓쳤을 문제</span>
+  Okutama 인스턴스 417개는 <b>같은 인물의 연속 프레임</b>이었다. 청바지·올리브 상의 한 사람이
+  거의 같은 자세로 25번 넘게 반복됐다. SARD 도 60장 중 서로 다른 사람이 6~8명뿐이었다.
+  <b>그대로 붙였다면 다양성이 느는 게 아니라 한 사람의 겉모습이 증폭된다</b> —
+  애초에 피하려던 문제를 더 키우는 셈이다. 스크립트가 돌아가는 것과 목적이 달성되는 것은 다르다.
+</div>
+
+<h3>보류 결정</h3>
+
+<p>Copy-Paste 는 <strong>배경을 곱할 뿐 사람을 만들지 못한다.</strong> 은행에 없는 체형·옷·자세는
+합성으로도 생기지 않는다. 남는 효과는 "배경 의존성 차단"인데 실재하지만 부차적이다.</p>
+
+<p>게다가 진짜 병목인 <strong>Okutama 0.070 / NOMAD 0.254</strong> 는 라벨 품질의 천장일 가능성이 크다 —
+그 도메인에 특화 학습한 모델조차 0.147 / 0.177 이었다. Copy-Paste 가 이를 뚫는다는 근거가 없다.</p>
+
+<div class="note">
+  <span class="lbl">자산으로 남긴다</span>
+  은행 1,116개와 도구 4종, SAM 가중치가 준비돼 있다. 필요해지면 <b>합성 단계부터 바로 재개</b>할 수 있다.
+  특히 우리에게 <b>0개</b>인 조합(겨울·농장에 쓰러진 사람)을 만들어야 할 때 쓴다.
+</div>
+
+<h2 class="sec"><span class="secnum">12</span> 오늘의 결론</h2>
+
+<div class="block">
+  <div class="block-body">
+    <table>
+      <thead><tr><th>항목</th><th>결론</th></tr></thead>
+      <tbody>
+        <tr class="good"><td>운용 모델</td><td><b>8차 <code>pose3_sn_freeze</code> 를 쓴다</b> — 9차는 재현율 손해로 기각</td></tr>
+        <tr class="good"><td>최고 자세 성능</td><td>SARD test 쓰러짐 재현율 <b>0.987</b> (9차)</td></tr>
+        <tr class="good"><td>실시간성</td><td>1280×720 에서 <b>20.6 ms / 48.6 fps</b> — 충족</td></tr>
+        <tr><td>Okutama</td><td>우리 고도(17 m)와 일치하나 배우가 적어 <b>평가 전용</b></td></tr>
+        <tr><td>Copy-Paste</td><td>파이프라인 완성 후 <b>보류</b> — 원천 다양성 부족</td></tr>
+        <tr class="bad"><td>미해결</td><td>도메인 이전(Okutama 0.070) · 탐지 −10% 잔존 · <code>ambiguous</code> 물체 오탐</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="note">
+  <span class="lbl">다음에 할 만한 것</span>
+  <b>가)</b> <code>not_defined</code> 크기 기준 절충안 — 진단이 확정돼 성공 가능성이 있다<br>
+  <b>나)</b> NOMAD 라벨 정제 — 배우 100명이라 다양성 자산이지만 라벨이 약하다<br>
+  <b>다)</b> 시연 환경 실촬영 — 11~12월 한국 농촌 데이터가 <b>우리에게 하나도 없다</b>. 장기적으로 가장 확실하다
 </div>
 
 <footer>
