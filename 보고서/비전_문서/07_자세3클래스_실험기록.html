@@ -1,0 +1,474 @@
+<title>자세 3클래스 실험 기록</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500;600&family=Noto+Serif+KR:wght@500;600;700&display=swap">
+
+<style>
+:root{
+  --ground:#F2F4F6; --surface:#FFFFFF; --surface-alt:#E8ECEF;
+  --ink:#16202B; --ink-soft:#3D4A57; --muted:#6B7784;
+  --rule:#D3DAE0; --rule-soft:#E4E9ED;
+  --accent:#216580; --accent-soft:#DCEAF0;
+  --safe:#35705A; --safe-soft:#DEEDE6;
+  --warn:#9C5A22; --warn-soft:#F5E7D8;
+  --danger:#9E3437; --danger-soft:#F6E0E0;
+  --shadow:0 1px 2px rgba(22,32,43,.05),0 8px 24px -16px rgba(22,32,43,.18);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0E141A; --surface:#161E26; --surface-alt:#1E2831;
+  --ink:#E4EAEF; --ink-soft:#B6C1CB; --muted:#8593A0;
+  --rule:#2C3945; --rule-soft:#222D38;
+  --accent:#6FB4D0; --accent-soft:#17323F;
+  --safe:#74BE9E; --safe-soft:#142B23;
+  --warn:#D69A5F; --warn-soft:#2E2318;
+  --danger:#DE8386; --danger-soft:#331B1D;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -16px rgba(0,0,0,.7);
+}}
+:root[data-theme="dark"]{
+  --ground:#0E141A; --surface:#161E26; --surface-alt:#1E2831;
+  --ink:#E4EAEF; --ink-soft:#B6C1CB; --muted:#8593A0;
+  --rule:#2C3945; --rule-soft:#222D38;
+  --accent:#6FB4D0; --accent-soft:#17323F;
+  --safe:#74BE9E; --safe-soft:#142B23;
+  --warn:#D69A5F; --warn-soft:#2E2318;
+  --danger:#DE8386; --danger-soft:#331B1D;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -16px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Sans KR",system-ui,"Malgun Gothic",sans-serif;
+  line-height:1.72;-webkit-font-smoothing:antialiased}
+.wrap{max-width:58rem;margin:0 auto;padding:clamp(2.4rem,6vw,4.5rem) clamp(1.1rem,4vw,2.4rem) 6rem}
+
+.masthead{border-bottom:2px solid var(--ink);padding-bottom:1.5rem;margin-bottom:1.4rem}
+.kicker{font-family:"IBM Plex Mono",monospace;font-size:.7rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:.85rem}
+h1{font-family:"Noto Serif KR",Georgia,serif;font-weight:700;
+  font-size:clamp(1.85rem,5.5vw,2.8rem);line-height:1.2;letter-spacing:-.015em;
+  margin:0 0 .65rem;text-wrap:balance}
+.standfirst{color:var(--ink-soft);font-size:1.02rem;max-width:42rem;margin:0;font-weight:300}
+.meta{margin-top:1.2rem;font-family:"IBM Plex Mono",monospace;font-size:.73rem;color:var(--muted)}
+
+h2.sec{font-family:"Noto Serif KR",Georgia,serif;font-weight:600;
+  font-size:clamp(1.2rem,3.2vw,1.5rem);margin:2.9rem 0 .25rem;letter-spacing:-.01em;
+  padding-top:.9rem;border-top:1px solid var(--rule)}
+h3{font-size:1.02rem;font-weight:600;margin:1.6rem 0 .45rem}
+.secnum{font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--accent);
+  letter-spacing:.12em;display:block;margin-bottom:.15rem}
+.sub{color:var(--muted);font-size:.88rem;margin:0 0 1.1rem}
+p{max-width:43rem;margin:0 0 .9rem}
+strong{font-weight:600}
+em{font-style:normal;border-bottom:1.5px solid var(--accent);padding-bottom:1px}
+code{font-family:"IBM Plex Mono",monospace;font-size:.86em;background:var(--surface-alt);
+  padding:.1em .35em;border-radius:2px}
+pre{font-family:"IBM Plex Mono",monospace;font-size:.82rem;line-height:1.7;
+  background:var(--surface-alt);border:1px solid var(--rule-soft);border-radius:3px;
+  padding:.8rem 1rem;overflow-x:auto;margin:1rem 0}
+
+.block{margin:1.1rem 0;background:var(--surface);border:1px solid var(--rule);
+  border-radius:3px;box-shadow:var(--shadow);overflow:hidden}
+.block-head{font-family:"IBM Plex Mono",monospace;font-size:.67rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);padding:.6rem 1rem;
+  border-bottom:1px solid var(--rule-soft);background:var(--surface-alt)}
+.block-head b{color:var(--ink);font-weight:600}
+.block-body{padding:.85rem 1rem;overflow-x:auto}
+.block-foot{padding:.55rem 1rem;border-top:1px solid var(--rule-soft);
+  font-family:"IBM Plex Mono",monospace;font-size:.68rem;color:var(--muted);line-height:1.7}
+.block-foot b{color:var(--ink-soft)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th,td{padding:.42rem .55rem;text-align:left;vertical-align:top;white-space:nowrap}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+thead th{font-family:"IBM Plex Mono",monospace;font-size:.65rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);font-weight:500;border-bottom:1px solid var(--rule)}
+tbody td{border-bottom:1px solid var(--rule-soft)}
+tbody tr:last-child td{border-bottom:none}
+tr.hi td{background:var(--accent-soft);font-weight:500}
+tr.bad td{background:var(--danger-soft)}
+tr.good td{background:var(--safe-soft)}
+tr.tot td{border-top:1px solid var(--rule);font-weight:600}
+.up{color:var(--safe);font-weight:600} .down{color:var(--danger);font-weight:600}
+
+.note{margin:1.1rem 0;padding:.85rem 1rem;border-left:3px solid var(--accent);
+  background:var(--surface);font-size:.91rem;color:var(--ink-soft)}
+.note.warn{border-left-color:var(--warn)}
+.note.danger{border-left-color:var(--danger)}
+.note.good{border-left-color:var(--safe)}
+.note b{color:var(--ink)}
+.note .lbl{font-family:"IBM Plex Mono",monospace;font-size:.65rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--accent);display:block;margin-bottom:.3rem}
+.note.warn .lbl{color:var(--warn)} .note.danger .lbl{color:var(--danger)}
+.note.good .lbl{color:var(--safe)}
+
+footer{margin-top:3rem;padding-top:1.3rem;border-top:1px solid var(--rule);
+  font-size:.77rem;color:var(--muted);font-family:"IBM Plex Mono",monospace;line-height:1.9}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <div class="kicker">비전 파트 · 문서 07 · 실험 기록</div>
+  <h1>자세 3클래스 실험 기록</h1>
+  <p class="standfirst">쓰러짐 판별과 탐지 강건성을 동시에 얻으려는 시도의 하루치 기록. 무엇을 재서 무엇을 알았고, 어디서 틀렸는지를 수치와 함께 남긴다.</p>
+  <div class="meta">2026-09-05 · 정서인(객체 탐지·비전)</div>
+</header>
+
+<h2 class="sec"><span class="secnum">01</span> 오늘의 결론 먼저</h2>
+
+<div class="block">
+  <div class="block-head">한 줄 요약</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>항목</th><th>결과</th></tr></thead>
+      <tbody>
+        <tr class="good"><td>교환관계 해소</td><td><b>자세를 얻으려 탐지를 잃는 문제를 크게 완화했다</b> — 망각 폭 −39%/−30% → −11%/−10%</td></tr>
+        <tr class="good"><td>자세 성능</td><td>SARD 쓰러짐 재현율 <b>0.974</b> — 역대 최고</td></tr>
+        <tr class="good"><td>미학습 도메인 탐지</td><td>Okutama <b>0.682</b> — 원본 모델(0.633)보다 높다</td></tr>
+        <tr class="good"><td>실시간성</td><td>1280×720 에서 <b>20.6 ms / 48.6 fps</b> — 30 fps 충족</td></tr>
+        <tr class="bad"><td>미해결 ①</td><td><code>ambiguous</code> 가 <b>벤치·가방 등 물체에 오탐</b> — 실영상 탐지의 47.3%</td></tr>
+        <tr class="bad"><td>미해결 ②</td><td>NOMAD·WiSARD 탐지가 원본 대비 <b>−10%</b> 남음</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h2 class="sec"><span class="secnum">02</span> 학습한 모델</h2>
+
+<div class="block">
+  <div class="block-head">yolov8s_pose3_sn_freeze</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>항목</th><th>값</th></tr></thead>
+      <tbody>
+        <tr><td>시작 가중치</td><td><code>yolov8s_stage1_all.pt</code> (NOMAD+WiSARD 학습 운용 모델)</td></tr>
+        <tr><td>학습 데이터</td><td>SARD + NOMAD 3클래스 · train 9,008장 / val 1,592장</td></tr>
+        <tr><td>클래스</td><td>0 person · 1 fallen · 2 ambiguous</td></tr>
+        <tr><td>설정</td><td>imgsz 960 · batch 6 · lr0 0.001 · <b>백본 10층 동결</b></td></tr>
+        <tr><td>동결 규모</td><td>5,079,712개 고정(45.6%) / 6,057,049개 학습(54.4%)</td></tr>
+        <tr><td>학습 시간</td><td>2시간 33분 · 28에폭에서 조기 종료(최고 18에폭)</td></tr>
+        <tr><td>추론 속도</td><td>1280×720 기준 20.6 ms (48.6 fps)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h3>학습 데이터 구성</h3>
+
+<div class="block">
+  <div class="block-body">
+    <table>
+      <thead><tr><th>출처</th><th class="n">이미지</th><th class="n">person</th><th class="n">fallen</th><th class="n">ambiguous</th></tr></thead>
+      <tbody>
+        <tr><td>SARD</td><td class="n">1,778</td><td class="n">3,431</td><td class="n">1,418</td><td class="n">887</td></tr>
+        <tr><td>NOMAD</td><td class="n">8,822</td><td class="n">5,857</td><td class="n">1,844</td><td class="n">1,121</td></tr>
+        <tr><td>WiSARD</td><td class="n">—</td><td colspan="3">학습 제외 (아래 03절)</td></tr>
+        <tr class="tot"><td>train</td><td class="n">9,008</td><td class="n">7,562</td><td class="n">2,755</td><td class="n">1,731</td></tr>
+        <tr class="tot"><td>val</td><td class="n">1,592</td><td class="n">1,726</td><td class="n">507</td><td class="n">277</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">NOMAD 는 활동 구간 경계 ±15프레임(0.5초)을 <code>ambiguous</code> 로 보냈다 — fallen 2,703 → 1,844장(68.2% 유지)</div>
+</div>
+
+<h3>검증셋 클래스별 성능 (1,592장 / 2,510개)</h3>
+
+<div class="block">
+  <div class="block-body">
+    <table>
+      <thead><tr><th>클래스</th><th class="n">개수</th><th class="n">정밀도</th><th class="n">재현율</th><th class="n">mAP50</th><th class="n">mAP50-95</th></tr></thead>
+      <tbody>
+        <tr><td>person</td><td class="n">1,726</td><td class="n">0.771</td><td class="n">0.648</td><td class="n">0.668</td><td class="n">0.387</td></tr>
+        <tr class="hi"><td><b>fallen</b></td><td class="n">507</td><td class="n">0.738</td><td class="n">0.679</td><td class="n">0.702</td><td class="n">0.468</td></tr>
+        <tr><td>ambiguous</td><td class="n">277</td><td class="n">0.550</td><td class="n">0.516</td><td class="n">0.473</td><td class="n">0.276</td></tr>
+        <tr class="tot"><td>전체</td><td class="n">2,510</td><td class="n">0.686</td><td class="n">0.614</td><td class="n">0.614</td><td class="n">0.377</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h2 class="sec"><span class="secnum">03</span> 설계 변경 — WiSARD 를 학습에서 뺐다</h2>
+
+<p>초안은 WiSARD 13,235개를 <code>ambiguous</code> 로 넣는 것이었다. <strong>철회했다.</strong></p>
+
+<p>WiSARD 의 <code>data.yaml</code> 은 <code>nc: 1, names: ['person']</code> — 제작자가 붙인 정답이다.
+문제는 두 데이터셋에서 <code>person</code> 의 뜻이 다르다는 것이었다.</p>
+
+<div class="block">
+  <div class="block-body">
+    <table>
+      <thead><tr><th>라벨</th><th>실제 의미</th><th>종류</th></tr></thead>
+      <tbody>
+        <tr><td>WiSARD <code>person</code></td><td>"여기 사람이 있다"</td><td><b>탐지</b> 라벨</td></tr>
+        <tr><td>우리 <code>person</code></td><td>"확실히 서 있다"</td><td><b>자세</b> 라벨</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="note danger">
+  <span class="lbl">두 선택지가 각각 다르게 틀린다</span>
+  <b>→ ambiguous</b>: 라벨에 대해선 참이지만 모델에게 <b>"눈밭 = 판단 보류"</b> 를 가르친다.
+  겨울 수색에서 모든 탐지가 보류로 나오면 무용지물이다.<br>
+  <b>→ person</b>: 원본에 없는 자세 주장을 얹는다. 눈밭에 쓰러진 사람을 정상으로 가르치므로
+  <b>요구조자를 놓치는 방향</b>의 오류다.
+</div>
+
+<p><strong>둘 다 틀리므로 자세 학습에 넣지 않는다.</strong> 대신 겨울 강건성은 데이터가 아니라
+<em>가중치</em>로 지킨다 — <code>stage1_all</code> 백본이 이미 설경 특징을 학습해 뒀으니 그것을 동결한다.</p>
+
+<div class="block">
+  <div class="block-head">백본 동결이란</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>구간</th><th>역할</th><th class="n">파라미터</th><th>학습</th></tr></thead>
+      <tbody>
+        <tr><td>백본 0~9층</td><td>시각적 특징 추출 (형태·질감·계절)</td><td class="n">5,079,712</td><td><b>동결</b></td></tr>
+        <tr><td>넥 10~21층</td><td>여러 해상도 특징 혼합</td><td class="n">3,939,840</td><td>학습</td></tr>
+        <tr><td>헤드 22층</td><td>상자·클래스 최종 판단</td><td class="n">2,117,209</td><td>학습</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">기울기를 계산하지 않아(<code>requires_grad=False</code>) 가중치가 그대로 유지된다. 순전파는 정상</div>
+</div>
+
+<h2 class="sec"><span class="secnum">04</span> 성능 측정 — 세 모델을 같은 잣대로</h2>
+
+<p class="sub">비교 대상의 클래스 수가 1·6·3으로 제각각이라 <code>eval_pose3.py</code> 를 새로 만들어 같은 코드로 다시 쟀다</p>
+
+<div class="block">
+  <div class="block-head"><b>탐지 축</b> — 클래스 무시하고 사람을 찾는가 (발견율)</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>모델</th><th class="n">NOMAD<br>1,198개</th><th class="n">WiSARD<br>3,843개</th><th class="n">Okutama(미학습)<br>1,497개</th></tr></thead>
+      <tbody>
+        <tr><td><code>stage1_all</code> (원본)</td><td class="n"><b>0.663</b></td><td class="n"><b>0.897</b></td><td class="n">0.633</td></tr>
+        <tr class="bad"><td><code>sard2_pose6</code></td><td class="n">0.403</td><td class="n">0.624</td><td class="n">0.482</td></tr>
+        <tr class="hi"><td><b><code>pose3_sn_freeze</code></b></td><td class="n">0.589</td><td class="n">0.804</td><td class="n"><b>0.682</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">동결로 망각 폭이 <b>−39%/−30% → −11%/−10%</b> 로 줄었다 · 미학습 도메인에서는 원본을 앞선다</div>
+</div>
+
+<div class="block">
+  <div class="block-head"><b>자세 축</b> — 쓰러진 사람을 쓰러졌다고 하는가 (재현율 / 정밀도)</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>모델</th><th class="n">SARD test<br>151개</th><th class="n">SARD val<br>322개</th><th class="n">NOMAD<br>185개</th><th class="n">Okutama<br>341개</th></tr></thead>
+      <tbody>
+        <tr><td><code>sard2_pose6</code></td><td class="n">0.960 / 0.960</td><td class="n">0.978 / 0.952</td><td class="n">0.157 / 0.207</td><td class="n">0.088 / 0.100</td></tr>
+        <tr class="hi"><td><b><code>pose3_sn_freeze</code></b></td><td class="n"><b>0.974</b> / 0.919</td><td class="n">0.957 / 0.933</td><td class="n"><b>0.227</b> / <b>0.532</b></td><td class="n">0.091 / 0.121</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot"><code>stage1_all</code> 은 1클래스라 자세 판정이 불가능하므로 제외 · conf 0.15 · IoU 0.3 그리디 매칭</div>
+</div>
+
+<h3>목표치 정정 — 초안의 합격 기준이 근거 없었다</h3>
+
+<p>문서 06 에서 "NOMAD 쓰러짐 ≥ 0.50" 을 목표로 잡았으나 <strong>근거 없이 정한 숫자였다.</strong>
+그 도메인으로 직접 학습한 모델의 최고 기록이 0.177 인데 0.50 을 요구한 셈이다.</p>
+
+<div class="block">
+  <div class="block-head">도메인별 "그 데이터로 특화 학습한 모델" 과의 비교</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>도메인</th><th>특화 학습 모델</th><th class="n">그 모델</th><th class="n">우리 모델</th></tr></thead>
+      <tbody>
+        <tr class="good"><td>SARD</td><td><code>sard2_pose6</code></td><td class="n">0.960</td><td class="n"><b>0.974</b></td></tr>
+        <tr class="good"><td>NOMAD</td><td><code>pose2_lr001_cont</code></td><td class="n">0.177</td><td class="n"><b>0.227</b></td></tr>
+        <tr><td>Okutama</td><td><code>okutama_pose200</code></td><td class="n">0.147</td><td class="n">0.091</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">SARD·NOMAD 에서는 <b>특화 모델을 앞선다</b> · Okutama 특화 모델조차 0.147 에 그쳤다</div>
+</div>
+
+<div class="note">
+  <span class="lbl">읽는 법</span>
+  NOMAD·Okutama 에서 쓰러짐 재현율이 0.15~0.23 에 갇히는 것은 <b>방법의 한계가 아니라 라벨의 한계</b>로 보인다.
+  SARD 는 사람이 직접 붙인 자세 라벨이라 0.97 이 나오고, NOMAD 는 활동 구간에서 변환한 라벨이라 0.23 이다.
+</div>
+
+<h2 class="sec"><span class="secnum">05</span> 실영상 검증 — 지표에 안 잡히던 실패</h2>
+
+<p>정답이 없는 실제 드론 영상(Okutama 2.2.10, 60초, 600프레임)에 걸어 보았다.</p>
+
+<div class="block">
+  <div class="block-body">
+    <table>
+      <thead><tr><th>클래스</th><th class="n">탐지 수</th><th class="n">비중</th><th class="n">평균 신뢰도</th></tr></thead>
+      <tbody>
+        <tr><td>person</td><td class="n">1,615</td><td class="n">37.9%</td><td class="n">0.627</td></tr>
+        <tr><td>fallen</td><td class="n">630</td><td class="n">14.8%</td><td class="n">0.498</td></tr>
+        <tr class="bad"><td><b>ambiguous</b></td><td class="n"><b>2,012</b></td><td class="n"><b>47.3%</b></td><td class="n">0.604</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">학습셋에서 <code>ambiguous</code> 는 14%(최소 클래스)였는데 실영상에서는 47%(최다)가 됐다</div>
+</div>
+
+<div class="note danger">
+  <span class="lbl">눈으로 확인한 결과</span>
+  프레임을 열어 보니 <code>ambiguous</code> 상자가 <b>벤치(0.48/0.88)와 파란 가방(0.30)</b> 에 붙어 있었다.
+  사람이 아닌 물체다. <b>진짜 사람이 늘어난 게 아니라 물체 오탐이 탐지 수를 부풀린 것</b>이다.
+</div>
+
+<p><strong>원인</strong> — <code>ambiguous</code> 에 SARD <code>not_defined</code> 를 넣었는데, 그 클래스에는 애매한 자세뿐
+아니라 <em>가려짐·과소 크기</em>까지 섞여 있다(상자 크기 중앙값 43px 로 6클래스 중 최소).
+그래서 모델이 배운 것은 "애매한 자세"가 아니라 <strong>"뭔지 모를 흐릿한 덩어리"</strong> 였다.</p>
+
+<p>반면 <code>fallen</code> 판정은 실영상에서도 정확했다. 누운 사람에 정확히 상자가 붙었다.</p>
+
+<h3>속도</h3>
+
+<div class="block">
+  <div class="block-body">
+    <table>
+      <thead><tr><th>입력 해상도</th><th class="n">추론 시간</th><th class="n">처리량</th><th>판정</th></tr></thead>
+      <tbody>
+        <tr><td>3840×2160 (4K)</td><td class="n">53.2 ms</td><td class="n">18.8 fps</td><td>우리 조건 아님</td></tr>
+        <tr class="good"><td><b>1280×720 (실기체)</b></td><td class="n"><b>20.6 ms</b></td><td class="n"><b>48.6 fps</b></td><td><b>30 fps 충족</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">95분위 21.8 ms · RTX 3050 Laptop 4GB 기준 · 온보드 장비에서는 재측정 필요</div>
+</div>
+
+<h2 class="sec"><span class="secnum">06</span> 데이터셋 재평가</h2>
+
+<h3>쓰고 있는 네 데이터셋</h3>
+
+<div class="block">
+  <div class="block-body">
+    <table>
+      <thead><tr><th>이름</th><th>내용</th><th>자세 라벨</th><th class="n">배우 다양성</th><th>환경</th></tr></thead>
+      <tbody>
+        <tr><td><b>SARD</b></td><td>슬로베니아 산악구조 훈련 · 1,980장 / 6,354상자</td><td>사람 주석 6클래스</td><td class="n">소수</td><td>채석장·풀밭·숲·도로</td></tr>
+        <tr><td><b>NOMAD</b></td><td>미국 농장 · 여름 · 크롭 8,822장</td><td>활동 구간 변환</td><td class="n"><b>100명</b></td><td>농장 1곳</td></tr>
+        <tr><td><b>WiSARD</b></td><td>구조대원 수색 · 9월/1월 · 8,289장</td><td><b>없음</b></td><td class="n">소수</td><td>설경 2곳</td></tr>
+        <tr><td><b>Okutama-Action</b></td><td>일본 공원 · 4K 드론 영상 43편</td><td>사람 주석 프레임별</td><td class="n"><b>매우 적음</b></td><td>공원 1곳</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">SARD 정식 명칭 — Sambolek &amp; Ivasic-Kos, "Search and Rescue Image Dataset for Person Detection", IEEE DataPort 2021, DOI 10.21227/ahxm-k331</div>
+</div>
+
+<h3>Okutama 재발견 — 두 가지</h3>
+
+<div class="note good">
+  <span class="lbl">① 우리 운용 조건과 정확히 맞는다</span>
+  기준서: 54° HFOV · 1080p · 고도 16 m → 선 자세 <b>59 px</b><br>
+  Okutama 원본 라벨 상자 장변 중앙값 118 px(3840폭) → 1920폭 환산 <b>59 px</b><br>
+  43편 중 <b>36편이 환산 고도 16~30 m</b> 구간(전체 중앙 17 m · 범위 12~25 m). 시점도 하향으로 동일하다.
+</div>
+
+<div class="note warn">
+  <span class="lbl">② 영상이 10편이 아니라 40편이었다</span>
+  스크립트의 파일 탐색 패턴 <code>Drone*/*/*.mp4</code> 가 한 단계 더 들어간
+  <code>TrainSetVideos (2)/</code> 하위의 30편을 놓치고 있었다. <code>rglob</code> 로 고쳤다.
+  덕분에 <code>Lying</code> 라벨이 703개 → <b>11,922개</b> 로 늘었다.
+</div>
+
+<div class="block">
+  <div class="block-head">Okutama 행동 라벨 어휘 (43편 전체)</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>라벨</th><th class="n">개수</th><th>라벨</th><th class="n">개수</th></tr></thead>
+      <tbody>
+        <tr><td>Standing</td><td class="n">186,303</td><td>Calling</td><td class="n">21,425</td></tr>
+        <tr><td>Walking</td><td class="n">170,779</td><td>Running</td><td class="n">17,106</td></tr>
+        <tr><td>Carrying</td><td class="n">83,402</td><td class="n"><b>Lying</b></td><td class="n"><b>14,466</b></td></tr>
+        <tr><td>Sitting</td><td class="n">65,447</td><td>Hugging</td><td class="n">9,658</td></tr>
+        <tr><td>Pushing/Pulling</td><td class="n">44,925</td><td>Hand Shaking</td><td class="n">8,265</td></tr>
+        <tr><td>Reading</td><td class="n">40,531</td><td>Drinking</td><td class="n">6,193</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot"><b>프레임별·상자별 사람 주석</b> — NOMAD 처럼 구간에서 변환한 것이 아니라 SARD 와 같은 급</div>
+</div>
+
+<h3>그런데 학습에 쓰면 안 된다</h3>
+
+<p>추출까지 마친 뒤 다양성을 점검했다. Okutama-Action 은 <strong>일본 공원 한 곳에서 소수의 배우가
+대본대로 연기한</strong> 데이터셋이다. 검수판에서 같은 인물(파란 상의·민트색 신발)이 60칸 중 절반 가까이 차지했다.</p>
+
+<div class="note warn">
+  <span class="lbl">이미 같은 실수를 했다</span>
+  <code>nomad30</code> 은 NOMAD 한 도메인만 학습해 WiSARD 가 <b>0.544 → 0.242</b> 로 무너졌다.
+  배우 10명 미만·잔디밭 한 곳으로 학습하면 그 배우와 그 잔디를 외운다.
+</div>
+
+<p><strong>그래서 Okutama 의 역할을 학습이 아니라 평가로 정한다.</strong> 우리 고도와 맞고,
+사람이 붙인 자세 라벨이 있고, 학습에 쓰지 않은 실제 드론 영상 — 이 조건을 모두 만족하는 것은
+이것뿐이라, 학습에 넣으면 <em>정직한 잣대를 잃는다.</em></p>
+
+<div class="block">
+  <div class="block-head">오늘 만든 <code>okutama3</code> 데이터셋 (평가 전용)</div>
+  <div class="block-body">
+    <table>
+      <thead><tr><th>분할</th><th class="n">이미지</th><th class="n">person</th><th class="n">fallen</th><th class="n">ambiguous</th></tr></thead>
+      <tbody>
+        <tr><td>train</td><td class="n">1,169</td><td class="n">6,430</td><td class="n">442</td><td class="n">62</td></tr>
+        <tr><td>val</td><td class="n">214</td><td class="n">1,291</td><td class="n">193</td><td class="n">9</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">14편 · 4K를 <b>자르거나 확대하지 않고</b> 1920×1080 으로 축소만 함 · stride 15(0.5초)<br>
+  프레임 오프셋 15편 중 14편 확정 · <code>2.2.6</code> 은 정렬 점수 0.29 로 제외</div>
+</div>
+
+<h2 class="sec"><span class="secnum">07</span> 남은 문제와 다음 단계</h2>
+
+<div class="block">
+  <div class="block-body">
+    <table>
+      <thead><tr><th>문제</th><th>근거</th><th>대응안</th></tr></thead>
+      <tbody>
+        <tr><td><code>ambiguous</code> 물체 오탐</td><td>실영상 47.3% · 벤치·가방에 상자</td><td>SARD <code>not_defined</code> 를 학습에서 제외하고 <code>ambiguous</code> 를 전환 동작만으로 좁힌다</td></tr>
+        <tr><td>탐지 −10% 잔존</td><td>NOMAD 0.589 / WiSARD 0.804</td><td>동결 범위를 넥까지 넓히거나, 2단(탐지 모델 분리) 구조 검토</td></tr>
+        <tr><td>자세 학습 데이터 다양성</td><td>SARD·Okutama 모두 배우 소수</td><td>NOMAD(100명) 라벨 정제 · 외부 데이터셋 조사</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<h3>외부 데이터셋 조사 (진행 중)</h3>
+
+<p><b>UAV-Human</b> (Li 외, CVPR 2021) — 피험자 <strong>119명</strong>, 도시·농촌, 주간·야간, 3개월 촬영.
+다양성은 우리가 필요한 그것이다. 다만 155개 행동 클래스에 <em>넘어짐·누움이 명시돼 있지 않고</em>,
+행동 라벨이 상자 단위가 아니라 <em>영상 클립 단위</em>다. 자세 추정 부분집합(22,476프레임, 골격 키포인트)에서
+누운 자세를 기하적으로 유도하는 경로는 가능해 보이나 <strong>확인이 더 필요하다.</strong></p>
+
+<p>그 밖의 후보: <b>VTSaR</b>(다양한 각도·고도, 가시광+적외선), <b>HERIDAL</b>(1,647장, 지중해 야생),
+<b>MOBDrone</b>(해상 125K장), <b>ForestPersons</b>(수관 아래 가림).</p>
+
+<h2 class="sec"><span class="secnum">08</span> 오늘 만든 코드</h2>
+
+<div class="block">
+  <div class="block-body">
+    <table>
+      <thead><tr><th>파일</th><th>용도</th></tr></thead>
+      <tbody>
+        <tr><td><code>make_pose3_dataset.py</code></td><td>SARD+NOMAD 3클래스 통합셋 생성. 전환 구간 처리, WiSARD 배정 선택</td></tr>
+        <tr><td><code>eval_pose3.py</code></td><td>합격 기준 4개 동시 측정. 모델 클래스 수를 보고 매핑 자동 선택</td></tr>
+        <tr><td><code>video_infer.py</code></td><td>영상 일괄 추론 — 주석 영상·CSV·스냅샷 저장</td></tr>
+        <tr><td><code>live_view.py</code></td><td>실시간 확인 창. 임계값 조절·클래스 토글·쓰러짐 구간 점프</td></tr>
+        <tr><td><code>okutama3_prep.py</code></td><td>Okutama 원본 → 3클래스 평가셋 (1080p 축소, 오프셋 보정)</td></tr>
+        <tr><td><code>label_review.py</code></td><td>라벨 눈 검수 — 클래스별 조각 모음판 생성</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="block-foot">수정 — <code>okutama_align.py</code> · <code>okutama_prep.py</code> 의 파일 탐색을 <code>rglob</code> 로 (영상 10→40편)</div>
+</div>
+
+<footer>
+  측정 근거 —<br>
+  metrics/eval_pose3.csv · runs_person/pose3_sn_freeze · runs_video/2.2.10<br>
+  runs_review/okutama3_val · configs/okutama_offsets.json · logs/*.log<br><br>
+  데이터 — SARD(Sambolek &amp; Ivasic-Kos 2021, CC BY 4.0) · NOMAD · WiSARD ·
+  Okutama-Action(CC BY-NC-SA 3.0)<br>
+  ※ NOMAD·WiSARD·Okutama 는 연구용 라이선스로 재배포 불가 — 데이터 파일은 저장소에 올리지 않는다
+</footer>
+
+</div>
