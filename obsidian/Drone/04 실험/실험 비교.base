@@ -1,0 +1,40 @@
+filters:
+  and:
+    - file.inFolder("04 실험")
+    - file.ext == "md"
+properties:
+  file.name:
+    displayName: 실험
+  note.분류:
+    displayName: 분류
+  note.날짜:
+    displayName: 날짜
+  note.핵심수치:
+    displayName: 핵심 수치
+  note.판정:
+    displayName: 판정
+views:
+  - type: table
+    name: 전체 실험
+    order:
+      - file.name
+      - note.분류
+      - note.날짜
+      - note.핵심수치
+      - note.판정
+    sort:
+      - property: note.날짜
+        direction: ASC
+  - type: table
+    name: 자세 판별만
+    filters:
+      and:
+        - note["분류"] == "자세"
+    order:
+      - file.name
+      - note.날짜
+      - note.핵심수치
+      - note.판정
+    sort:
+      - property: note.날짜
+        direction: ASC
