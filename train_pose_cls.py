@@ -48,9 +48,17 @@ def main():
                     help="크롭 데이터셋 경로. 실사만 / 실사+합성 혼합을 바꿔 끼운다")
     ap.add_argument("--epochs", type=int, default=30)
     ap.add_argument("--imgsz", type=int, default=128)
-    ap.add_argument("--batch", type=int, default=64)
+    # 64 는 노트북(RTX 3050 4GB) 기준값. 128px 분류는 가벼워 서버(3090 24GB)에서는
+    # 훨씬 키울 수 있다. -1 이면 VRAM 60% 목표 자동, 0<x<1 소수면 그 비율 목표.
+    ap.add_argument("--batch", default=-1,
+                    help="정수 고정 배치. -1 이면 자동(VRAM 60%%), 0<x<1 소수면 그 비율 목표")
     ap.add_argument("--patience", type=int, default=10)
     ap.add_argument("--device", default=0)
+    ap.add_argument("--workers", type=int, default=8,
+                    help="데이터 로더 워커 수 (노트북 4 · 서버 8)")
+    ap.add_argument("--cache", default="ram",
+                    choices=("False", "disk", "ram"),
+                    help="이미지 캐시. 128px 패치라 가벼워 서버에서는 'ram' 이 기본")
     ap.add_argument("--resume", action="store_true")
     args = ap.parse_args()
 
@@ -72,18 +80,28 @@ def main():
         print(f"  백본   : {args.model}")
         print(f"  데이터 : {data_dir}")
         print(f"  설정   : imgsz {args.imgsz} / epochs {args.epochs} / batch {args.batch}")
+        # -1(문자열/정수 모두 허용) → 그대로, 소수(0~1) → VRAM 비율 목표, 그 외 → 정수 배치
+        batch_str = str(args.batch)
+        if batch_str == "-1":
+            batch_val = -1
+        elif "." in batch_str:
+            batch_val = float(batch_str)
+        else:
+            batch_val = int(batch_str)
+
         model = YOLO(args.model)
         model.train(
             data=str(data_dir),
             epochs=args.epochs,
             imgsz=args.imgsz,
-            batch=args.batch,
+            batch=batch_val,
             device=args.device,
             project=str(RUNS),
             name=args.name,
             exist_ok=True,
             patience=args.patience,
-            workers=4,
+            workers=args.workers,
+            cache=False if args.cache == "False" else args.cache,
             seed=42,
             plots=True,
             # 항공 시점이라 상하좌우 어느 방향으로도 누울 수 있다.

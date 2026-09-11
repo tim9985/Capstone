@@ -38,3 +38,14 @@ runs_review/
 runs_video/
 metrics/_lists/
 mobile_sam.pt
+
+# ── 서버 세션 산출물 (다운로드/학습 로그, 임시 필터) ──
+*_dl.log
+*_rclone*.log
+train_e*.log
+train_remaining*.log
+wisard_unzip.log
+nomad_filter.txt
+
+# ── data 심볼릭 링크 (머신마다 실제 경로가 다름) ──
+/data

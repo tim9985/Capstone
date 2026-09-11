@@ -108,10 +108,19 @@ def main():
     ap.add_argument("--epochs", type=int, default=None)
     ap.add_argument("--imgsz", type=int, default=960)
     ap.add_argument("--batch", default=-1,
-                    help="-1 이면 VRAM에 맞춰 자동 (RTX 3050 4.3GB 권장)")
+                    help="-1 이면 VRAM 60%% 목표로 자동. 0<x<1 소수면 그 비율을 목표로 자동"
+                         "(예: 0.85 → 3090 24GB의 85%%). 정수면 고정 배치")
     ap.add_argument("--weights", default=None, help="시작 가중치 직접 지정")
     ap.add_argument("--patience", type=int, default=15)
     ap.add_argument("--device", default=0)
+    # 아래 두 값은 노트북(RTX 3050 4GB · 4코어) 기준으로 코드에 박혀 있었다.
+    # 서버(i9-11900 8코어16스레드 · RAM 64GB)에서는 크게 낭비되므로 인자로 뺀다.
+    # 결과에는 영향이 없고 에폭당 시간만 줄인다 — 실험 비교의 공정성은 유지된다.
+    ap.add_argument("--workers", type=int, default=8,
+                    help="데이터 로더 워커 수 (노트북 4 · 서버 8)")
+    ap.add_argument("--cache", default="disk",
+                    choices=("False", "disk", "ram"),
+                    help="이미지 캐시. 'ram' 은 9,008장에 ~24GB 필요하니 여유를 확인할 것")
     ap.add_argument("--resume", action="store_true",
                     help="중단된 학습을 last.pt 에서 이어서 진행")
     ap.add_argument("--data", default=None,
@@ -192,20 +201,29 @@ def main():
         extra["freeze"] = args.freeze
         print(f"  고정        : 앞 {args.freeze}개 층")
 
+    # -1(문자열/정수 모두 허용) → 그대로, 소수(0~1) → VRAM 비율 목표, 그 외 → 정수 배치
+    batch_str = str(args.batch)
+    if batch_str == "-1":
+        batch_val = -1
+    elif "." in batch_str:
+        batch_val = float(batch_str)
+    else:
+        batch_val = int(batch_str)
+
     model = YOLO(str(weights))
     model.train(
         data=str(data),
         epochs=epochs,
         imgsz=args.imgsz,
-        batch=args.batch if args.batch == -1 else int(args.batch),
+        batch=batch_val,
         device=args.device,
         project=str(RUNS),
         name=name,
         exist_ok=True,
         patience=args.patience,
-        amp=True,             # 4.3GB VRAM 에서 필수
-        cache=False,          # 1.2GB 데이터셋을 RAM 캐시하면 오히려 불안정
-        workers=4,
+        amp=True,
+        cache=False if args.cache == "False" else args.cache,
+        workers=args.workers,
         seed=42,
         val=True,
         plots=True,
