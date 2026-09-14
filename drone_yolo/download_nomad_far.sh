@@ -24,7 +24,7 @@ N=$(( ($(wc -l < "$FILTER") - 1) / 2 ))
 echo "[$(date -u '+%F %T') UTC] 시작 — 배우 ${N}명 · a50 · a70 → $RAW/NOMAD"
 [ "$N" -gt 0 ] || { echo "대상 배우 없음 — 중단"; exit 1; }
 
-PACE="--checkers 32 --drive-pacer-min-sleep 10ms --drive-pacer-burst 200 --stats 60s --stats-one-line --retries 10 --low-level-retries 20"
+PACE="--checkers 32 --drive-pacer-min-sleep 10ms --drive-pacer-burst 200 --stats 60s --stats-one-line --stats-log-level NOTICE --retries 10 --low-level-retries 20"
 for kind in labels images; do
   T=16; [ "$kind" = labels ] && T=32
   ok=0
