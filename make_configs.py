@@ -38,15 +38,20 @@ CFG = BASE_DIR / "configs"
 
 # 이름 → (train 하위경로들, val 하위경로들)
 NOMAD = ["det/nomad_actor01_10", "det/nomad_actor11_20", "det/nomad_actor21_30"]
+# metrics/nomad_actor_selection.csv 의 42명 선정 중 31번 이후 30명 (나이·인종·상의색
+# 분산 기준으로 고른 목록). 1~30 배치(전원 30명)와 별도 배치로 받아 붙인다 → 합계 60명.
+NOMAD42_EXTRA = "det/nomad_actor_sel31_100"
 WISARD = "det/wisard"
 
 SETS = {
-    # 운용 모델이 쓴 구성. NOMAD 배우 1~30 + WiSARD 9월·1월
+    # NOMAD 배우 60명(1~30 전원 + 선정 목록 중 31번 이후 30명) + WiSARD 전체.
+    # 8차 노트북 기준선과는 더 이상 비교 대상이 아니므로 val 도 전체 배치로 넓혀
+    # 검증을 더 견고하게 한다 (예전엔 배치1·2만 val 에 썼다).
     "data_all.yaml": {
-        "note": ["NOMAD(배우1~30) + WiSARD(9월·1월) 통합",
-                 "val: NOMAD 배우 004·008·014·018 + WiSARD 9월 비행 2개 + 1월 시간분할 뒤 30%"],
-        "train": [f"{d}/images/train" for d in NOMAD] + [f"{WISARD}/images/train"],
-        "val":   [f"{d}/images/val" for d in NOMAD[:2]] + [f"{WISARD}/images/val"],
+        "note": ["NOMAD(60명: 배우1~30 전원 + 선정 목록 중 31번 이후 30명) + WiSARD(VIS 전체) 통합",
+                 "val: NOMAD 전 배치 + WiSARD"],
+        "train": [f"{d}/images/train" for d in NOMAD + [NOMAD42_EXTRA]] + [f"{WISARD}/images/train"],
+        "val":   [f"{d}/images/val" for d in NOMAD + [NOMAD42_EXTRA]] + [f"{WISARD}/images/val"],
     },
     # 배우 수 효과를 볼 때 쓴 것들. 검증셋을 고정해 같은 잣대로 비교한다
     "data_nomad20.yaml": {
@@ -110,7 +115,7 @@ def main():
 
     # 학습에 실제로 몇 장이 들어가는지 세어 둔다. 수치가 예상과 다르면 데이터가 덜 준비된 것이다
     print("\n데이터 규모")
-    for rel in NOMAD + [WISARD]:
+    for rel in NOMAD + [NOMAD42_EXTRA, WISARD]:
         tr = DATA / rel / "images" / "train"
         va = DATA / rel / "images" / "val"
         if tr.is_dir():

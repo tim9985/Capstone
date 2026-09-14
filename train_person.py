@@ -133,6 +133,18 @@ def main():
                     help="시작 학습률. 잘 되는 모델을 이어받을 때는 0.001 이하를 쓴다")
     ap.add_argument("--freeze", type=int, default=None,
                     help="앞쪽 N개 층을 고정한다. 특징 추출부를 보존하고 헤드만 학습시킬 때")
+    # 마감이 정해진 학습용. ultralytics 가 첫 에폭 속도를 보고 에폭 수와 학습률 스케줄을
+    # 다시 맞추므로, 중간에 잘리는 게 아니라 줄어든 스케줄로 끝까지 마무리된다.
+    ap.add_argument("--time", type=float, default=None,
+                    help="최대 학습 시간(시간 단위). 지정하면 --epochs 를 덮어쓴다")
+    ap.add_argument("--close-mosaic", type=int, default=None,
+                    help="마지막 N 에폭은 모자이크를 끈다 (ultralytics 기본 10). 에폭이 적을 때 줄인다")
+    # optimizer=auto(기본)면 ultralytics 가 --lr0 를 무시하고 스스로 고른다 (09-12 로그로 확인).
+    # 학습률을 직접 정해야 하는 이어 학습에서는 옵티마이저를 명시한다.
+    ap.add_argument("--optimizer", default=None,
+                    help="옵티마이저 이름 (예: SGD, MuSGD, AdamW). 지정해야 --lr0 가 적용된다")
+    ap.add_argument("--warmup-epochs", type=float, default=None,
+                    help="워밍업 에폭 (ultralytics 기본 3). 중간 가중치에서 이어갈 때는 줄인다")
     ap.add_argument("--shutdown", type=int, default=0, metavar="SEC",
                     help="학습 정상 완료 후 지정 초 뒤 컴퓨터 종료 (예: --shutdown 120). "
                          "취소는 다른 터미널에서 'shutdown /a'")
@@ -148,10 +160,19 @@ def main():
         if not last.exists():
             raise SystemExit(f"이어받을 체크포인트가 없습니다: {last}")
         print(f"=== stage{args.stage} 이어 학습: {last} ===")
-        YOLO(str(last)).train(resume=True)
+        resume_kw = {}
+        if args.time is not None:
+            # 체크포인트에 저장된 time(시간 제한)을 덮어쓴다. resume 하면 시간 측정이 0부터 다시
+            # 시작돼 에폭 수가 재계산되므로, 0 을 주면 시간 제한 없이 저장된 epochs 까지 정확히 간다.
+            resume_kw["time"] = args.time
+            print(f"  시간 제한 덮어쓰기: {args.time}")
+        YOLO(str(last)).train(resume=True, **resume_kw)
         best = RUNS / name / "weights" / "best.pt"
         if best.exists():
-            dest = BASE_DIR / "weights" / f"yolov8s_{name}.pt"
+            # 실험 이름(name)에 이미 모델 정보가 들어있다(예: e7_11m_1280).
+            # "yolov8s_" 를 고정으로 붙이면 yolo11m/l 로 학습해도 파일명이
+            # yolov8s 라고 나와 오해를 준다(2026-09-11 발견) — 접두사 제거.
+            dest = BASE_DIR / "weights" / f"{name}.pt"
             shutil.copy(best, dest)
             print(f"\n최종 가중치 복사: {dest}")
         if args.shutdown:
@@ -163,9 +184,15 @@ def main():
         weights = Path(args.weights) if args.weights else BASE_WEIGHTS
         epochs = args.epochs or 60
         name = "stage1_nomad"
-        # 단일 도메인(여름·정오)이라 색상 증강을 기본보다 강하게
-        extra = dict(hsv_h=0.02, hsv_s=0.8, hsv_v=0.5, degrees=10.0,
-                     translate=0.15, scale=0.5, fliplr=0.5, mosaic=1.0)
+        # 단일 도메인(여름·정오)이라 색상 증강을 기본보다 강하게.
+        # degrees=180/flipud=0.5 — 하향 90° 시점엔 화면에 "위쪽"이 없다.
+        # 드론이 요잉하면 장면 전체가 돌고, 쓰러진 사람은 어느 방향으로든
+        # 누울 수 있다. 기존 ±10°·flipud 0 은 이 물리적 조건과 안 맞았다
+        # (SERVER.md 5절 실험 A). 과적합 완화 효과도 겸한다 — train/val
+        # loss가 15에폭 근처부터 벌어지는 패턴이 E1·E2에서 보였는데,
+        # 방향 다양성 부족이 원인 중 하나로 보인다.
+        extra = dict(hsv_h=0.02, hsv_s=0.8, hsv_v=0.5, degrees=180.0,
+                     flipud=0.5, translate=0.15, scale=0.5, fliplr=0.5, mosaic=1.0)
     else:
         data = write_mixed_yaml(args.synth_repeat)
         default_w = RUNS / "stage1_all" / "weights" / "best.pt"
@@ -200,6 +227,18 @@ def main():
     if args.freeze is not None:
         extra["freeze"] = args.freeze
         print(f"  고정        : 앞 {args.freeze}개 층")
+    if args.time is not None:
+        extra["time"] = args.time
+        print(f"  시간 제한   : {args.time}시간 (epochs 무시, 스케줄 자동 조정)")
+    if args.close_mosaic is not None:
+        extra["close_mosaic"] = args.close_mosaic
+        print(f"  모자이크 끔 : 마지막 {args.close_mosaic}에폭")
+    if args.optimizer is not None:
+        extra["optimizer"] = args.optimizer
+        print(f"  옵티마이저  : {args.optimizer}")
+    if args.warmup_epochs is not None:
+        extra["warmup_epochs"] = args.warmup_epochs
+        print(f"  워밍업      : {args.warmup_epochs}에폭")
 
     # -1(문자열/정수 모두 허용) → 그대로, 소수(0~1) → VRAM 비율 목표, 그 외 → 정수 배치
     batch_str = str(args.batch)
@@ -232,7 +271,7 @@ def main():
 
     best = RUNS / name / "weights" / "best.pt"
     if best.exists():
-        dest = BASE_DIR / "weights" / f"yolov8s_{name}.pt"
+        dest = BASE_DIR / "weights" / f"{name}.pt"   # 이어 학습 분기와 같은 규칙 (모델 정보는 name 에)
         shutil.copy(best, dest)
         print(f"\n최종 가중치 복사: {dest}")
     print(f"결과: {RUNS / name}")

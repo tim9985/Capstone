@@ -36,9 +36,14 @@ BASE_DIR = Path(__file__).resolve().parent
 TMP_DIR = BASE_DIR / "metrics" / "_lists"
 OUT_CSV = BASE_DIR / "metrics" / "eval_domain.csv"
 IMGSZ = 960
+CONF = 0.15   # 쓰러짐 재현율에 쓰는 운용 임계값 (--conf 로 덮어씀)
 
 NOMAD_VAL = [BASE_DIR / "data" / "det" / "nomad_actor01_10" / "images" / "val",
              BASE_DIR / "data" / "det" / "nomad_actor11_20" / "images" / "val"]
+# 공통 홀드아웃 10명 (CLAUDE.md §4-1): 004·008·014·018 + 048·059·071·079·088·094.
+# 024·028(nomad_actor21_30 val)은 노트북 stage1_all 이 학습에 쓴 배우라 넣지 않는다.
+# nomad_summer(4명)는 과거 기록과의 연속성용, 이쪽은 표본이 약 3배라 판정용.
+NOMAD_HOLDOUT10 = NOMAD_VAL + [BASE_DIR / "data" / "det" / "nomad_actor_sel31_100" / "images" / "val"]
 WISARD_VAL = BASE_DIR / "data" / "det" / "wisard" / "images" / "val"
 # 1월(겨울) 비행은 DJI_0582 (1-10-2022 ...). 나머지(DJI_0403/0409)는 9월.
 JAN_PREFIX = "DJI_0582"
@@ -58,11 +63,15 @@ def build_domains():
     nomad = []
     for d in NOMAD_VAL:
         nomad.extend(sorted(d.glob("*.jpg")))
+    holdout = []
+    for d in NOMAD_HOLDOUT10:
+        holdout.extend(sorted(d.glob("*.jpg")))
     wis = sorted(WISARD_VAL.glob("*.jpg"))
     jan = [p for p in wis if p.name.startswith(JAN_PREFIX)]
     sep = [p for p in wis if not p.name.startswith(JAN_PREFIX)]
     return {
         "nomad_summer": nomad,
+        "nomad_holdout10": holdout,
         "wisard_sept": sep,
         "wisard_jan": jan,
         "combined": nomad + wis,
@@ -148,7 +157,8 @@ def laying_recall(model, imgs):
         gts = load_yolo_labels(Path(str(img_p).replace("images", "labels")).with_suffix(".txt"), w, h)
         if not gts:
             continue
-        res = model(img, verbose=False, imgsz=IMGSZ)[0]
+        # conf 를 안 넘기면 ultralytics 기본 0.25 로 잰다 — 운용값 0.15 기준 기록(MODELS.md 4절)과 어긋났다 (2026-09-12 수정)
+        res = model(img, verbose=False, imgsz=IMGSZ, conf=CONF)[0]
         preds = []
         for b in res.boxes:
             if model.names[int(b.cls[0])] not in PERSON_NAMES:
@@ -175,9 +185,16 @@ def main():
                     help="추론 해상도. 학습 때 쓴 값과 맞춰야 공정한 비교가 된다")
     ap.add_argument("--conf", type=float, default=0.15,
                     help="신뢰도 임계값 (기본값은 F2 스윕으로 정한 운용값)")
+    ap.add_argument("--out", default=None,
+                    help="결과 CSV 경로 (기본 metrics/eval_domain.csv — 기존 기록을 덮어쓰지 않으려면 지정)")
     args = ap.parse_args()
 
-    global MODELS
+    # --imgsz 를 받아 놓고 전역 IMGSZ(960)를 그대로 쓰고 있었다 → 1280 모델도 960 으로 재는 버그 (2026-09-12 수정)
+    global MODELS, IMGSZ, OUT_CSV, CONF
+    IMGSZ = args.imgsz
+    CONF = args.conf
+    if args.out:
+        OUT_CSV = Path(args.out).resolve()
     if args.weights:
         # 경로에서 이름을 짓는다: runs_person/yolo11s_1280/weights/best.pt → yolo11s_1280
         named = []
@@ -215,13 +232,15 @@ def main():
             print(f"  {dname:14} mAP50 {rec['mAP50']:.3f} | mAP50-95 {rec['mAP50_95']:.3f} "
                   f"| P {rec['precision']:.3f} | R {rec['recall']:.3f}")
 
-        # 쓰러진 자세 재현율은 NOMAD 에만 라벨이 있다
-        act = laying_recall(model, doms["nomad_summer"])
-        for a, (h, t) in act.items():
-            mark = "  ← 쓰러짐" if "Laying" in a else ""
-            print(f"    [활동] {a:20} 재현율 {h/t:.3f} ({h}/{t}){mark}")
-            rows.append({"model": mname, "domain": f"nomad_act::{a}", "images": t,
-                         "recall": round(h / t, 4)})
+        # 쓰러진 자세 재현율은 NOMAD 에만 라벨이 있다 (conf = CONF)
+        for dom, prefix in (("nomad_summer", "nomad_act"), ("nomad_holdout10", "holdout10_act")):
+            print(f"  [{dom} · conf {CONF}]")
+            act = laying_recall(model, doms[dom])
+            for a, (h, t) in act.items():
+                mark = "  ← 쓰러짐" if "Laying" in a else ""
+                print(f"    [활동] {a:20} 재현율 {h/t:.3f} ({h}/{t}){mark}")
+                rows.append({"model": mname, "domain": f"{prefix}::{a}", "images": t,
+                             "recall": round(h / t, 4)})
 
     keys = ["model", "domain", "images", "mAP50", "mAP50_95", "precision", "recall"]
     with open(OUT_CSV, "w", newline="", encoding="utf-8-sig") as f:
