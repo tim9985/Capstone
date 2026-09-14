@@ -20,3 +20,6 @@ Thumbs.db
 # Obsidian 개인 화면 상태 · 휴지통
 obsidian/Drone/.obsidian/workspace*.json
 obsidian/Drone/.trash/
+
+# Obsidian 을 저장소 루트로 열 때 생기는 개인 설정
+/.obsidian/
