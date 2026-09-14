@@ -1,0 +1,29 @@
+filters:
+  and:
+    - file.inFolder("10 성능 요구사항")
+    - file.ext == "md"
+    - note["식별자"] != null
+properties:
+  note.식별자:
+    displayName: 식별자
+  note.분류:
+    displayName: 분류
+  note.기준:
+    displayName: 기준
+  note.판정:
+    displayName: 지금 할 수 있나
+  note.좌우하는것:
+    displayName: 좌우하는 것
+views:
+  - type: table
+    name: 성능 요구사항
+    order:
+      - 식별자
+      - file.name
+      - 분류
+      - 기준
+      - 판정
+      - 좌우하는것
+    sort:
+      - property: 식별자
+        direction: ASC

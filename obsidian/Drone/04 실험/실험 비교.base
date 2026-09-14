@@ -18,12 +18,12 @@ views:
     name: 전체 실험
     order:
       - file.name
-      - note.분류
-      - note.날짜
-      - note.핵심수치
-      - note.판정
+      - 분류
+      - 날짜
+      - 핵심수치
+      - 판정
     sort:
-      - property: note.날짜
+      - property: 날짜
         direction: ASC
   - type: table
     name: 자세 판별만
@@ -32,9 +32,9 @@ views:
         - note["분류"] == "자세"
     order:
       - file.name
-      - note.날짜
-      - note.핵심수치
-      - note.판정
+      - 날짜
+      - 핵심수치
+      - 판정
     sort:
-      - property: note.날짜
+      - property: 날짜
         direction: ASC

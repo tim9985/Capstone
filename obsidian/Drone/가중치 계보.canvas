@@ -1,172 +1,25 @@
 {
- "nodes": [
-  {
-   "id": "n045",
-   "type": "text",
-   "x": 0,
-   "y": 0,
-   "width": 320,
-   "height": 150,
-   "text": "## VisDrone 기성\n공개 · 11클래스\n여름 0.133 · 쓰러짐 0.048\n[[VisDrone 기성 모델]]",
-   "color": "6"
-  },
-  {
-   "id": "n046",
-   "type": "text",
-   "x": 0,
-   "y": 900,
-   "width": 320,
-   "height": 110,
-   "text": "## COCO 사전학습\nyolo11s · v8s · 11m · 11l",
-   "color": "6"
-  },
-  {
-   "id": "n047",
-   "type": "text",
-   "x": 460,
-   "y": -260,
-   "width": 280,
-   "height": 100,
-   "text": "NOMAD 10명\n여름 0.461"
-  },
-  {
-   "id": "n048",
-   "type": "text",
-   "x": 460,
-   "y": -130,
-   "width": 280,
-   "height": 100,
-   "text": "NOMAD 20명\n여름 0.635"
-  },
-  {
-   "id": "n049",
-   "type": "text",
-   "x": 460,
-   "y": 0,
-   "width": 280,
-   "height": 120,
-   "text": "NOMAD 30명\n여름 0.644 · **겨울 0.242**",
-   "color": "2"
-  },
-  {
-   "id": "n050",
-   "type": "text",
-   "x": 460,
-   "y": 250,
-   "width": 320,
-   "height": 190,
-   "text": "## ⭐ stage1_all\nNOMAD 30명 + WiSARD\n여름 0.641 · 겨울 0.922\n14,342장 · 08-03\n[[stage1_all]]",
-   "color": "4"
-  },
-  {
-   "id": "n051",
-   "type": "text",
-   "x": 900,
-   "y": 60,
-   "width": 320,
-   "height": 150,
-   "text": "## 7차 sard2_pose6\n동결 없음\nSARD 0.960 · NOMAD 발견 **−39%**\n[[자세 7차 - SARD 6클래스]]",
-   "color": "1"
-  },
-  {
-   "id": "n052",
-   "type": "text",
-   "x": 900,
-   "y": 260,
-   "width": 320,
-   "height": 170,
-   "text": "## ⭐ 8차 pose3_sn_freeze\n백본 동결 · 3클래스\nSARD 0.974 · 탐지 −11%\n[[pose3_sn_freeze]]",
-   "color": "4"
-  },
-  {
-   "id": "n053",
-   "type": "text",
-   "x": 900,
-   "y": 480,
-   "width": 320,
-   "height": 150,
-   "text": "## 9차 pose3_nd_freeze\nnot_defined 제외\n오탐 −58% · 발견율 −0.086\n[[자세 9차 - not_defined 제외]]",
-   "color": "1"
-  },
-  {
-   "id": "n054",
-   "type": "text",
-   "x": 460,
-   "y": 900,
-   "width": 320,
-   "height": 110,
-   "text": "## 🔄 서버 E1~E8\n42명 · 회전 180°\n[[서버 E1~E8]]",
-   "color": "3"
-  },
-  {
-   "id": "n055",
-   "type": "text",
-   "x": 0,
-   "y": -260,
-   "width": 320,
-   "height": 190,
-   "text": "### 범례\n🟩 채택 · 운용\n🟥 기각\n🟪 공개 사전학습\n🟨 진행 중\n\n⚠️ NOMAD 단계별과 stage1_all 은\n**각각 따로** VisDrone 에서 출발"
-  }
- ],
- "edges": [
-  {
-   "id": "n056",
-   "fromNode": "n045",
-   "fromSide": "right",
-   "toNode": "n047",
-   "toSide": "left"
-  },
-  {
-   "id": "n057",
-   "fromNode": "n045",
-   "fromSide": "right",
-   "toNode": "n048",
-   "toSide": "left"
-  },
-  {
-   "id": "n058",
-   "fromNode": "n045",
-   "fromSide": "right",
-   "toNode": "n049",
-   "toSide": "left"
-  },
-  {
-   "id": "n059",
-   "fromNode": "n045",
-   "fromSide": "right",
-   "toNode": "n050",
-   "toSide": "left",
-   "label": "+ WiSARD"
-  },
-  {
-   "id": "n060",
-   "fromNode": "n050",
-   "fromSide": "right",
-   "toNode": "n051",
-   "toSide": "left",
-   "label": "SARD 6클래스"
-  },
-  {
-   "id": "n061",
-   "fromNode": "n050",
-   "fromSide": "right",
-   "toNode": "n052",
-   "toSide": "left",
-   "label": "SARD+NOMAD 3클래스"
-  },
-  {
-   "id": "n062",
-   "fromNode": "n050",
-   "fromSide": "right",
-   "toNode": "n053",
-   "toSide": "left"
-  },
-  {
-   "id": "n063",
-   "fromNode": "n046",
-   "fromSide": "right",
-   "toNode": "n054",
-   "toSide": "left"
-  }
- ]
+	"nodes":[
+		{"id":"n045","type":"text","x":0,"y":0,"width":320,"height":150,"text":"## VisDrone 기성\n공개 · 11클래스\n여름 0.133 · 쓰러짐 0.048\n[[VisDrone 기성 모델]]","color":"6"},
+		{"id":"n046","type":"text","x":0,"y":900,"width":320,"height":110,"text":"## COCO 사전학습\nyolo11s · v8s · 11m · 11l","color":"6"},
+		{"id":"n047","type":"text","x":460,"y":-260,"width":280,"height":100,"text":"NOMAD 10명\n여름 0.461"},
+		{"id":"n048","type":"text","x":460,"y":-130,"width":280,"height":100,"text":"NOMAD 20명\n여름 0.635"},
+		{"id":"n049","type":"text","x":460,"y":0,"width":280,"height":120,"text":"NOMAD 30명\n여름 0.644 · **겨울 0.242**","color":"2"},
+		{"id":"n050","type":"text","x":460,"y":250,"width":320,"height":190,"text":"## ⭐ stage1_all\nNOMAD 30명 + WiSARD\n여름 0.641 · 겨울 0.922\n14,342장 · 08-03\n[[stage1_all]]","color":"4"},
+		{"id":"n051","type":"text","x":900,"y":60,"width":320,"height":150,"text":"## 7차 sard2_pose6\n동결 없음\nSARD 0.960 · NOMAD 발견 **−39%**\n[[자세 7차 - SARD 6클래스]]","color":"1"},
+		{"id":"n052","type":"text","x":900,"y":260,"width":320,"height":170,"text":"## ⭐ 8차 pose3_sn_freeze\n백본 동결 · 3클래스\nSARD 0.974 · 탐지 −11%\n[[pose3_sn_freeze]]","color":"4"},
+		{"id":"n053","type":"text","x":900,"y":480,"width":320,"height":150,"text":"## 9차 pose3_nd_freeze\nnot_defined 제외\n오탐 −58% · 발견율 −0.086\n[[자세 9차 - not_defined 제외]]","color":"1"},
+		{"id":"n054","type":"text","x":460,"y":900,"width":320,"height":110,"text":"## 🔄 서버 E1~E8\n42명 · 회전 180°\n[[서버 E1~E8]]","color":"3"},
+		{"id":"n055","type":"text","x":0,"y":-260,"width":320,"height":190,"text":"### 범례\n🟩 채택 · 운용\n🟥 기각\n🟪 공개 사전학습\n🟨 진행 중\n\n⚠️ NOMAD 단계별과 stage1_all 은\n**각각 따로** VisDrone 에서 출발"}
+	],
+	"edges":[
+		{"id":"n056","fromNode":"n045","fromSide":"right","toNode":"n047","toSide":"left"},
+		{"id":"n057","fromNode":"n045","fromSide":"right","toNode":"n048","toSide":"left"},
+		{"id":"n058","fromNode":"n045","fromSide":"right","toNode":"n049","toSide":"left"},
+		{"id":"n059","fromNode":"n045","fromSide":"right","toNode":"n050","toSide":"left","label":"+ WiSARD"},
+		{"id":"n060","fromNode":"n050","fromSide":"right","toNode":"n051","toSide":"left","label":"SARD 6클래스"},
+		{"id":"n061","fromNode":"n050","fromSide":"right","toNode":"n052","toSide":"left","label":"SARD+NOMAD 3클래스"},
+		{"id":"n062","fromNode":"n050","fromSide":"right","toNode":"n053","toSide":"left"},
+		{"id":"n063","fromNode":"n046","fromSide":"right","toNode":"n054","toSide":"left"}
+	]
 }

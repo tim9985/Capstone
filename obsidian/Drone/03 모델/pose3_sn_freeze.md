@@ -1,9 +1,11 @@
 ---
 tags: [모델, 핵심]
 파일: weights/yolov8s_pose3_sn_freeze.pt
-상태: 자세 운용안
+상태: 보관 (자세 트랙 중단)
 학습일: 2026-09-05
 ---
+
+> [!warning] 자세 판별 트랙은 09-13 중단됐다 — 기록용으로 보관 → [[결정 - 자세 판별 제외]]
 
 > [!summary] 3클래스 자세 모델 (8차) — person / fallen / ambiguous
 > [[stage1_all]] 에서 **백본 동결** 전이학습 · SARD + NOMAD 9,008장 · WiSARD 제외
