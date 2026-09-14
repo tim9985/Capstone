@@ -19,10 +19,10 @@
 #   장애 간격이 29분 ~ 3.6시간으로 들쭉날쭉하다. 30분 통과는 "그 전력에서 안전하다"는 증거가 약하다.
 #   통과한 가장 낮은 단계로 더 길게 돌려봐야 확신할 수 있다.
 #
-# 실행: cd ~/JupyterLAB/drone_dev/drone_yolo && nohup ./gpu_stability_test.sh > gpu_stability_test.log 2>&1 &
+# 실행: cd ~/JupyterLAB/Capstone/drone_yolo && nohup ./gpu_stability_test.sh > gpu_stability_test.log 2>&1 &
 #       단계 · 시간 바꾸기: LEVELS="200 250" MINUTES=45 nohup ./gpu_stability_test.sh > ... &
 set -u
-cd /home/se/JupyterLAB/drone_dev/drone_yolo
+cd /home/se/JupyterLAB/Capstone/drone_yolo
 export MPLBACKEND=Agg
 PY=/home/se/miniconda3/envs/drone/bin/python
 LEVELS=${LEVELS:-"200 250 300"}

@@ -1,8 +1,8 @@
 #!/bin/bash
 # NOMAD 신규 30명 다운로드 완료를 기다린 뒤 전처리·설정 재생성까지 자동으로 진행
-cd /home/se/JupyterLAB/drone_dev/drone_yolo
+cd /home/se/JupyterLAB/Capstone/drone_yolo
 PY=/home/se/miniconda3/envs/drone/bin/python
-RAW=/home/se/JupyterLAB/drone_dev/data/raw/NOMAD
+RAW=/home/se/JupyterLAB/Capstone/data/raw/NOMAD
 
 echo "=== NOMAD 신규 다운로드 완료 대기 시작 $(date) ==="
 while kill -0 10487 2>/dev/null; do sleep 15; done
@@ -10,7 +10,7 @@ echo "=== 다운로드 완료 감지 $(date) ==="
 tail -5 nomad_rclone_new30.log
 
 echo "=== 신규 30명 배치용 하드링크 스테이징 구성 $(date) ==="
-STAGE=/home/se/JupyterLAB/drone_dev/data/raw/NOMAD_sel31_100
+STAGE=/home/se/JupyterLAB/Capstone/data/raw/NOMAD_sel31_100
 rm -rf "$STAGE"
 mkdir -p "$STAGE/images"
 ln -sf "$RAW/annotations.json" "$STAGE/annotations.json"

@@ -59,7 +59,7 @@ NVRM: Xid (PCI:0000:02:00): 154, GPU recovery action changed from 0x0 (None) to 
 4. 진단을 위해 `pci=noaer` 를 빼고 부팅 → 부하 중 PCIe 오류가 쌓이는지 확인
 5. 가능하면 다른 슬롯 · 다른 파워서플라이 · 다른 GPU 로 교차 확인
 
-## 참고 자료 (서버 `~/JupyterLAB/drone_dev/drone_yolo/`)
+## 참고 자료 (서버 `~/JupyterLAB/Capstone/drone_yolo/`)
 
 - GPU 기록 (30초 · 10초 간격): `gpu_telemetry_20260914_0040.csv` (3회차), `gpu_telemetry_20260914_0447.csv` (4회차), `gpu_telemetry_stab_*W_*.csv` (전력 단계 테스트)
 - 전력 단계 테스트 결과: `gpu_stability_20260914_0210.txt`

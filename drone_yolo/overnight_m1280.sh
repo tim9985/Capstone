@@ -12,12 +12,12 @@
 #
 # 실행: nohup ./overnight_m1280.sh > overnight_m1280.log 2>&1 &
 set -u
-cd /home/se/JupyterLAB/drone_dev/drone_yolo
+cd /home/se/JupyterLAB/Capstone/drone_yolo
 # 화면 없는 서버에서 matplotlib 이 tkagg 를 고르면 학습 끝의 best.pt 최종 검증(PR 곡선 그리기)에서
 # ImportError 로 죽는다 — E1 이 그렇게 끝나 weights/ 복사가 빠졌다 (2026-09-12)
 export MPLBACKEND=Agg
 PY=/home/se/miniconda3/envs/drone/bin/python
-DATA=/home/se/JupyterLAB/drone_dev/data
+DATA=/home/se/JupyterLAB/Capstone/data
 RAW=$DATA/raw
 BK=$DATA/det_v1_fov60
 NAME=m1_11m_1280

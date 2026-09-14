@@ -11,9 +11,9 @@
 #   3) GPU 감시 스크립트 · 온도/전력/스로틀 기록(30초) 시작 — 24시간 안에 두 번 죽은 원인 추적
 #   4) train_person.py --resume → 끝나면 GPU 로 도메인 평가
 #
-# 실행: cd ~/JupyterLAB/drone_dev/drone_yolo && nohup ./resume_m1.sh > resume_m1.log 2>&1 &
+# 실행: cd ~/JupyterLAB/Capstone/drone_yolo && nohup ./resume_m1.sh > resume_m1.log 2>&1 &
 set -u
-cd /home/se/JupyterLAB/drone_dev/drone_yolo
+cd /home/se/JupyterLAB/Capstone/drone_yolo
 export MPLBACKEND=Agg   # 화면 없는 서버에서 최종 검증 PR 곡선 그리기가 죽지 않게 (E1 에서 겪음)
 PY=/home/se/miniconda3/envs/drone/bin/python
 NAME=m1_11m_1280

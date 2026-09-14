@@ -54,7 +54,7 @@ Capstone 저장소의 `drone_yolo/`(비전 코드)에서 작업하는 Claude 세
 | 트랙 | 어디서 | 내용 | 상태 |
 |---|---|---|---|
 | **탐지 v2 (실기체용)** | 서버 | COCO 사전학습 1클래스 · 입력 1280 · 크기 분포 재설계 · 각도 태그 · 자체 촬영 파인튜닝 → `obsidian/Drone/11 서버 학습 계획/` | **계획 — S0 환경·기준선 → S1 데이터 재생성부터** |
-| 탐지 스윕 E1~E8 | 서버 `~/JupyterLAB/drone_dev` · 브랜치 `server-3090-setup` | NOMAD **60명**(train 48 / val 12 · 탐지 train 18,937 / val 4,968장) + WiSARD VIS · degrees 180 / flipud 0.5 | E1 마무리 · **E2~E8 중단** (전처리 전제 재검토) |
+| 탐지 스윕 E1~E8 | 서버 `~/JupyterLAB/Capstone/drone_yolo` (09-14 통합 전 `~/JupyterLAB/drone_dev` · 브랜치 `server-3090-setup`) | NOMAD **60명**(train 48 / val 12 · 탐지 train 18,937 / val 4,968장) + WiSARD VIS · degrees 180 / flipud 0.5 | E1 마무리 · **E2~E8 중단** (전처리 전제 재검토) |
 | 상의 색상 비교 | 노트북 → 서버 | 규칙 기반 시제품(사람 영역 · Lab 12색 · 1·2순위) · NOMAD 42명 `upper_color` 1차 평가 → `obsidian/Drone/11 서버 학습 계획/10 상의 색상 비교.md` | **계획** |
 | 좌표 환산 | 노트북 | 시뮬레이터 깊이 기반 평균 0.50 m | 실기체엔 하향 깊이 없음 → 평지/DEM 방식으로 교체 필요 |
 | ~~3클래스 자세 pose3~~ | 노트북 | person / fallen / ambiguous | **중단 (09-13)** — 기록만 남긴다 |

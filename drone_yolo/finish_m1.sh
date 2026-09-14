@@ -12,9 +12,9 @@
 #   · close_mosaic 3 — 남은 에폭이 약 9개라 마지막 3에폭만 모자이크 끔
 #   · GPU 온도 · 전력 · 스로틀 원인을 30초마다 기록 — 24시간 안에 두 번 죽은 원인 추적용
 #
-# 실행 (재부팅 후): cd ~/JupyterLAB/drone_dev/drone_yolo && nohup ./finish_m1.sh > finish_m1.log 2>&1 &
+# 실행 (재부팅 후): cd ~/JupyterLAB/Capstone/drone_yolo && nohup ./finish_m1.sh > finish_m1.log 2>&1 &
 set -u
-cd /home/se/JupyterLAB/drone_dev/drone_yolo
+cd /home/se/JupyterLAB/Capstone/drone_yolo
 export MPLBACKEND=Agg
 PY=/home/se/miniconda3/envs/drone/bin/python
 SRC=runs_person/m1_11m_1280/weights/last.pt

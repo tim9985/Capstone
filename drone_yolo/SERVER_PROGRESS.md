@@ -3,7 +3,7 @@
 `SERVER.md` · `EXPERIMENTS.md` · `DATASETS.md` 대로 진행하면서 실제로 겪은 것들과
 현재 상태를 기록한다. 로컬(노트북) 작업 이어가기 전에 이 파일부터 볼 것.
 
-작성 2026-09-11 · 갱신 2026-09-12 02:50 KST (09-11 17:50 UTC) · Claude Code (se 계정 세션)
+작성 2026-09-11 · 갱신 2026-09-14 (M1 완주 · 서버 폴더 이동) · Claude Code (se 계정 세션)
 
 ---
 
@@ -254,12 +254,34 @@ sudo nvidia-smi -pl 200        # 스크립트가 감지하면 30분 부하. 끝�
 참고: 2회차 장애가 검증 중에 났는데, 200 W 는 검증 2회를 넘겼다. 다만 30분 통과는 약한 증거다.
 테스트 중 `gpu_watchdog.sh` 는 시작 시 자기 매칭 오판으로 꺼져 있다가 11:23 에 수동으로 켰다.
 
+**▶ 09-14 20:17 KST: M1 34에폭 완주 → 평가 → 서버 폴더 이동**
+
+- 완화 설정 뒤 15~34에폭 5시간 55분 + 평가(20:21 완료) 동안 **GPU 소실 0회**.
+  기록 `gpu_telemetry_20260914_0522.csv` (14:22 ~ 20:21 KST · 평균 60.1 °C · 최고 62 °C · 평균 242 W).
+- 결과 → 4-1절 "최종 결과". 요약: 쓰러짐 재현율 외 모든 도메인에서 E1 보다 높다 · 쓰러짐은 같은 수준 · 23에폭부터 val 하락(과적합 신호).
+- **속도 실측** (같은 M1 부하, 로그의 학습 진행 줄 it/s 중앙값)
+
+| 조건 | it/s | 350 W 대비 |
+|---|---:|---:|
+| 350 W (09-12 M1) | 7.7 | — |
+| 300 W (안정성 테스트) | 7.4 | −4 % |
+| 250 W (안정성 테스트) | 6.9 | −10 % |
+| 완화 설정 (Gen3 · 클럭 1600 MHz · 250 W) | 6.4 | **−17 %** (250 W 만보다 −7 %) |
+
+  검증 포함 에폭 시간은 약 15.5분 → 17.6분 (+14 %). 계획 검토의 "완화 설정 약 −10 %" 가정보다 조금 크다.
+- **서버 폴더 이동**: `~/JupyterLAB/drone_dev` → `~/JupyterLAB/Capstone` (git 밖 자산은 그대로 git 밖).
+  - `data/` → `Capstone/data` (`drone_yolo/data` 는 `../data` 링크) · `data/raw` 의 절대경로 링크 12개를 상대경로로.
+  - `runs_person` · `weights` · 사전학습 `.pt` · `nomad_filter.txt` → `drone_yolo/` · 로그 → `drone_yolo/logs/` · hwpx/docx 원본 → `보고서/원본/`.
+  - 스크립트 · `configs/data_*.yaml` · `autoheal/gpu_autoheal.sh` 의 절대경로를 새 경로로.
+  - 옛 폴더는 `~/JupyterLAB/drone_dev_old_0914` 로 보관, 임시 호환 링크 `~/JupyterLAB/drone_dev → Capstone`.
+  - 자동 복구는 이동 중 `ENABLED` 를 지워 꺼 뒀다. 새 경로로 `sudo bash autoheal/install.sh` 재설치(설치하면 `ENABLED` 가 다시 생긴다) 뒤 호환 링크 제거.
+
 ---
 
 ## 1. 환경
 
-- 레포 경로가 `~/drone_dev` → **`~/JupyterLAB/drone_dev/drone_yolo`** 로 이동했다.
-  `data/` 는 `~/JupyterLAB/drone_dev/data` 를 가리키는 심볼릭 링크 (레포 밖, `.gitignore`).
+- 레포 경로: `~/drone_dev` → `~/JupyterLAB/drone_dev/drone_yolo` (09-11) → **`~/JupyterLAB/Capstone/drone_yolo`** (09-14 통합 · 이동).
+  `data/` 는 `../data` (`~/JupyterLAB/Capstone/data`) 를 가리키는 상대 심볼릭 링크 (git 밖, `.gitignore`).
 - conda env `drone` (python 3.10), `/home/se/miniconda3/envs/drone/bin/python`
 - torch 2.13.0+cu130, ultralytics 8.4.102, opencv 5.0.0.93 — `requirements.txt`대로 설치됨
 - **주의**: 이 머신은 `/home/se/JupyterLAB/bin`이 `PATH`에서 conda보다 앞에 있다.
@@ -448,6 +470,45 @@ ImportError: Cannot load backend 'tkagg' which requires the 'tk' interactive fra
 
 원자료: `metrics/eval_domain_m1_11m_1280.csv`, `metrics/eval_domain_e1_11s_960_newval.csv`,
 로그 `overnight_m1280.log` · `eval_m1_11m_1280.log` · `eval_e1_newval.log` · `gpu_watchdog_incident.log`.
+
+### 최종 결과 — 34에폭 완주 (09-14 20:17 KST)
+
+완화 설정 뒤 15에폭부터 이어 학습 (`resume_m1_mitig.log`) → 34에폭 종료 → `best.pt`(22에폭)로 입력 1280 도메인별 평가 (`eval_m1_11m_1280_full.log`).
+
+학습 중 검증 (data_all val 4,968장)
+
+| 에폭 | mAP50 | mAP50-95 | fitness | 재현율 |
+|---:|---:|---:|---:|---:|
+| **22 (best)** | **0.651** | **0.352** | **0.3816** | 0.575 |
+| 26 | 0.656 | 0.348 | 0.3783 | 0.592 |
+| 29 | 0.626 | 0.329 | 0.3584 | 0.568 |
+| 34 (모자이크 끈 뒤) | 0.607 | 0.324 | 0.3526 | 0.550 |
+
+- 23에폭부터 val 이 내려가는 동안 box_loss 는 1.254 → 1.041 로 계속 줄었다. 모자이크를 끈 30~34에폭에도 회복 없음 → 과적합 신호.
+
+**도메인별 (새 val 크롭 · 쓰러짐 재현율 conf 0.15)** — `metrics/eval_domain_m1_11m_1280_full.csv`
+
+| 도메인 | 장수 | M1 최종 mAP50 / 50-95 | E1 (11s·960·27ep) mAP50 / 50-95 |
+|---|---:|---:|---:|
+| nomad_summer (4명) | 593 | **0.715 / 0.441** | 0.686 / 0.423 |
+| nomad_holdout10 | 1,396 | **0.709 / 0.432** | 0.665 / 0.386 |
+| wisard_sept (실제로는 1월 외 전체) | 2,614 | **0.545 / 0.228** | 0.489 / 0.188 |
+| wisard_jan | 642 | **0.890 / 0.612** | 0.860 / 0.569 |
+| combined | 3,849 | **0.644 / 0.343** | 0.601 / 0.306 |
+
+| 활동별 재현율 (holdout10) | 표본 | M1 최종 | E1 |
+|---|---:|---:|---:|
+| Hiding (Laying) — 쓰러짐 | 276 | 0.732 | **0.746** |
+| Walking | 311 | **0.904** | 0.878 |
+| Hiding | 806 | **0.627** | 0.566 |
+
+해석
+- 쓰러짐 재현율을 뺀 모든 항목에서 E1 보다 높다. 쓰러짐은 276명 중 약 4명 차이로 같은 수준.
+- 원인 분리 불가: 모델 · 입력 크기 · 에폭 · 학습 크롭 규칙이 함께 다르다.
+- 새 val 크롭은 M1 학습 크롭과 같은 지터 규칙 (0.65, 1.45), E1 은 옛 규칙 (0.75, 1.35) 으로 학습 → M1 에 유리할 수 있다.
+- `stage1_all` 과는 비교하지 않는다 (검증셋이 다르고, 재측정은 하지 않기로 함 — 사용자 결정 09-14).
+
+산출물 (git 밖): `weights/m1_11m_1280.pt` (= `best.pt`) · `runs_person/m1_11m_1280/`.
 
 ### 참고 — 1차 스윕 결과 (증강 변경 전 · 배우 30명 · val 3,900장, **지금 수치와 비교 불가**)
 

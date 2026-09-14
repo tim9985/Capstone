@@ -33,7 +33,7 @@
 # 점검: bash autoheal/gpu_autoheal.sh --selftest        (root 불필요, 실제 조치 없음)
 set -u
 
-REPO=/home/se/JupyterLAB/drone_dev/drone_yolo
+REPO=/home/se/JupyterLAB/Capstone/drone_yolo
 AH=$REPO/autoheal
 USER_NAME=se
 PY=/home/se/miniconda3/envs/drone/bin/python

@@ -9,7 +9,7 @@
 #   - cache='disk' 유지. 42명 확장 후 데이터셋(~68GB)이 RAM(62GB)을 넘어서
 #     'ram' 은 ultralytics 자체 안전장치(check_cache_ram, 50% 안전마진)로
 #     거의 확실히 disk 로 자동 폴백된다 — 애초에 명시적으로 disk 로 시작
-cd /home/se/JupyterLAB/drone_dev/drone_yolo
+cd /home/se/JupyterLAB/Capstone/drone_yolo
 PY=/home/se/miniconda3/envs/drone/bin/python
 
 echo "=== E1 (yolo11s, imgsz960) 시작 $(date) ==="

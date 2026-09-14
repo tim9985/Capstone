@@ -1,7 +1,7 @@
 #!/bin/bash
 # wait_and_preprocess.sh(전처리 체인) 완료를 기다린 뒤, 결과가 정상인지 확인하고
 # E1~E8 학습 체인을 자동으로 시작한다.
-cd /home/se/JupyterLAB/drone_dev/drone_yolo
+cd /home/se/JupyterLAB/Capstone/drone_yolo
 
 echo "=== 전처리 체인(PID 194309) 완료 대기 시작 $(date) ==="
 while kill -0 194309 2>/dev/null; do sleep 20; done
