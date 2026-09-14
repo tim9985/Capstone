@@ -240,8 +240,8 @@ sudo nvidia-smi -pl 200        # 스크립트가 감지하면 30분 부하. 끝�
 
 - **병합**: 노트북 인계 `386a787`(docs/server_plan S0~S8 · CLAUDE.md 09-13 확정 · WEIGHTS.md · check_env.sh)을 병합했다 (사용자 승인).
   - 서버에 스테이징돼 있던 CLAUDE.md · REBOOT_PLAN.md (옛 사본) · DATASETS.md (main 과 동일)는 main 쪽을 채택.
-- **작성자 정정**: d647e22 · 병합 커밋이 서버 계정 전역 git 설정 `rohyenwu` 로 기록돼 있었다 (사용자 아님).
-  - 두 커밋 모두 미push 라 내용 · 날짜는 그대로 두고 작성자만 `Seoin Jung <timjjang0914@naver.com>` 으로 다시 만들었다 → 병합 커밋 **a7b43d5**.
+- **작성자 정정**: d647e22 · 병합 커밋이 서버 계정의 전역 git 설정(사용자가 아닌 다른 이름)으로 기록돼 있었다.
+  - 두 커밋 모두 미push 라 내용 · 날짜는 그대로 두고 작성자를 Seoin Jung 으로 다시 만들었다 → 병합 커밋 **a7b43d5**.
   - 저장소 로컬 git 설정을 사용자로 바꿨다. 전역 `~/.gitconfig` 는 그대로 둠.
 - **계획 검토**: `docs/server_plan_review_0914.md`.
   - 방향은 그대로 가능.
