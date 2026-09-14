@@ -18,8 +18,8 @@ Thumbs.db
 # 서버 데이터 (drone_yolo/data 는 이 폴더를 가리키는 링크)
 /data/
 # Obsidian 개인 화면 상태 · 휴지통
-obsidian/Drone/.obsidian/workspace*.json
-obsidian/Drone/.trash/
+obsidian/.obsidian/workspace*.json
+obsidian/.trash/
 
 # Obsidian 을 저장소 루트로 열 때 생기는 개인 설정
 /.obsidian/
