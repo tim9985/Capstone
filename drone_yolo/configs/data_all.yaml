@@ -1,0 +1,17 @@
+# NOMAD(60명: 배우1~30 전원 + 선정 목록 중 31번 이후 30명) + WiSARD(VIS 전체) 통합
+# val: NOMAD 전 배치 + WiSARD
+# 이 파일은 make_configs.py 가 생성한다. 직접 고치지 말 것.
+train:
+  - /home/se/JupyterLAB/drone_dev/drone_yolo/data/det/nomad_actor01_10/images/train
+  - /home/se/JupyterLAB/drone_dev/drone_yolo/data/det/nomad_actor11_20/images/train
+  - /home/se/JupyterLAB/drone_dev/drone_yolo/data/det/nomad_actor21_30/images/train
+  - /home/se/JupyterLAB/drone_dev/drone_yolo/data/det/nomad_actor_sel31_100/images/train
+  - /home/se/JupyterLAB/drone_dev/drone_yolo/data/det/wisard/images/train
+val:
+  - /home/se/JupyterLAB/drone_dev/drone_yolo/data/det/nomad_actor01_10/images/val
+  - /home/se/JupyterLAB/drone_dev/drone_yolo/data/det/nomad_actor11_20/images/val
+  - /home/se/JupyterLAB/drone_dev/drone_yolo/data/det/nomad_actor21_30/images/val
+  - /home/se/JupyterLAB/drone_dev/drone_yolo/data/det/nomad_actor_sel31_100/images/val
+  - /home/se/JupyterLAB/drone_dev/drone_yolo/data/det/wisard/images/val
+nc: 1
+names: ['person']

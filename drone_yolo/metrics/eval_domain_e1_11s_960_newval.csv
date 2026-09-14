@@ -1,0 +1,13 @@
+﻿model,domain,images,mAP50,mAP50_95,precision,recall
+e1_11s_960,nomad_summer,593,0.6862,0.4233,0.752,0.6054
+e1_11s_960,nomad_holdout10,1396,0.6647,0.386,0.7611,0.5788
+e1_11s_960,wisard_sept,2614,0.4888,0.1877,0.6368,0.4567
+e1_11s_960,wisard_jan,642,0.86,0.5686,0.8614,0.7676
+e1_11s_960,combined,3849,0.6014,0.306,0.7227,0.5321
+e1_11s_960,nomad_act::Hiding,354,,,,0.5508
+e1_11s_960,nomad_act::Hiding (Laying),104,,,,0.7692
+e1_11s_960,nomad_act::Walking,135,,,,0.8815
+e1_11s_960,holdout10_act::Hiding,806,,,,0.5658
+e1_11s_960,holdout10_act::Hiding (Laying),276,,,,0.7464
+e1_11s_960,holdout10_act::Laying,3,,,,1.0
+e1_11s_960,holdout10_act::Walking,311,,,,0.8778

@@ -1,0 +1,15 @@
+[Unit]
+Description=GPU Xid 79 auto-heal (mitigations, auto-resume training, auto-reboot on GPU loss)
+# 관리자 서비스 nvidia-powerlimit.service 가 부팅 때 -pl 350 을 건다 → 그 뒤에 250 W 를 걸어야 덮어써지지 않는다
+After=multi-user.target nvidia-persistence.service nvidia-powerlimit.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/gpu_autoheal.sh
+Restart=always
+RestartSec=30
+# 이 서비스가 띄운 학습(se 계정)이 서비스 재시작 · 중지 때 같이 죽지 않게 한다
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
