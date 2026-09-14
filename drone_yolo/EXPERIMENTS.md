@@ -1,7 +1,7 @@
 # 서버 학습 실험 계획
 
 > **2026-09-13** — E1 마무리 · **E2~E8 중단**. 전처리 전제(화각 60°→54°, 사람 크기 94 px, 촬영 각도 혼재)가 틀려
-> 데이터를 다시 만든다. 다음 계획은 **`docs/server_plan/`** (S0~S8). 이 문서는 기록용이다.
+> 데이터를 다시 만든다. 다음 계획은 **`obsidian/Drone/11 서버 학습 계획/`** (S0~S8, Capstone 저장소 루트 기준). 이 문서는 기록용이다.
 
 대여 서버(**Ubuntu 22.04 · i9-11900 · RTX 3090 24GB · RAM 64GB**)에서 파인튜닝을
 다시 돌린다. 목표는 **지금 운용 모델을 이기는 것 하나**다.
@@ -26,8 +26,8 @@
 ## 0. 서버 준비 (약 30분)
 
 ```bash
-git clone https://github.com/tim9985/drone_yolo.git
-cd drone_yolo                       # ← 경로에 한글이 없어야 한다
+git clone https://github.com/tim9985/Capstone.git   # 옛 drone_yolo 저장소는 09-14 Capstone 으로 통합
+cd Capstone/drone_yolo              # ← 경로에 한글이 없어야 한다
 
 conda create -n drone python=3.10 -y && conda activate drone
 pip install torch==2.13.0 torchvision==0.28.0 --index-url https://download.pytorch.org/whl/cu130

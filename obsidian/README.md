@@ -22,16 +22,23 @@
 
 GitHub 에서도 마크다운으로 읽을 수 있지만 `[[링크]]` · 캔버스 · 비교표는 Obsidian 에서만 동작한다.
 
-## 갱신
+## 갱신 (2026-09-14 부터)
 
-로컬 볼트(`캡스톤/obsidian/Drone`)를 고친 뒤:
+노트북 · 서버 모두 **저장소 안의 `obsidian/Drone` 을 직접** Obsidian 으로 연다.
 
 ```bash
-python obsidian/sync_vault.py
-git add obsidian && git commit -m "볼트 갱신" && git push
+git pull                                            # 편집 전
+# … Obsidian 에서 편집 …
+git add obsidian && git commit -m "볼트: <무엇을>" && git push
 ```
+
+- 같은 노트를 두 곳에서 동시에 고치지 않는다. 서버 세션은 주로 `08 서버` · 서버 실험 노트 · `09 기록/타임라인` 을 고친다
+- 저장소 밖 볼트를 복사해 넣던 `sync_vault.py` 는 없앴다 (서버에서 고친 노트를 덮어썼다)
+- `.obsidian/workspace*.json`(개인 화면 상태) · `.trash/` 는 올리지 않는다
 
 ## 주의
 
-- 수치의 원본은 [drone_yolo](https://github.com/tim9985/drone_yolo) 의 `metrics/*.csv` 와 문서다. 이 볼트는 요약이다
+- **공개 저장소다** — 팀 내부 배포 주소 · 개인 연락처를 노트에 적지 않는다 (`sync_vault.py` 가 하던 가리기는 이제 없다)
+- 확정 문서는 **1. 주제제안서 · 2. 요구사항명세서 최신판** — 노트와 어긋나면 이 둘이 우선한다
+- 수치의 원본은 [`drone_yolo/metrics/*.csv`](../drone_yolo/metrics/) 와 `drone_yolo/` 문서다. 이 볼트는 요약이다
 - 연구용 데이터셋(NOMAD · WiSARD · Okutama)의 이미지는 들어 있지 않다

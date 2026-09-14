@@ -54,8 +54,8 @@ NOMAD·Okutama 자세 라벨이 활동 구간에서 변환한 것이라 품질�
 ## 2. 서버 준비
 
 ```bash
-git clone https://github.com/tim9985/drone_yolo.git
-cd drone_yolo
+git clone https://github.com/tim9985/Capstone.git   # 옛 drone_yolo 저장소는 09-14 Capstone 으로 통합
+cd Capstone/drone_yolo
 
 conda create -n drone python=3.10 -y && conda activate drone
 # CUDA 빌드 확인 필수 — CPU 빌드가 설치되기 쉽다

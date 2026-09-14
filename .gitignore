@@ -6,3 +6,17 @@
 __pycache__/
 .DS_Store
 Thumbs.db
+
+# ── 2026-09-14 저장소 통합 ──
+# 확정 문서(주제제안서·요구명세서) 원본에는 팀원 연락처가 있다 — 공개 저장소에 올리지 않는다
+*.hwp
+*.hwpx
+*.docx
+*.pptx
+*.log
+.ipynb_checkpoints/
+# 서버 데이터 (drone_yolo/data 는 이 폴더를 가리키는 링크)
+/data/
+# Obsidian 개인 화면 상태 · 휴지통
+obsidian/Drone/.obsidian/workspace*.json
+obsidian/Drone/.trash/
