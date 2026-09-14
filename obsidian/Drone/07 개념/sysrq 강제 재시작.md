@@ -9,14 +9,11 @@ tags: [개념, 서버]
 
 ```bash
 echo 1 | sudo tee /proc/sys/kernel/sysrq    # sysrq 기능 켜기
-echo s | sudo tee /proc/sysrq-trigger       # (권장) 디스크 쓰기 마무리
 echo b | sudo tee /proc/sysrq-trigger       # 즉시 재시작
 ```
 
-| 글자 | 하는 일 |
-|---|---|
-| `s` | 메모리에 남은 쓰기를 디스크에 내린다 (sync) |
-| `b` | 정리 없이 **즉시** 재시작 — 전원 버튼을 누른 것과 비슷하다 |
+- 관리자 매뉴얼 그대로 이 두 줄만 쓴다
+- `b` 는 정리 없이 **즉시** 재시작한다 — 전원 버튼을 누른 것과 비슷하다
 
 ## 왜 `sudo reboot` 을 안 쓰나
 

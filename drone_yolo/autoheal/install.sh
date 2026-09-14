@@ -28,7 +28,10 @@ install -d -m 0755 -o se -g se "$DIR/logs"
 install -d -m 0700 /var/lib/gpu-autoheal
 runuser -u se -- touch "$DIR/ENABLED"
 systemctl daemon-reload
-systemctl enable --now gpu-autoheal
+systemctl enable gpu-autoheal
+# enable --now 는 이미 도는 서비스를 다시 띄우지 않는다 → restart 로 새 스크립트 반영
+# (KillMode=process 라 학습 · 평가 프로세스는 유지된다)
+systemctl restart gpu-autoheal
 sleep 3
 systemctl --no-pager --lines=0 status gpu-autoheal || true
 echo
