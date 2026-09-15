@@ -1,0 +1,17 @@
+# M2 (09-14 밤): data_all 학습셋 + SARD train 1클래스(data/det/sard, 라벨 클래스 전부 0). val 은 data_all 과 같다 → M1 과 직접 비교
+# make_configs.py 가 만들지 않는 수동 파일
+train:
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det/nomad_actor01_10/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det/nomad_actor11_20/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det/nomad_actor21_30/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det/nomad_actor_sel31_100/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det/wisard/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det/sard/images/train
+val:
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det/nomad_actor01_10/images/val
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det/nomad_actor11_20/images/val
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det/nomad_actor21_30/images/val
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det/nomad_actor_sel31_100/images/val
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det/wisard/images/val
+nc: 1
+names: ['person']

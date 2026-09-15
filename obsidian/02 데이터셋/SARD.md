@@ -17,6 +17,13 @@ tags: [데이터셋]
 | valid | 396 | 1,312 |
 | test | 198 | 618 |
 
+> [!warning] 분할 누수 (09-14 서버 확인)
+> 파일명이 `gssNNNN` 연속 프레임이고 Roboflow 가 **프레임 단위 무작위**로 나눴다 → test 의 87 % · valid 의 91 % 가 train 프레임과 번호 차이 1 이내.
+> 아래 SARD test 수치(자세 7~9차 쓰러짐 재현율 0.960~0.987)는 부풀려졌을 수 있다. 번호 구간 단위로 다시 나눠야 test 로 쓸 수 있다.
+
+서버 확보 (09-14): `data/raw/sard2/search-and-rescue-2` · 해상도 전부 **1920×1080** · 사람 박스 긴 변 중앙값 57 px (입력 1280 에서 약 38 px).
+1클래스 탐지용 `data/det/sard` (train 만 · 6클래스 전부 `person`) 로 서버 M2 학습에 넣었다 → `drone_yolo/SERVER_PROGRESS.md` 4-2절
+
 | 원래 클래스 (train) | 개수 | 우리 3클래스 |
 |---|---:|---|
 | stands | 1,265 | person |

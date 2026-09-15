@@ -97,8 +97,10 @@ def tail_text(path, nbytes=400_000):
 
 def read_progress(log_arg):
     """가장 최근 로그에서 마지막 진행 막대를 읽는다 → (로그, phase, 정보) 또는 None"""
+    # 로그는 최상위 · logs/ · autoheal/logs/ (자동 재개 학습) 에 흩어져 있다
     cands = [Path(log_arg)] if log_arg else sorted(
-        BASE_DIR.glob("*.log"), key=lambda p: p.stat().st_mtime, reverse=True)[:6]
+        [*BASE_DIR.glob("*.log"), *BASE_DIR.glob("logs/*.log"), *BASE_DIR.glob("autoheal/logs/*.log")],
+        key=lambda p: p.stat().st_mtime, reverse=True)[:6]
     for log in cands:
         if not log.exists():
             continue
@@ -146,11 +148,15 @@ def _report(args):
     if args.name:
         name = args.name
     else:
-        cands = [d for d in runs.glob("*") if (d / "results.csv").exists()] if runs.exists() else []
+        # 첫 epoch 중인 실행은 results.csv 가 아직 없다 → args.yaml(학습 시작 때 생성)도 후보로 본다.
+        # results.csv 만 보면 방금 시작한 M2 대신 끝난 M1 이 골라졌다 (09-14)
+        stamp = lambda d: max((d / f).stat().st_mtime for f in ("args.yaml", "results.csv") if (d / f).exists())
+        cands = [d for d in runs.glob("*") if (d / "args.yaml").exists() or (d / "results.csv").exists()] \
+            if runs.exists() else []
         if not cands:
             print("runs_person 에 결과가 없습니다.")
             return
-        name = max(cands, key=lambda d: (d / "results.csv").stat().st_mtime).name
+        name = max(cands, key=stamp).name
     run_dir = runs / name
     csv_path = run_dir / "results.csv"
 
@@ -171,10 +177,11 @@ def _report(args):
         print(f"감시 스크립트: {'켜짐' if watchdog else '꺼짐'} · 사고 {last_incident()}")
 
     rows = list(csv.DictReader(open(csv_path, encoding="utf-8"))) if csv_path.exists() else []
-    total = None
+    total, run_args = None, {}
     try:
         import yaml
-        total = int(yaml.safe_load((run_dir / "args.yaml").read_text(encoding="utf-8"))["epochs"])
+        run_args = yaml.safe_load((run_dir / "args.yaml").read_text(encoding="utf-8")) or {}
+        total = int(run_args["epochs"])
     except Exception:
         pass
 
@@ -235,7 +242,17 @@ def _report(args):
         finals = [BASE_DIR / "weights" / f"{name}.pt", BASE_DIR / "weights" / f"yolov8s_{name}.pt"]
         done = [w for w in finals if w.exists() and w.stat().st_mtime >= csv_path.stat().st_mtime - 300]
         if done:
-            reason = "조기 종료(patience)" if total and len(rows) < total else "전체 epoch 소화"
+            # time 제한 학습은 args.yaml 의 epochs(예: 60)가 실제 에폭 수(예: 27)와 달라
+            # "epochs 미달 = 조기 종료" 로 판단하면 틀린다 (M2 가 그렇게 표시됐다, 09-15)
+            patience, limit = int(run_args.get("patience") or 0), float(run_args.get("time") or 0)
+            if patience and stale >= patience:
+                reason = f"조기 종료(patience {patience})"
+            elif limit and total and len(rows) < total:
+                reason = f"시간 제한 {limit:g}시간 도달 ({len(rows)} epoch)"
+            elif total and len(rows) < total:
+                reason = f"epochs {total} 미달로 끝남 ({len(rows)} epoch) — 로그 확인"
+            else:
+                reason = "전체 epoch 소화"
             print(f"\n✔ 학습 완료 — {reason}. 최종 가중치: weights/{done[0].name}")
         elif evals:
             print("\n학습은 끝났고 평가가 진행 중이다.")

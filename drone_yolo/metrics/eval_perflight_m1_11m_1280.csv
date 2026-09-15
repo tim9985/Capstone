@@ -1,0 +1,14 @@
+model,group,split,images,boxes,mAP50,mAP50_95,precision,recall
+m1_11m_1280,nomad:a10,actor,939,939,0.7095,0.4407,0.8299,0.6134
+m1_11m_1280,nomad:a30,actor,728,728,0.6989,0.4213,0.8446,0.6198
+m1_11m_1280,wisard:200528_Everson_Mavic_Mini_VIS_0028,flight,256,457,0.2414,0.0550,0.2900,0.3457
+m1_11m_1280,wisard:200614_SuddenValley_Phantom_VIS_0005,flight,322,830,0.8846,0.3575,0.8695,0.8301
+m1_11m_1280,wisard:200717_Mission_FLIR_VIS,time,63,63,0.7106,0.1778,0.7626,0.7460
+m1_11m_1280,wisard:210327_Airfield_FLIR_VIS_3,flight,103,88,0.9415,0.3821,0.9396,0.8834
+m1_11m_1280,wisard:210417_MtErie_Enterprise_VIS_0003,flight,261,839,0.4454,0.1380,0.5738,0.4505
+m1_11m_1280,wisard:210417_MtErie_Enterprise_VIS_0007,flight,165,289,0.6033,0.2322,0.7253,0.4934
+m1_11m_1280,wisard:210924_FHL_Enterprise_VIS_0401.mp4,flight,347,727,0.4324,0.2562,0.7093,0.3554
+m1_11m_1280,wisard:DJI_0031 (1-6-2022 8-22-14 AM).mp4,flight,333,924,0.5328,0.2500,0.8234,0.4367
+m1_11m_1280,wisard:DJI_0055,flight,48,0,,,,
+m1_11m_1280,wisard:DJI_0407.mp4,flight,716,1492,0.5762,0.2894,0.7459,0.5031
+m1_11m_1280,wisard:DJI_0582 (1-10-2022 2-51-42 PM).mp4,time,642,1895,0.8901,0.6123,0.8641,0.7917

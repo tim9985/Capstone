@@ -63,6 +63,17 @@ rclone copy gdrive:images ./NOMAD/images -P \
 **우리가 실제로 쓰는 것은 `annotations/` 와 `images/` 뿐이다.**
 `videos/`(5.4K 원본)는 용량만 크고 `nomad_prep.py` 가 쓰지 않는다. 용량을 아끼려면 건너뛴다.
 
+**50 · 70 m 원본은 `download_nomad_far.sh`** (09-14 서버). 서버에 30 m 원본이 있는 배우(학습 구성 60명)만
+필터(`data/raw/nomad_filter_a50_a70.txt`, 스크립트가 만든다)로 골라 labels → images 순서로 받는다.
+끊기면 같은 명령을 다시 실행한다 — 받은 파일은 건너뛴다. 끝나면 `data/raw/nomad_far_dl.done`.
+
+```bash
+cd ~/JupyterLAB/Capstone/drone_yolo && setsid nohup ./download_nomad_far.sh > logs/nomad_far_dl.log 2>&1 < /dev/null &
+```
+
+결과: a50 · a70 각 이미지 5,165 · 라벨 5,165 · 71 GB · 약 6시간 (Drive 속도가 0.3 ~ 9 MiB/s 로 출렁인다).
+`annotations.json` 은 원래 a10 ~ a90 전 거리를 담고 있어 따로 받을 것이 없다.
+
 **우리 스크립트가 기대하는 구조** (`nomad_prep.py`)
 
 ```
@@ -182,28 +193,39 @@ IEEE DataPort 2021. **CC BY 4.0.** 1,981장에 사람이 직접 붙인 6클래�
   (DOI `10.21227/ahxm-k331`)
 - 우리가 쓴 재배포본 — Roboflow `rescuedby/sard-peykp-lxuf9` v1
 
+Roboflow 계정의 API 키가 필요하다. **키는 파일로만 넘긴다** — 채팅 · 문서 · 명령줄 · 커밋에 쓰지 않는다.
+
 ```bash
-# Roboflow 계정의 API 키가 필요하다
-pip install roboflow
-python - <<'PY'
-from roboflow import Roboflow
-rf = Roboflow(api_key="<YOUR_KEY>")
-ds = rf.workspace("rescuedby").project("sard-peykp-lxuf9") \
-       .version(1).download("yolov8", location="data/raw/sard2")
-PY
+# 1) 키 파일 (별도 터미널에서 — 입력이 화면 · 셸 기록에 안 남는다)
+mkdir -p ~/.config/roboflow && (umask 077; read -rsp 'Roboflow key: ' K; echo; printf '%s' "$K" > ~/.config/roboflow/api_key)
+
+# 2) 서버 (09-14): roboflow 패키지 없이 REST API 로 받는다. NOMAD 받기가 돌고 있으면 끝나길 기다린다
+cd ~/JupyterLAB/Capstone/drone_yolo && setsid nohup ./download_sard.sh > logs/sard_dl.log 2>&1 < /dev/null &
+tail -n 8 logs/sard_dl.log     # 장수 · 해상도 · 박스 수 · 끝나면 data/raw/sard_dl.done
 ```
+
+`download_sard.sh` 는 키를 인증 헤더로만 보내 명령줄 · `ps` · 로그에 드러나지 않는다.
+zip 검사 → 장수가 문서와 다르거나 받을 자리에 이미 뭔가 있으면 옮기지 않고 멈춘다.
+패키지를 쓸 수 있는 곳에서는 `Roboflow(api_key=...).workspace("rescuedby").project("sard-peykp-lxuf9").version(1).download("yolov8", location="data/raw/sard2")` 도 된다.
 
 **기대 구조**
 
 ```
 data/raw/sard2/search-and-rescue-2/
-├── train/{images,labels}/    # 1,386장
-├── valid/{images,labels}/    #   396장
-├── test/{images,labels}/     #   198장   ← 최종 판정 전용, 학습 금지
+├── train/{images,labels}/    # 1,386장 · 박스 4,424
+├── valid/{images,labels}/    #   396장 · 박스 1,312
+├── test/{images,labels}/     #   198장 · 박스   618   ← ⚠ 아래 누수 — 재분할 전엔 판정에 쓰지 않는다
 └── data.yaml                 # nc: 6
 ```
 
 클래스 순서 — `['Running','Walking','laying_down','not_defined','seated','stands']`
+해상도 전부 **1920×1080** (축소 재배포 아님) · 사람 박스 긴 변 중앙값 57 px (입력 1280 에서 약 38 px).
+
+> ⚠ **분할 누수 (09-14 서버 확인)** — 파일명이 `gssNNNN` 연속 프레임이고 Roboflow 가 프레임 단위 무작위로 나눴다.
+> test 의 87 % · valid 의 91 % 가 train 프레임과 번호 차이 1 이내 → 점수가 부풀려진다.
+> test 로 쓰려면 프레임 번호 **구간 단위**로 다시 나눈다.
+
+1클래스 탐지 학습용은 `data/det/sard/` — train 만, 이미지는 raw 하드링크, 6클래스 전부 0 (`not_defined` 포함 · 계획 3절 5항).
 
 > 자세 라벨은 **SARD 원본 고유**다. Roboflow 사용자가 붙인 것이 아니다.
 > 인용은 Sambolek & Ivasic-Kos 2021 로 한다.

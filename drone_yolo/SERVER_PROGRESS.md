@@ -3,7 +3,7 @@
 `SERVER.md` · `EXPERIMENTS.md` · `DATASETS.md` 대로 진행하면서 실제로 겪은 것들과
 현재 상태를 기록한다. 로컬(노트북) 작업 이어가기 전에 이 파일부터 볼 것.
 
-작성 2026-09-11 · 갱신 2026-09-14 (M1 완주 · 서버 폴더 이동) · Claude Code (se 계정 세션)
+작성 2026-09-11 · 갱신 2026-09-15 (NOMAD 50·70 m · SARD 확보 · M2 완료 · 파이프라인 검토) · Claude Code (se 계정 세션)
 
 ---
 
@@ -276,6 +276,20 @@ sudo nvidia-smi -pl 200        # 스크립트가 감지하면 30분 부하. 끝�
   - 옛 폴더는 `~/JupyterLAB/drone_dev_old_0914` 로 보관, 임시 호환 링크 `~/JupyterLAB/drone_dev → Capstone`.
   - 자동 복구는 이동 중 `ENABLED` 를 지워 꺼 뒀다. 새 경로로 `sudo bash autoheal/install.sh` 재설치(설치하면 `ENABLED` 가 다시 생긴다) 뒤 호환 링크 제거.
 
+**▶ 09-14 밤 ~ 09-15: S1 원본 확보 · M2 학습 · 파이프라인 검토**
+
+- **NOMAD 50·70 m 확보** — `download_nomad_far.sh` (12:55 ~ 18:55 UTC).
+  - 학습 배우 60명 × a50 · a70 → 각 이미지 5,165 · 라벨 5,165 (a10 · a30 과 같은 수) · 71 GB.
+  - `annotations.json` 은 원래 a10 ~ a90 전 거리를 담고 있어 따로 받을 것이 없다.
+- **SARD 확보** — `download_sard.sh` (NOMAD 끝을 기다렸다가 18:55 ~ 18:57 UTC).
+  - Roboflow v1 yolov8 → `data/raw/sard2/search-and-rescue-2`. 키는 `~/.config/roboflow/api_key` (권한 600) 로만 넘기고 인증 헤더로 보낸다.
+  - 장수 1,386 · 396 · 198 · 박스 4,424 · 1,312 · 618 (문서와 같음) · **해상도 전부 1920×1080**.
+  - ⚠ **분할 누수**: 연속 프레임을 프레임 단위 무작위로 나눠 test 87 % 가 train ±1 프레임 → 4-3절.
+- **M2** (`train_m2.sh` · yolo11m · 1280 · batch 8 · + SARD train) → 4-2절. **M1 과 같은 점수** (fitness 0.3816 동률) · GPU 소실 0회.
+- **파이프라인 검토** → 4-3절. 점수를 잃는 곳은 재현율(못 찾음 26~32 %) · NOMAD val 가시도 30 미만 22 % · WiSARD 1월은 시간 분할 · 음성 셋 없음. 180° 회전 박스 부풀림 가설은 기각.
+- 도구: `eval_perflight.py` (비행별 · 거리별 평가) 추가 · `train_status.py` 수정 (첫 epoch 중인 실행 · `logs/` 로그 · 시간 제한 종료 표시).
+- autoheal `job.conf` → M2 (완료 상태라 할 일 없음). 디스크 `data/` 318 GB (raw 180 · det 69 · det_v1_fov60 69) · 남은 공간 4.8 TB.
+
 ---
 
 ## 1. 환경
@@ -296,9 +310,9 @@ sudo nvidia-smi -pl 200        # 스크립트가 감지하면 30분 부하. 끝�
 
 | 데이터셋 | 상태 | 방법 |
 |---|---|---|
-| **NOMAD** | **배우 60명** (1~30 전원 + 31~100 중 30명), 거리 a10/a30만 | `rclone gdrive:` + `--filter-from` (`nomad_filter_new30.txt`). `gdown --folder`는 API 레이트리밋으로 실패했었음 |
+| **NOMAD** | **배우 60명** (1~30 전원 + 31~100 중 30명), 거리 a10/a30 · **a50/a70 (09-14 추가, 각 5,165장 · 71 GB)** | `rclone gdrive:` + `--filter-from` (`nomad_filter_new30.txt`). `gdown --folder`는 API 레이트리밋으로 실패했었음. 50·70 m 는 `download_nomad_far.sh` |
 | **WiSARD** | VIS 전체(39개 비행), IR 삭제 | `gdown`으로 43.5GB zip, 압축해제 후 IR 폴더 삭제 |
-| SARD | **미확보** | Roboflow API 키 필요. pose3(3클래스 자세) 실험엔 필수 |
+| **SARD** | **확보 (09-14)** · 1,386 / 396 / 198장 · 1920×1080 · ⚠ test 누수 (4-3절) | `download_sard.sh` (Roboflow REST · 키 파일 `~/.config/roboflow/api_key`). 1클래스 학습용 `data/det/sard` (train 만) |
 | Okutama | **미확보** | 공식 Dropbox 막힘. 노트북에서 옮겨야 함 (평가 전용이라 탐지 학습은 안 막힘) |
 
 가중치: `weights/` 에 `yolov8s_stage1_all.pt`(안전자산) · `yolov8s_pose3_sn_freeze.pt` ·
@@ -521,6 +535,105 @@ ImportError: Cannot load backend 'tkagg' which requires the 'tk' interactive fra
 백업 위치: `runs_person/*_before_20260911_1456/`, `runs_person/e3_11s_1280_crashed_13ep/`,
 `runs_person/e1_11s_960_batch9_old/`.
 
+## 4-2. M2 `m2_11m_1280_sard` — batch 8 + SARD (09-14 밤)
+
+| 항목 | 값 |
+|---|---|
+| 스크립트 | `train_m2.sh` (autoheal `job.conf` 등록) · 로그 `logs/train_m2.log` |
+| 모델 · 입력 | yolo11m (COCO) · 1280 |
+| M1 대비 바뀐 것 | ① batch AutoBatch 3 → **8 고정** ② **SARD train 1,386장** 1클래스 추가 (`data/det/sard` · 이미지는 raw 하드링크 · 6클래스 전부 0, `not_defined` 포함). 두 가지가 함께 바뀌어 **원인 분리 불가** |
+| 데이터 | `configs/data_m2_sard.yaml` — train 20,306장 · val 은 data_all 그대로 **4,923장** (위 표의 4,968 은 옛 수) |
+| 길이 | `time 7.5` → 27에폭 · close_mosaic 5 · patience 10 · optimizer auto → MuSGD (lr 0.01) |
+| 실행 | 09-14 19:11 ~ 09-15 02:45 UTC (7.51시간) · 에폭당 약 16.7분 · 메모리 15.5 GB · **GPU 소실 0회** |
+
+학습 중 검증 (val 4,923장)
+
+| | best | mAP50 | mAP50-95 | fitness | P | R |
+|---|---:|---:|---:|---:|---:|---:|
+| M1 | 22 / 34 | 0.651 | 0.352 | 0.3816 | 0.770 | 0.575 |
+| **M2** | 22 / 27 | 0.645 | 0.352 | 0.3816 | 0.754 | 0.582 |
+
+- M2 가 빨리 오른다 (8에폭 0.630 · M1 은 19에폭에 0.637). 12에폭부터 0.63~0.65 에서 멈춤 — **M1 과 같은 벽**.
+- 모자이크 끈 23~27에폭 0.621~0.630 · best 갱신 없음 (M1 도 끈 뒤 하락).
+
+도메인별 (`metrics/eval_domain_m2_11m_1280_sard.csv` · 입력 1280 · 재현율 conf 0.15)
+
+| 도메인 | 장수 | M1 mAP50 / 50-95 · P | M2 mAP50 / 50-95 · P |
+|---|---:|---:|---:|
+| nomad_summer | 593 | 0.715 / 0.441 · 0.847 | 0.693 / 0.448 · 0.775 |
+| nomad_holdout10 | 1,396 | 0.709 / 0.432 · 0.835 | 0.687 / 0.414 · **0.753** |
+| wisard_sept (1월 외 전체) | 2,614 | 0.545 / 0.228 · 0.699 | 0.539 / 0.228 · 0.698 |
+| wisard_jan (시간 분할 ⚠) | 642 | 0.890 / 0.612 · 0.864 | 0.904 / 0.623 · 0.883 |
+| combined | 3,849 | 0.644 / 0.343 · 0.770 | 0.646 / 0.348 · 0.761 |
+
+| holdout10 활동별 재현율 | 표본 | M1 | M2 |
+|---|---:|---:|---:|
+| Hiding | 806 | 0.627 | 0.665 |
+| Hiding (Laying) | 276 | 0.732 | 0.746 |
+| Walking | 311 | 0.904 | 0.923 |
+
+해석
+- NOMAD: 재현율은 조금 오르고 **정밀도가 크게 떨어져** AP50 −0.02 → 오탐 증가. SARD `not_defined`(애매한 물체 698개)를 사람으로 넣은 영향으로 의심 — **미확인**.
+- WiSARD 약한 비행(0.54)은 그대로. 1월 +0.013 은 시간 분할 도메인이라 근거로 쓰지 않는다.
+- **기준 모델은 M1 유지.** batch 8 + SARD 는 수렴만 빠르게 하고 한계선을 못 올렸다.
+
+산출물 (git 밖): `weights/m2_11m_1280_sard.pt` (= `best.pt` · 22에폭) · `runs_person/m2_11m_1280_sard/`.
+
+## 4-3. 학습 파이프라인 검토 (09-14 밤 · M1 best 기준)
+
+목표 NFR-V03 사람 AP50 ≥ 0.80 인데 M1 · M2 모두 0.65 에서 막힌 이유를 측정으로 찾았다.
+
+**1) 비행별 · 거리별** — `eval_perflight.py` → `metrics/eval_perflight_m1_11m_1280.csv`
+
+| 그룹 | 분할 | 장수 | 박스 | mAP50 | mAP50-95 | R |
+|---|---|---:|---:|---:|---:|---:|
+| WiSARD Airfield_FLIR_VIS_3 | 비행 | 103 | 88 | 0.942 | 0.382 | 0.883 |
+| WiSARD DJI_0582 (1월) | **시간** | 642 | 1,895 | 0.890 | 0.612 | 0.792 |
+| WiSARD SuddenValley_0005 | 비행 | 322 | 830 | 0.885 | 0.357 | 0.830 |
+| WiSARD Mission_FLIR_VIS | **시간** | 63 | 63 | 0.711 | 0.178 | 0.746 |
+| NOMAD a10 | 배우 | 939 | 939 | 0.709 | 0.441 | 0.613 |
+| NOMAD a30 | 배우 | 728 | 728 | 0.699 | 0.421 | 0.620 |
+| WiSARD MtErie_0007 | 비행 | 165 | 289 | 0.603 | 0.232 | 0.493 |
+| WiSARD DJI_0407 | 비행 | 716 | 1,492 | 0.576 | 0.289 | 0.503 |
+| WiSARD DJI_0031 | 비행 | 333 | 924 | 0.533 | 0.250 | 0.437 |
+| WiSARD MtErie_0003 | 비행 | 261 | 839 | 0.445 | 0.138 | 0.451 |
+| WiSARD FHL_0401 | 비행 | 347 | 727 | 0.432 | 0.256 | 0.355 |
+| WiSARD **Everson_0028** | 비행 | 256 | 457 | **0.241** | 0.055 | 0.346 |
+
+DJI_0055 는 음성 48장뿐이라 mAP 없음.
+
+- 사람 크기 문제는 아니다 — 비행별 박스 긴 변 중앙값 81~125 px (크롭 1280×720).
+- 모음판 `runs_person/m1_11m_1280/analysis_worst_flights.jpg` (git 밖) 으로 본 놓침: 하향 숲 나무 밑(Everson) · 바위와 섞인 색(FHL) · 흔들린 프레임(MtErie) · 그늘(DJI_0031). 라벨 없는 사람 같은 예측 · 배낭 오탐도 보인다.
+
+**2) 점수를 어디서 잃나** — M1 · conf 0.15 · val 1/3 표본 · 정답-예측 IoU 매칭
+
+| | 정답 | IoU ≥ 0.5 | IoU 0.2~0.5 (위치 빗나감) | 못 찾음 | 예측/정답 폭 · 높이 | 매칭 IoU 중앙 |
+|---|---:|---:|---:|---:|---:|---:|
+| NOMAD | 556 | 68.5 % | 5.0 % | **26.4 %** | 1.01 · 1.01 | 0.83 |
+| WiSARD | 2,541 | 59.5 % | 8.6 % | **31.9 %** | 0.99 · 1.00 | 0.76 |
+
+- **재현율 문제다.** 위치 오차 몫은 작다.
+- **"degrees 180 이 박스를 부풀린다" 가설 기각.** ultralytics 는 세그먼트가 없으면 네 꼭짓점 min/max 로 새 박스를 만들지만(`data/augment.py` `apply_bboxes`), 예측 박스 크기가 정답과 같다.
+
+**3) 데이터 · 분할**
+
+| 항목 | 값 | 영향 |
+|---|---|---|
+| NOMAD val 정답 가시도 | 0~30: 371 (22 %) · 30~70: 822 (49 %) · 70~100: 474 (28 %) | 거의 안 보이는 사람이 1/5 → 이 val 로 AP50 0.8 은 구조적으로 어렵다. 가시도별로 따로 봐야 한다 |
+| WiSARD 시간 분할 | DJI_0582 (train 1,398 / val 642) · Mission_FLIR_VIS (224 / 63) | 같은 비행 앞부분이 train → 1월 0.89 는 부풀려짐. 나머지 val 비행은 비행 단위 |
+| 음성 (빈 라벨) | NOMAD 0 % · WiSARD train 808 / 11,748 (7 %) · val 112 / 3,256 · SARD 2 / 1,386 | NFR-V06 (사람 없는 영상 오탐 ≤1건/장) 을 잴 셋이 없다 |
+| SARD 분할 | 연속 프레임 무작위 분할 → test 87 % 가 train ±1 프레임 | SARD test 사용 불가 |
+
+**4) 설정 · 코드**
+
+- val 이 best 선택과 최종 보고를 겸한다 → 낙관적. NFR-V03 은 장소 분리 시험셋을 요구한다.
+- val 크롭도 학습과 같은 무작위 크기 규칙 (94 × U(0.65, 1.45)) → 운용 크기 분포가 아니다.
+- `optimizer auto` → lr0 무시 · 반복 수에 따라 MuSGD / AdamW 가 바뀐다 → 실험 간 통제 안 됨.
+- best.pt 는 fitness (0.9 × mAP50-95) 로 골라진다. 목표는 AP50.
+- `auto_augment` · `erasing` 은 분류 전용이라 탐지에는 영향 없음.
+
+**결론**: 학습 설정으로는 0.65 를 못 넘는다 → **평가셋 재정의 (가시도별 · 시간 분할 제외 · 장소 분리 · 음성) → 하향 숲 데이터 보강**.
+
 ## 5. 예상 일정
 
 | 실험 | 예상 |
@@ -532,6 +645,15 @@ ImportError: Cannot load backend 'tkagg' which requires the 'tk' interactive fra
 | 최종 검증 · 도메인 평가 2건 | ~12:15 ~ 12:50 |
 
 ## 6. 다음에 할 일
+
+> **09-15 갱신 — 위에서부터**
+> 1. **평가셋 재정의** — 가시도별 AP50 · 시간 분할 비행(DJI_0582 · Mission_FLIR_VIS) 제외 · 장소 분리 시험셋 · 음성 셋 (4-3절)
+> 2. SARD 프레임 번호 구간 단위 재분할 → test 로 쓸 수 있게
+> 3. M2 NOMAD 오탐 모음판 → SARD `not_defined` 가설 확인 (학습 없이)
+> 4. `nomad_prep.py` v2 옵션 — 50·70 m 원본 확보됨. 최대 확대 1.0 / 2.2 결정 필요
+> 5. 사용자: Okutama · 노트북 val 크롭 복사 · AI-Hub 182 신청 · `data/det_v1_fov60` (69 GB) 정리 여부
+>
+> 아래 1~4 는 09-12 이전 목록이다 (2번 자세 판별은 09-13 제외 결정으로 중단).
 
 1. E1 종료 후 `runs_person/e1_11s_960/` 의 `results.csv` · `best.pt` 백업 (대여 서버).
 2. **자세 판별(person / fallen / ambiguous)까지 포함한 데이터셋·실험 계획 수립** — 3090 사양 기준.
