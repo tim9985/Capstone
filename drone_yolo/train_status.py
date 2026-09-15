@@ -128,7 +128,9 @@ def read_progress(log_arg):
 
 
 def fitness(r):
-    return 0.1 * float(r["metrics/mAP50(B)"]) + 0.9 * float(r["metrics/mAP50-95(B)"])
+    # 설치본 ultralytics 8.4.102 의 best.pt 기준 = mAP50-95 만 (utils/metrics.py fitness w=[0,0,0,1], 09-15 확인).
+    # 예전엔 옛 버전 공식 0.1·mAP50 + 0.9·mAP50-95 로 표시해 실제 best.pt 와 어긋날 수 있었다
+    return float(r["metrics/mAP50-95(B)"])
 
 
 def last_incident():

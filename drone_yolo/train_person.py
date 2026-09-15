@@ -137,6 +137,8 @@ def main():
     # 다시 맞추므로, 중간에 잘리는 게 아니라 줄어든 스케줄로 끝까지 마무리된다.
     ap.add_argument("--time", type=float, default=None,
                     help="최대 학습 시간(시간 단위). 지정하면 --epochs 를 덮어쓴다")
+    ap.add_argument("--scale", type=float, default=None,
+                    help="학습 중 크기 증강 (stage1 기본 0.5). 전처리에서 크기 분포를 이미 넓혔으면 0.3 (계획 4절)")
     ap.add_argument("--close-mosaic", type=int, default=None,
                     help="마지막 N 에폭은 모자이크를 끈다 (ultralytics 기본 10). 에폭이 적을 때 줄인다")
     # optimizer=auto(기본)면 ultralytics 가 --lr0 를 무시하고 스스로 고른다 (09-12 로그로 확인).
@@ -233,6 +235,9 @@ def main():
     if args.close_mosaic is not None:
         extra["close_mosaic"] = args.close_mosaic
         print(f"  모자이크 끔 : 마지막 {args.close_mosaic}에폭")
+    if args.scale is not None:
+        extra["scale"] = args.scale
+        print(f"  크기 증강   : scale {args.scale}")
     if args.optimizer is not None:
         extra["optimizer"] = args.optimizer
         print(f"  옵티마이저  : {args.optimizer}")

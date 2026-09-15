@@ -1,0 +1,17 @@
+# 화각 비교 실험 (09-15): NOMAD 60명 a10·a30·a50·a70 + WiSARD VIS 전체, 사람 크기 16~160 px 로그 균등 (data/det_fov)
+# 분할은 기존 data_all 과 같다 (NOMAD 배치별 배우 · WiSARD 비행). SARD 는 넣지 않는다 (M2 정밀도 하락 요인과 분리)
+# make_configs.py 가 만들지 않는 수동 파일
+train:
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor01_10/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor11_20/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor21_30/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor_sel31_100/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/wisard/images/train
+val:
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor01_10/images/val
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor11_20/images/val
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor21_30/images/val
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor_sel31_100/images/val
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/wisard/images/val
+nc: 1
+names: ['person']

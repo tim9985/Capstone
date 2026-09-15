@@ -89,10 +89,17 @@ def index_images(root):
     return idx
 
 
-def _init_worker():
+# 목표 크기 분포 (--target-dist): jitter = TARGET_PERSON_PX × SCALE_JITTER (기존) · loguniform = [min, max] 로그 균등
+TARGET_DIST, TARGET_MIN, TARGET_MAX = "jitter", 22.0, 120.0
+
+
+def _init_worker(target_dist="jitter", target_min=22.0, target_max=120.0):
     # OpenCV 는 프로세스당 내부 스레드풀을 또 만든다. 멀티프로세싱과 같이 쓰면
     # 코어 수를 초과해 경합만 생기므로 워커 프로세스당 1스레드로 고정한다.
     cv2.setNumThreads(1)
+    # Windows(spawn)는 전역을 물려받지 않으므로 크기 설정은 initargs 로 넘긴다
+    global TARGET_DIST, TARGET_MIN, TARGET_MAX
+    TARGET_DIST, TARGET_MIN, TARGET_MAX = target_dist, float(target_min), float(target_max)
 
 
 def process_one(args_tuple):
@@ -114,7 +121,17 @@ def process_one(args_tuple):
         long_side = max(bw, bh)
         if long_side <= 1:
             continue
-        target = target_px * rnd.uniform(*SCALE_JITTER)
+        if TARGET_DIST == "loguniform":
+            # 원본마다 만들 수 있는 크기 = [창을 채우는 최소 배율 × 사람, MAX_UPSCALE × 사람].
+            # 목표 범위와의 교집합에서 로그 균등으로 뽑는다 — 억지로 맞추면 창이 비거나 화질이 무너진다 (09-15 화각 실험)
+            s_fill = max(CROP_W / W, CROP_H / H)
+            lo, hi = max(TARGET_MIN, long_side * s_fill), min(TARGET_MAX, long_side * MAX_UPSCALE)
+            if lo > hi:
+                stats["skipped_upscale"] += 1   # 도달 불가 (기존 통계 이름 유지)
+                continue
+            target = float(np.exp(rnd.uniform(np.log(lo), np.log(hi))))
+        else:
+            target = target_px * rnd.uniform(*SCALE_JITTER)
         scale = target / long_side
         if scale > MAX_UPSCALE:
             stats["skipped_upscale"] += 1
@@ -183,6 +200,10 @@ def main():
                     help="이번 배치를 전부 train 으로 (검증셋을 기존 것으로 고정할 때)")
     ap.add_argument("--workers", type=int, default=0,
                     help="병렬 워커 수. 0이면 CPU 코어 수 그대로 (서버는 16코어)")
+    ap.add_argument("--target-dist", default="jitter", choices=("jitter", "loguniform"),
+                    help="jitter = --target-px × SCALE_JITTER (기존) · loguniform = [--target-min, --target-max] 로그 균등")
+    ap.add_argument("--target-min", type=float, default=22.0)
+    ap.add_argument("--target-max", type=float, default=120.0)
     args = ap.parse_args()
 
     random.seed(SEED)
@@ -246,7 +267,9 @@ def main():
              "person_px": [], "visibility": Counter()}
 
     done = 0
-    with mp.Pool(processes=n_workers, initializer=_init_worker) as pool:
+    print(f"목표 크기: {args.target_dist}" + (f" {args.target_min:g}~{args.target_max:g} px" if args.target_dist == "loguniform" else f" {args.target_px} × {SCALE_JITTER}"))
+    with mp.Pool(processes=n_workers, initializer=_init_worker,
+                 initargs=(args.target_dist, args.target_min, args.target_max)) as pool:
         for _, s in pool.imap_unordered(process_one, jobs, chunksize=8):
             stats["crops"] += s.get("crops", 0)
             stats["skipped_read"] += s.get("skipped_read", 0)
