@@ -139,7 +139,7 @@ def main():
         alts = man["alts"]
         print(f"\n=== {name} · 재현율@{args.conf:g} (세트 공통 원본 평균 · 화면 중앙 · 하향 · 입력 1920 기준 크기) ===")
         print("    * = 학습 크기 범위(16~160 px) 밖 외삽 · 10 m 열은 원본 세트가 달라 20 m 이상과 직접 비교 주의")
-        for pose, label in (("standing", "서 있는 사람 (0.5 m)"), ("lying", "누운 사람 (1.7 m)")):
+        for pose, label in (("standing", "서 있는 사람 크기 기준 0.5 m (자세 라벨 아님)"), ("lying", "누운 사람 크기 기준 1.7 m")):
             print(f"\n[{label}]  " + "  ".join(f"{a} m".rjust(14) for a in alts))
             for fov in man["fovs"]:
                 cells_txt = []

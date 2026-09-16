@@ -142,7 +142,7 @@ def result_table(run):
     fovs = sorted({int(r["fov_deg"]) for r in rows})
     rk = next(k for k in rows[0] if k.startswith("recall@"))
     out = [f"\n[{run}] 재현율@0.15 (세트 공통 원본 · * 학습 크기 밖 외삽 · 10 m 열은 원본 세트가 달라 직접 비교 주의)"]
-    for pose, label in (("standing", "서 있는 사람"), ("lying", "누운 사람")):
+    for pose, label in (("standing", "서 있는 크기 0.5m"), ("lying", "누운 크기 1.7m")):
         out.append(f"  {label:<8}" + "".join(f"{a:>5} m     " for a in alts))
         for f in fovs:
             cells = []
