@@ -4,7 +4,7 @@ tags: [데이터셋]
 ---
 
 > [!summary] 일본 오쿠타마 · 4K · 행동 라벨 12종 — **평가 전용** (미학습 도메인)
-> 공식 Dropbox 는 접근 불가 → 노트북에만 있음 (9.6 GB)
+> 공식 Dropbox 는 접근 불가 → 노트북에서 복사 · **09-16 서버 확보 완료** `data/raw/okutama` (26 GB)
 
 ## 사양
 
@@ -23,6 +23,20 @@ tags: [데이터셋]
 | Running | 17,106 | person |
 | **Lying** | **14,466** | **fallen** |
 | 행동 없음 | — | ambiguous |
+
+## 서버 확보 (09-16 · MobaXterm SFTP)
+
+`~/JupyterLAB/Capstone/data/raw/okutama` · 26 GB · 77,679 파일 (23:05 KST 전송 완료)
+
+| 폴더 | 용량 | 파일 |
+|---|---:|---:|
+| TrainSetVideos (2) | 15 GB | 132 (영상 44편 포함) |
+| Drone1 / Drone2 추출 프레임 | 4.7 / 4.9 GB | 29,829 / 30,220 |
+| TestSetFrames | 1.6 GB | 17,356 |
+| Labels · Final-Models · Sample | 0.8 GB | 142 |
+
+- 영상뿐 아니라 **1280×720 추출 프레임**까지 왔다 → 프레임 오프셋 문제를 피해 평가에 바로 쓸 수 있다
+- 원본 · 파생물은 git 에 올리지 않는다
 
 ## 쓴 방법
 
