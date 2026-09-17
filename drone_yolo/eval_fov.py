@@ -68,6 +68,7 @@ def main():
     ap.add_argument("--imgsz", type=int, default=1280)
     ap.add_argument("--conf", type=float, default=0.15)
     ap.add_argument("--batch", type=int, default=16)
+    ap.add_argument("--tag", default="", help="출력 CSV 이름에 붙일 꼬리표 — 다른 시험셋 결과를 덮어쓰지 않게")
     args = ap.parse_args()
 
     from ultralytics import YOLO
@@ -124,7 +125,7 @@ def main():
                 "nomad_vis30": mean([v[2] for v in vals if v[0] == "nomad"]),
                 "scored": len(pc["stems"]), "recall_scored": mean([v[1] for v in pc["stems"].values()]), "ap50": pc["ap50"]}
 
-        out = BASE_DIR / "metrics" / f"eval_fov_{name}.csv"
+        out = BASE_DIR / "metrics" / f"eval_fov{args.tag}_{name}.csv"
         with open(out, "w", newline="", encoding="utf-8") as f:
             wr = csv.writer(f)
             wr.writerow(["model", "fov_deg", "altitude_m", "pose", "person_px", "source_set", "extrapolated",
@@ -139,7 +140,9 @@ def main():
         alts = man["alts"]
         print(f"\n=== {name} · 재현율@{args.conf:g} (세트 공통 원본 평균 · 화면 중앙 · 하향 · 입력 1920 기준 크기) ===")
         print("    * = 학습 크기 범위(16~160 px) 밖 외삽 · 10 m 열은 원본 세트가 달라 20 m 이상과 직접 비교 주의")
-        for pose, label in (("standing", "서 있는 사람 크기 기준 0.5 m (자세 라벨 아님)"), ("lying", "누운 사람 크기 기준 1.7 m")):
+        pose_m = man.get("poses") or {"standing": 0.5, "lying": 1.7}
+        for pose, label in (("standing", f"서 있는 사람 크기 기준 {pose_m['standing']} m (자세 라벨 아님)"),
+                            ("lying", f"누운 사람 크기 기준 {pose_m['lying']} m")):
             print(f"\n[{label}]  " + "  ".join(f"{a} m".rjust(14) for a in alts))
             for fov in man["fovs"]:
                 cells_txt = []

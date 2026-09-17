@@ -167,7 +167,17 @@ def main():
     ap.add_argument("--nomad-step", type=int, default=4, help="NOMAD val 프레임 간격")
     ap.add_argument("--wisard-step", type=int, default=4, help="WiSARD val 프레임 간격")
     ap.add_argument("--workers", type=int, default=16)
+    ap.add_argument("--fovs", default="", help="쉼표로 화각 지정 (기본 54,65,80,90) — 예산안 비교는 68,75,90,93")
+    ap.add_argument("--standing-m", type=float, default=None,
+                    help="서 있는 사람 박스 긴 변(m). 기본 0.5 (옛 가정) · AI-Hub 라벨 역산값은 0.81")
     args = ap.parse_args()
+
+    global FOVS, POSES
+    if args.fovs:
+        FOVS = tuple(int(x) for x in args.fovs.split(","))
+    if args.standing_m:
+        POSES = (("standing", args.standing_m), ("lying", 1.7))
+    print(f"화각 {FOVS} · 크기 가정 {dict(POSES)}")
 
     det, out = Path(args.det), Path(args.out)
     if out.exists() and any(out.iterdir()):
@@ -243,6 +253,7 @@ def main():
                 "sources_used": {k: dict(sorted(c.items())) for k, c in used.items()}, "per_cell": summary,
                 "val_actors": val_actors, "val_flights": val_flights, "input_w": INPUT_W,
                 "alts": sorted({a for _, al in ALT_GROUPS for a in al}), "fovs": list(FOVS),
+                "poses": dict(POSES),
                 "note": "화면 중앙 · 하향 90° 사람 크기만 흉내 (왜곡 · 옆모습 없음) · 거울 바둑판 채움 · "
                         "채점은 meta orig & !seam & near_ref · 세트(자세 × 10 m / 20~40 m) 안 교집합 원본으로 평균"}
     (out / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False))
