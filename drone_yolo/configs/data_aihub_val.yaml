@@ -1,0 +1,6 @@
+# AI-Hub 182 **장소 분리** val (저수지1) — 학습 장소(저수지2 · 평지(흙)3 · 산악6)에 없는 곳
+# NFR-V03 의 "학습/평가 장소 분리" 를 만족하는 유일한 시험셋이다. 다만 이 데이터는 쉽다(가림 없음)
+train: /home/se/JupyterLAB/Capstone/drone_yolo/data/det_aihub/images/val
+val: /home/se/JupyterLAB/Capstone/drone_yolo/data/det_aihub/images/val
+nc: 1
+names: ['person']

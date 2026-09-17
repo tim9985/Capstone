@@ -1,0 +1,18 @@
+# L2 (09-18): L1 데이터(NOMAD 60명 + WiSARD) + AI-Hub 182 장소 3곳
+# val 은 L1 과 **똑같이** 둔다 — best.pt 선택 기준을 같게 해야 L1 과 비교된다.
+#   AI-Hub 장소 분리 val(저수지1)은 학습에 안 넣고 configs/data_aihub_val.yaml 로 따로 잰다
+train:
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor01_10/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor11_20/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor21_30/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor_sel31_100/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/wisard/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_aihub/images/train
+val:
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor01_10/images/val
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor11_20/images/val
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor21_30/images/val
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor_sel31_100/images/val
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/wisard/images/val
+nc: 1
+names: ['person']

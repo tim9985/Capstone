@@ -12,7 +12,9 @@ while [ ! -f logs/train_l.done ]; do
   for s in $STAGES; do [ -f weights/$s.pt ] || { stage=$s; break; }; done
   [ -n "$stage" ] || stage=${STAGES##* }
   cur=$(grep -E '^JOB_NAME=' autoheal/job.conf | cut -d= -f2)
-  [ "$cur" = "$stage" ] || sed -i "s/^JOB_NAME=.*/JOB_NAME=$stage/" autoheal/job.conf && log "job.conf JOB_NAME → $stage"
+  if [ "$cur" != "$stage" ]; then
+    sed -i "s/^JOB_NAME=.*/JOB_NAME=$stage/" autoheal/job.conf && log "job.conf JOB_NAME $cur → $stage"
+  fi
   for run in $STAGES; do
     last=runs_person/$run/weights/last.pt
     [ -f "$last" ] || continue
