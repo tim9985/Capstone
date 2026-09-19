@@ -16,6 +16,7 @@ detect_live.py — 항공 영상에 사람 탐지 모델을 걸고 **실시간�
   + -          신뢰도 ±0.05            [ ]       입력 크기 한 단계 아래/위
   m            다음 가중치로 교체        t         추적기(ByteTrack) 켜기/끄기
   b            박스 크기(px) 표시        l         라벨 표시
+  c            crop 모드 (4K 에서 1280x720 을 원본 크기로 잘라 넣기)   i j k n  crop 창 이동
   s            현재 화면 저장            r         주석 영상 녹화 시작/정지
   h            도움말                   q ESC     종료
 
@@ -156,6 +157,8 @@ def main():
     ap.add_argument("--start", type=int, default=0, help="시작 프레임")
     ap.add_argument("--stride", type=int, default=1, help="N 프레임마다 추론 (1 = 모두)")
     ap.add_argument("--window", type=int, default=1280, help="창 가로 크기(픽셀)")
+    ap.add_argument("--crop", default="", help="예: 1280x720 — 4K 영상에서 이 크기 창을 원본 해상도로 잘라 넣는다 "
+                                              "(줄이지 않으므로 사람 픽셀 크기가 실제 운용과 같아진다). c 키로 끄고 켠다")
     ap.add_argument("--save-dir", default="runs_live", help="화면 저장·녹화 폴더")
     args = ap.parse_args()
 
@@ -177,9 +180,25 @@ def main():
     cv2.createTrackbar("stride", WIN, max(1, args.stride), 10, noop)
     cv2.createTrackbar("speed %", WIN, 100, 400, noop)
 
+    crop_wh = None
+    if args.crop:
+        cw, ch = (int(v) for v in args.crop.lower().split("x"))
+        crop_wh = (cw, ch)
+    crop_on = crop_wh is not None
+    crop_pos = [0.5, 0.5]  # 원본 안에서 창의 중심 (0~1)
     playing, show_labels, show_px, use_tracker, show_help = True, True, False, False, True
     writer, last_result, last_ms = None, None, (0.0, 0.0, 0.0)
     fps_hist, frame = deque(maxlen=30), None
+
+    def cut(img):
+        """crop 모드면 원본 해상도 그대로 창 하나를 잘라 낸다."""
+        if not (crop_on and crop_wh):
+            return img
+        h, w = img.shape[:2]
+        cw, ch = min(crop_wh[0], w), min(crop_wh[1], h)
+        x = int(np.clip(crop_pos[0] * w - cw / 2, 0, w - cw))
+        y = int(np.clip(crop_pos[1] * h - ch / 2, 0, h - ch))
+        return img[y:y + ch, x:x + cw]
 
     def infer(img, conf, iou, imgsz, max_det):
         name, model = models[mi]
@@ -212,14 +231,14 @@ def main():
             else:
                 frame = new_frame
                 if player.idx % stride == 0:
-                    last_result, last_ms = infer(frame, conf, iou, imgsz, max_det)
+                    last_result, last_ms = infer(cut(frame), conf, iou, imgsz, max_det)
         if frame is None:
             ok, frame = player.read()
             if not ok:
                 break
-            last_result, last_ms = infer(frame, conf, iou, imgsz, max_det)
+            last_result, last_ms = infer(cut(frame), conf, iou, imgsz, max_det)
 
-        view = frame.copy()
+        view = cut(frame).copy()
         n, confs, longs = 0, [], []
         if last_result is not None and last_result.boxes is not None:
             ids = last_result.boxes.id
@@ -247,7 +266,8 @@ def main():
         pre, inf_ms, post, total_ms = last_ms
         pos = f"{player.idx + 1}/{player.total}" if player.total else f"{player.idx + 1}"
         lines = [
-            f"{name}  imgsz {imgsz}  conf {conf:.2f}  iou {iou:.2f}  {'TRACK' if use_tracker else 'DETECT'}",
+            f"{name}  imgsz {imgsz}  conf {conf:.2f}  iou {iou:.2f}  {'TRACK' if use_tracker else 'DETECT'}"
+            + (f"  CROP {crop_wh[0]}x{crop_wh[1]} @({crop_pos[0]:.2f},{crop_pos[1]:.2f})" if crop_on and crop_wh else "  FULL"),
             f"{total_ms:5.1f} ms/frame (inf {inf_ms:.1f})  {1000 / total_ms if total_ms else 0:4.1f} fps   frame {pos}"
             f"  stride {stride}  speed {speed:.1f}x",
             f"boxes {n}   conf avg {np.mean(confs) if confs else 0:.2f}   box long side median "
@@ -307,6 +327,16 @@ def main():
         elif key == ord("t"):
             use_tracker = not use_tracker
             print(f"추적기 {'켬 (ByteTrack)' if use_tracker else '끔'}")
+        elif key == ord("c"):
+            if crop_wh is None:
+                crop_wh = (1280, 720)
+            crop_on = not crop_on
+            print(f"crop 모드 {'켬' if crop_on else '끔'}")
+        elif key in (ord("i"), ord("k"), ord("j"), ord("n")) and crop_on:
+            dx = {"j": -0.08, "n": 0.08}.get(chr(key), 0.0)
+            dy = {"i": -0.08, "k": 0.08}.get(chr(key), 0.0)
+            crop_pos[0] = float(np.clip(crop_pos[0] + dx, 0.0, 1.0))
+            crop_pos[1] = float(np.clip(crop_pos[1] + dy, 0.0, 1.0))
         elif key == ord("l"):
             show_labels = not show_labels
         elif key == ord("b"):
