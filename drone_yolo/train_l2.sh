@@ -25,7 +25,10 @@ pgrep -af "train_person\.py" | awk '$2 ~ /python/' | grep . && fail "다른 trai
 if [ -f weights/$NAME.pt ]; then
   log "$NAME 학습 이미 완료"
 elif [ -f runs_person/$NAME/weights/last.pt ]; then
-  log "이어 학습 $NAME"; $PY train_person.py --stage 1 --resume --name $NAME --time 0
+  # 09-19: 20 h 상한 때문에 ultralytics 가 목표 에폭을 30→23 으로 줄여 놨다.
+  # 체크포인트의 train_args(epochs 30 · time None)를 직접 고쳐 뒀으므로 --time 을 넘기지 않는다
+  # (ultralytics resume 은 imgsz·batch·device·close_mosaic 외의 덮어쓰기를 버린다)
+  log "이어 학습 $NAME"; $PY train_person.py --stage 1 --resume --name $NAME
 else
   log "새 학습 $NAME"
   $PY train_person.py --stage 1 --data configs/data_l2.yaml --weights yolo11l.pt --imgsz 1280 --batch 6 \
