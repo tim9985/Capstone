@@ -105,7 +105,7 @@ def find_weights():
     """--weights 를 안 주면 여기서 찾는다. 서버에서 받아 온 것을 먼저 올린다."""
     here = Path(__file__).resolve().parent
     dirs = [here / "weights", here.parent.parent / "drone_dev" / "weights"]
-    prefer = ("m2_", "m1_", "l1_", "e1_", "yolov8s_stage1_all")
+    prefer = ("fov_11s", "fov_11m", "l1_", "m2_", "m1_", "e1_", "yolov8s_stage1_all")
     found, seen = [], set()
     for d in dirs:
         if not d.is_dir():
