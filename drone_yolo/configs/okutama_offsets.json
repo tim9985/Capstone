@@ -152,5 +152,40 @@
     "score_at_zero": 0.449,
     "video_frames": 1560,
     "label_max_frame": 1559
+  },
+  "1.1.11": {
+    "offset": 0,
+    "score": 0.352,
+    "score_at_zero": 0.352,
+    "video_frames": 604,
+    "label_max_frame": 603
+  },
+  "2.2.4": {
+    "offset": 23,
+    "score": 0.388,
+    "score_at_zero": 0.032,
+    "video_frames": 2029,
+    "label_max_frame": 1869
+  },
+  "2.2.5": {
+    "offset": 23,
+    "score": 0.365,
+    "score_at_zero": 0.151,
+    "video_frames": 1042,
+    "label_max_frame": 1061
+  },
+  "2.2.7": {
+    "offset": 26,
+    "score": 0.328,
+    "score_at_zero": 0.107,
+    "video_frames": 1530,
+    "label_max_frame": 1349
+  },
+  "2.2.8": {
+    "offset": 0,
+    "score": 0.556,
+    "score_at_zero": 0.543,
+    "video_frames": 1770,
+    "label_max_frame": 1759
   }
 }
