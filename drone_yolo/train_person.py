@@ -141,6 +141,9 @@ def main():
                     help="학습 중 크기 증강 (stage1 기본 0.5). 전처리에서 크기 분포를 이미 넓혔으면 0.3 (계획 4절)")
     ap.add_argument("--close-mosaic", type=int, default=None,
                     help="마지막 N 에폭은 모자이크를 끈다 (ultralytics 기본 10). 에폭이 적을 때 줄인다")
+    ap.add_argument("--translate", type=float, default=None,
+                    help="학습 중 위치 증강 (stage1 기본 0.15). 타일 추론을 쓰면 사람이 타일 가장자리에도 "
+                         "오므로 키워 본다 — 저장된 크롭은 가장자리 100 px 안에 1.8 %% 뿐이다 (09-20)")
     # optimizer=auto(기본)면 ultralytics 가 --lr0 를 무시하고 스스로 고른다 (09-12 로그로 확인).
     # 학습률을 직접 정해야 하는 이어 학습에서는 옵티마이저를 명시한다.
     ap.add_argument("--optimizer", default=None,
@@ -238,6 +241,9 @@ def main():
     if args.scale is not None:
         extra["scale"] = args.scale
         print(f"  크기 증강   : scale {args.scale}")
+    if args.translate is not None:
+        extra["translate"] = args.translate
+        print(f"  위치 증강   : translate {args.translate}")
     if args.optimizer is not None:
         extra["optimizer"] = args.optimizer
         print(f"  옵티마이저  : {args.optimizer}")

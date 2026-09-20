@@ -112,6 +112,7 @@ def main():
      for q in args.quantize:
       kw = {} if q == "none" else {"quantize": q}
       model = YOLO(args.weights)          # 구성마다 새 인스턴스 (predictor 재사용 시 인자가 무시된다)
+      engine = str(args.weights).endswith(".engine")   # 엔진은 빌드 때 고정한 (h, w) 를 그대로 줘야 한다
       for s in sets:
           d = root / s
           imgs = sorted((d / "images").glob("*.jpg"))
@@ -122,7 +123,8 @@ def main():
                   continue
               t0 = time.perf_counter()
               tiles = [img[y:y + TH, x:x + TW] for x, y in TILES]
-              res = model.predict(tiles, imgsz=max(TW, TH), conf=args.conf, batch=len(tiles), verbose=False, **kw)
+              sz = (((TH + 31) // 32) * 32, TW) if engine else max(TW, TH)
+              res = model.predict(tiles, imgsz=sz, conf=args.conf, batch=len(tiles), verbose=False, **kw)
               box, cf = [], []
               for (x, y), r in zip(TILES, res):
                   b = r.boxes.xyxy.cpu().numpy()

@@ -1,0 +1,4 @@
+model,set,mode,quantize,tiles,images,recall@0.15,fp_per_frame,ms_per_frame
+,l128,4x720,none,4,869,0.6611,1.223,18.8
+,neg,4x720,none,4,187,,0.594,17.7
+,s38,4x720,none,4,1673,0.3725,1.718,18.5
