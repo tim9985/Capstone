@@ -6,8 +6,11 @@ make_fullframe_testset.py — 1920×1080 전체 프레임 시험셋 (2026-09-16)
   **프레임당 오탐**이 실제보다 적게 보일 수 있다 → 전체 프레임으로 따로 재야 한다.
   덤으로 추론 입력(1280 / 1600 / 1920)에 따라 재현율 · 오탐이 어떻게 변하는지도 같은 프레임으로 본다.
 
-무엇을 만드나 (운용 기준점: 수평 54° · 고도 25 m · 하향 90° · 1080p)
-  s38  서 있는 사람 38 px  ·  l128 누운 사람 128 px  ·  neg 사람 없는 프레임
+무엇을 만드나 — 칸은 **사람 px** 로 정의된다
+  s38  38 px  ·  l128 128 px  ·  neg 사람 없는 프레임
+  ⚠ 원래 표기 '54° · 25 m · 하향 90°' 는 **옛 가정(서 있는 사람 0.5 m)** 으로 계산한 것이다 (09-17 실측 0.81 m 로 정정).
+    0.81 m 로 다시 계산하면 같은 조건의 서 있는 사람은 61 px 이고, 38 px 은 54°·40 m 쯤에 해당한다.
+    누운 사람 128 px 은 1.7 m 기준이라 그대로 유효하다. **마운트각은 모형화하지 않는다** (크기만 재현).
   · val 원본만 (NOMAD val 배우 · WiSARD val 비행) — make_fov_testsets.py v4 와 같은 원본 규칙
   · 원본을 목표 크기로 줄이고 1920×1080 창을 뜬다. 창보다 작아지면 거울 반사 바둑판으로 채운다
   · 음성 프레임은 그 비행 양성 프레임의 중앙값 배율을 그대로 써서 같은 GSD 로 맞춘다
@@ -165,7 +168,7 @@ def main():
         nneg = sum(1 for r in pool.imap_unordered(work, njobs, chunksize=4) if r)
     counts = {n: len(list((out / n / "images").glob("*.jpg"))) for n in list(SETS) + ["neg"]}
     (out / "manifest.json").write_text(json.dumps({"sets": {k: {"pose": v[0], "px": v[1]} for k, v in SETS.items()},
-        "frame": [W_OUT, H_OUT], "operating_point": "54° · 25 m · 하향 90° · 1080p", "counts": counts,
+        "frame": [W_OUT, H_OUT], "operating_point": "칸은 사람 px 로 정의 (s38=38px · l128=128px) · 옛 0.5 m 가정 표기였음 · 마운트각 미모형화", "counts": counts,
         "sources_used": dict(used), "negatives": nneg, "val_actors": val_actors, "val_flights": val_flights}, indent=2, ensure_ascii=False))
     print(f"장수 {counts} · 음성 {nneg}\n→ {out}")
 
