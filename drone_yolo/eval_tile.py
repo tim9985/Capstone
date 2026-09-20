@@ -35,8 +35,12 @@ import numpy as np
 os.environ.setdefault("MPLBACKEND", "Agg")
 BASE_DIR = Path(__file__).resolve().parent
 W, H = 1920, 1080
-TW, TH = 1280, 720
-TILES = [(x, y) for y in (0, H - TH) for x in (0, W - TW)]      # 4장 · 겹침 50 %
+# 타일 배치 — imgsz 는 **긴 변** 기준이므로 폭 1280 이면 세로가 1080 이어도 리사이즈가 0 이다
+MODES = {
+    "4x720":  (1280, 720,  [(x, y) for y in (0, 1080 - 720) for x in (0, 1920 - 1280)]),   # 겹침 50 %
+    "2x1080": (1280, 1080, [(0, 0), (1920 - 1280, 0)]),                                     # 세로 전체 · 2장
+    "6x540":  (960,  540,  [(x, y) for y in (0, 540) for x in (0, 480, 960)]),              # 겹침 0/50 %
+}
 
 
 def load_gt(p):
@@ -91,6 +95,8 @@ def main():
     ap.add_argument("--testsets", default=str(BASE_DIR / "data" / "det_fullframe"))
     ap.add_argument("--conf", type=float, default=0.15)
     ap.add_argument("--nms-iou", type=float, default=0.6)
+    ap.add_argument("--mode", nargs="+", default=["4x720", "2x1080"], choices=list(MODES))
+    ap.add_argument("--quantize", nargs="+", default=["fp16"], help="none 또는 fp16")
     args = ap.parse_args()
 
     import cv2
@@ -99,51 +105,56 @@ def main():
     root = Path(args.testsets).resolve()
     sets = [d.name for d in sorted(root.iterdir()) if d.is_dir() and (d / "images").exists()]
     name = Path(args.weights).parent.parent.name
-    model = YOLO(args.weights)
     rows = []
 
-    for s in sets:
-        d = root / s
-        imgs = sorted((d / "images").glob("*.jpg"))
-        rec, fps, times = [], [], []
-        for p in imgs:
-            img = cv2.imread(str(p))
-            if img is None:
-                continue
-            t0 = time.perf_counter()
-            tiles = [img[y:y + TH, x:x + TW] for x, y in TILES]
-            res = model.predict(tiles, imgsz=1280, conf=args.conf, verbose=False)
-            box, cf = [], []
-            for (x, y), r in zip(TILES, res):
-                b = r.boxes.xyxy.cpu().numpy()
-                if len(b):
-                    box.append(b + np.array([x, y, x, y])); cf.append(r.boxes.conf.cpu().numpy())
-            if box:
-                box = np.concatenate(box); cf = np.concatenate(cf)
-                k = nms(box, cf, args.nms_iou); box = box[k]
-            else:
-                box = np.zeros((0, 4))
-            times.append((time.perf_counter() - t0) * 1000)
+    for mode in args.mode:
+     TW, TH, TILES = MODES[mode]
+     for q in args.quantize:
+      kw = {} if q == "none" else {"quantize": q}
+      model = YOLO(args.weights)          # 구성마다 새 인스턴스 (predictor 재사용 시 인자가 무시된다)
+      for s in sets:
+          d = root / s
+          imgs = sorted((d / "images").glob("*.jpg"))
+          rec, fps, times = [], [], []
+          for p in imgs:
+              img = cv2.imread(str(p))
+              if img is None:
+                  continue
+              t0 = time.perf_counter()
+              tiles = [img[y:y + TH, x:x + TW] for x, y in TILES]
+              res = model.predict(tiles, imgsz=max(TW, TH), conf=args.conf, batch=len(tiles), verbose=False, **kw)
+              box, cf = [], []
+              for (x, y), r in zip(TILES, res):
+                  b = r.boxes.xyxy.cpu().numpy()
+                  if len(b):
+                      box.append(b + np.array([x, y, x, y])); cf.append(r.boxes.conf.cpu().numpy())
+              if box:
+                  box = np.concatenate(box); cf = np.concatenate(cf)
+                  k = nms(box, cf, args.nms_iou); box = box[k]
+              else:
+                  box = np.zeros((0, 4))
+              times.append((time.perf_counter() - t0) * 1000)
 
-            gt = load_gt(p)
-            mp = d / "meta" / f"{p.stem}.json"
-            if mp.exists():
-                meta = json.loads(mp.read_text())
-                meta = meta["boxes"] if isinstance(meta, dict) else meta
-                keep = np.array([m["orig"] and not m["seam"] and m["near_ref"] for m in meta], dtype=bool)
-                keep = keep[:len(gt)] if len(keep) >= len(gt) else np.pad(keep, (0, len(gt) - len(keep)))
-            else:
-                keep = np.zeros(len(gt), dtype=bool)
-            hit, n_match = matched(gt, box)
-            if keep.any():
-                rec.append(float(hit[keep].mean()))
-            fps.append(max(0, len(box) - n_match))
-        rows.append({"model": name, "set": s, "mode": f"tile 4×({TW}×{TH})", "images": len(imgs),
-                     f"recall@{args.conf:g}": round(float(np.mean(rec)), 4) if rec else "",
-                     "fp_per_frame": round(float(np.mean(fps)), 3),
-                     "ms_per_frame": round(float(np.median(times)), 1)})
-        print(f"  {s}: {len(imgs)}장 · 재현율 {rows[-1][f'recall@{args.conf:g}']} · "
-              f"오탐 {rows[-1]['fp_per_frame']}/장 · {rows[-1]['ms_per_frame']} ms", flush=True)
+              gt = load_gt(p)
+              mp = d / "meta" / f"{p.stem}.json"
+              if mp.exists():
+                  meta = json.loads(mp.read_text())
+                  meta = meta["boxes"] if isinstance(meta, dict) else meta
+                  keep = np.array([m["orig"] and not m["seam"] and m["near_ref"] for m in meta], dtype=bool)
+                  keep = keep[:len(gt)] if len(keep) >= len(gt) else np.pad(keep, (0, len(gt) - len(keep)))
+              else:
+                  keep = np.zeros(len(gt), dtype=bool)
+              hit, n_match = matched(gt, box)
+              if keep.any():
+                  rec.append(float(hit[keep].mean()))
+              fps.append(max(0, len(box) - n_match))
+          rows.append({"model": name, "set": s, "mode": mode, "quantize": q,
+                       "tiles": len(TILES), "images": len(imgs),
+                       f"recall@{args.conf:g}": round(float(np.mean(rec)), 4) if rec else "",
+                       "fp_per_frame": round(float(np.mean(fps)), 3),
+                       "ms_per_frame": round(float(np.median(times)), 1)})
+          print(f"  [{mode}·{q}] {s}: {len(imgs)}장 · 재현율 {rows[-1][f'recall@{args.conf:g}']} · "
+                f"오탐 {rows[-1]['fp_per_frame']}/장 · {rows[-1]['ms_per_frame']} ms", flush=True)
 
     out = BASE_DIR / "metrics" / f"tile_fullframe_{name}.csv"
     with open(out, "w", newline="", encoding="utf-8") as f:

@@ -1,0 +1,4 @@
+model,set,mode,images,recall@0.15,fp_per_frame,ms_per_frame
+fov_11m_1280_all,l128,tile 4×(1280×720),869,0.6607,1.224,58.3
+fov_11m_1280_all,neg,tile 4×(1280×720),187,,0.594,57.4
+fov_11m_1280_all,s38,tile 4×(1280×720),1673,0.3729,1.708,58.0
