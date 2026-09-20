@@ -1,0 +1,1174 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>드론 사람 탐지 — 개념 정리 노트</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans+KR:wght@400;500;600;700&amp;display=swap">
+
+<style>
+  :root{
+    --bg:#F1F3F1;
+    --surface:#FFFFFF;
+    --surface-2:#E7EBE8;
+    --surface-3:#DCE2DE;
+    --ink:#14181A;
+    --ink-soft:#55605C;
+    --ink-faint:#8A948F;
+    --border:#D5DBD7;
+    --accent:#C8631F;
+    --accent-soft:#F1E0CE;
+    --accent-ink:#FFFFFF;
+    --accent2:#227373;
+    --accent2-soft:#DCEAEA;
+    --red:#B23A32;
+    --code-kw:#8B4A9C;
+    --code-str:#2E7D46;
+    --code-com:#8A948F;
+    --code-fn:#1D6FB8;
+    --code-num:#B2622E;
+    --shadow: 0 1px 2px rgba(20,24,26,.06), 0 8px 24px -12px rgba(20,24,26,.18);
+    --radius: 10px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14181A;
+      --surface:#1B2023;
+      --surface-2:#20272A;
+      --surface-3:#283130;
+      --ink:#E8EDE9;
+      --ink-soft:#9AA8A2;
+      --ink-faint:#657069;
+      --border:#313B38;
+      --accent:#E39150;
+      --accent-soft:#3A2A1B;
+      --accent-ink:#1A1006;
+      --accent2:#5FC2C0;
+      --accent2-soft:#17302F;
+      --red:#E07B72;
+      --code-kw:#C892D8;
+      --code-str:#7FCB93;
+      --code-com:#7C8983;
+      --code-fn:#7EB6E8;
+      --code-num:#E3A374;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.55);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14181A;
+    --surface:#1B2023;
+    --surface-2:#20272A;
+    --surface-3:#283130;
+    --ink:#E8EDE9;
+    --ink-soft:#9AA8A2;
+    --ink-faint:#657069;
+    --border:#313B38;
+    --accent:#E39150;
+    --accent-soft:#3A2A1B;
+    --accent-ink:#1A1006;
+    --accent2:#5FC2C0;
+    --accent2-soft:#17302F;
+    --red:#E07B72;
+    --code-kw:#C892D8;
+    --code-str:#7FCB93;
+    --code-com:#7C8983;
+    --code-fn:#7EB6E8;
+    --code-num:#E3A374;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 28px -14px rgba(0,0,0,.55);
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"IBM Plex Sans","IBM Plex Sans KR",-apple-system,sans-serif;
+    font-size:16px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:var(--accent-soft); color:var(--ink); }
+
+  a{ color:var(--accent2); text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
+  a:focus-visible, button:focus-visible, summary:focus-visible{
+    outline: 2.5px solid var(--accent2); outline-offset: 2px; border-radius:4px;
+  }
+
+  h1,h2,h3,h4{
+    font-family:"IBM Plex Sans Condensed","IBM Plex Sans KR",sans-serif;
+    font-weight:700;
+    text-wrap:balance;
+    margin:0;
+    letter-spacing:.1px;
+  }
+
+  .layout{
+    display:grid;
+    grid-template-columns: 250px minmax(0,1fr);
+    max-width:1180px;
+    margin:0 auto;
+    align-items:start;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+    padding:28px 14px 28px 20px;
+    border-right:1px solid var(--border);
+    scrollbar-width:thin;
+  }
+  .brand{
+    display:block;
+    font-family:"IBM Plex Sans Condensed",sans-serif;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+    color:var(--ink-faint);
+    margin-bottom:4px;
+  }
+  .brand strong{
+    display:block;
+    font-size:19px;
+    letter-spacing:0;
+    text-transform:none;
+    color:var(--ink);
+    margin-top:6px;
+    line-height:1.25;
+  }
+  nav.toc{ margin-top:26px; }
+  nav.toc .group-label{
+    font-size:11px; letter-spacing:.09em; text-transform:uppercase;
+    color:var(--ink-faint); font-weight:600; padding:0 10px; margin:18px 0 6px;
+  }
+  nav.toc .group-label:first-child{ margin-top:0; }
+  nav.toc ol{ list-style:none; margin:0; padding:0; counter-reset:none; }
+  nav.toc a{
+    display:flex; align-items:baseline; gap:10px;
+    padding:6px 10px; border-radius:7px;
+    color:var(--ink-soft); text-decoration:none; font-size:14.5px;
+    transition:background .12s ease, color .12s ease;
+  }
+  nav.toc a:hover{ background:var(--surface-2); color:var(--ink); }
+  nav.toc a .letter{
+    font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:600;
+    color:var(--accent); width:1.1em; flex:none;
+  }
+  nav.toc a.active{ background:var(--accent-soft); color:var(--ink); }
+  nav.toc a.active .letter{ color:var(--accent); }
+
+  /* ---------- Main ---------- */
+  main{ padding:56px 44px 120px; min-width:0; }
+
+  header.hero{ max-width:660px; margin-bottom:54px; }
+  .eyebrow{
+    font-family:"IBM Plex Sans Condensed",sans-serif;
+    font-size:12.5px; letter-spacing:.11em; text-transform:uppercase;
+    color:var(--accent); font-weight:600; margin-bottom:14px; display:block;
+  }
+  header.hero h1{ font-size:38px; line-height:1.15; margin-bottom:16px; }
+  header.hero .sub{ color:var(--ink-soft); font-size:16.5px; max-width:58ch; }
+
+  .stage-row{
+    display:flex; flex-wrap:wrap; gap:10px; margin-top:26px;
+  }
+  .stage-chip{
+    display:flex; align-items:center; gap:8px;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:999px; padding:7px 14px 7px 10px; font-size:13.5px; color:var(--ink-soft);
+  }
+  .stage-chip b{ color:var(--ink); font-weight:600; }
+  .stage-chip .n{
+    width:20px; height:20px; border-radius:50%; background:var(--accent2-soft); color:var(--accent2);
+    display:flex; align-items:center; justify-content:center; font-size:11.5px; font-weight:700;
+    font-family:"IBM Plex Mono",monospace;
+  }
+
+  section.chapter{
+    padding-top:52px; margin-top:6px; border-top:1px solid var(--border);
+    scroll-margin-top: 20px;
+  }
+  section.chapter:first-of-type{ border-top:none; padding-top:0; }
+
+  .chapter-head{ display:flex; gap:18px; align-items:flex-start; margin-bottom:22px; }
+  .chapter-head .big-letter{
+    font-family:"IBM Plex Sans Condensed",sans-serif; font-weight:700;
+    font-size:44px; line-height:1; color:var(--accent2); flex:none;
+    min-width:.9em;
+  }
+  .chapter-head h2{ font-size:25px; padding-top:5px; }
+  .chapter-head .stage-tag{
+    display:inline-block; margin-top:8px;
+    font-size:11.5px; letter-spacing:.07em; text-transform:uppercase; font-weight:600;
+    color:var(--ink-faint);
+  }
+
+  .prose{ max-width:70ch; }
+  .prose p{ margin:0 0 14px; color:var(--ink); }
+  .prose p.soft{ color:var(--ink-soft); }
+
+  .callout{
+    background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--accent2);
+    border-radius:8px; padding:16px 20px; margin:18px 0 22px; max-width:70ch;
+    box-shadow:var(--shadow);
+  }
+  .callout .label{
+    font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; font-weight:700;
+    color:var(--accent2); margin-bottom:8px; display:block;
+  }
+  .callout ul{ margin:0; padding-left:20px; }
+  .callout li{ margin-bottom:6px; color:var(--ink); }
+  .callout li:last-child{ margin-bottom:0; }
+  .callout li .k{ color:var(--ink-soft); }
+
+  .takeaway{
+    display:flex; gap:12px; align-items:flex-start;
+    background:var(--accent-soft); border-radius:8px; padding:14px 18px;
+    margin-top:22px; max-width:70ch;
+  }
+  .takeaway .mark{
+    font-family:"IBM Plex Mono",monospace; font-weight:700; color:var(--accent); font-size:13px;
+    flex:none; margin-top:2px;
+  }
+  .takeaway p{ margin:0; color:var(--ink); font-size:14.5px; }
+
+  /* formula */
+  .formula{
+    font-family:"IBM Plex Mono",monospace; background:var(--surface-2);
+    border:1px solid var(--border); border-radius:8px;
+    padding:16px 22px; margin:16px 0; max-width:70ch;
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    font-size:15.5px; overflow-x:auto;
+  }
+  .formula .frac{
+    display:inline-flex; flex-direction:column; align-items:center; vertical-align:middle;
+    margin:0 3px; line-height:1.3;
+  }
+  .formula .frac .num{ border-bottom:1.4px solid currentColor; padding:0 4px 1px; }
+  .formula .frac .den{ padding:1px 4px 0; }
+  .formula sup{ font-size:.7em; }
+
+  /* code card */
+  .code-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:10px;
+    margin:16px 0 22px; overflow:hidden; box-shadow:var(--shadow);
+    max-width: 100%;
+  }
+  .code-card .bar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:9px 16px; background:var(--surface-2); border-bottom:1px solid var(--border);
+    font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-soft);
+  }
+  .code-card .bar .fn{ color:var(--ink); font-weight:600; }
+  .code-card pre{
+    margin:0; padding:16px 18px; overflow-x:auto;
+    font-family:"IBM Plex Mono",monospace; font-size:13.3px; line-height:1.62;
+  }
+  .code-card code{ color:var(--ink); }
+  .tok-kw{ color:var(--code-kw); }
+  .tok-str{ color:var(--code-str); }
+  .tok-com{ color:var(--code-com); font-style:italic; }
+  .tok-fn{ color:var(--code-fn); }
+  .tok-num{ color:var(--code-num); }
+
+  .kv-table{ width:100%; border-collapse:collapse; margin:14px 0 20px; max-width:70ch; font-size:14px; }
+  .kv-table th, .kv-table td{
+    text-align:left; padding:8px 12px; border-bottom:1px solid var(--border);
+  }
+  .kv-table th{ color:var(--ink-faint); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.05em; }
+  .kv-table td code{ font-family:"IBM Plex Mono",monospace; font-size:12.8px; background:var(--surface-2); padding:1px 5px; border-radius:4px; }
+  .kv-table td.num{ font-variant-numeric: tabular-nums; }
+
+  .compare{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:16px 0 22px; max-width:70ch; }
+  .compare .box{ background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:14px 16px; }
+  .compare .box h4{ font-size:14px; margin-bottom:8px; color:var(--ink); }
+  .compare .box.pos{ border-left:3px solid var(--accent2); }
+  .compare .box.neg{ border-left:3px solid var(--red); }
+  .compare ul{ margin:0; padding-left:18px; font-size:13.6px; color:var(--ink-soft); }
+  .compare li{ margin-bottom:4px; }
+
+  /* kernel grid visual */
+  .kernel-row{ display:flex; gap:28px; flex-wrap:wrap; margin:18px 0 22px; }
+  .kernel{ text-align:center; }
+  .kernel .cap{ font-size:12.5px; color:var(--ink-soft); margin-bottom:8px; }
+  .kernel .grid3{
+    display:grid; grid-template-columns:repeat(3,34px); grid-template-rows:repeat(3,34px);
+    gap:3px; background:var(--border); border:1px solid var(--border); border-radius:6px; overflow:hidden;
+  }
+  .kernel .grid3 span{
+    background:var(--surface); display:flex; align-items:center; justify-content:center;
+    font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--ink);
+  }
+  .kernel .grid3 span.center{ background:var(--accent-soft); color:var(--accent); font-weight:700; }
+  .kernel .grid3 span.neg{ color:var(--red); }
+
+  /* HSV wheel */
+  .hsv-wrap{ display:flex; gap:32px; align-items:center; flex-wrap:wrap; margin:18px 0 24px; }
+  .hsv-wrap svg{ flex:none; }
+  .hsv-legend{ font-size:13.6px; color:var(--ink-soft); max-width:34ch; }
+  .hsv-legend div{ margin-bottom:6px; }
+  .hsv-legend b{ color:var(--ink); }
+
+  .pipeline{
+    display:flex; align-items:center; flex-wrap:wrap; gap:0; margin:18px 0 24px; max-width:70ch;
+  }
+  .pipeline .step{
+    background:var(--surface); border:1px solid var(--border); border-radius:8px;
+    padding:9px 14px; font-size:13px; color:var(--ink); white-space:nowrap;
+  }
+  .pipeline .arrow{ color:var(--ink-faint); padding:0 8px; font-size:15px; }
+
+  .figure{
+    margin:22px 0 26px; max-width:70ch; background:var(--surface);
+    border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:16px 14px 10px;
+  }
+  .figure .scroll{ overflow-x:auto; }
+  .figure svg{ display:block; width:100%; min-width:560px; height:auto; }
+  .figure figcaption{
+    margin-top:10px; padding-top:10px; border-top:1px solid var(--border);
+    font-size:12.5px; color:var(--ink-soft); line-height:1.65;
+  }
+  .figure figcaption b{ color:var(--ink); }
+  svg .fbox{ fill:var(--surface-2); stroke:var(--border); }
+  svg .fbox-a{ fill:var(--accent-soft); stroke:var(--accent); }
+  svg .fbox-b{ fill:var(--accent2-soft); stroke:var(--accent2); }
+  svg .flab{ fill:var(--ink); font-size:11.5px; font-weight:600; }
+  svg .fsub{ fill:var(--ink-faint); font-size:10.5px; }
+  svg .fline{ stroke:var(--ink-faint); fill:none; stroke-width:1.4; }
+  svg .fline-a{ stroke:var(--accent); fill:none; stroke-width:1.6; }
+  svg .fline-b{ stroke:var(--accent2); fill:none; stroke-width:1.6; }
+  svg .fgrid{ stroke:var(--border); stroke-width:.8; fill:none; }
+
+  footer.page-end{
+    max-width:70ch; margin-top:64px; padding-top:26px; border-top:1px solid var(--border);
+    color:var(--ink-faint); font-size:13px;
+  }
+
+  code.inline{
+    font-family:"IBM Plex Mono",monospace; background:var(--surface-2);
+    padding:1.5px 6px; border-radius:5px; font-size:.88em; color:var(--ink);
+  }
+
+  .mobile-toc-toggle{ display:none; }
+
+  @media (max-width: 900px){
+    .layout{ grid-template-columns: 1fr; }
+    .sidebar{
+      position:static; height:auto; border-right:none; border-bottom:1px solid var(--border);
+      padding:16px 20px;
+    }
+    nav.toc{ display:none; margin-top:14px; }
+    nav.toc.open{ display:block; }
+    .mobile-toc-toggle{
+      display:flex; align-items:center; gap:8px; width:100%;
+      background:var(--surface-2); border:1px solid var(--border); border-radius:8px;
+      padding:10px 14px; color:var(--ink); font-size:13.5px; font-weight:600;
+      font-family:"IBM Plex Sans Condensed",sans-serif; letter-spacing:.03em;
+    }
+    main{ padding:38px 20px 90px; }
+    .compare{ grid-template-columns:1fr; }
+    header.hero h1{ font-size:30px; }
+  }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; scroll-behavior:auto !important; } }
+
+  html{ scroll-behavior:smooth; }
+
+  /* ---------- Print (PDF로 저장 시) ---------- */
+  @media print{
+    :root{
+      --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F3F4F2; --surface-3:#EAEDEA;
+      --ink:#14181A; --ink-soft:#4A5450; --ink-faint:#78827D; --border:#CBD2CD;
+      --shadow:none;
+    }
+    * { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    body{ font-size:12.5px; }
+    .layout{ display:block; max-width:none; }
+    .sidebar{ display:none; }
+    main{ padding:0 6mm; }
+    header.hero{ margin-bottom:30px; }
+    .stage-chip{ break-inside:avoid; }
+    section.chapter{
+      border-top:1px solid var(--border);
+      break-before:page; padding-top:24px;
+    }
+    section.chapter:first-of-type{ break-before:avoid; }
+    .code-card, .callout, .compare, .kv-table, .takeaway, .kernel-row, .hsv-wrap, .formula, .pipeline{
+      break-inside:avoid;
+    }
+    a{ color:var(--ink); text-decoration:none; }
+    .code-card pre{ white-space:pre-wrap; word-break:break-word; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <span class="brand">Study Notes<strong>드론 사람 탐지<br>개념 정리</strong></span>
+    <button class="mobile-toc-toggle" id="tocToggle" type="button">목차 펼치기 ▾</button>
+    <nav class="toc" id="tocNav">
+      <div class="group-label">01 · 세상을 픽셀로 옮기기</div>
+      <ol>
+        <li><a href="#sec-a"><span class="letter">A</span>핀홀 카메라 · 초점거리 · 화각</a></li>
+        <li><a href="#sec-b"><span class="letter">B</span>GSD와 대상 픽셀 크기</a></li>
+      </ol>
+      <div class="group-label">02 · 모델이 작동하는 방식</div>
+      <ol>
+        <li><a href="#sec-c"><span class="letter">C</span>특징 피라미드 · stride · 앵커</a></li>
+        <li><a href="#sec-d"><span class="letter">D</span>박스를 숫자로 — DFL</a></li>
+        <li><a href="#sec-e"><span class="letter">E</span>누가 정답을 맡나 — 할당</a></li>
+        <li><a href="#sec-f"><span class="letter">F</span>손실함수</a></li>
+      </ol>
+      <div class="group-label">03 · 학습</div>
+      <ol>
+        <li><a href="#sec-g"><span class="letter">G</span>전이학습 · 동결 · 망각</a></li>
+        <li><a href="#sec-h"><span class="letter">H</span>데이터 증강</a></li>
+        <li><a href="#sec-i"><span class="letter">I</span>최적화 — SGD · LR · AMP</a></li>
+      </ol>
+      <div class="group-label">04 · 평가</div>
+      <ol>
+        <li><a href="#sec-j"><span class="letter">J</span>IoU · 정밀도 · 재현율 · AP</a></li>
+        <li><a href="#sec-k"><span class="letter">K</span>분할과 누수</a></li>
+        <li><a href="#sec-l"><span class="letter">L</span>작은 객체가 어려운 이유</a></li>
+      </ol>
+      <div class="group-label">05 · 배포</div>
+      <ol>
+        <li><a href="#sec-m"><span class="letter">M</span>정밀도 · 지연시간</a></li>
+      </ol>
+    </nav>
+  </aside>
+
+  <main>
+    <header class="hero">
+      <span class="eyebrow">자율 정찰 드론 관제 시스템 · 비전 파트</span>
+      <h1>드론에서 사람을 찾는 일 — 개념 정리</h1>
+      <p class="sub">고도 30 m 상공에서 사람은 <b>30 px 남짓</b>으로 찍힌다. 그 30 px을 숫자로 만들고, 모델이 어떻게 읽고,
+      무엇을 최소화하며, 어떻게 채점하는지를 순서대로 정리했다. 모든 수치는 이 프로젝트에서 실제로 측정한 값이다.</p>
+      <div class="stage-row">
+        <div class="stage-chip"><span class="n">1</span> <b>기하</b>&nbsp;핀홀 · 화각 · GSD</div>
+        <div class="stage-chip"><span class="n">2</span> <b>모델</b>&nbsp;피라미드 · DFL · 할당 · 손실</div>
+        <div class="stage-chip"><span class="n">3</span> <b>학습</b>&nbsp;전이 · 증강 · 최적화</div>
+        <div class="stage-chip"><span class="n">4</span> <b>평가</b>&nbsp;AP · 누수 · 소형 객체</div>
+      </div>
+    </header>
+
+    <!-- ================= A ================= -->
+    <section class="chapter" id="sec-a">
+      <div class="chapter-head">
+        <span class="big-letter">A</span>
+        <div><h2>핀홀 카메라 · 초점거리 · 화각</h2><span class="stage-tag">"몇 미터짜리가 몇 픽셀로 찍히나"</span></div>
+      </div>
+      <div class="prose">
+        <p>탐지 문제를 시작하기 전에 답해야 하는 질문이 있다. <b>우리 카메라에 사람이 몇 픽셀로 찍히는가.</b>
+        이 값이 정해져야 학습 데이터를 어떤 크기로 만들지, 어느 고도까지 올라가도 되는지가 정해진다.</p>
+        <p>카메라를 <b>핀홀 모델</b>로 보면 답이 간단한 비례식이 된다. 거리 <code class="inline">R</code>만큼 떨어진
+        길이 <code class="inline">L</code>짜리 물체는 <b>초점거리에 비례하고 거리에 반비례</b>하는 픽셀 수로 찍힌다.</p>
+      </div>
+
+      <div class="formula">픽셀 = <span class="frac"><span class="num">f · L</span><span class="den">R</span></span>
+        &nbsp;&nbsp;·&nbsp;&nbsp; f = <span class="frac"><span class="num">이미지 폭 / 2</span><span class="den">tan(수평화각 / 2)</span></span></div>
+
+      <div class="callout">
+        <span class="label">용어 — 헷갈리기 쉬운 세 가지</span>
+        <ul>
+          <li><span class="k">초점거리(mm)</span> &nbsp; 렌즈의 물리 사양. 5.5 mm 같은 값</li>
+          <li><span class="k">초점거리(px)</span> &nbsp; 위 식의 <code class="inline">f</code>. <b>해상도에 따라 달라진다.</b> 같은 렌즈라도 1920 폭이면 f가 2배</li>
+          <li><span class="k">화각(FOV)</span> &nbsp; 렌즈가 담는 각도. 초점거리와 센서 크기로 정해진다. 화각이 넓을수록 f는 작다</li>
+        </ul>
+      </div>
+
+      <table class="kv-table">
+        <tr><th>렌즈 화각</th><th>f (1920 폭 기준)</th><th>30 m에서 0.81 m 물체</th></tr>
+        <tr><td>75°</td><td>1,251 px</td><td><b>34 px</b></td></tr>
+        <tr><td>90°</td><td>960 px</td><td>26 px</td></tr>
+        <tr><td>93°</td><td>911 px</td><td>25 px</td></tr>
+      </table>
+
+      <div class="takeaway"><span class="mark">POINT</span><p><b>화각 자체는 탐지 성능과 직접 관계가 없다.</b> 화각은 f를 정하고, f가 픽셀 수를 정하고, 픽셀 수가 성능을 정한다.
+      그래서 "65°·20 m"와 "54°·25 m"는 둘 다 38 px이고 <b>측정된 재현율@0.15 도 같았다</b>(0.36). 렌즈 선택은 화각 문제가 아니라 <b>초점거리 문제</b>다.</p></div>
+    </section>
+
+    <!-- ================= B ================= -->
+    <section class="chapter" id="sec-b">
+      <div class="chapter-head">
+        <span class="big-letter">B</span>
+        <div><h2>GSD와 대상 픽셀 크기</h2><span class="stage-tag">화소 하나가 땅에서 몇 cm인가</span></div>
+      </div>
+      <div class="prose">
+        <p><b>GSD(Ground Sample Distance)</b>는 항공·위성 영상에서 쓰는 기본 단위로, <b>화소 하나가 덮는 지상 거리</b>다.
+        A절의 식을 뒤집은 것이며, 지상에 있는 것의 크기를 다룰 때 훨씬 편하다.</p>
+      </div>
+
+      <div class="formula">GSD = <span class="frac"><span class="num">R</span><span class="den">f</span></span>
+        &nbsp;&nbsp;·&nbsp;&nbsp; 픽셀 = <span class="frac"><span class="num">지상 길이</span><span class="den">GSD</span></span></div>
+
+      <h3 style="font-size:16px;margin:28px 0 6px;">카메라가 비스듬하면 GSD가 방향마다 달라진다</h3>
+      <p class="prose soft">수직 하향에서는 거리 = 고도이고 화소가 정사각형으로 땅에 떨어진다. 그런데 <b>마운트각 θ</b>로 기울이면
+      거리가 늘고, 땅이 비스듬히 보여 <b>진행 방향(종방향)으로 화소가 늘어난다</b>.</p>
+
+      <div class="formula">R = <span class="frac"><span class="num">고도</span><span class="den">sin θ</span></span>
+        &nbsp;·&nbsp; GSD<sub>횡</sub> = <span class="frac"><span class="num">R</span><span class="den">f</span></span>
+        &nbsp;·&nbsp; GSD<sub>종</sub> = <span class="frac"><span class="num">R</span><span class="den">f · sin θ</span></span></div>
+
+      <table class="kv-table">
+        <tr><th>마운트각</th><th>거리</th><th>횡 GSD</th><th>종 GSD</th><th>종/횡</th></tr>
+        <tr><td>90° (수직)</td><td>30.0 m</td><td>2.40 cm</td><td>2.40 cm</td><td>1.00</td></tr>
+        <tr><td>60°</td><td>34.6 m</td><td>2.77 cm</td><td>3.20 cm</td><td>1.15</td></tr>
+        <tr><td>45°</td><td>42.4 m</td><td>3.39 cm</td><td>4.80 cm</td><td><b>1.41</b></td></tr>
+        <tr><td>30°</td><td>60.0 m</td><td>4.80 cm</td><td>9.59 cm</td><td><b>2.00</b></td></tr>
+      </table>
+
+      <div class="callout">
+        <span class="label">GSD로 되는 것과 안 되는 것</span>
+        <ul>
+          <li><span class="k">된다</span> &nbsp; <b>지면 위 길이</b> — 누운 사람, 지형지물, 좌표 변환 오차</li>
+          <li><span class="k">안 된다</span> &nbsp; <b>수직 성분이 있는 것</b> — 서 있는 사람의 키는 땅 위 길이가 아니다</li>
+        </ul>
+      </div>
+
+      <p class="prose">서 있는 사람은 <b>키(수직) + 발자국(수평)</b>이 섞여 보이므로 투영을 직접 계산해야 한다.
+      시선에 수직인 성분만 픽셀이 된다는 원리로 쓰면:</p>
+
+      <div class="formula">세로 픽셀 = <span class="frac"><span class="num">f · (H·cos θ + w·sin θ)</span><span class="den">R</span></span>
+        &nbsp;&nbsp; (H = 키, w = 발자국)</div>
+
+      <table class="kv-table">
+        <tr><th>마운트각</th><th>서 있는 사람 (1.7 m)</th><th>누운 사람 (1.7 m)</th></tr>
+        <tr><td>90° (수직)</td><td>33.8 px</td><td><b>70.9 px</b></td></tr>
+        <tr><td>60°</td><td><b>56.0 px</b> (1.66×)</td><td>53~61 px</td></tr>
+        <tr><td>45°</td><td>52.3 px</td><td>35~50 px</td></tr>
+        <tr><td>30°</td><td>39.1 px</td><td>18~35 px (0.50×)</td></tr>
+      </table>
+
+      <div class="takeaway"><span class="mark">POINT</span><p><b>마운트각은 두 자세에 반대로 작용한다.</b> 비스듬해지면 서 있는 사람은 키가 보이기 시작해 커지고(60°에서 최대),
+      누운 사람은 길이가 단축되고 거리가 멀어져 작아진다. 수색 대상에 <b>쓰러진 사람</b>이 포함되므로 이건 그대로 설계 트레이드오프가 된다.</p></div>
+
+      <div class="takeaway"><span class="mark">함정</span><p>비스듬하면 <b>화면 위와 아래의 거리가 다르다.</b> 45°에서는 화면 위쪽 사람이 아래쪽의 <b>40 %</b> 크기로 찍힌다.
+      즉 "사람 px"가 하나의 값이 아니라 <b>화면 위치에 따른 분포</b>가 된다. 수직 하향(0.92)에서만 균일하다고 볼 수 있다.</p></div>
+    </section>
+
+    <!-- ================= C ================= -->
+    <section class="chapter" id="sec-c">
+      <div class="chapter-head">
+        <span class="big-letter">C</span>
+        <div><h2>특징 피라미드 · stride · 앵커</h2><span class="stage-tag">모델은 격자 위에서 답한다</span></div>
+      </div>
+      <div class="prose">
+        <p>CNN은 이미지를 통과시키며 해상도를 <b>절반씩 줄이고</b> 채널을 늘린다. 이 과정에서 생기는 중간 결과를 <b>특징맵(feature map)</b>이라 하고,
+        원본 대비 몇 배로 줄었는지를 <b>stride</b>라 한다. stride 8이면 원본 8 px이 특징맵 1칸이다.</p>
+        <p>작은 물체는 큰 특징맵(stride 8)에서, 큰 물체는 작은 특징맵(stride 32)에서 잡는다.
+        이 세 단계를 한꺼번에 쓰는 구조를 <b>특징 피라미드(FPN)</b>라 한다.</p>
+      </div>
+
+      <div class="pipeline">
+        <div class="step">입력<br><span style="color:var(--ink-faint);">3×736×1280</span></div><span class="arrow">→</span>
+        <div class="step">backbone<br><span style="color:var(--ink-faint);">특징 추출</span></div><span class="arrow">→</span>
+        <div class="step">neck (FPN+PAN)<br><span style="color:var(--ink-faint);">해상도 섞기</span></div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--accent2);">head ×3<br><span style="color:var(--ink-faint);">stride 8/16/32</span></div>
+      </div>
+
+      <figure class="figure">
+        <div class="scroll">
+<svg viewBox="0 0 860 372" role="img" aria-label="YOLO11 특징 피라미드 구조">
+<defs>
+  <marker id="ah" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="var(--ink-faint)"/></marker>
+  <marker id="ah-a" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="var(--accent)"/></marker>
+  <marker id="ah-b" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="var(--accent2)"/></marker>
+</defs>
+<text class="fsub" x="90" y="24">backbone</text>
+<text class="fsub" x="300" y="24">neck · FPN</text>
+<text class="fsub" x="480" y="24">neck · PAN</text>
+<text class="fsub" x="650" y="24">head ×3</text>
+<text class="fsub" x="300" y="36" style="fill:var(--accent)">위 → 아래 · 업샘플</text>
+<text class="fsub" x="480" y="36" style="fill:var(--accent2)">아래 → 위 · 다운샘플</text>
+<text class="flab" x="8" y="64.0">P3</text><text class="fsub" x="8" y="78.0">stride 8</text>
+<rect class="fbox" x="90" y="46" width="140" height="40" rx="6"/>
+<rect class="fbox-a" x="300" y="46" width="140" height="40" rx="6"/>
+<rect class="fbox-b" x="480" y="46" width="140" height="40" rx="6"/>
+<rect class="fbox" x="650" y="46" width="180" height="40" rx="6" style="stroke:var(--accent2);stroke-dasharray:0"/>
+<text class="flab" x="662" y="64.0">92 × 160 격자</text><text class="fsub" x="662" y="78.0">앵커 14,720개 · 칸마다 65개 숫자</text>
+<path class="fline" d="M236,66.0 H292" marker-end="url(#ah)"/>
+<path class="fline-a" d="M446,66.0 H472" marker-end="url(#ah-a)"/>
+<path class="fline-b" d="M626,66.0 H642" marker-end="url(#ah-b)"/>
+<text class="flab" x="8" y="184.0">P4</text><text class="fsub" x="8" y="198.0">stride 16</text>
+<rect class="fbox" x="90" y="166" width="70" height="40" rx="6"/>
+<rect class="fbox-a" x="300" y="166" width="70" height="40" rx="6"/>
+<rect class="fbox-b" x="480" y="166" width="70" height="40" rx="6"/>
+<rect class="fbox" x="650" y="166" width="180" height="40" rx="6" style="stroke:var(--accent2);stroke-dasharray:0"/>
+<text class="flab" x="662" y="184.0">46 × 80 격자</text><text class="fsub" x="662" y="198.0">앵커 3,680개 · 칸마다 65개 숫자</text>
+<path class="fline" d="M166,186.0 H292" marker-end="url(#ah)"/>
+<path class="fline-a" d="M376,186.0 H472" marker-end="url(#ah-a)"/>
+<path class="fline-b" d="M556,186.0 H642" marker-end="url(#ah-b)"/>
+<text class="flab" x="8" y="304.0">P5</text><text class="fsub" x="8" y="318.0">stride 32</text>
+<rect class="fbox" x="90" y="286" width="35" height="40" rx="6"/>
+<rect class="fbox-a" x="300" y="286" width="35" height="40" rx="6"/>
+<rect class="fbox-b" x="480" y="286" width="35" height="40" rx="6"/>
+<rect class="fbox" x="650" y="286" width="180" height="40" rx="6" style="stroke:var(--accent2);stroke-dasharray:0"/>
+<text class="flab" x="662" y="304.0">23 × 40 격자</text><text class="fsub" x="662" y="318.0">앵커 920개 · 칸마다 65개 숫자</text>
+<path class="fline" d="M131,306.0 H292" marker-end="url(#ah)"/>
+<path class="fline-a" d="M341,306.0 H472" marker-end="url(#ah-a)"/>
+<path class="fline-b" d="M521,306.0 H642" marker-end="url(#ah-b)"/>
+<path class="fline" d="M106,86 V158" marker-end="url(#ah)"/>
+<text class="fsub" x="114" y="130.0">해상도 ½ · 채널 ×2</text>
+<path class="fline" d="M106,206 V278" marker-end="url(#ah)"/>
+<text class="fsub" x="114" y="250.0">해상도 ½ · 채널 ×2</text>
+<path class="fline-a" d="M316,286 V214" marker-end="url(#ah-a)"/>
+<text class="fsub" x="324" y="250.0" style="fill:var(--accent)">업샘플 ×2 후 더하기</text>
+<path class="fline-a" d="M316,166 V94" marker-end="url(#ah-a)"/>
+<text class="fsub" x="324" y="130.0" style="fill:var(--accent)">업샘플 ×2 후 더하기</text>
+<path class="fline-b" d="M496,86 V158" marker-end="url(#ah-b)"/>
+<text class="fsub" x="504" y="130.0" style="fill:var(--accent2)">다운샘플 후 더하기</text>
+<path class="fline-b" d="M496,206 V278" marker-end="url(#ah-b)"/>
+<text class="fsub" x="504" y="250.0" style="fill:var(--accent2)">다운샘플 후 더하기</text>
+<path class="fline" d="M106,14 V38" marker-end="url(#ah)"/>
+<text class="fsub" x="8" y="16">입력 3 × 736 × 1280</text>
+<text class="fsub" x="8" y="352">상자 너비는 특징맵 가로 크기에 비례한다 — 단계마다 절반으로 줄어든다</text>
+</svg>
+        </div>
+        <figcaption><b>FPN 은 한 번만 흐르지 않는다.</b> backbone 이 해상도를 절반씩 줄여 P3·P4·P5 를 만들고,
+        FPN 이 <b>위에서 아래로</b>(의미가 강한 저해상도 → 고해상도) 섞은 뒤, PAN 이 다시 <b>아래에서 위로</b> 섞는다.
+        작은 사람은 P3 가 맡지만, PAN 덕분에 P3 도 P5 가 본 넓은 맥락(이 지형이 숲인가 밭인가)을 함께 갖게 된다.</figcaption>
+      </figure>
+
+      <table class="kv-table">
+        <tr><th>단계</th><th>stride</th><th>격자</th><th>앵커 수</th><th>맡는 크기</th></tr>
+        <tr><td>P3</td><td>8</td><td>92 × 160</td><td>14,720</td><td>작은 것</td></tr>
+        <tr><td>P4</td><td>16</td><td>46 × 80</td><td>3,680</td><td>중간</td></tr>
+        <tr><td>P5</td><td>32</td><td>23 × 40</td><td>920</td><td>큰 것</td></tr>
+        <tr><td colspan="3"><b>합계</b></td><td><b>19,320</b></td><td></td></tr>
+      </table>
+
+      <p class="prose"><b>앵커(anchor)</b>는 격자의 각 칸을 가리킨다. 모델은 앵커마다 "여기 사람이 있나, 있다면 박스는 어디까지인가"를 답한다.
+      앵커 하나가 내놓는 숫자의 개수를 <code class="inline">no</code>라 한다.</p>
+
+      <div class="formula">no = 4 × reg_max + nc = 4 × 16 + 1 = <b>65</b></div>
+
+      <figure class="figure">
+        <div class="scroll">
+<svg viewBox="0 0 860 300" role="img" aria-label="stride 8 격자 위에서 사람이 차지하는 칸 수">
+<rect class="fbox" x="40" y="40" width="528" height="198" rx="2"/>
+<path class="fgrid" d="M62,40 V238"/>
+<path class="fgrid" d="M84,40 V238"/>
+<path class="fgrid" d="M106,40 V238"/>
+<path class="fgrid" d="M128,40 V238"/>
+<path class="fgrid" d="M150,40 V238"/>
+<path class="fgrid" d="M172,40 V238"/>
+<path class="fgrid" d="M194,40 V238"/>
+<path class="fgrid" d="M216,40 V238"/>
+<path class="fgrid" d="M238,40 V238"/>
+<path class="fgrid" d="M260,40 V238"/>
+<path class="fgrid" d="M282,40 V238"/>
+<path class="fgrid" d="M304,40 V238"/>
+<path class="fgrid" d="M326,40 V238"/>
+<path class="fgrid" d="M348,40 V238"/>
+<path class="fgrid" d="M370,40 V238"/>
+<path class="fgrid" d="M392,40 V238"/>
+<path class="fgrid" d="M414,40 V238"/>
+<path class="fgrid" d="M436,40 V238"/>
+<path class="fgrid" d="M458,40 V238"/>
+<path class="fgrid" d="M480,40 V238"/>
+<path class="fgrid" d="M502,40 V238"/>
+<path class="fgrid" d="M524,40 V238"/>
+<path class="fgrid" d="M546,40 V238"/>
+<path class="fgrid" d="M40,62 H568"/>
+<path class="fgrid" d="M40,84 H568"/>
+<path class="fgrid" d="M40,106 H568"/>
+<path class="fgrid" d="M40,128 H568"/>
+<path class="fgrid" d="M40,150 H568"/>
+<path class="fgrid" d="M40,172 H568"/>
+<path class="fgrid" d="M40,194 H568"/>
+<path class="fgrid" d="M40,216 H568"/>
+<text class="fsub" x="40" y="30">stride 8 특징맵 — 한 칸 = 원본 8 × 8 px</text>
+<rect class="fbox-a" x="62" y="188.5" width="49.5" height="49.5" rx="2" fill-opacity=".55"/>
+<text class="flab" x="62" y="172.5">18 px</text>
+<text class="fsub" x="62" y="184.5">2.3 × 2.3 칸</text>
+<rect class="fbox-a" x="160" y="133.5" width="104.5" height="104.5" rx="2" fill-opacity=".55"/>
+<text class="flab" x="160" y="117.5">38 px</text>
+<text class="fsub" x="160" y="129.5">4.8 × 4.8 칸</text>
+<rect class="fbox-b" x="320" y="42.8" width="195.2" height="195.2" rx="2" fill-opacity=".55"/>
+<text class="flab" x="320" y="26.8">71 px</text>
+<text class="fsub" x="320" y="38.8">8.9 × 8.9 칸</text>
+<text class="fsub" x="586" y="60">18 px → <tspan class="flab">2.3칸</tspan></text>
+<text class="fsub" x="586" y="84">38 px → <tspan class="flab">4.8칸</tspan></text>
+<text class="fsub" x="586" y="108">71 px → <tspan class="flab">8.9칸</tspan></text>
+<text class="fsub" x="586" y="140">P2 헤드(stride 4)를</text>
+<text class="fsub" x="586" y="156">붙이면 18 px 도 4.5칸,</text>
+<text class="fsub" x="586" y="172">대신 앵커가 4배</text>
+<text class="fsub" x="40" y="264">정사각형으로 그렸지만 실제 박스는 자세에 따라 납작하다 — 여기 값은 긴 변 기준이다</text>
+</svg>
+        </div>
+        <figcaption>같은 격자 위에 우리 운용 조건의 사람을 올려 본 것이다.
+        고도 30 m · 화각 90° 에서 서 있는 사람은 <b>2.3 × 2.3 칸</b>에 불과하다 —
+        박스 네 변까지의 거리를 답해야 하는데 쓸 수 있는 칸이 이것뿐이다.</figcaption>
+      </figure>
+
+      <div class="takeaway"><span class="mark">POINT</span><p>18 px짜리 사람은 stride 8 격자에서 <b>2.3칸</b>밖에 차지하지 않는다.
+      작은 객체가 어려운 구조적 이유가 여기 있다 — <b>모델이 쓸 수 있는 칸 자체가 부족하다.</b>
+      stride 4인 <b>P2 헤드</b>를 추가하면 4.5칸이 되고, 대신 앵커가 4배로 늘어 비용이 커진다.</p></div>
+    </section>
+
+    <!-- ================= D ================= -->
+    <section class="chapter" id="sec-d">
+      <div class="chapter-head">
+        <span class="big-letter">D</span>
+        <div><h2>박스를 숫자로 — DFL</h2><span class="stage-tag">좌표 4개가 아니라 분포 4개</span></div>
+      </div>
+      <div class="prose">
+        <p>박스를 내놓는 가장 단순한 방법은 좌표 4개를 회귀하는 것이다. 요즘 YOLO는 대신 <b>앵커 점에서 네 변까지의 거리</b>를
+        내놓고, 그 거리를 <b>실수 하나가 아니라 확률분포</b>로 표현한다. 이것이 <b>DFL(Distribution Focal Loss)</b> 방식이다.</p>
+      </div>
+
+      <div class="formula">거리 = <span style="font-size:20px;">Σ</span><sub>i=0..15</sub> &nbsp; i · softmax(z)<sub>i</sub></div>
+
+      <p class="prose soft">0~15의 16개 칸(bin)에 확률을 주고 그 <b>기댓값</b>을 거리로 쓴다.
+      "13 근처인데 12일 수도 14일 수도"를 표현할 수 있다.</p>
+
+      <div class="compare">
+        <div class="box neg">
+          <h4>좌표 직접 회귀</h4>
+          <ul><li>숫자 4개로 단순</li><li>− 애매한 경계를 표현할 수 없다</li><li>− 정답이 한 점이라 학습이 불안정</li></ul>
+        </div>
+        <div class="box pos">
+          <h4>거리 분포 (DFL)</h4>
+          <ul><li>변마다 16칸 분포 → 64채널</li><li>+ 불확실성을 표현 (풀에 가린 사람 등)</li><li>+ 분류 문제로 바뀌어 학습이 안정적</li></ul>
+        </div>
+      </div>
+
+      <div class="takeaway"><span class="mark">POINT</span><p>박스 좌표를 <b>회귀가 아니라 분류로 푸는</b> 것이 핵심 아이디어다.
+      우리 데이터처럼 <b>경계가 애매한 대상</b>(풀숲에 누운 사람)이 많으면 이 표현의 값어치가 크다.</p></div>
+    </section>
+    <!-- ================= E ================= -->
+    <section class="chapter" id="sec-e">
+      <div class="chapter-head">
+        <span class="big-letter">E</span>
+        <div><h2>누가 정답을 맡나 — 할당</h2><span class="stage-tag">앵커 19,320개 vs 정답 1.45개</span></div>
+      </div>
+      <div class="prose">
+        <p>예측은 앵커 19,320개로 <b>고정</b>인데 정답은 이미지마다 <b>0~6개</b>다. 손실을 계산하려면 먼저
+        <b>"어느 앵커가 어느 정답을 맡는가"</b>를 정해야 한다. 이 단계를 <b>할당(assignment)</b>이라 한다.
+        선형 회귀에는 없고 객체 탐지에만 있는 단계다.</p>
+        <p>YOLO11은 <b>TAL(Task-Aligned Assigner)</b>을 쓴다. 정답과 잘 겹치면서(IoU 높음) 동시에 사람이라고 확신하는(점수 높음)
+        앵커를 정답마다 상위 <code class="inline">k=10</code>개 고른다.</p>
+      </div>
+
+      <div class="formula">정렬 점수 t = s<sup>α</sup> · u<sup>β</sup> &nbsp;&nbsp;(s = 분류 점수, u = IoU)</div>
+
+      <table class="kv-table">
+        <tr><th>항목</th><th>값</th></tr>
+        <tr><td>앵커 수</td><td>19,320</td></tr>
+        <tr><td>이미지당 정답 (실측)</td><td>1.45</td></tr>
+        <tr><td><b>정답 1개당 앵커</b></td><td><b>13,318</b></td></tr>
+        <tr><td>할당되는 양성 앵커</td><td>약 14.5개</td></tr>
+        <tr><td><b>양성 비율</b></td><td><b>0.075 %</b></td></tr>
+      </table>
+
+      <div class="takeaway"><span class="mark">POINT</span><p>객체 탐지는 본질적으로 <b>극단적 불균형 문제</b>다.
+      앵커의 99.9 %가 배경이다. 그래서 <code class="inline">L_cls</code>는 <b>전체 앵커</b>에서 계산하고,
+      <code class="inline">L_box</code>·<code class="inline">L_dfl</code>은 <b>양성 앵커 0.075 %</b>에서만 계산한다.</p></div>
+    </section>
+
+    <!-- ================= F ================= -->
+    <section class="chapter" id="sec-f">
+      <div class="chapter-head">
+        <span class="big-letter">F</span>
+        <div><h2>손실함수</h2><span class="stage-tag">무엇을 최소화하는가</span></div>
+      </div>
+
+      <div class="formula">L = 7.5 · L<sub>box</sub> &nbsp;+&nbsp; 0.5 · L<sub>cls</sub> &nbsp;+&nbsp; 1.5 · L<sub>dfl</sub></div>
+
+      <table class="kv-table">
+        <tr><th>항</th><th>식</th><th>대상</th><th>무엇을 고치나</th></tr>
+        <tr><td><b>box</b></td><td>1 − CIoU</td><td>양성 앵커</td><td>박스 <b>위치·크기</b></td></tr>
+        <tr><td><b>cls</b></td><td>BCE(s, t)</td><td>전체 앵커</td><td><b>사람인가 아닌가</b></td></tr>
+        <tr><td><b>dfl</b></td><td>거리 bin 교차엔트로피</td><td>양성 앵커</td><td>박스 <b>경계의 정밀도</b></td></tr>
+      </table>
+
+      <p class="prose"><b>CIoU</b>는 IoU에 <b>중심 거리</b>와 <b>종횡비</b> 항을 더한 것이다. IoU만 쓰면 두 박스가 겹치지 않을 때
+      기울기가 0이 되어 학습이 안 되는데, 중심 거리 항이 그 문제를 푼다.</p>
+
+      <div class="formula">CIoU = IoU − <span class="frac"><span class="num">ρ²(중심 거리)</span><span class="den">대각선²</span></span> − α·v</div>
+
+      <p class="prose"><b>cls의 목표값이 0/1이 아니라는 점</b>이 중요하다. TAL의 정렬 점수 <code class="inline">t</code>를 목표로 쓴다.
+      "잘 맞춘 앵커일수록 높은 점수를 내라"는 부드러운 목표다.</p>
+
+      <div class="code-card">
+        <div class="bar"><span class="fn">loss.py</span><span>실제 손실값 계산</span></div>
+        <pre><code><span class="tok-kw">from</span> ultralytics <span class="tok-kw">import</span> YOLO
+<span class="tok-kw">from</span> ultralytics.cfg <span class="tok-kw">import</span> get_cfg
+<span class="tok-kw">from</span> ultralytics.utils <span class="tok-kw">import</span> DEFAULT_CFG
+
+net = YOLO(<span class="tok-str">"best.pt"</span>).model
+net.args = <span class="tok-fn">get_cfg</span>(DEFAULT_CFG)    <span class="tok-com"># box 7.5 · cls 0.5 · dfl 1.5</span>
+net.<span class="tok-fn">train</span>()
+
+total, items = net.<span class="tok-fn">loss</span>({<span class="tok-str">"img"</span>: im, <span class="tok-str">"batch_idx"</span>: idx,
+                          <span class="tok-str">"cls"</span>: cls, <span class="tok-str">"bboxes"</span>: boxes})
+<span class="tok-com"># items = [box, cls, dfl]  — 가중치가 이미 적용된 값</span></code></pre>
+      </div>
+
+      <h3 style="font-size:16px;margin:28px 0 6px;">실측 — 34 px 크롭 한 장</h3>
+      <table class="kv-table">
+        <tr><th>항</th><th>가중 전</th><th>가중치</th><th>가중 후</th></tr>
+        <tr><td>box</td><td>0.3421</td><td>× 7.5</td><td>2.5656</td></tr>
+        <tr><td>cls</td><td>2.3968</td><td>× 0.5</td><td>1.1984</td></tr>
+        <tr><td>dfl</td><td>0.7265</td><td>× 1.5</td><td>1.0898</td></tr>
+        <tr><td colspan="3"><b>합계</b></td><td><b>4.8538</b></td></tr>
+      </table>
+
+      <h3 style="font-size:16px;margin:28px 0 6px;">손실이 대상 크기에 어떻게 반응하나 (실측 · 각 40장)</h3>
+      <table class="kv-table">
+        <tr><th>대상 크기</th><th>box</th><th>cls</th><th>dfl</th><th>합</th></tr>
+        <tr><td>18 px</td><td>3.755</td><td><b>5.174</b></td><td>1.868</td><td>10.798</td></tr>
+        <tr><td>34 px</td><td>3.156</td><td>4.090</td><td>1.896</td><td>9.142</td></tr>
+        <tr><td>71 px</td><td>2.340</td><td>3.361</td><td>1.913</td><td>7.614</td></tr>
+        <tr><td>106 px</td><td>2.236</td><td><b>2.395</b></td><td>1.724</td><td>6.356</td></tr>
+        <tr><td><b>106 → 18 px 증가율 (상대)</b></td><td><b>+68 %</b></td><td><b>+116 %</b></td><td><b>+8 %</b></td><td>+70 %</td></tr>
+      </table>
+
+      <div class="takeaway"><span class="mark">POINT</span><p><b>대상이 작아질 때 무너지는 것은 cls다.</b> 위치 회귀(dfl)는 상대 +8 %로 거의 변하지 않는다.
+      즉 우리 문제는 "박스를 잘못 그린다"가 아니라 <b>"사람이 있다는 걸 알아채지 못한다"</b>는 것이고,
+      이건 재현율@0.15 측정(정답 중 26~32 %가 미검출, 매칭된 박스의 IoU 중앙값 0.76~0.83)과 정확히 같은 결론이다.</p></div>
+    </section>
+
+    <!-- ================= G ================= -->
+    <section class="chapter" id="sec-g">
+      <div class="chapter-head">
+        <span class="big-letter">G</span>
+        <div><h2>전이학습 · 동결 · 망각</h2><span class="stage-tag">COCO에서 배운 것을 가져온다</span></div>
+      </div>
+      <div class="prose">
+        <p><b>전이학습(transfer learning)</b>은 큰 데이터셋(COCO 12만 장·80클래스)에서 학습한 가중치를 출발점으로 삼는 것이다.
+        초반 층은 <b>모서리·질감처럼 어느 도메인에나 통하는 특징</b>을 배우므로 재사용 가치가 크다.
+        우리는 3만 장뿐이라 처음부터 학습하면 확실히 나쁘다.</p>
+      </div>
+
+      <table class="kv-table">
+        <tr><th>용어</th><th>뜻</th><th>우리 경우</th></tr>
+        <tr><td><b>사전학습</b></td><td>큰 데이터로 미리 학습된 가중치</td><td>COCO <code class="inline">yolo11m.pt</code></td></tr>
+        <tr><td><b>파인튜닝</b></td><td>그 위에 우리 데이터로 이어 학습</td><td>1클래스(person)로 바꿔 학습</td></tr>
+        <tr><td><b>백본 동결</b></td><td>앞쪽 층의 가중치를 고정</td><td>자세 분류 때 썼음 — 망각을 1/3로 줄임</td></tr>
+        <tr><td><b>파국적 망각</b></td><td>새 데이터를 배우며 이전 지식을 잃음</td><td>동결 없이 lr만 낮춰서는 못 막는다</td></tr>
+      </table>
+
+      <div class="takeaway"><span class="mark">함정</span><p>망각을 막겠다고 <b>학습률만 낮추는 것은 듣지 않는다</b>(실험으로 확인).
+      구조적으로 막으려면 <b>동결</b>이 필요하다. 반대로 동결이 지나치면 새 도메인을 못 배운다.</p></div>
+    </section>
+
+    <!-- ================= H ================= -->
+    <section class="chapter" id="sec-h">
+      <div class="chapter-head">
+        <span class="big-letter">H</span>
+        <div><h2>데이터 증강</h2><span class="stage-tag">같은 사진을 여러 조건으로 보여주기</span></div>
+      </div>
+      <div class="prose">
+        <p>증강은 <b>데이터를 늘리는 게 아니라 불변성(invariance)을 가르치는 것</b>이다.
+        "이렇게 변해도 같은 사람이다"를 알려주는 작업이라, <b>실제로 일어나는 변화만</b> 넣어야 한다.</p>
+      </div>
+
+      <table class="kv-table">
+        <tr><th>증강</th><th>값</th><th>왜 이 값인가</th></tr>
+        <tr><td><code class="inline">degrees 180</code></td><td>회전 ±180°</td><td>하향 시점 영상엔 <b>"위쪽"이 없다</b></td></tr>
+        <tr><td><code class="inline">flipud 0.5</code></td><td>상하반전</td><td>같은 이유. 일반 사진 데이터에서는 쓰면 안 되는 값</td></tr>
+        <tr><td><code class="inline">scale 0.3</code></td><td>±30 % 크기</td><td>고도 변화를 흉내</td></tr>
+        <tr><td><code class="inline">mosaic 1.0</code></td><td>4장을 이어 붙임</td><td>배경 다양성 · 강한 정규화</td></tr>
+        <tr><td><code class="inline">close_mosaic 5</code></td><td>마지막 5에폭 해제</td><td>통상 권장이나 <b>우리 조건에선 성능이 떨어졌다</b></td></tr>
+        <tr><td>블러</td><td><b>없음</b></td><td>기체 흔들림 대비가 안 된 상태</td></tr>
+      </table>
+
+      <div class="takeaway"><span class="mark">POINT</span><p>증강값은 <b>도메인에서 유도해야 한다.</b>
+      하향 카메라라서 <code class="inline">flipud</code>가 맞는 것이고, 일반 사진이었다면 하늘과 땅이 뒤집혀 해가 된다.
+      우리 실험에서 <code class="inline">close_mosaic</code>이 <b>세 모델 모두에서 성능을 떨어뜨렸다</b> — 권장값도 검증 대상이다.</p></div>
+    </section>
+
+    <!-- ================= I ================= -->
+    <section class="chapter" id="sec-i">
+      <div class="chapter-head">
+        <span class="big-letter">I</span>
+        <div><h2>최적화 — SGD · LR · AMP</h2><span class="stage-tag">가중치를 어떻게 움직이나</span></div>
+      </div>
+
+      <div class="formula">θ<sub>t+1</sub> = θ<sub>t</sub> − η(∇L + λθ<sub>t</sub>) + μ·v<sub>t</sub></div>
+
+      <table class="kv-table">
+        <tr><th>기호</th><th>이름</th><th>우리 값</th><th>역할</th></tr>
+        <tr><td>η</td><td>학습률 (lr)</td><td>0.01 → 0.01×lrf</td><td>한 번에 얼마나 움직이나</td></tr>
+        <tr><td>μ</td><td>모멘텀</td><td>0.937</td><td>이전 방향을 이어받아 진동을 줄임</td></tr>
+        <tr><td>λ</td><td>weight decay</td><td>0.0005</td><td>가중치를 0 쪽으로 당겨 과적합 억제</td></tr>
+        <tr><td>—</td><td>warmup</td><td>3 epoch</td><td>초반에 lr을 천천히 올림</td></tr>
+      </table>
+
+      <div class="takeaway"><span class="mark">함정</span><p><b>초반 2~4에폭의 성능 하락은 warmup 때문이다.</b>
+      실패로 오해하고 학습을 끊으면 안 된다.</p></div>
+
+      <p class="prose"><b>AMP(자동 혼합 정밀도)</b>는 곱셈을 FP16으로, 누산을 FP32로 하는 방식이다.
+      메모리와 시간을 아끼면서 정확도 손실이 거의 없다. 우리 학습은 전부 AMP로 돌았다.</p>
+
+      <h3 style="font-size:16px;margin:28px 0 6px;">과적합을 눈으로 보는 법 (실측)</h3>
+      <table class="kv-table">
+        <tr><th>학습</th><th>데이터</th><th>정점 val mAP50</th><th>최종 val mAP50</th><th>변화 (%p)</th><th>변화 (상대)</th></tr>
+        <tr><td>yolo11s (30ep)</td><td>30,056장</td><td>25에폭 <b>0.4224</b></td><td>0.3987</td><td>−2.4 %p</td><td>−5.6 %</td></tr>
+        <tr><td>yolo11m (19ep)</td><td>30,056장</td><td>10에폭 <b>0.4779</b></td><td>0.4264</td><td>−5.2 %p</td><td>−10.8 %</td></tr>
+        <tr><td>yolo11l (30ep)</td><td>30,056장</td><td>13에폭 <b>0.4849</b></td><td>0.4254</td><td>−6.0 %p</td><td>−12.3 %</td></tr>
+        <tr><td>yolo11l + 데이터 64 %↑</td><td><b>49,268장</b></td><td>18에폭 <b>0.4795</b></td><td>0.4693</td><td><b>−1.0 %p</b></td><td><b>−2.1 %</b></td></tr>
+      </table>
+      <p class="prose" style="font-size:12.5px;color:var(--ink-soft);">사람 1클래스라 <code class="inline">val mAP50</code> 은 사람 AP50(IoU 0.5)과 같은 값이다.
+      ultralytics 로그 표기를 그대로 쓴 것이다. <b>best.pt 선정 기준은 mAP50 이 아니라 fitness = mAP50-95</b> 다.</p>
+
+      <div class="takeaway"><span class="mark">POINT</span><p>세 모델 모두 <b>중반에 정점을 찍고 내려간다.</b>
+      에폭·모델 크기를 늘려도 안 오르고, 데이터를 64 % 늘리자 하락 폭이 <b>−6.0 %p → −1.0 %p</b> 로 줄었다.
+      "학습이 모자란가, 데이터가 모자란가"는 이 곡선 모양으로 구분한다.</p>
+      <p><b>단, 이 곡선만으로 "데이터가 천장"이라 결론내면 안 된다.</b> 하락분에는 26에폭부터 켜지는
+      <code class="inline">close_mosaic</code> 효과가 섞여 있고, 데이터를 64 % 늘려도 <b>가림 지형 재현율@0.15 은 상대 +2.3 %</b>에
+      그쳤다. 같은 가중치로 추론 해상도만 올린 쪽이 <b>+21.6 %</b>다 — 천장은 데이터 양이 아니라 <b>조건 불일치</b>에 가깝다.</p></div>
+    </section>
+    <!-- ================= J ================= -->
+    <section class="chapter" id="sec-j">
+      <div class="chapter-head">
+        <span class="big-letter">J</span>
+        <div><h2>IoU · 정밀도 · 재현율 · AP</h2><span class="stage-tag">채점 규칙</span></div>
+      </div>
+      <div class="prose">
+        <p>탐지 결과를 채점하려면 먼저 <b>예측과 정답을 짝지어야</b> 한다. 짝의 기준이 <b>IoU</b>다.</p>
+      </div>
+
+      <div class="formula"><span class="frac"><span class="num">교집합 면적</span><span class="den">합집합 면적</span></span> = IoU
+        &nbsp;&nbsp;·&nbsp;&nbsp; IoU ≥ 0.5 면 같은 것으로 본다</div>
+
+      <table class="kv-table">
+        <tr><th>결과</th><th>뜻</th><th>수색에서의 의미</th></tr>
+        <tr><td><b>TP</b> (참양성)</td><td>정답을 맞게 찾음</td><td>구조 대상 발견</td></tr>
+        <tr><td><b>FN</b> (미탐)</td><td>정답을 못 찾음</td><td><b>사람을 놓쳤다</b> — 가장 치명적</td></tr>
+        <tr><td><b>FP</b> (오탐)</td><td>없는 걸 있다고 함</td><td>구조대 헛걸음</td></tr>
+      </table>
+
+      <div class="formula">정밀도 P = <span class="frac"><span class="num">TP</span><span class="den">TP + FP</span></span>
+        &nbsp;&nbsp; 재현율 R = <span class="frac"><span class="num">TP</span><span class="den">TP + FN</span></span></div>
+
+      <p class="prose"><b>둘은 임계값(conf)을 움직이면 반대로 간다.</b> 문턱을 낮추면 많이 찾지만(R↑) 헛것도 많아진다(P↓).
+      하나의 수로 합치려면 조화평균 계열인 <b>F점수</b>를 쓴다.</p>
+
+      <div class="formula">F<sub>β</sub> = <span class="frac"><span class="num">(1+β²) · P · R</span><span class="den">β²·P + R</span></span>
+        &nbsp;&nbsp; β = 1 → 균형 &nbsp;·&nbsp; <b>β = 2 → 재현율에 4배 가중</b></div>
+
+      <div class="callout">
+        <span class="label">왜 우리는 F2를 쓰나</span>
+        <ul>
+          <li><span class="k">수색 과업</span> &nbsp; 놓친 사람(FN)의 비용이 헛걸음(FP)보다 훨씬 크다</li>
+          <li><span class="k">우선순위</span> &nbsp; 명세서에 <b>미탐 최소화 &gt; 오탐 최소화</b>로 못 박혀 있다</li>
+          <li><span class="k">함정</span> &nbsp; F1을 쓰면 정밀도를 같은 무게로 쳐서 <b>덜 찾는 모델이 이긴다</b></li>
+        </ul>
+      </div>
+
+      <h3 style="font-size:16px;margin:28px 0 6px;">AP와 mAP — 임계값에 안 걸리는 지표</h3>
+      <p class="prose soft">임계값을 하나 고르면 그 선택에 결과가 좌우된다. <b>AP(Average Precision)</b>는 임계값을 0~1로 쓸어가며
+      P-R 곡선 아래 면적을 재므로 <b>임계값과 무관</b>하다. 클래스가 여럿이면 평균 내어 <b>mAP</b>가 된다.</p>
+
+      <table class="kv-table">
+        <tr><th>표기</th><th>뜻</th></tr>
+        <tr><td><b>AP50</b></td><td>IoU 0.5 기준 AP — 박스가 대충 맞으면 인정</td></tr>
+        <tr><td><b>AP50-95</b></td><td>IoU 0.5~0.95를 0.05씩 올리며 평균 — <b>위치 정밀도까지</b> 본다</td></tr>
+        <tr><td><b>fitness</b></td><td>ultralytics가 <code class="inline">best.pt</code>를 고르는 기준. 설치본은 <b>mAP50-95만</b></td></tr>
+      </table>
+
+      <div class="takeaway"><span class="mark">함정</span><p><b>재현율 하나만 보면 속는다.</b>
+      우리 실험에서 큰 모델(11l)이 93°·40 m·서 있음 칸에서 <b>재현율@0.15 0.1956 → 0.2142 (+1.9 %p · 상대 +9.5 %)</b>였는데 같은 칸 <b>AP50 은 0.1151 → 0.0926 (−2.2 %p · 상대 −19.5 %)</b>였다.
+      낮은 신뢰도 박스를 남발해 재현율만 올린 경우다. <b>재현율과 AP를 반드시 같이 본다.</b></p></div>
+
+      <div class="takeaway"><span class="mark">함정</span><p><b>AP는 정밀도를 같은 무게로 반영한다.</b>
+      오탐(건/프레임)이 상대 19 % 적은 모델이 재현율@0.15 은 거의 전 구간에서 낮은데도 AP에서 이겼다.
+      우리처럼 <b>미탐이 우선</b>인 과업에서는 AP만으로 모델을 고르면 우선순위와 어긋난 선택을 하게 된다.</p></div>
+    </section>
+
+    <!-- ================= K ================= -->
+    <section class="chapter" id="sec-k">
+      <div class="chapter-head">
+        <span class="big-letter">K</span>
+        <div><h2>분할과 누수</h2><span class="stage-tag">점수를 믿을 수 있는가</span></div>
+      </div>
+      <div class="prose">
+        <p><b>데이터 누수(leakage)</b>는 평가 데이터의 정보가 학습에 새어 들어가 <b>점수가 부풀려지는</b> 현상이다.
+        영상 데이터에서는 특히 쉽게 생긴다 — <b>연속 프레임은 거의 같은 사진</b>이기 때문이다.</p>
+      </div>
+
+      <table class="kv-table">
+        <tr><th>분할 단위</th><th>막는 것</th><th>실제 사례</th></tr>
+        <tr><td>프레임 단위 무작위</td><td>아무것도 못 막음</td><td>SARD: test의 <b>87 %</b>가 train과 프레임 번호 1 차이</td></tr>
+        <tr><td>배우 단위</td><td>같은 사람 재등장</td><td>NOMAD에 적용</td></tr>
+        <tr><td>비행 단위</td><td>같은 촬영분</td><td>WiSARD에 적용</td></tr>
+        <tr><td><b>장소 단위</b></td><td>같은 배경·지형</td><td><b>요구사항이 요구하는 조건</b> — 현재 미충족</td></tr>
+      </table>
+
+      <div class="takeaway"><span class="mark">POINT</span><p>우리 WiSARD는 <b>비행 단위</b>로 나눴는데,
+      파일명을 전수 확인하니 <b>val 장소 6곳이 전부 train에도 있었다.</b>
+      비행은 달라도 <b>배경이 같으면</b> 모델은 그 배경을 외운다. 분할 단위는 <b>"무엇을 외울 수 있는가"</b>로 정해야 한다.</p></div>
+
+      <div class="takeaway"><span class="mark">함정</span><p>한 비행을 <b>시간순으로 앞 70 % / 뒤 30 %</b>로 나누는 것도 누수다.
+      같은 장소·같은 사람·같은 조명이라 사실상 같은 데이터다. 우리 데이터에도 그런 비행이 2개 있다.</p></div>
+
+      <h3 style="font-size:16px;margin:28px 0 6px;">데이터 난이도 자체가 결과를 지배한다</h3>
+      <table class="kv-table">
+        <tr><th>조건</th><th>같은 30 px 사람 재현율</th></tr>
+        <tr><td>열린 흙바닥 · 가림 없음 (AI-Hub)</td><td><b>0.86</b></td></tr>
+        <tr><td>풀숲 · 숲 (NOMAD · WiSARD)</td><td><b>0.33</b></td></tr>
+      </table>
+      <p class="prose soft"><b>2.6배 차이.</b> 크기가 같아도 가림·배경 복잡도가 성능을 더 크게 좌우한다.
+      쉬운 데이터로 검증하면 <b>스스로를 속이게 된다.</b></p>
+    </section>
+
+    <!-- ================= L ================= -->
+    <section class="chapter" id="sec-l">
+      <div class="chapter-head">
+        <span class="big-letter">L</span>
+        <div><h2>작은 객체가 어려운 이유</h2><span class="stage-tag">우리 문제의 핵심</span></div>
+      </div>
+
+      <table class="kv-table">
+        <tr><th>대상 크기</th><th>정답 수</th><th>재현율@0.15</th></tr>
+        <tr><td>16~25 px</td><td>262</td><td><b>0.160</b></td></tr>
+        <tr><td>25~40 px</td><td>502</td><td>0.217</td></tr>
+        <tr><td>40~60 px</td><td>614</td><td>0.366</td></tr>
+        <tr><td>60~100 px</td><td>808</td><td>0.556</td></tr>
+        <tr><td>100~300 px</td><td>636</td><td><b>0.734</b></td></tr>
+      </table>
+
+      <div class="callout">
+        <span class="label">구조적 원인 세 가지</span>
+        <ul>
+          <li><span class="k">격자 부족</span> &nbsp; 18 px 대상은 stride 8 격자에서 <b>2.3칸</b>뿐 (C절)</li>
+          <li><span class="k">정보 소실</span> &nbsp; 다운샘플링을 거치며 작은 것은 <b>특징이 먼저 사라진다</b></li>
+          <li><span class="k">분류가 먼저 무너진다</span> &nbsp; 106 → 18 px 에서 cls 손실 상대 +116 %, dfl은 +8 % (F절)</li>
+        </ul>
+      </div>
+
+      <h3 style="font-size:16px;margin:28px 0 6px;">대응책과 실측 결과</h3>
+      <table class="kv-table">
+        <tr><th>방법</th><th>원리</th><th>우리 결과 (모두 재현율@conf 0.15)</th></tr>
+        <tr><td><b>크기 분포 재설계</b></td><td>학습 표본을 운용 크기에 맞춰 리샘플</td><td>31 px에서 <b>0.08 → 0.24</b> (+16 %p · 상대 +200 %)</td></tr>
+        <tr><td><b>추론 해상도 상향</b></td><td>1280→1920으로 넣어 대상을 키움</td><td>38 px 대상 0.283 → 0.3444<br><b>+6.1 %p</b> (상대 +21.6 %)</td></tr>
+        <tr><td><b>타일 추론</b></td><td>학습과 같은 1280×720 조각으로 넣음</td><td>1920 위에서 0.3444 → 0.3729<br><b>+2.9 %p</b> (상대 +8.3 %)</td></tr>
+        <tr><td>모델 확대 (11m→11l)</td><td>표현력을 늘림</td><td>운용 구간 <b>상대 −3~−8 %</b> (실패)</td></tr>
+        <tr><td>네이티브 초과 확대</td><td>2560·3200으로 더 키움</td><td>시간 3.5~5배, 이득 불확실 (기각)</td></tr>
+        <tr><td>P2 헤드 추가</td><td>stride 4 → 격자 4.5칸</td><td>미검증</td></tr>
+      </table>
+
+      <div class="takeaway"><span class="mark">POINT</span><p><b>모델을 키우는 게 답이 아니었다.</b>
+      데이터(크기 분포 재설계)와 추론 방식(해상도)에서 이득이 나왔고, 용량 확대는 오히려 손해였다.
+      "성능이 안 나오면 더 큰 모델"이라는 기본 반응을 <b>측정이 반박한 사례</b>다.</p></div>
+    </section>
+
+    <!-- ================= M ================= -->
+    <section class="chapter" id="sec-m">
+      <div class="chapter-head">
+        <span class="big-letter">M</span>
+        <div><h2>정밀도 · 지연시간</h2><span class="stage-tag">실기체에 올리기</span></div>
+      </div>
+      <div class="prose">
+        <p><b>수치 정밀도</b>를 낮추면 계산이 빨라진다. FP32(32비트)를 FP16(16비트)으로 바꾸면 메모리 대역폭이 절반이고,
+        텐서코어가 FP16 곱셈을 훨씬 빠르게 처리한다.</p>
+      </div>
+
+      <table class="kv-table">
+        <tr><th>정밀도</th><th>가수 비트</th><th>유효숫자</th><th>쓰임</th></tr>
+        <tr><td>FP32</td><td>23</td><td>약 7자리</td><td>기본값</td></tr>
+        <tr><td><b>FP16</b></td><td>10</td><td>약 3자리</td><td><b>추론 표준</b></td></tr>
+        <tr><td>INT8</td><td>—</td><td>정수 256단계</td><td>보정(calibration) 필요</td></tr>
+      </table>
+
+      <h3 style="font-size:16px;margin:28px 0 6px;">FP32 vs FP16 실측 (각 398장)</h3>
+      <table class="kv-table">
+        <tr><th>대상</th><th>FP32 재현율@0.15</th><th>FP16 재현율@0.15</th><th>차이</th></tr>
+        <tr><td>18 px</td><td>0.2764</td><td>0.2739</td><td>−0.25 %p</td></tr>
+        <tr><td>34 px</td><td>0.4221</td><td>0.4246</td><td>+0.25 %p</td></tr>
+        <tr><td>71 px</td><td>0.5852</td><td>0.5852</td><td>±0 %p</td></tr>
+      </table>
+
+      <div class="takeaway"><span class="mark">POINT</span><p>차이가 <b>한 방향이 아니다</b> — 400장 중 1장 수준의 무작위 뒤집힘이다.
+      박스 좌표 차이도 중앙값 0.3 px. 반면 <b>시간은 상대 39 % 빨라진다.</b>
+      텐서코어가 <b>FP16으로 곱하고 FP32로 누산</b>하기 때문에 오차가 쌓이지 않고,
+      학습 자체를 AMP로 했으므로 가중치가 이미 FP16 연산을 겪으며 수렴한 값이다.</p></div>
+
+      <h3 style="font-size:16px;margin:28px 0 6px;">속도 실측 (RTX 3090 · 1920×1080 한 장 · 전처리~후처리)</h3>
+      <table class="kv-table">
+        <tr><th>모델</th><th>1280</th><th>1600</th><th>1920</th></tr>
+        <tr><td>yolo11s FP16</td><td>7.8 ms</td><td>11.1</td><td>11.5</td></tr>
+        <tr><td>yolo11m FP32</td><td>17.4</td><td>26.3</td><td><b>32.3 ✕</b></td></tr>
+        <tr><td><b>yolo11m FP16</b></td><td>12.3</td><td>17.1</td><td><b>19.7 ✓</b></td></tr>
+        <tr><td>yolo11l FP16</td><td>15.4</td><td>21.4</td><td><b>27.0 ✓</b></td></tr>
+      </table>
+      <p class="prose soft">요구 기준은 30 ms 이하. <b>FP32로는 11m조차 1920에서 초과한다.</b></p>
+
+      <div class="callout">
+        <span class="label">지연시간 용어</span>
+        <ul>
+          <li><span class="k">추론 시간</span> &nbsp; 모델 순전파만</li>
+          <li><span class="k">전 과정(e2e)</span> &nbsp; 전처리 + 추론 + NMS. <b>요구사항은 이 값</b></li>
+          <li><span class="k">FPS</span> &nbsp; 초당 프레임. 파이프라인이 병렬이면 1/지연시간과 다르다</li>
+          <li><span class="k">P95</span> &nbsp; 100번 중 95번이 이 시간 안에 끝남. 평균보다 <b>최악을 보는</b> 지표</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="chapter">
+      <div class="chapter-head">
+        <span class="big-letter">＊</span>
+        <div><h2>한 장으로 요약</h2><span class="stage-tag">이 프로젝트가 서 있는 자리</span></div>
+      </div>
+      <div class="pipeline">
+        <div class="step">기하<br><span style="color:var(--ink-faint);">18~50 px</span></div><span class="arrow">→</span>
+        <div class="step">전처리<br><span style="color:var(--ink-faint);">1:1 크롭 · 16~160 px</span></div><span class="arrow">→</span>
+        <div class="step">모델<br><span style="color:var(--ink-faint);">앵커 19,320</span></div><span class="arrow">→</span>
+        <div class="step">손실<br><span style="color:var(--ink-faint);">box+cls+dfl</span></div><span class="arrow">→</span>
+        <div class="step" style="border-color:var(--accent2);">평가<br><span style="color:var(--ink-faint);">재현율 + AP</span></div>
+      </div>
+      <div class="callout">
+        <span class="label">지금까지 측정이 말해 준 것</span>
+        <ul>
+          <li><span class="k">1</span> 탐지율은 화각이 아니라 <b>사람 픽셀 수</b>로 정해진다</li>
+          <li><span class="k">2</span> 크기보다 <b>가림</b>이 더 크게 좌우한다 (0.86 vs 0.33)</li>
+          <li><span class="k">3</span> 작아질 때 무너지는 것은 <b>분류(cls)</b>이지 위치가 아니다</li>
+          <li><span class="k">4</span> 모델 확대는 <b>실패</b>했고, 데이터와 추론 해상도가 이겼다</li>
+          <li><span class="k">5</span> 지표 하나만 보면 <b>반대 결론</b>이 나온다 (같은 칸에서 재현율@0.15 상대 +9.5 % / AP50 상대 −19.5 %)</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="page-end">
+      자율 정찰 드론 관제 시스템 · 비전 파트 개념 정리 · 2026-09-20<br>
+      수치 출처: <code class="inline">drone_yolo/metrics/*.csv</code> · 상세 기록: <code class="inline">obsidian/</code> 볼트 · 상담 문서: <code class="inline">보고서/교수님_상담용_비전.md</code>
+    </footer>
+  </main>
+</div>
+
+<script>
+  (function(){
+    var toggle = document.getElementById('tocToggle');
+    var nav = document.getElementById('tocNav');
+    if(toggle){
+      toggle.addEventListener('click', function(){
+        nav.classList.toggle('open');
+        toggle.textContent = nav.classList.contains('open') ? '목차 접기 ▴' : '목차 펼치기 ▾';
+      });
+    }
+    var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
+    var sections = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+    function onScroll(){
+      var pos = window.scrollY + 120;
+      var activeIdx = 0;
+      for(var i=0;i<sections.length;i++){
+        if(sections[i] && sections[i].offsetTop <= pos) activeIdx = i;
+      }
+      links.forEach(function(a,i){ a.classList.toggle('active', i===activeIdx); });
+    }
+    document.addEventListener('scroll', onScroll, {passive:true});
+    onScroll();
+  })();
+</script>
+</body>
+</html>
