@@ -977,6 +977,30 @@ total, items = net.<span class="tok-fn">loss</span>({<span class="tok-str">"img"
         <tr><td><b>fitness</b></td><td>ultralytics가 <code class="inline">best.pt</code>를 고르는 기준. 설치본은 <b>mAP50-95만</b></td></tr>
       </table>
 
+      <h3 style="font-size:16px;margin:28px 0 6px;">%p 와 "상대 %" — 변화를 적는 두 가지 방법</h3>
+      <p class="prose soft">재현율·AP는 0~1 사이 값이라 <b>변화를 두 가지로 잴 수 있고, 둘의 숫자가 크게 다르다.</b>
+      어느 쪽인지 안 적으면 읽는 사람이 오해한다.</p>
+
+      <table class="kv-table">
+        <tr><th>방법</th><th>계산</th><th>단위</th><th>언제 쓰나</th></tr>
+        <tr><td><b>퍼센트포인트</b></td><td><b>뺄셈</b> — 나중값 − 처음값</td><td><code class="inline">%p</code></td><td>0~1 지표(재현율·정밀도·AP·F2). <b>우리 기본</b></td></tr>
+        <tr><td><b>상대 %</b></td><td><b>나눗셈</b> — 나중값 ÷ 처음값 − 1</td><td><code class="inline">상대 %</code></td><td>시간·장수처럼 0이 기준인 양</td></tr>
+      </table>
+
+      <p class="prose">같은 변화를 두 방법으로 잰 예 (93°·40 m·서 있음 칸, 11m → 11l):</p>
+      <table class="kv-table">
+        <tr><th>지표</th><th>처음 → 나중</th><th>뺄셈 (%p)</th><th>나눗셈 (상대 %)</th></tr>
+        <tr><td>재현율@0.15</td><td>0.1956 → 0.2142</td><td>+0.0186 = <b>+1.9 %p</b></td><td>÷ = 1.095 → <b>+9.5 %</b></td></tr>
+        <tr><td>AP50</td><td>0.1151 → 0.0926</td><td>−0.0225 = <b>−2.2 %p</b></td><td>÷ = 0.805 → <b>−19.5 %</b></td></tr>
+      </table>
+
+      <div class="takeaway"><span class="mark">POINT</span><p><b>작은 값에서 출발하면 상대 %가 부풀려진다.</b>
+      위의 +0.0186 은 원래 값이 0.1956이라 상대 +9.5 %로 보이지만, 재현율이 0.80이었다면 같은 +0.0186이 <b>상대 +2.3 %</b>로만 보인다.
+      우리 재현율은 칸마다 0.2~0.7로 흩어져 있어 <b>상대 %만 보면 어려운 칸(값이 작은 칸)의 변화가 과대평가된다.</b>
+      그래서 이 노트는 <b>%p를 먼저 적고 상대 %를 괄호에 넣는다.</b></p>
+      <p>반대로 <b>시간에는 %p를 쓰지 않는다</b> — 60.8 ms → 39.7 ms는 "−21.1 %p"가 아니라 <b>상대 −35 %</b>다.
+      0이 기준인 양이라 비율이 자연스럽다.</p></div>
+
       <div class="takeaway"><span class="mark">함정</span><p><b>재현율 하나만 보면 속는다.</b>
       우리 실험에서 큰 모델(11l)이 93°·40 m·서 있음 칸에서 <b>재현율@0.15 0.1956 → 0.2142 (+1.9 %p · 상대 +9.5 %)</b>였는데 같은 칸 <b>AP50 은 0.1151 → 0.0926 (−2.2 %p · 상대 −19.5 %)</b>였다.
       낮은 신뢰도 박스를 남발해 재현율만 올린 경우다. <b>재현율과 AP를 반드시 같이 본다.</b></p></div>
