@@ -23,3 +23,5 @@ obsidian/.trash/
 
 # Obsidian 을 저장소 루트로 열 때 생기는 개인 설정
 /.obsidian/
+drone_yolo/data/raw/unicamp_uav_repo/
+drone_yolo/data/raw/unicamp_uav/

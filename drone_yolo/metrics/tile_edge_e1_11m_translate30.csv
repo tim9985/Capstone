@@ -1,0 +1,11 @@
+model,set,edge_lo,edge_hi,n,recall@0.15
+e1_11m_translate30,s38,0,20,481,0.2349
+e1_11m_translate30,s38,20,50,784,0.2003
+e1_11m_translate30,s38,50,100,1144,0.2002
+e1_11m_translate30,s38,100,200,2408,0.2101
+e1_11m_translate30,s38,200,10000,2954,0.2512
+e1_11m_translate30,l128,0,20,245,0.6245
+e1_11m_translate30,l128,20,50,300,0.64
+e1_11m_translate30,l128,50,100,533,0.6116
+e1_11m_translate30,l128,100,200,1037,0.6297
+e1_11m_translate30,l128,200,10000,869,0.672
