@@ -1,0 +1,7 @@
+model,set,mode,quantize,tiles,images,recall@0.15,fp_per_frame,ms_per_frame
+v3a_11m_neg,l128,4x720,fp16,4,869,0.5915,0.847,39.8
+v3a_11m_neg,neg,4x720,fp16,4,187,,0.214,39.2
+v3a_11m_neg,s38,4x720,fp16,4,1673,0.3294,1.087,39.8
+v3a_11m_neg,l128,2x1080,fp16,2,869,0.5774,0.634,31.3
+v3a_11m_neg,neg,2x1080,fp16,2,187,,0.187,30.7
+v3a_11m_neg,s38,2x1080,fp16,2,1673,0.3089,0.879,31.0

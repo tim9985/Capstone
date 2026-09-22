@@ -25,3 +25,6 @@ obsidian/.trash/
 /.obsidian/
 drone_yolo/data/raw/unicamp_uav_repo/
 drone_yolo/data/raw/unicamp_uav/
+
+# VisDrone 원본 (약 2 GB · 연구용)
+drone_yolo/data/raw/VisDrone/

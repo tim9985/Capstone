@@ -1,0 +1,7 @@
+# 장소 분리 학습 (2026-09-22) — 평가 전용 장소 ['Carnation', 'Karen'] 를 train 에서 뺐다
+# 평가셋: data/test_v2 (같은 두 장소 · 1920x1080 전체 프레임)
+# 크롭은 재생성하지 않았다 — 목록에서 걸러냈을 뿐이다
+train: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/train_v3_place_neg.txt
+val: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/val_v3_place.txt
+nc: 1
+names: ['person']

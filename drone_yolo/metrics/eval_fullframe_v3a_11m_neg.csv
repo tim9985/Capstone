@@ -1,0 +1,6 @@
+model,set,imgsz,images,recall@0.15,fp_per_frame,ms_per_frame
+v3a_11m_neg,s38,1920,1673,0.3034,1.027,30.0
+v3a_11m_neg,l128,1920,869,0.5857,0.663,30.9
+v3a_11m_neg,neg,1920,187,nan,0.139,29.8
+v3a_11m_neg,s38_sharp_q,1920,1606,,,
+v3a_11m_neg,l128_sharp_q,1920,838,,,

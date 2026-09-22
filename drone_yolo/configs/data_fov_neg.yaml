@@ -1,0 +1,18 @@
+# v3a 음성 보강 (2026-09-21): data_fov.yaml + 하드 네거티브 det_neg (train 전용)
+# 분할은 기존 data_all 과 같다 (NOMAD 배치별 배우 · WiSARD 비행). SARD 는 넣지 않는다 (M2 정밀도 하락 요인과 분리)
+# make_configs.py 가 만들지 않는 수동 파일
+train:
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor01_10/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor11_20/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor21_30/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor_sel31_100/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/wisard/images/train
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_neg/images/train
+val:
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor01_10/images/val
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor11_20/images/val
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor21_30/images/val
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/nomad_actor_sel31_100/images/val
+  - /home/se/JupyterLAB/Capstone/drone_yolo/data/det_fov/wisard/images/val
+nc: 1
+names: ['person']
