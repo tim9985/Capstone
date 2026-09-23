@@ -1,0 +1,18 @@
+# 기준선 v3_place 설정 (하향 90° 전제) — chain_v2.sh 의 COMMON + stage 1 증강을 한 파일로
+# v6_oblique.yaml 과 비교하면 바뀐 것은 degrees · flipud 두 줄뿐이다
+epochs: 30
+imgsz: 1280
+batch: 8
+patience: 100
+optimizer: SGD
+lr0: 0.01
+close_mosaic: 0     # 우리 조건에서 해롭다 (09-20 · 3종 모델 일관)
+mosaic: 1.0
+scale: 0.3
+translate: 0.15     # 0.30 은 09-21 실패
+degrees: 180.0      # 하향 90° — 화면에 위쪽이 없다
+flipud: 0.5
+fliplr: 0.5
+hsv_h: 0.02
+hsv_s: 0.8
+hsv_v: 0.5

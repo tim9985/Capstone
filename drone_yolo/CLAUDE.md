@@ -42,7 +42,8 @@
 - 한 번에 하나만 바꾼다 · 판정 기준은 **돌리기 전에** `_학습 큐.md` 에 적는다
 - `ultralytics==8.4.102` 고정 — fitness = **mAP50-95 만** · 초반 2~4에폭 하락은 warmup
 - 기본 설정: COCO YOLO11m · imgsz 1280 (학습은 1280 까지) · SGD lr0 0.01 · **close_mosaic 0** · scale 0.3 · translate 0.15
-- ⚠ `train_person.py --stage 1` 은 **degrees 180 · flipud 0.5 가 하드코딩**(수직 전제)이다 — v6(60°: flipud 0 · degrees ±10) 전에 인자로 빼야 한다
+- 설정은 **`configs/hyp/*.yaml` 로 묶는다** — 기준선 `v3_nadir.yaml` · 60° `v6_oblique.yaml` (둘은 degrees · flipud 만 다르다). 우선순위: 기본값 < `--hyp` < 명시 인자 < `--set 키=값`
+- ⚠ `--hyp` 없이 `--stage 1` 만 주면 **옛 수직 전제**(degrees 180 · flipud 0.5 · imgsz 960) 로 돈다 — 체인 호환용
 - 커스텀 구조는 `--model-yaml` + `.load()` · yaml **파일명에 크기 글자**가 있어야 한다 (`yolo11m-p2.yaml`, 없으면 nano 로 학습된다)
 - 추론: 1920 → **타일 4장 1280×720 (겹침 50 %) + NMS 0.6** · 항상 **FP16** · TensorRT 는 `imgsz=[736,1280]` (정수 하나면 정사각 엔진) · 엔진은 GPU 마다 재빌드
 - AI-Hub 182 는 **학습용** — 가림이 없어 검증에 쓰면 부풀려진다 (AP50 0.995)
@@ -53,9 +54,9 @@
 ## 5. 서버 운영 (RTX 3090 · 대여 서버)
 
 - **GPU 를 쉬게 두지 않는다** — 긴 작업은 `chain_*.sh` 로 잇고 `logs/QUEUE.md` 에 남긴다
-- 체인을 걸기 전 **연기 실행**: 1에폭 + 평가 20장 → 모델 파라미터 수 · 출력 파일 확인
+- 체인을 걸기 전 **연기 실행**: 같은 명령에 `--smoke` (학습 64장 · 평가 20장 · 1에폭 · 실패면 exit 2 · 1에폭 시간 추정) · 설정 확인만은 `--dry-run`
 - **실행 중인 체인 스크립트는 고치지 않는다** — bash 가 실행 중에 파일을 다시 읽는다. 새 스크립트로 이어 건다
-- 학습이 끝날 때마다 `results.csv` · `best.pt` 백업
+- 학습이 끝나면 `train_person.py` 가 **자동 백업** — `best.pt` → `weights/` · `results.csv`·`args.yaml`·`command.txt` → `metrics/train_runs/<이름>/` (commit 하면 서버 밖에 남는다)
 - 프로세스는 **PID 로** 끈다 — `pgrep -f`/`pkill -f` 는 자기 셸(heredoc 본문의 스크립트 이름까지)을 잡아 exit 144 로 죽는다. 파일 편집도 heredoc 대신 별도 스크립트로
 - 서버 시계는 **UTC** — 시각은 `TZ=Asia/Seoul date '+%F %T'` · 기록은 KST
 - GPU 가 사라지는 장애(Xid 79) 이력 → `autoheal/` · `obsidian/05 결정/결정 - GPU 완화 설정과 자동 복구.md`
@@ -90,7 +91,8 @@
 
 | 스크립트 | 용도 |
 |---|---|
-| `train_person.py` | 학습 (`--data` `--weights` `--model-yaml` `--rect` `--scale` `--translate` `--close-mosaic` …) |
+| `train_person.py` | 학습 — `--hyp` · `--set` · `--smoke` · `--dry-run` · `--model-yaml`(크기 글자 검사) · 끝나면 자동 백업 |
+| `configs/hyp/` | 학습 설정 묶음 — `v3_nadir.yaml` (기준선) · `v6_oblique.yaml` (60°) |
 | `eval_test_v2.py` | **NFR-V03 판정** — 1920 · 타일 4장 · NMS 0.6 · FP16 · AP50 → `metrics/test_v2_<이름>.csv` |
 | `make_testset_v2.py` · `make_place_split.py` | 장소 분리 평가셋 · 학습 목록 `configs/lists/` |
 | `chain_v2.sh` | 현재 GPU 대기열 |

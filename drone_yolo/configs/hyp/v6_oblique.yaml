@@ -1,0 +1,18 @@
+# 학습 계획 v6 (기본 마운트각 60° · 비스듬) — obsidian/11 서버 학습 계획/02 학습 계획 v6 (60° 기준).md §5·§7
+# v3_nadir.yaml 에서 degrees · flipud 만 바꿨다 (수직 크롭의 90° 단위 회전은 크롭 생성 때 미리 넣는다)
+epochs: 30
+imgsz: 1280
+batch: 8
+patience: 100
+optimizer: SGD
+lr0: 0.01
+close_mosaic: 0
+mosaic: 1.0
+scale: 0.3
+translate: 0.15
+degrees: 10.0       # 짐벌이 롤을 잡아준다 — ±10° 만
+flipud: 0.0         # 60° 화면은 위(먼 쪽)·아래(가까운 쪽)가 있다
+fliplr: 0.5         # 좌우는 대칭
+hsv_h: 0.02
+hsv_s: 0.8
+hsv_v: 0.5
