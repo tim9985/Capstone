@@ -28,3 +28,6 @@ drone_yolo/data/raw/unicamp_uav/
 
 # VisDrone 원본 (약 2 GB · 연구용)
 drone_yolo/data/raw/VisDrone/
+
+# 팀 공유 드라이브 미러 — 전자서명·공문서·시간표가 있다. 공개 저장소에 절대 올리지 않는다
+팀드라이브/
