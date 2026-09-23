@@ -111,6 +111,10 @@ def main():
                     help="-1 이면 VRAM 60%% 목표로 자동. 0<x<1 소수면 그 비율을 목표로 자동"
                          "(예: 0.85 → 3090 24GB의 85%%). 정수면 고정 배치")
     ap.add_argument("--weights", default=None, help="시작 가중치 직접 지정")
+    ap.add_argument("--rect", action="store_true",
+                    help="직사각 배치(패딩 최소) — 추론 엔진 [736,1280] 과 모양을 맞춘다 (09-23)")
+    ap.add_argument("--model-yaml", default=None,
+                    help="구조 파일(예: configs/models/yolo11m-p2.yaml). --weights 는 호환 층만 이식")
     ap.add_argument("--patience", type=int, default=15)
     ap.add_argument("--device", default=0)
     # 아래 두 값은 노트북(RTX 3050 4GB · 4코어) 기준으로 코드에 박혀 있었다.
@@ -260,7 +264,13 @@ def main():
     else:
         batch_val = int(batch_str)
 
-    model = YOLO(str(weights))
+    if args.model_yaml:
+        # 파일명에 크기(m)가 있어야 한다 — 없으면 nano 로 만들어진다 (09-23 사고)
+        model = YOLO(args.model_yaml).load(str(weights))
+    else:
+        model = YOLO(str(weights))
+    if args.rect:
+        extra["rect"] = True
     model.train(
         data=str(data),
         epochs=epochs,
