@@ -1,50 +1,311 @@
 {
-	"nodes":[
-		{"id":"n001","type":"text","x":-40,"y":-260,"width":1900,"height":110,"text":"# 자율 정찰 드론 관제 시스템 · 비전 파트\n하향 90° 드론 영상에서 **쓰러진 사람**을 찾아 실좌표로 신고한다 · [[00 홈]]"},
-		{"id":"n002","type":"group","x":-40,"y":-100,"width":360,"height":760,"label":"🎯 조건","color":"5"},
-		{"id":"n003","type":"text","x":0,"y":-40,"width":280,"height":250,"text":"## [[운용 조건]]\nIMX415 · HFOV 54°\n1920×1080 · 하향 90°\n고도 16~30 m\n\n30 m 서 있는 사람 **31 px**","color":"5"},
-		{"id":"n004","type":"text","x":0,"y":240,"width":280,"height":180,"text":"## [[요구명세서]]\n겨울 ≥0.85 · 여름 ≥0.60\n쓰러짐 ≥0.70 (제안)\n추론 ≤30 ms","color":"5"},
-		{"id":"n005","type":"text","x":0,"y":450,"width":280,"height":160,"text":"## [[하드웨어와 예산]]\nF450 · RunCam WiFiLink 2\n예산 200만원","color":"5"},
-		{"id":"n006","type":"group","x":400,"y":-100,"width":360,"height":760,"label":"🗂️ 데이터","color":"6"},
-		{"id":"n007","type":"text","x":440,"y":-40,"width":280,"height":150,"text":"## [[NOMAD]]\n여름 농장 · 배우 100명\n⚠️ 비스듬한 시점","color":"6"},
-		{"id":"n008","type":"text","x":440,"y":130,"width":280,"height":150,"text":"## [[WiSARD]]\n가을·겨울 산지\n⚠️ 1월 = 측면 시점","color":"6"},
-		{"id":"n009","type":"text","x":440,"y":300,"width":280,"height":150,"text":"## [[SARD]]\n사람이 붙인 자세 라벨\n**판별이 되는 유일한 데이터**","color":"6"},
-		{"id":"n010","type":"text","x":440,"y":470,"width":280,"height":150,"text":"## [[Okutama-Action]]\n우리 고도 · 미학습\n**평가 전용**","color":"6"},
-		{"id":"n011","type":"group","x":840,"y":-100,"width":380,"height":760,"label":"🧠 모델","color":"4"},
-		{"id":"n012","type":"text","x":880,"y":-40,"width":300,"height":120,"text":"## [[VisDrone 기성 모델]]\n쓰러짐 재현율 0.048"},
-		{"id":"n013","type":"text","x":880,"y":120,"width":300,"height":200,"text":"## ⭐ [[stage1_all]]\n1클래스 탐지 · 안전자산\n여름 0.641 · 겨울 0.922\n쓰러진 사람 발견 0.608","color":"4"},
-		{"id":"n014","type":"text","x":880,"y":360,"width":300,"height":200,"text":"## ⭐ [[pose3_sn_freeze]]\n3클래스 · 백본 동결\nSARD 쓰러짐 **0.974**\nOkutama 쓰러짐 **0.091**","color":"4"},
-		{"id":"n015","type":"text","x":880,"y":590,"width":300,"height":60,"text":"🔄 [[서버 E1~E8]]","color":"3"},
-		{"id":"n016","type":"group","x":1300,"y":-100,"width":380,"height":760,"label":"✅ 결정","color":"4"},
-		{"id":"n017","type":"text","x":1340,"y":-40,"width":300,"height":100,"text":"**[[결정 - 신뢰도 0.15]]**\n놓친 조난자 > 헛탐지"},
-		{"id":"n018","type":"text","x":1340,"y":75,"width":300,"height":100,"text":"**[[결정 - 3클래스 체계]]**\nperson · fallen · ambiguous"},
-		{"id":"n019","type":"text","x":1340,"y":190,"width":300,"height":100,"text":"**[[결정 - 백본 동결]]**\n망각 −39% → −11%"},
-		{"id":"n020","type":"text","x":1340,"y":305,"width":300,"height":100,"text":"**[[결정 - WiSARD 자세 학습 제외]]**\n라벨 뜻이 다르다"},
-		{"id":"n021","type":"text","x":1340,"y":420,"width":300,"height":100,"text":"**[[결정 - Okutama 평가 전용]]**\n정직한 잣대를 지킨다"},
-		{"id":"n022","type":"text","x":1340,"y":535,"width":300,"height":100,"text":"**[[결정 - Copy-Paste 보류]]**\n은행 인물 ~8명"},
-		{"id":"n023","type":"group","x":1760,"y":-100,"width":400,"height":760,"label":"⚠️ 이슈","color":"1"},
-		{"id":"n024","type":"text","x":1800,"y":-40,"width":320,"height":115,"text":"**🔴 [[쓰러짐 판별 도메인 이전 실패]]**\nSARD 0.974 → Okutama 0.091","color":"1"},
-		{"id":"n025","type":"text","x":1800,"y":95,"width":320,"height":115,"text":"**🔴 [[학습 데이터 촬영 각도 불일치]]**\n우리 90° vs 데이터 비스듬함","color":"1"},
-		{"id":"n026","type":"text","x":1800,"y":230,"width":320,"height":115,"text":"**[[겨울 0.922의 한계]]**\n같은 비행 · 측면 시점","color":"2"},
-		{"id":"n027","type":"text","x":1800,"y":365,"width":320,"height":115,"text":"**[[ambiguous 물체 오탐]]**\n벤치·가방 · 실영상 47%","color":"2"},
-		{"id":"n028","type":"text","x":1800,"y":500,"width":320,"height":115,"text":"**[[NOMAD 검증 배우 불일치]]**\n공통 홀드아웃 10명","color":"2"},
-		{"id":"n029","type":"text","x":2240,"y":200,"width":300,"height":260,"text":"## 👉 [[다음 할 일]]\n- 하향 90° 평가셋\n- 서버 브랜치 push\n- 09-16 요구사항 발표\n- 좌표 변환 평지/DEM","color":"3"}
-	],
-	"edges":[
-		{"id":"n030","fromNode":"n003","fromSide":"right","toNode":"n007","toSide":"left","label":"시점 불일치","color":"1"},
-		{"id":"n031","fromNode":"n007","fromSide":"right","toNode":"n013","toSide":"left"},
-		{"id":"n032","fromNode":"n008","fromSide":"right","toNode":"n013","toSide":"left"},
-		{"id":"n033","fromNode":"n012","fromSide":"bottom","toNode":"n013","toSide":"top"},
-		{"id":"n034","fromNode":"n013","fromSide":"bottom","toNode":"n014","toSide":"top","label":"동결"},
-		{"id":"n035","fromNode":"n009","fromSide":"right","toNode":"n014","toSide":"left"},
-		{"id":"n036","fromNode":"n010","fromSide":"right","toNode":"n014","toSide":"left","label":"평가"},
-		{"id":"n037","fromNode":"n014","fromSide":"right","toNode":"n018","toSide":"left"},
-		{"id":"n038","fromNode":"n014","fromSide":"right","toNode":"n019","toSide":"left"},
-		{"id":"n039","fromNode":"n013","fromSide":"right","toNode":"n017","toSide":"left"},
-		{"id":"n040","fromNode":"n014","fromSide":"right","toNode":"n024","toSide":"left","color":"1"},
-		{"id":"n041","fromNode":"n003","fromSide":"top","toNode":"n025","toSide":"top","color":"1"},
-		{"id":"n042","fromNode":"n008","fromSide":"right","toNode":"n026","toSide":"left","color":"2"},
-		{"id":"n043","fromNode":"n024","fromSide":"right","toNode":"n029","toSide":"left"},
-		{"id":"n044","fromNode":"n025","fromSide":"right","toNode":"n029","toSide":"left"}
-	]
+ "nodes": [
+  {
+   "id": "gA",
+   "type": "group",
+   "label": "🎯 조건 (09-24)",
+   "x": 0,
+   "y": 200,
+   "width": 340,
+   "height": 662,
+   "color": "5"
+  },
+  {
+   "id": "a1",
+   "type": "text",
+   "text": "## [[운용 조건]]\nIMX415 · 1920×1080\n렌즈 **대각 88° (수평 80.2°)**\n고도 16~30 m",
+   "x": 20,
+   "y": 250,
+   "width": 300,
+   "height": 150
+  },
+  {
+   "id": "a2",
+   "type": "text",
+   "text": "## [[결정 - 기본 마운트각 60° (잠정)|마운트각 60° 🟡]]\n짐벌 GM3 V2 · 대응 45~75°\n30 m 서 있음 **51 px** (90° 는 31)",
+   "x": 20,
+   "y": 424,
+   "width": 300,
+   "height": 150,
+   "color": "3"
+  },
+  {
+   "id": "a3",
+   "type": "text",
+   "text": "**[[결정 - 최종 예산안 (2026-09-23 계획서)|최종 예산안]]**\n15품목 · 1,867,810원\n렌즈 62·78·88° · 3축 짐벌",
+   "x": 20,
+   "y": 598,
+   "width": 300,
+   "height": 130
+  },
+  {
+   "id": "a4",
+   "type": "text",
+   "text": "[[01 기준 요건 확정안]] · [[마운트각과 화면 기하]]",
+   "x": 20,
+   "y": 752,
+   "width": 300,
+   "height": 80
+  },
+  {
+   "id": "gB",
+   "type": "group",
+   "label": "🗂️ 데이터 — 목적에 맞춘다",
+   "x": 400,
+   "y": 200,
+   "width": 340,
+   "height": 672,
+   "color": "6"
+  },
+  {
+   "id": "b1",
+   "type": "text",
+   "text": "### 학습 · 비스듬 ≥50 %\n[[Unicamp-UAV]] 5,200장 (브라질)\n[[VisDrone]] 비스듬 4,974장 (중국)",
+   "x": 420,
+   "y": 250,
+   "width": 300,
+   "height": 140
+  },
+  {
+   "id": "b2",
+   "type": "text",
+   "text": "### 학습 · 수직 ≤50 %\n[[AI-Hub 182 조난자 수색|AI-Hub 182]] (한국 · 90°)\n[[WiSARD]] (미국 산지)\n[[NOMAD]] 상한 3,000",
+   "x": 420,
+   "y": 414,
+   "width": 300,
+   "height": 160
+  },
+  {
+   "id": "b3",
+   "type": "text",
+   "text": "### 판정 — 학습에 안 쓴 장소\n**test_obl** [[Okutama-Action|Okutama]] 비스듬\n**test_v2** WiSARD 2곳\n**test_kr** AI-Hub 2곳",
+   "x": 420,
+   "y": 598,
+   "width": 300,
+   "height": 160,
+   "color": "4"
+  },
+  {
+   "id": "b4",
+   "type": "text",
+   "text": "[[_데이터셋 한눈에]]",
+   "x": 420,
+   "y": 782,
+   "width": 300,
+   "height": 60
+  },
+  {
+   "id": "gC",
+   "type": "group",
+   "label": "🧠 학습",
+   "x": 800,
+   "y": 200,
+   "width": 340,
+   "height": 622,
+   "color": "3"
+  },
+  {
+   "id": "c1",
+   "type": "text",
+   "text": "## [[02 학습 계획 v6 (60° 기준)|학습 계획 v6]]\nYOLO11m · 1280 · 31~94 px\nflipud 0 · degrees ±10",
+   "x": 820,
+   "y": 250,
+   "width": 300,
+   "height": 150
+  },
+  {
+   "id": "c2",
+   "type": "text",
+   "text": "⭐ **[[서버 v3_place - 장소 분리 학습|v3_place]]**\n장소 분리 기준선\ntest_v2 AP50 **0.2233**",
+   "x": 820,
+   "y": 424,
+   "width": 300,
+   "height": 130,
+   "color": "4"
+  },
+  {
+   "id": "c3",
+   "type": "text",
+   "text": "🔄 **p2m_place** (P2 헤드)\n→ ⏳ **v6_obl** → v6_nwd → 자체 촬영",
+   "x": 820,
+   "y": 578,
+   "width": 300,
+   "height": 110,
+   "color": "3"
+  },
+  {
+   "id": "c4",
+   "type": "text",
+   "text": "[[가중치 계보]] · [[_학습 큐]] · [[_실험 색인]]",
+   "x": 820,
+   "y": 712,
+   "width": 300,
+   "height": 80
+  },
+  {
+   "id": "gD",
+   "type": "group",
+   "label": "📏 성능 요구 (비전)",
+   "x": 1200,
+   "y": 200,
+   "width": 340,
+   "height": 656,
+   "color": "4"
+  },
+  {
+   "id": "d1",
+   "type": "text",
+   "text": "✅ [[NFR-V01 추론 시간|V01 추론]] **18.5 ms** / 30\n타일 4장 · TensorRT FP16",
+   "x": 1220,
+   "y": 250,
+   "width": 300,
+   "height": 110,
+   "color": "4"
+  },
+  {
+   "id": "d2",
+   "type": "text",
+   "text": "❌ [[NFR-V03 탐지 정확도|V03 정확도]] **0.2233** / 0.80\n장소 분리",
+   "x": 1220,
+   "y": 384,
+   "width": 300,
+   "height": 110,
+   "color": "1"
+  },
+  {
+   "id": "d3",
+   "type": "text",
+   "text": "✅ [[NFR-V04 좌표 정확도|V04 좌표]] **4.7 m** / 10~15\n60° · 25 m 계산",
+   "x": 1220,
+   "y": 518,
+   "width": 300,
+   "height": 110,
+   "color": "4"
+  },
+  {
+   "id": "d4",
+   "type": "text",
+   "text": "✅ [[NFR-V06 프레임 오탐|V06 오탐]] **0.2~0.6** / 1",
+   "x": 1220,
+   "y": 652,
+   "width": 300,
+   "height": 90,
+   "color": "4"
+  },
+  {
+   "id": "d5",
+   "type": "text",
+   "text": "[[성능 요구사항 한눈에]]",
+   "x": 1220,
+   "y": 766,
+   "width": 300,
+   "height": 60
+  },
+  {
+   "id": "gE",
+   "type": "group",
+   "label": "⚠️ 막힌 곳 · 확인할 것",
+   "x": 1600,
+   "y": 200,
+   "width": 340,
+   "height": 632,
+   "color": "1"
+  },
+  {
+   "id": "e1",
+   "type": "text",
+   "text": "🔴 **[[장소 일반화 - NFR-V03 0.22|장소 일반화]]**\n같은 장소 0.86 · 새 장소 0.22",
+   "x": 1620,
+   "y": 250,
+   "width": 300,
+   "height": 120,
+   "color": "1"
+  },
+  {
+   "id": "e2",
+   "type": "text",
+   "text": "🟡 **짐벌 실물**\nGM3 V2 피치 60° · RunCam 장착\n보조 렌즈 호환",
+   "x": 1620,
+   "y": 394,
+   "width": 300,
+   "height": 120
+  },
+  {
+   "id": "e3",
+   "type": "text",
+   "text": "🟡 **NFR-V03 판정셋**\ntest_v2(수직) → test_obl(60°)?\n팀 협의",
+   "x": 1620,
+   "y": 538,
+   "width": 300,
+   "height": 120
+  },
+  {
+   "id": "e4",
+   "type": "text",
+   "text": "🟡 **자체 촬영**\n한국 산지 · 60° 는 이것뿐\n→ [[05 실기체 적용 - 자체 촬영]]",
+   "x": 1620,
+   "y": 682,
+   "width": 300,
+   "height": 120
+  },
+  {
+   "id": "t0",
+   "type": "text",
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 150,
+   "text": "# 자율 정찰 드론 관제 시스템 · 비전 파트\n드론 영상에서 **사람(쓰러진 사람 포함)** 을 찾아 실좌표로 신고한다 · [[00 홈]] · [[타임라인]]\n**09-30 설계명세서 발표** → [[03 9.30 설계명세서 병행 일정]]"
+  },
+  {
+   "id": "t1",
+   "type": "text",
+   "x": 1200,
+   "y": 0,
+   "width": 740,
+   "height": 150,
+   "color": "2",
+   "text": "## 👉 [[다음 할 일]]\n- test_obl 구축 · v6 크롭 · 체인 교체\n- 설계명세서 4.2·4.3 그림 · 팀원 파트 요청\n- 팀: 짐벌 피치 · 판정셋 · 촬영 일정"
+  }
+ ],
+ "edges": [
+  {
+   "id": "e0",
+   "fromNode": "a2",
+   "fromSide": "right",
+   "toNode": "b1",
+   "toSide": "left",
+   "label": "목적에 데이터를 맞춘다"
+  },
+  {
+   "id": "e1",
+   "fromNode": "b3",
+   "fromSide": "right",
+   "toNode": "c2",
+   "toSide": "left",
+   "label": "판정"
+  },
+  {
+   "id": "e2",
+   "fromNode": "b1",
+   "fromSide": "right",
+   "toNode": "c1",
+   "toSide": "left"
+  },
+  {
+   "id": "e3",
+   "fromNode": "c2",
+   "fromSide": "right",
+   "toNode": "d2",
+   "toSide": "left"
+  },
+  {
+   "id": "e4",
+   "fromNode": "d2",
+   "fromSide": "right",
+   "toNode": "e1",
+   "toSide": "left",
+   "label": "원인"
+  }
+ ]
 }

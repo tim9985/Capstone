@@ -1,25 +1,253 @@
 {
-	"nodes":[
-		{"id":"n045","type":"text","x":0,"y":0,"width":320,"height":150,"text":"## VisDrone 기성\n공개 · 11클래스\n여름 0.133 · 쓰러짐 0.048\n[[VisDrone 기성 모델]]","color":"6"},
-		{"id":"n046","type":"text","x":0,"y":900,"width":320,"height":110,"text":"## COCO 사전학습\nyolo11s · v8s · 11m · 11l","color":"6"},
-		{"id":"n047","type":"text","x":460,"y":-260,"width":280,"height":100,"text":"NOMAD 10명\n여름 0.461"},
-		{"id":"n048","type":"text","x":460,"y":-130,"width":280,"height":100,"text":"NOMAD 20명\n여름 0.635"},
-		{"id":"n049","type":"text","x":460,"y":0,"width":280,"height":120,"text":"NOMAD 30명\n여름 0.644 · **겨울 0.242**","color":"2"},
-		{"id":"n050","type":"text","x":460,"y":250,"width":320,"height":190,"text":"## ⭐ stage1_all\nNOMAD 30명 + WiSARD\n여름 0.641 · 겨울 0.922\n14,342장 · 08-03\n[[stage1_all]]","color":"4"},
-		{"id":"n051","type":"text","x":900,"y":60,"width":320,"height":150,"text":"## 7차 sard2_pose6\n동결 없음\nSARD 0.960 · NOMAD 발견 **−39%**\n[[자세 7차 - SARD 6클래스]]","color":"1"},
-		{"id":"n052","type":"text","x":900,"y":260,"width":320,"height":170,"text":"## ⭐ 8차 pose3_sn_freeze\n백본 동결 · 3클래스\nSARD 0.974 · 탐지 −11%\n[[pose3_sn_freeze]]","color":"4"},
-		{"id":"n053","type":"text","x":900,"y":480,"width":320,"height":150,"text":"## 9차 pose3_nd_freeze\nnot_defined 제외\n오탐 −58% · 발견율 −0.086\n[[자세 9차 - not_defined 제외]]","color":"1"},
-		{"id":"n054","type":"text","x":460,"y":900,"width":320,"height":110,"text":"## 🔄 서버 E1~E8\n42명 · 회전 180°\n[[서버 E1~E8]]","color":"3"},
-		{"id":"n055","type":"text","x":0,"y":-260,"width":320,"height":190,"text":"### 범례\n🟩 채택 · 운용\n🟥 기각\n🟪 공개 사전학습\n🟨 진행 중\n\n⚠️ NOMAD 단계별과 stage1_all 은\n**각각 따로** VisDrone 에서 출발"}
-	],
-	"edges":[
-		{"id":"n056","fromNode":"n045","fromSide":"right","toNode":"n047","toSide":"left"},
-		{"id":"n057","fromNode":"n045","fromSide":"right","toNode":"n048","toSide":"left"},
-		{"id":"n058","fromNode":"n045","fromSide":"right","toNode":"n049","toSide":"left"},
-		{"id":"n059","fromNode":"n045","fromSide":"right","toNode":"n050","toSide":"left","label":"+ WiSARD"},
-		{"id":"n060","fromNode":"n050","fromSide":"right","toNode":"n051","toSide":"left","label":"SARD 6클래스"},
-		{"id":"n061","fromNode":"n050","fromSide":"right","toNode":"n052","toSide":"left","label":"SARD+NOMAD 3클래스"},
-		{"id":"n062","fromNode":"n050","fromSide":"right","toNode":"n053","toSide":"left"},
-		{"id":"n063","fromNode":"n046","fromSide":"right","toNode":"n054","toSide":"left"}
-	]
+ "nodes": [
+  {
+   "id": "gs",
+   "type": "group",
+   "label": "서버 계보 — COCO 에서 새로 출발 (09-11~)",
+   "x": -20,
+   "y": -60,
+   "width": 1640,
+   "height": 760
+  },
+  {
+   "id": "coco",
+   "type": "text",
+   "x": 0,
+   "y": 0,
+   "width": 300,
+   "height": 120,
+   "text": "## COCO 사전학습\nyolo11s · 11m · 11l",
+   "color": "6"
+  },
+  {
+   "id": "vdp",
+   "type": "text",
+   "x": 0,
+   "y": 480,
+   "width": 300,
+   "height": 120,
+   "text": "## dronefreak VisDrone 11m\nimgsz 640 · 공개",
+   "color": "6"
+  },
+  {
+   "id": "m1",
+   "type": "text",
+   "x": 400,
+   "y": 0,
+   "width": 300,
+   "height": 120,
+   "text": "M1 · M2 · 11m 1280\nAP50 **0.65 벽** (장소 섞인 val)"
+  },
+  {
+   "id": "fov",
+   "type": "text",
+   "x": 400,
+   "y": 160,
+   "width": 300,
+   "height": 120,
+   "text": "⭐ **fov_11m**\n16~160 px 로그균등 크롭\n가림 40칸 재현율 0.478",
+   "color": "4"
+  },
+  {
+   "id": "v3p",
+   "type": "text",
+   "x": 400,
+   "y": 320,
+   "width": 300,
+   "height": 130,
+   "text": "⭐ **[[서버 v3_place - 장소 분리 학습|v3_place]]**\n장소 분리 데이터\n**test_v2 AP50 0.2233**",
+   "color": "4"
+  },
+  {
+   "id": "vd",
+   "type": "text",
+   "x": 400,
+   "y": 480,
+   "width": 300,
+   "height": 120,
+   "text": "❌ **[[서버 D - VisDrone 항공 사전학습|vd_11m]]**\n−2.3 %p",
+   "color": "1"
+  },
+  {
+   "id": "l",
+   "type": "text",
+   "x": 800,
+   "y": 0,
+   "width": 300,
+   "height": 120,
+   "text": "❌ **[[서버 L1 - yolo11l 1280|L1 · L2 (11l)]]**\n상대 −3~−8 % · AI-Hub ±0",
+   "color": "1"
+  },
+  {
+   "id": "tr",
+   "type": "text",
+   "x": 800,
+   "y": 160,
+   "width": 300,
+   "height": 120,
+   "text": "❌ **translate 0.30**\n−4.9 %p → [[타일 가장자리 효과]]",
+   "color": "1"
+  },
+  {
+   "id": "ng",
+   "type": "text",
+   "x": 800,
+   "y": 320,
+   "width": 300,
+   "height": 130,
+   "text": "❌ **[[서버 v3a - 하드 네거티브 음성 보강|v3a 음성 15.8 %]]**\n오탐 −64 % · 재현율 −7.3 %p",
+   "color": "1"
+  },
+  {
+   "id": "p2",
+   "type": "text",
+   "x": 1200,
+   "y": 160,
+   "width": 300,
+   "height": 120,
+   "text": "🔄 **p2m_place**\nP2 헤드 (stride 4)\n09-24 완료 예정",
+   "color": "3"
+  },
+  {
+   "id": "v6",
+   "type": "text",
+   "x": 1200,
+   "y": 320,
+   "width": 300,
+   "height": 130,
+   "text": "⏳ **v6_obl**\n60° 데이터 · 비스듬 ≥50 %\n→ v6_nwd → 자체 촬영"
+  },
+  {
+   "id": "gn",
+   "type": "group",
+   "label": "노트북 계보 — VisDrone v8s 출발 (08월 · 보관)",
+   "x": -20,
+   "y": 780,
+   "width": 1240,
+   "height": 240
+  },
+  {
+   "id": "vis",
+   "type": "text",
+   "x": 0,
+   "y": 820,
+   "width": 300,
+   "height": 120,
+   "text": "## VisDrone 기성 v8s\n11클래스 · 공개",
+   "color": "6"
+  },
+  {
+   "id": "nom",
+   "type": "text",
+   "x": 400,
+   "y": 820,
+   "width": 300,
+   "height": 120,
+   "text": "NOMAD 10·20·30명\n여름 0.461 → 0.644"
+  },
+  {
+   "id": "s1",
+   "type": "text",
+   "x": 800,
+   "y": 820,
+   "width": 300,
+   "height": 120,
+   "text": "⭐ **[[stage1_all]]**\nNOMAD 30명 + WiSARD\n여름 0.641 · 겨울 0.922",
+   "color": "4"
+  },
+  {
+   "id": "leg",
+   "type": "text",
+   "x": 1300,
+   "y": 820,
+   "width": 320,
+   "height": 150,
+   "text": "### 범례\n🟩 채택·기준선 · 🟥 기각\n🟪 공개 가중치 · 🟨 진행\n⚠ 두 계보는 이어지지 않는다"
+  }
+ ],
+ "edges": [
+  {
+   "id": "e0",
+   "fromNode": "coco",
+   "fromSide": "right",
+   "toNode": "m1",
+   "toSide": "left"
+  },
+  {
+   "id": "e1",
+   "fromNode": "coco",
+   "fromSide": "right",
+   "toNode": "fov",
+   "toSide": "left"
+  },
+  {
+   "id": "e2",
+   "fromNode": "coco",
+   "fromSide": "right",
+   "toNode": "v3p",
+   "toSide": "left",
+   "label": "장소 분리"
+  },
+  {
+   "id": "e3",
+   "fromNode": "vdp",
+   "fromSide": "right",
+   "toNode": "vd",
+   "toSide": "left"
+  },
+  {
+   "id": "e4",
+   "fromNode": "fov",
+   "fromSide": "right",
+   "toNode": "l",
+   "toSide": "left",
+   "label": "같은 데이터"
+  },
+  {
+   "id": "e5",
+   "fromNode": "fov",
+   "fromSide": "right",
+   "toNode": "tr",
+   "toSide": "left",
+   "label": "같은 데이터"
+  },
+  {
+   "id": "e6",
+   "fromNode": "fov",
+   "fromSide": "right",
+   "toNode": "ng",
+   "toSide": "left",
+   "label": "같은 데이터"
+  },
+  {
+   "id": "e7",
+   "fromNode": "v3p",
+   "fromSide": "right",
+   "toNode": "p2",
+   "toSide": "left",
+   "label": "+ P2"
+  },
+  {
+   "id": "e8",
+   "fromNode": "v3p",
+   "fromSide": "right",
+   "toNode": "v6",
+   "toSide": "left",
+   "label": "+ 60° 데이터"
+  },
+  {
+   "id": "e9",
+   "fromNode": "vis",
+   "fromSide": "right",
+   "toNode": "nom",
+   "toSide": "left"
+  },
+  {
+   "id": "e10",
+   "fromNode": "vis",
+   "fromSide": "right",
+   "toNode": "s1",
+   "toSide": "left"
+  }
+ ]
 }

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="490.627041pt" height="341.039406pt" viewBox="0 0 490.627041 341.039406" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-09-23T16:48:26.586114</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.9, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 341.039406 
+L 490.627041 341.039406 
+L 490.627041 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 147.464994 68.273267 
+L 163.824292 269.40443 
+L 438.477562 269.40443 
+z
+" clip-path="url(#p64db447415)" style="fill: #dbeafe; stroke: #dbeafe; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 147.464994 68.273267 
+L 52.175902 269.40443 
+" clip-path="url(#p64db447415)" style="fill: none; stroke-dasharray: 4,3; stroke-dashoffset: 0; stroke: #6b7280"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 147.464994 68.273267 
+L 242.754087 269.40443 
+" clip-path="url(#p64db447415)" style="fill: none; stroke-dasharray: 4,3; stroke-dashoffset: 0; stroke: #6b7280"/>
+   </g>
+   <g id="line2d_3">
+    <path d="M 147.464994 68.273267 
+L 163.824292 269.40443 
+" clip-path="url(#p64db447415)" style="fill: none; stroke: #2563eb; stroke-width: 1.2; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_4">
+    <path d="M 147.464994 68.273267 
+L 263.588125 269.40443 
+" clip-path="url(#p64db447415)" style="fill: none; stroke: #2563eb; stroke-width: 2.4; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_5">
+    <path d="M 147.464994 68.273267 
+L 438.477562 269.40443 
+" clip-path="url(#p64db447415)" style="fill: none; stroke: #2563eb; stroke-width: 1.2; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_6">
+    <path d="M 26.786297 269.40443 
+L 472.627041 269.40443 
+" clip-path="url(#p64db447415)" style="fill: none; stroke: #111827; stroke-width: 1.5; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-size: 9.5px; font-family: 'Pretendard','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','Noto Sans CJK KR','NanumGothic',sans-serif; fill: #6b7280" transform="translate(30.138483 285.681519)">점선 = 하향 90° 였다면</text>
+    <text style="font-size: 9.5px; font-family: 'Pretendard','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','Noto Sans CJK KR','NanumGothic',sans-serif; fill: #6b7280" transform="translate(30.138483 296.541504)">앞뒤 28 m · 서 있는 사람 31 px</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 11px; font-family: 'Pretendard','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','Noto Sans CJK KR','NanumGothic',sans-serif; text-anchor: start" x="155.510241" y="64.250643" transform="rotate(-0 155.510241 64.250643)">드론 · 고도 30 m</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 10px; font-family: 'Pretendard','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','Noto Sans CJK KR','NanumGothic',sans-serif; text-anchor: middle; fill: #2563eb" x="163.824292" y="286.079488" transform="rotate(-0 163.824292 286.079488)">2.4 m</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 10px; font-family: 'Pretendard','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','Noto Sans CJK KR','NanumGothic',sans-serif; text-anchor: middle; fill: #2563eb" x="263.588125" y="286.079488" transform="rotate(-0 263.588125 286.079488)">17.3 m</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 10px; font-family: 'Pretendard','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','Noto Sans CJK KR','NanumGothic',sans-serif; text-anchor: middle; fill: #2563eb" x="438.477562" y="286.079488" transform="rotate(-0 438.477562 286.079488)">43.4 m</text>
+   </g>
+   <g id="patch_3">
+    <path d="M 435.36048 300.244541 
+Q 301.151973 300.244541 166.943466 300.244541 
+" style="fill: none; stroke: #2563eb; stroke-linecap: round"/>
+    <path d="M 430.96048 298.044541 
+L 435.36048 300.244541 
+L 430.96048 302.444541 
+" style="fill: none; stroke: #2563eb; stroke-linecap: round"/>
+    <path d="M 171.343466 302.444541 
+L 166.943466 300.244541 
+L 171.343466 298.044541 
+" style="fill: none; stroke: #2563eb; stroke-linecap: round"/>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 10px; font-family: 'Pretendard','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','Noto Sans CJK KR','NanumGothic',sans-serif; text-anchor: middle; fill: #2563eb" x="301.150927" y="313.006352" transform="rotate(-0 301.150927 313.006352)">찍히는 지면 2.4 ~ 43.4 m (깊이 41 m)</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 10px; font-family: 'Pretendard','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','Noto Sans CJK KR','NanumGothic',sans-serif; fill: #6b7280" transform="translate(376.407667 56.119525)">렌즈 LN012 대각 88°</text>
+    <text style="font-size: 10px; font-family: 'Pretendard','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','Noto Sans CJK KR','NanumGothic',sans-serif; fill: #6b7280" transform="translate(366.24048 67.191088)">수평 80.2° · 수직 50.7°</text>
+    <text style="font-size: 10px; font-family: 'Pretendard','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','Noto Sans CJK KR','NanumGothic',sans-serif; fill: #6b7280" transform="translate(412.27798 78.455775)">f = 1,141 px</text>
+   </g>
+   <g id="text_8">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'Pretendard','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','Noto Sans CJK KR','NanumGothic',sans-serif; text-anchor: start" x="26.786297" y="28.751406" transform="rotate(-0 26.786297 28.751406)">기본 마운트각 60° — 옆에서 본 촬영 범위와 사람 크기 (고도 30 m)</text>
+   </g>
+   <g id="line2d_7">
+    <path d="M 147.464994 68.273267 
+" clip-path="url(#p64db447415)" style="fill: none; stroke: #111827; stroke-width: 1.5; stroke-linecap: square"/>
+    <defs>
+     <path id="m9fefddc0d1" d="M -6.5 6.5 
+L 6.5 6.5 
+L 6.5 -6.5 
+L -6.5 -6.5 
+z
+" style="stroke: #111827; stroke-linejoin: miter"/>
+    </defs>
+    <g clip-path="url(#p64db447415)">
+     <use xlink:href="#m9fefddc0d1" x="147.464994" y="68.273267" style="fill: #111827; stroke: #111827; stroke-linejoin: miter"/>
+    </g>
+   </g>
+   <g id="line2d_8">
+    <defs>
+     <path id="m090dacdeab" d="M 0 3 
+C 0.795609 3 1.55874 2.683901 2.12132 2.12132 
+C 2.683901 1.55874 3 0.795609 3 0 
+C 3 -0.795609 2.683901 -1.55874 2.12132 -2.12132 
+C 1.55874 -2.683901 0.795609 -3 0 -3 
+C -0.795609 -3 -1.55874 -2.683901 -2.12132 -2.12132 
+C -2.683901 -1.55874 -3 -0.795609 -3 0 
+C -3 0.795609 -2.683901 1.55874 -2.12132 2.12132 
+C -1.55874 2.683901 -0.795609 3 0 3 
+z
+" style="stroke: #2563eb"/>
+    </defs>
+    <g clip-path="url(#p64db447415)">
+     <use xlink:href="#m090dacdeab" x="163.824292" y="269.40443" style="fill: #2563eb; stroke: #2563eb"/>
+    </g>
+   </g>
+   <g id="line2d_9">
+    <g clip-path="url(#p64db447415)">
+     <use xlink:href="#m090dacdeab" x="263.588125" y="269.40443" style="fill: #2563eb; stroke: #2563eb"/>
+    </g>
+   </g>
+   <g id="line2d_10">
+    <g clip-path="url(#p64db447415)">
+     <use xlink:href="#m090dacdeab" x="438.477562" y="269.40443" style="fill: #2563eb; stroke: #2563eb"/>
+    </g>
+   </g>
+   <g id="patch_4">
+    <path d="M 88.696058 168.619781 
+Q 125.651455 216.87636 162.606851 265.132939 
+" style="fill: none; stroke: #2563eb; stroke-width: 0.8; stroke-linecap: round"/>
+   </g>
+   <g id="text_9">
+    <g id="patch_5">
+     <path d="M 18 166.58823 
+L 134.05625 166.58823 
+Q 138.05625 166.58823 138.05625 162.58823 
+L 138.05625 141.567605 
+Q 138.05625 137.567605 134.05625 137.567605 
+L 18 137.567605 
+Q 14 137.567605 14 141.567605 
+L 14 162.58823 
+Q 14 166.58823 18 166.58823 
+z
+" style="fill: #ffffff; stroke: #2563eb; stroke-width: 0.9; stroke-linejoin: miter"/>
+    </g>
+    <text style="font-size: 10px; font-family: 'Pretendard','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','Noto Sans CJK KR','NanumGothic',sans-serif" transform="translate(36.329688 149.636355)">화면 아래 (하향 85.4°)</text>
+    <text style="font-size: 10px; font-family: 'Pretendard','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','Noto Sans CJK KR','NanumGothic',sans-serif" transform="translate(18 161.067918)">서 있음 36 px · 누움 65 px</text>
+   </g>
+   <g id="patch_6">
+    <path d="M 313.663836 145.416209 
+Q 289.007264 205.145801 264.350692 264.875393 
+" style="fill: none; stroke: #2563eb; stroke-width: 0.8; stroke-linecap: round"/>
+   </g>
+   <g id="text_10">
+    <g id="patch_7">
+     <path d="M 258.087134 143.122928 
+L 383.113696 143.122928 
+Q 387.113696 143.122928 387.113696 139.122928 
+L 387.113696 118.102303 
+Q 387.113696 114.102303 383.113696 114.102303 
+L 258.087134 114.102303 
+Q 254.087134 114.102303 254.087134 118.102303 
+L 254.087134 139.122928 
+Q 254.087134 143.122928 258.087134 143.122928 
+z
+" style="fill: #ffffff; stroke: #2563eb; stroke-width: 0.9; stroke-linejoin: miter"/>
+    </g>
+    <text style="font-size: 10px; font-family: 'Pretendard','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','Noto Sans CJK KR','NanumGothic',sans-serif" transform="translate(258.087134 126.171053)">화면 중앙 · 광축 (하향 60.0°)</text>
+    <text style="font-size: 10px; font-family: 'Pretendard','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','Noto Sans CJK KR','NanumGothic',sans-serif" transform="translate(258.087134 137.602616)">서 있음 51 px · 누움 56 px</text>
+   </g>
+   <g id="patch_8">
+    <path d="M 415.123955 212.455459 
+Q 426.405213 238.669932 437.68647 264.884405 
+" style="fill: none; stroke: #2563eb; stroke-width: 0.8; stroke-linecap: round"/>
+   </g>
+   <g id="text_11">
+    <g id="patch_9">
+     <path d="M 349.866419 210.166649 
+L 465.922669 210.166649 
+Q 469.922669 210.166649 469.922669 206.166649 
+L 469.922669 185.146024 
+Q 469.922669 181.146024 465.922669 181.146024 
+L 349.866419 181.146024 
+Q 345.866419 181.146024 345.866419 185.146024 
+L 345.866419 206.166649 
+Q 345.866419 210.166649 349.866419 210.166649 
+z
+" style="fill: #ffffff; stroke: #2563eb; stroke-width: 0.9; stroke-linejoin: miter"/>
+    </g>
+    <text style="font-size: 10px; font-family: 'Pretendard','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','Noto Sans CJK KR','NanumGothic',sans-serif" transform="translate(377.596106 193.214774)">화면 위 (하향 34.7°)</text>
+    <text style="font-size: 10px; font-family: 'Pretendard','Malgun Gothic','Apple SD Gothic Neo','Noto Sans KR','Noto Sans CJK KR','NanumGothic',sans-serif" transform="translate(349.866419 204.646336)">서 있음 40 px · 누움 37 px</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p64db447415">
+   <rect x="26.786297" y="34.751406" width="445.840744" height="288.288"/>
+  </clipPath>
+ </defs>
+</svg>
