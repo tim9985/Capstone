@@ -1,0 +1,5 @@
+# 학습 계획 v6 (60°) — make_v6_data.py 생성 · 판정은 test_obl · test_v2 (학습에 안 쓴 장소)
+train: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/train_v6.txt
+val: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/val_v6.txt
+nc: 1
+names: ['person']

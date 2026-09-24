@@ -1,0 +1,37 @@
+{
+ "비스듬": {
+  "uc_tr": 4610,
+  "uc_va": 600,
+  "vd_tr": 4002,
+  "vd_va": 470
+ },
+ "수직_장소별": {
+  "nomad": 1381,
+  "wisard_SkookumCreek": 971,
+  "wisard_Bellingham": 244,
+  "wisard_Everson": 37,
+  "wisard_SuddenValley": 191,
+  "wisard_Mission": 79,
+  "wisard_Airfield": 281,
+  "wisard_MtErie": 48,
+  "wisard_FHL": 22,
+  "wisard_?": 1360,
+  "aihub_산악6": 1381,
+  "aihub_저수지2": 1381,
+  "aihub_평지(흙)3": 1238
+ },
+ "train": 18133,
+ "비스듬_train": 8612,
+ "수직_train": 8614,
+ "음성_train": 907,
+ "비스듬_비율": 0.475,
+ "val": 4070,
+ "val_비스듬": 1070,
+ "비스듬_사람px_분위수_5_25_50_75_95": [
+  22.5,
+  34.4,
+  45.7,
+  64.1,
+  101.6
+ ]
+}

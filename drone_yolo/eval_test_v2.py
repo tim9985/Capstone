@@ -21,7 +21,7 @@ W, H, TW, TH = 1920, 1080, 1280, 720
 TILES = [(x, y) for y in (0, H - TH) for x in (0, W - TW)]
 
 
-def load_gt(p):
+def load_gt(p, W=W, H=H):
     t = Path(str(p).replace("/images/", "/labels/")).with_suffix(".txt")
     if not t.exists():
         return np.zeros((0, 4), np.float32)
@@ -50,6 +50,9 @@ def main():
     ap.add_argument("--conf-min", type=float, default=0.01, help="PR 곡선용 하한")
     ap.add_argument("--op-conf", type=float, default=0.15, help="운용 임계값")
     ap.add_argument("--batch", type=int, default=4)
+    ap.add_argument("--mode", choices=("tile", "single"), default="tile",
+                    help="tile: 1920×1080 → 1280×720 4장 (test_v2) · single: 원본 그대로 imgsz 1280 (test_obl 1280×720)")
+    ap.add_argument("--tag", default="test_v2", help="결과 파일 접두사 → metrics/<tag>_<모델>.csv")
     args = ap.parse_args()
 
     import cv2
@@ -58,7 +61,9 @@ def main():
     name = Path(args.weights).parent.parent.name
 
     imgs = sorted((Path(args.data) / "images").glob("*.jpg"))
-    print(f"{name} · {len(imgs):,}장 · 타일 4×(1280×720) · conf ≥{args.conf_min}", flush=True)
+    print(f"{name} · {args.tag} · {len(imgs):,}장 · {'타일 4×(1280×720)' if args.mode == 'tile' else '단일 추론'} · conf ≥{args.conf_min}", flush=True)
+    BINS = [(0, 24), (24, 36), (36, 50), (50, 80), (80, 1e9)]
+    bin_gt = [0] * len(BINS); bin_hit = [0] * len(BINS)
 
     scores, tps, n_gt, fp_neg, n_neg = [], [], 0, 0, 0
     for i, p in enumerate(imgs):
@@ -67,12 +72,17 @@ def main():
         img = cv2.imread(str(p))
         if img is None:
             continue
-        gt = load_gt(p); n_gt += len(gt)
-        tiles = [img[y:y + TH, x:x + TW] for x, y in TILES]
+        ih, iw = img.shape[:2]
+        gt = load_gt(p, iw, ih); n_gt += len(gt)
+        if args.mode == "tile":
+            offs = TILES
+            tiles = [img[y:y + TH, x:x + TW] for x, y in TILES]
+        else:
+            offs, tiles = [(0, 0)], [img]
         res = model.predict(tiles, imgsz=1280, conf=args.conf_min, batch=len(tiles),
                             quantize="fp16", verbose=False)
         box, cf = [], []
-        for (ox, oy), r in zip(TILES, res):
+        for (ox, oy), r in zip(offs, res):
             b = r.boxes
             if not len(b):
                 continue
@@ -103,6 +113,18 @@ def main():
             scores.append(float(cf[j])); tps.append(k >= 0)
             if k >= 0:
                 used[k] = True
+        # 크기 구간별 재현율@운용 임계값 (층화 — 어디서 못 찾나)
+        if len(gt):
+            Mo = iou_mat(gt, box[cf >= args.op_conf]); hit = np.zeros(len(gt), bool); u = set()
+            for gi, pj in zip(*np.unravel_index(np.argsort(-Mo, axis=None), Mo.shape)) if Mo.size else []:
+                if Mo[gi, pj] < 0.5:
+                    break
+                if hit[gi] or pj in u:
+                    continue
+                hit[gi] = True; u.add(pj)
+            L = np.maximum(gt[:, 2] - gt[:, 0], gt[:, 3] - gt[:, 1])
+            for bi, (lo, hi) in enumerate(BINS):
+                m = (L >= lo) & (L < hi); bin_gt[bi] += int(m.sum()); bin_hit[bi] += int(hit[m].sum())
 
     s = np.array(scores); t = np.array(tps, bool)
     o = np.argsort(-s); t = t[o]; s = s[o]
@@ -115,14 +137,14 @@ def main():
     r_op = float(tp[m][-1] / max(n_gt, 1)) if m.any() else 0.0
     p_op = float(prec[m][-1]) if m.any() else 0.0
 
-    print(f"\n=== NFR-V03 — 장소 분리 평가셋 (Carnation · Karen)")
+    print(f"\n=== NFR-V03 — 장소 분리 평가셋 {args.tag}")
     print(f"  정답 {n_gt:,} · 예측 {len(s):,} · 음성 프레임 {n_neg}")
     print(f"  **AP50            {ap50:.4f}**   (목표 ≥0.80 → {'✅ 통과' if ap50>=0.80 else '❌ 미달'})")
     print(f"  재현율@{args.op_conf:g}      {r_op:.4f}")
     print(f"  정밀도@{args.op_conf:g}      {p_op:.4f}")
     print(f"  음성 프레임 오탐   {fp_neg/max(n_neg,1):.3f} 건/프레임")
 
-    out = BASE / "metrics" / f"test_v2_{name}.csv"
+    out = BASE / "metrics" / f"{args.tag}_{name}.csv"
     with open(out, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=["model", "n_gt", "AP50", f"recall@{args.op_conf:g}",
                                           f"precision@{args.op_conf:g}", "fp_per_neg_frame"])
@@ -132,6 +154,13 @@ def main():
                     f"precision@{args.op_conf:g}": round(p_op, 4),
                     "fp_per_neg_frame": round(fp_neg / max(n_neg, 1), 3)})
     print(f"→ {out}")
+    ob = BASE / "metrics" / f"{args.tag}_{name}_bins.csv"
+    with open(ob, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f); w.writerow(["px_bin", "n_gt", f"recall@{args.op_conf:g}"])
+        for (lo, hi), g, h in zip(BINS, bin_gt, bin_hit):
+            lab = f"{int(lo)}-{int(hi)}" if hi < 1e8 else f"{int(lo)}+"
+            w.writerow([lab, g, round(h / max(g, 1), 4)]); print(f"  {lab:>7} px  n={g:>6,}  재현율 {h/max(g,1):.3f}")
+    print(f"→ {ob}")
 
 
 if __name__ == "__main__":
