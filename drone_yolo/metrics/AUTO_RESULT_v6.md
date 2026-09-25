@@ -8,3 +8,7 @@
 | p2m_place | test_obl | 0.1309 |
 | v3_place | test_obl | 0.1029 |
 | fov_11m_1280_all | test_obl | 0.1661 |
+| v6_obl | test_obl | 0.3311 |
+| v6_obl | test_v2 | 0.5287 |
+
+**v6_obl 판정 (test_obl)**: 기준선 v3_place 0.1029 → 0.3311 (+22.8 %p · ✅ 개선)
