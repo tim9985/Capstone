@@ -93,6 +93,7 @@ def main():
     ap.add_argument("--mode", choices=("tile", "single"), default="tile",
                     help="tile: 1920×1080 → 1280×720 4장 (test_v2) · single: 원본 그대로 imgsz 1280 (test_obl 1280×720)")
     ap.add_argument("--tag", default="test_v2", help="결과 파일 접두사 → metrics/<tag>_<모델>.csv")
+    ap.add_argument("--imgsz", type=int, default=1280, help="모델 입력 크기 (single 모드에서 1920 이면 원본 그대로 한 장)")
     ap.add_argument("--boot", type=int, default=1000, help="블록 부트스트랩 횟수 (0 이면 끔)")
     args = ap.parse_args()
 
@@ -121,7 +122,7 @@ def main():
             tiles = [img[y:y + TH, x:x + TW] for x, y in TILES]
         else:
             offs, tiles = [(0, 0)], [img]
-        res = model.predict(tiles, imgsz=1280, conf=args.conf_min, batch=len(tiles),
+        res = model.predict(tiles, imgsz=args.imgsz, conf=args.conf_min, batch=len(tiles),
                             quantize="fp16", verbose=False)
         box, cf = [], []
         for (ox, oy), r in zip(offs, res):

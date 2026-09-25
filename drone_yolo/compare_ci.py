@@ -15,6 +15,8 @@ BASE = Path(__file__).resolve().parent
 
 
 def load(name, tag):
+    if "@" in name:                      # 같은 모델의 다른 평가 방식 비교: 모델@태그
+        name, tag = name.split("@")
     d = np.load(BASE / "runs_person" / name / f"eval_{tag}.npz", allow_pickle=False)
     return d["s"], d["t"].astype(bool), d["img"], d["ngt"], [str(x) for x in d["names"]]
 
