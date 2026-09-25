@@ -1,0 +1,6 @@
+# v6 데이터 + 장소가 겹치지 않는 val (2026-09-25)
+# val: VisDrone 비스듬 39 시퀀스(학습에 없음) 451 + AI-Hub 저수지1(학습에 없는 장소) 721 — best.pt 선택용
+train: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/train_v6.txt
+val: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/val_v6b.txt
+nc: 1
+names: ['person']

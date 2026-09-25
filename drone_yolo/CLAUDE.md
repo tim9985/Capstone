@@ -40,6 +40,8 @@
 - **판정은 장소 분리 평가셋으로만** — val mAP50 으로 모델을 고르면 실전과 반대로 간다 (11l 사례)
 - 재현율은 **AP 와 짝으로** 본다 · 소표본(수십 장)으로 결론 내지 않는다
 - 한 번에 하나만 바꾼다 · 판정 기준은 **돌리기 전에** `_학습 큐.md` 에 적는다
+- **판정 = 짝 부트스트랩 95 % 구간이 0 을 넘는가** — `eval_test_v2.py`(블록 부트스트랩 · `runs_person/<모델>/eval_<tag>.npz` 저장) → `compare_ci.py --tag test_obl 기준:비교`. 단일 AP 차 ±0.01 로 판정하지 않는다
+- 다음 학습의 val 은 `configs/data_v6b.yaml` (장소가 겹치지 않는 val) — `data_v6.yaml` 의 val 은 학습과 같은 영상이 섞였다
 - `ultralytics==8.4.102` 고정 — fitness = **mAP50-95 만** · 초반 2~4에폭 하락은 warmup
 - 기본 설정: COCO YOLO11m · imgsz 1280 (학습은 1280 까지) · SGD lr0 0.01 · **close_mosaic 0** · scale 0.3 · translate 0.15
 - 설정은 **`configs/hyp/*.yaml` 로 묶는다** — 기준선 `v3_nadir.yaml` · 60° `v6_oblique.yaml` (둘은 degrees · flipud 만 다르다). 우선순위: 기본값 < `--hyp` < 명시 인자 < `--set 키=값`

@@ -1,0 +1,4 @@
+tag,base,model,diff,lo,hi,blocks,verdict
+test_v2,v3_place,p2m_place,0.0464,0.0282,0.0649,72,차이 있음
+test_v2,v3_place,v6_obl,0.3054,0.2353,0.3822,72,차이 있음
+test_v2,v6_obl,v6_p2m,0.0094,-0.0155,0.0292,72,구분 안 됨

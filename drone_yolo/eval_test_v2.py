@@ -33,6 +33,46 @@ def load_gt(p, W=W, H=H):
                  (a[:, 0] + a[:, 2] / 2) * W, (a[:, 1] + a[:, 3] / 2) * H]
 
 
+BLOCK = 20   # 부트스트랩 단위: 비행·시퀀스 안 연속 20장 (연속 프레임은 서로 닮았다)
+
+
+def ap101(s, t, n_gt):
+    """점수·정답여부 → 101점 보간 AP50"""
+    if not len(s) or n_gt == 0:
+        return 0.0
+    o = np.argsort(-s); t = t[o]
+    tp = np.cumsum(t); fp = np.cumsum(~t)
+    rec = tp / n_gt; prec = tp / np.maximum(tp + fp, 1)
+    return float(np.mean([prec[rec >= r].max() if (rec >= r).any() else 0 for r in np.linspace(0, 1, 101)]))
+
+
+def blocks_of(names):
+    """이미지 이름 → 블록 번호 (그룹 = 이름에서 끝 프레임 번호를 뺀 것 · 그룹 안 정렬 후 BLOCK 장씩)"""
+    grp = {}
+    for i, n in enumerate(names):
+        grp.setdefault(n.rsplit("_", 1)[0], []).append(i)
+    b = np.zeros(len(names), int); k = 0
+    for g in sorted(grp):
+        idx = sorted(grp[g], key=lambda i: names[i])
+        for j in range(0, len(idx), BLOCK):
+            b[idx[j:j + BLOCK]] = k; k += 1
+    return b, k, len(grp)
+
+
+def boot_ap(s, t, img, n_gt_img, blk, nblk, B=1000, seed=0):
+    """블록 부트스트랩 AP50 표본 (같은 seed 면 모델 간 짝 비교가 된다)"""
+    rng = np.random.default_rng(seed)
+    pred_blk = blk[img]
+    by_blk = [np.where(pred_blk == k)[0] for k in range(nblk)]
+    gt_blk = np.bincount(blk, weights=n_gt_img, minlength=nblk)
+    out = []
+    for _ in range(B):
+        pick = rng.integers(0, nblk, nblk)
+        idx = np.concatenate([by_blk[k] for k in pick]) if nblk else np.array([], int)
+        out.append(ap101(s[idx], t[idx], gt_blk[pick].sum()))
+    return np.array(out)
+
+
 def iou_mat(g, p):
     if not len(g) or not len(p):
         return np.zeros((len(g), len(p)), np.float32)
@@ -53,6 +93,7 @@ def main():
     ap.add_argument("--mode", choices=("tile", "single"), default="tile",
                     help="tile: 1920×1080 → 1280×720 4장 (test_v2) · single: 원본 그대로 imgsz 1280 (test_obl 1280×720)")
     ap.add_argument("--tag", default="test_v2", help="결과 파일 접두사 → metrics/<tag>_<모델>.csv")
+    ap.add_argument("--boot", type=int, default=1000, help="블록 부트스트랩 횟수 (0 이면 끔)")
     args = ap.parse_args()
 
     import cv2
@@ -66,6 +107,7 @@ def main():
     bin_gt = [0] * len(BINS); bin_hit = [0] * len(BINS)
 
     scores, tps, n_gt, fp_neg, n_neg = [], [], 0, 0, 0
+    pimg, ngt_img, pname = [], [], []
     for i, p in enumerate(imgs):
         if i % 200 == 0:
             print(f"  {i:,}/{len(imgs):,}", flush=True)
@@ -73,7 +115,7 @@ def main():
         if img is None:
             continue
         ih, iw = img.shape[:2]
-        gt = load_gt(p, iw, ih); n_gt += len(gt)
+        gt = load_gt(p, iw, ih); n_gt += len(gt); ngt_img.append(len(gt)); pname.append(p.stem); ii = len(ngt_img) - 1
         if args.mode == "tile":
             offs = TILES
             tiles = [img[y:y + TH, x:x + TW] for x, y in TILES]
@@ -110,7 +152,7 @@ def main():
                 cand = np.where((M[:, j] >= 0.5) & ~used)[0]
                 if len(cand):
                     k = cand[np.argmax(M[cand, j])]
-            scores.append(float(cf[j])); tps.append(k >= 0)
+            scores.append(float(cf[j])); tps.append(k >= 0); pimg.append(ii)
             if k >= 0:
                 used[k] = True
         # 크기 구간별 재현율@운용 임계값 (층화 — 어디서 못 찾나)
@@ -161,6 +203,21 @@ def main():
             lab = f"{int(lo)}-{int(hi)}" if hi < 1e8 else f"{int(lo)}+"
             w.writerow([lab, g, round(h / max(g, 1), 4)]); print(f"  {lab:>7} px  n={g:>6,}  재현율 {h/max(g,1):.3f}")
     print(f"→ {ob}")
+    if args.boot:
+        names = pname
+        blk, nblk, ngrp = blocks_of(names)
+        S, T, I = np.array(scores), np.array(tps, bool), np.array(pimg, int)
+        G = np.array(ngt_img, float)
+        bs = boot_ap(S, T, I, G, blk, nblk, args.boot)
+        lo, hi = np.percentile(bs, [2.5, 97.5])
+        print(f"  AP50 95 % 구간  {lo:.4f} ~ {hi:.4f}  (블록 {nblk}개 · 그룹 {ngrp}개 · {args.boot}회)")
+        oc = BASE / "metrics" / f"{args.tag}_{name}_ci.csv"
+        with open(oc, "w", newline="", encoding="utf-8") as f:
+            w = csv.writer(f); w.writerow(["model", "AP50", "ci_lo", "ci_hi", "blocks", "groups", "B"])
+            w.writerow([name, round(ap50, 4), round(lo, 4), round(hi, 4), nblk, ngrp, args.boot])
+        dump = Path(args.weights).parent.parent / f"eval_{args.tag}.npz"
+        np.savez_compressed(dump, s=S, t=T, img=I, ngt=G, names=np.array(names))
+        print(f"→ {oc} · 짝 비교용 {dump}")
 
 
 if __name__ == "__main__":

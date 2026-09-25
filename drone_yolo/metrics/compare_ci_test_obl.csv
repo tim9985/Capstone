@@ -1,0 +1,6 @@
+tag,base,model,diff,lo,hi,blocks,verdict
+test_obl,v3_place,p2m_place,0.0279,0.0153,0.0415,48,차이 있음
+test_obl,v3_place,v6_obl,0.2281,0.1959,0.2549,48,차이 있음
+test_obl,p2m_place,v6_obl,0.2002,0.1666,0.2272,48,차이 있음
+test_obl,v6_obl,v6_p2m,0.0023,-0.0054,0.0126,48,구분 안 됨
+test_obl,fov_11m_1280_all,v6_obl,0.165,0.139,0.1889,48,차이 있음

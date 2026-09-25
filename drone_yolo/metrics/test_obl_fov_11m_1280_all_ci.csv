@@ -1,0 +1,2 @@
+model,AP50,ci_lo,ci_hi,blocks,groups,B
+fov_11m_1280_all,0.1661,0.1467,0.1866,48,16,1000
