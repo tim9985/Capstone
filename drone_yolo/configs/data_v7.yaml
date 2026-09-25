@@ -1,0 +1,5 @@
+# v7 (2026-09-26) — v6_1 + HERIDAL(야생 지형) − NOMAD · val = val_v6b
+train: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/train_v7.txt
+val: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/val_v6b.txt
+nc: 1
+names: ['person']
