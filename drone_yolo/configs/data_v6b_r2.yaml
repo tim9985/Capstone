@@ -1,0 +1,5 @@
+# v6 반복 학습 (2026-09-25) — 같은 학습 크롭을 순서만 섞음 (ultralytics 는 seed 로 순서가 안 바뀐다) · val 은 장소가 겹치지 않는 val_v6b
+train: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/train_v6_r2.txt
+val: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/val_v6b.txt
+nc: 1
+names: ['person']

@@ -52,6 +52,7 @@
 - Okutama 는 **평가 전용** (test_obl) · WiSARD val 앞 291장은 음성 — `--limit` 으로 앞에서 자르지 않는다
 - `det_fullframe` 등 옛 시험셋 칸 이름(s38 · l128)은 **사람 px** 다 — 붙어 있는 "54° · 25 m" 표기는 틀린 가정
 - 노트북 가중치는 `--resume` 금지 (Windows 경로) — `--weights` 로
+- ⚠ **`seed` 를 바꿔도 같은 학습이 된다** — ultralytics 8.4 데이터 로더가 고정 상수로 섞는다 (09-25 확인). 반복 학습은 **학습 목록 순서를 섞어** 만든다 (`configs/lists/train_v6_r2.txt`)
 
 ## 5. 서버 운영 (RTX 3090 · 대여 서버)
 
