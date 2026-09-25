@@ -336,6 +336,9 @@ def build_parser():
                    help="최대 학습 시간(시간 단위). 지정하면 --epochs 를 덮어쓴다")
     g.add_argument("--close-mosaic", type=int, default=None,
                    help="마지막 N 에폭은 모자이크를 끈다 (ultralytics 기본 10 · 우리 조건에선 0 — 09-20)")
+    g.add_argument("--nwd", type=float, default=0.0,
+                   help="NWD 비중 α (0=끔). 양성 할당·박스 손실을 (1−α)·CIoU + α·NWD 로 — 작은 사람용 (losses_ext.py)")
+    g.add_argument("--nwd-c", type=float, default=32.0, help="NWD 거리 기준 C (px)")
     g.add_argument("--rect", action="store_true",
                    help="직사각 배치 — 추론 엔진 [736,1280] 과 모양을 맞춘다. ⚠ mosaic·shuffle 이 꺼진다")
 
@@ -482,6 +485,9 @@ def main():
         return
 
     from ultralytics import YOLO
+    if args.nwd > 0:
+        from losses_ext import enable_nwd
+        enable_nwd(args.nwd, args.nwd_c)
     if model_yaml:
         model = YOLO(str(model_yaml)).load(str(weights))
     else:
@@ -490,7 +496,7 @@ def main():
     print(f"  파라미터    : {n_params:.2f} M")
 
     run = RUNS / name
-    log_command(run, {**final, "data": str(data), "weights": str(weights),
+    log_command(run, {**final, "data": str(data), "weights": str(weights), "nwd": args.nwd, "nwd_c": args.nwd_c,
                       "model_yaml": str(model_yaml) if model_yaml else None,
                       "params_M": round(n_params, 2)})
     t0 = time.time()
