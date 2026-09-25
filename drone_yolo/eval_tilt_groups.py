@@ -28,7 +28,9 @@ SRC_W, SRC_H = 3840, 2160
 def load_labels(seq):
     """시퀀스 라벨 → {frame: [xyxy…]} (1280x720 좌표)"""
     per = defaultdict(list)
-    for lp in glob.glob(str(BASE / f"data/raw/okutama/**/Labels/SingleActionLabels/3840x2160/{seq}.txt"), recursive=True):
+    files = sorted(glob.glob(str(BASE / f"data/raw/okutama/**/Labels/SingleActionLabels/3840x2160/{seq}.txt"), recursive=True),
+                   key=lambda f: "TrainSetVideos" in f)
+    for lp in files[:1]:   # 09-25: 같은 파일이 두 폴더에 있다 — 둘 다 읽으면 정답이 2번씩 들어간다
         for ln in open(lp, encoding="utf-8", errors="replace"):
             t = ln.split()
             if len(t) < 6:

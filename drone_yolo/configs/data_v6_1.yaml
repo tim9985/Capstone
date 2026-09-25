@@ -1,0 +1,5 @@
+# v6_1 (2026-09-25) — v6 + SARD(누운 사람) + 비스듬 음성(Unicamp 빈 프레임) · val = val_v6b
+train: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/train_v6_1.txt
+val: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/val_v6b.txt
+nc: 1
+names: ['person']

@@ -4,6 +4,7 @@ make_testset_obl.py — test_obl: 60° 운용 판정용 비스듬 평가셋 (202
   Okutama 비스듬 시퀀스 16개 (박스 크기–y 상관 r ≥ 0.60 · metrics/survey_tilt2.csv)
   · 1280×720 추출 프레임 · 시퀀스당 균등 표집 60장
   · 라벨은 4K 좌표 → 1280×720 · lost=1(화면 밖) 박스 제외 · 3 px 이하 제외
+  · ⚠ 09-25 수정: 라벨 파일이 두 폴더에 중복 → 하나만 읽는다 (그전 test_obl 은 정답이 전부 2번씩 — 재현율 상한 50 %)
   · Okutama 는 학습에 쓰지 않는다 (결정 - Okutama 평가 전용)
   평가: python eval_test_v2.py --data data/test_obl --mode single --tag test_obl --weights …
 """
@@ -20,7 +21,10 @@ PER_SEQ = 60
 
 def labels(seq):
     per = defaultdict(list)
-    for lp in glob.glob(str(BASE / f"data/raw/okutama/**/Labels/SingleActionLabels/3840x2160/{seq}.txt"), recursive=True):
+    # 같은 라벨 파일이 Labels/ 와 TrainSetVideos (2)/Labels/ 두 곳에 있다 → 하나만 읽는다 (09-25 중복 버그 수정)
+    files = sorted(glob.glob(str(BASE / f"data/raw/okutama/**/Labels/SingleActionLabels/3840x2160/{seq}.txt"), recursive=True),
+                   key=lambda f: "TrainSetVideos" in f)
+    for lp in files[:1]:
         for ln in open(lp, encoding="utf-8", errors="replace"):
             t = ln.split()
             if len(t) < 7:
