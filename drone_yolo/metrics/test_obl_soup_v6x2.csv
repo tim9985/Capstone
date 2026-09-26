@@ -1,0 +1,2 @@
+model,n_gt,AP50,recall@0.15,precision@0.15,fp_per_neg_frame
+soup_v6x2,6438,0.6347,0.694,0.6992,0.0

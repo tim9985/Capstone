@@ -2,7 +2,7 @@
 
 「자율 정찰 드론 관제 시스템」의 비전 코드 — **사람 1클래스 탐지 · 좌표 산정 · 상의 색상 비교**.
 경로는 Capstone 저장소 루트 기준. **수치·경위의 원본은 볼트(`obsidian/`)** 이고, 여기에는 작업 규칙과 함정만 둔다.
-갱신 2026-09-24
+갱신 2026-09-26
 
 ## 1. 먼저 볼 곳
 
@@ -41,6 +41,9 @@
 - 재현율은 **AP 와 짝으로** 본다 · 소표본(수십 장)으로 결론 내지 않는다
 - 한 번에 하나만 바꾼다 · 판정 기준은 **돌리기 전에** `_학습 큐.md` 에 적는다
 - **판정 = 짝 부트스트랩 95 % 구간이 0 을 넘는가** — `eval_test_v2.py`(블록 부트스트랩 · `runs_person/<모델>/eval_<tag>.npz` 저장) → `compare_ci.py --tag test_obl 기준:비교`. 단일 AP 차 ±0.01 로 판정하지 않는다
+- ⚠ 짝 구간은 **평가셋** 흔들림만 잰다 — 같은 설정을 두 번 돌리면 **최대 3.4 %p** 달라진다 (test_kr · 09-26). 개선 = 구간 > 0 **그리고** 반복 차이보다 큼 **그리고** 세 평가셋(test_obl · test_v2 · test_kr) 어디서도 유의하게 나빠지지 않음
+- test_obl 만 크게 오르면 **박스 너비비**를 먼저 본다 — Okutama 는 박스를 넓게 그린다 (AP30 0.845 ↔ AP50 0.626)
+- 최종 모델 = **같은 설정 반복들의 가중치 평균** (`soup.py`) — 같은 구조·손실·hyp 만 섞는다 (NWD 모델을 섞으면 박스가 망가진다)
 - 다음 학습의 val 은 `configs/data_v6b.yaml` (장소가 겹치지 않는 val) — `data_v6.yaml` 의 val 은 학습과 같은 영상이 섞였다
 - `ultralytics==8.4.102` 고정 — fitness = **mAP50-95 만** · 초반 2~4에폭 하락은 warmup
 - 기본 설정: COCO YOLO11m · imgsz 1280 (학습은 1280 까지) · SGD lr0 0.01 · **close_mosaic 0** · scale 0.3 · translate 0.15
@@ -75,6 +78,7 @@
 ## 7. 막다른 길 — 다시 하지 말 것 (근거 → `_실험 색인`)
 
 - 모델 확대 11m→11l · VisDrone 항공 사전학습(640) · 음성 15.8 % · translate 0.30 · close_mosaic
+- NWD 손실·할당 (확신도 부풀림 · −2.4 %p) · P2 머리 (v6 데이터 위에선 ±0) — 작은 사람용 손실·구조는 반복 없이 판정 불가 (09-26)
 - 1920 초과 업스케일 추론 · 2×(1280×1080) 타일 (겹침 없으면 이득 없음)
 - 자세 판별 전반 — 마스크 기하 · 200 px 확대 · lr 만 낮추기
 - ForestPersons (지상 1.5~2 m 시점) · CloudTrack 수치 비교 (제로샷 VLM)
@@ -96,6 +100,8 @@
 |---|---|
 | `train_person.py` | 학습 — `--hyp` · `--set` · `--smoke` · `--dry-run` · `--model-yaml`(크기 글자 검사) · 끝나면 자동 백업 |
 | `configs/hyp/` | 학습 설정 묶음 — `v3_nadir.yaml` (기준선) · `v6_oblique.yaml` (60°) |
+| `soup.py` | 같은 구조 모델 가중치 평균 → `runs_person/<이름>/weights/best.pt` |
+| `analyze_models.py` · `diag_misses.py` | 모델 차이 · 놓친 원인 · 크기/자세/가림 층 |
 | `eval_test_v2.py` | **NFR-V03 판정** — 1920 · 타일 4장 · NMS 0.6 · FP16 · AP50 → `metrics/test_v2_<이름>.csv` |
 | `make_testset_v2.py` · `make_place_split.py` | 장소 분리 평가셋 · 학습 목록 `configs/lists/` |
 | `chain_v2.sh` | 현재 GPU 대기열 |

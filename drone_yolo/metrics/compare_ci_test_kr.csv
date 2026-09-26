@@ -1,0 +1,10 @@
+tag,base,model,diff,lo,hi,blocks,verdict
+test_kr,v6_obl,v6_obl_r2,0.0336,0.0101,0.066,61,차이 있음
+test_kr,v6_obl_r2,v6_nwd,-0.0067,-0.0236,0.005,61,구분 안 됨
+test_kr,v6_obl,v6_p2m,0.0322,0.011,0.0645,61,차이 있음
+test_kr,v6_obl_r2,v6_p2m,-0.0014,-0.0054,0.0076,61,구분 안 됨
+test_kr,v6_obl,soup_v6x2,0.0238,0.0079,0.0458,61,차이 있음
+test_kr,v6_obl_r2,soup_v6x2,-0.0098,-0.0268,0.0008,61,구분 안 됨
+test_kr,v6_obl,soup_v6x3,-0.1972,-0.2458,-0.1413,61,차이 있음
+test_kr,v6_obl_r2,soup_v6x3,-0.2308,-0.2885,-0.1662,61,차이 있음
+test_kr,soup_v6x2,soup_v6x3,-0.221,-0.2729,-0.1607,61,차이 있음
