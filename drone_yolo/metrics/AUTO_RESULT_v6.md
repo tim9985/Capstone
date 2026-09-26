@@ -16,3 +16,7 @@
 | v6_p2m | test_v2 | 0.5381 |
 
 **v6_p2m 판정 (test_obl)**: v6_obl 0.3311 → 0.3333 (+0.2 %p · ➖ 동등)
+| v6_obl_r2 | test_obl | 0.6128 |
+| v6_obl_r2 | test_v2 | 0.5156 |
+| v6_nwd | test_obl | 0.5893 |
+| v6_nwd | test_v2 | 0.5151 |
