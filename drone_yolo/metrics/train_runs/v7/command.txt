@@ -1,0 +1,4 @@
+# 2026-09-26 09:32:41 KST 
+/home/se/miniconda3/envs/drone/bin/python train_person.py --stage 1 --hyp configs/hyp/v6_oblique.yaml --weights yolo11m.pt --data configs/data_v7.yaml --name v7
+{"amp": true, "batch": 8, "cache": "disk", "close_mosaic": 0, "data": "configs/data_v7.yaml", "degrees": 10.0, "epochs": 30, "fliplr": 0.5, "flipud": 0.0, "hsv_h": 0.02, "hsv_s": 0.8, "hsv_v": 0.5, "imgsz": 1280, "lr0": 0.01, "model_yaml": null, "mosaic": 1.0, "nwd": 0.0, "nwd_c": 32.0, "optimizer": "SGD", "params_M": 20.11, "patience": 100, "plots": true, "scale": 0.3, "seed": 42, "translate": 0.15, "val": true, "weights": "yolo11m.pt", "workers": 8}
+
