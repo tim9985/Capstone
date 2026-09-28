@@ -6,7 +6,7 @@ analyze_models.py — 두 모델이 **어디서 · 왜** 다른가 (2026-09-26)
     크기 구간별 재현율@0.15 · 놓친 원인(diag_misses 와 같은 정의)
     찾은 사람의 IoU 분포 · 예측/정답 박스 너비·높이 비 (박스 그리는 습관)
     (test_obl) 자세 · 가림별 재현율
-실행: python analyze_models.py v6_obl_r2 v6_nwd v6_obl v6_p2m
+실행: python analyze_models.py v6_obl_r2 v6_nwd v6_obl v6_p2m [--out=analyze_v9.json]
 """
 import json, sys
 from collections import Counter, defaultdict
@@ -103,13 +103,14 @@ def analyze(name, tag, omet):
 
 
 def main():
-    names = sys.argv[1:]
+    names = [a for a in sys.argv[1:] if not a.startswith("--out=")]
+    dst = next((a[6:] for a in sys.argv[1:] if a.startswith("--out=")), "analyze_models.json")
     omet = D.okutama_meta(); out = {}
     for tag in SETS:
         for nm in names:
             out[f"{nm}|{tag}"] = r = analyze(nm, tag, omet)
             print(f"\n== {nm} · {tag}\n" + json.dumps(r, ensure_ascii=False))
-    (BASE / "metrics" / "analyze_models.json").write_text(json.dumps(out, ensure_ascii=False, indent=1))
+    (BASE / "metrics" / dst).write_text(json.dumps(out, ensure_ascii=False, indent=1))
 
 
 if __name__ == "__main__":
