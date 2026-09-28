@@ -107,5 +107,6 @@ tags: [실험, 분석, 서버]
 - ❌ NWD 기각 (확정) · ❌ P2 안 씀 (유지) · 작은 사람용 손실·구조 실험은 **중단**
 - 판정 규칙 보완 → [[_학습 큐]] 「판정 기준」
 - 다음 → **데이터 (v7 · NII-CU 45°) + 반복 2회 + 수프** → [[_학습 큐]]
+- 결과 (09-28): v7 ✅ +4.9 %p · NII-CU ➖ · 수프 v7+v7_r2 ✅ → [[결정 - 최종 탐지 모델 soup_v7r2]]
 
 원본: `metrics/analyze_models.json` · `metrics/compare_ci_*.csv` · `drone_yolo/soup.py` · `analyze_models.py`

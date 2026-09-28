@@ -1,253 +1,308 @@
 {
- "nodes": [
-  {
-   "id": "gs",
-   "type": "group",
-   "label": "서버 계보 — COCO 에서 새로 출발 (09-11~)",
-   "x": -20,
-   "y": -60,
-   "width": 1640,
-   "height": 760
-  },
-  {
-   "id": "coco",
-   "type": "text",
-   "x": 0,
-   "y": 0,
-   "width": 300,
-   "height": 120,
-   "text": "## COCO 사전학습\nyolo11s · 11m · 11l",
-   "color": "6"
-  },
-  {
-   "id": "vdp",
-   "type": "text",
-   "x": 0,
-   "y": 480,
-   "width": 300,
-   "height": 120,
-   "text": "## dronefreak VisDrone 11m\nimgsz 640 · 공개",
-   "color": "6"
-  },
-  {
-   "id": "m1",
-   "type": "text",
-   "x": 400,
-   "y": 0,
-   "width": 300,
-   "height": 120,
-   "text": "M1 · M2 · 11m 1280\nAP50 **0.65 벽** (장소 섞인 val)"
-  },
-  {
-   "id": "fov",
-   "type": "text",
-   "x": 400,
-   "y": 160,
-   "width": 300,
-   "height": 120,
-   "text": "⭐ **fov_11m**\n16~160 px 로그균등 크롭\n가림 40칸 재현율 0.478",
-   "color": "4"
-  },
-  {
-   "id": "v3p",
-   "type": "text",
-   "x": 400,
-   "y": 320,
-   "width": 300,
-   "height": 130,
-   "text": "⭐ **[[서버 v3_place - 장소 분리 학습|v3_place]]**\n장소 분리 데이터\n**test_v2 AP50 0.2233**",
-   "color": "4"
-  },
-  {
-   "id": "vd",
-   "type": "text",
-   "x": 400,
-   "y": 480,
-   "width": 300,
-   "height": 120,
-   "text": "❌ **[[서버 D - VisDrone 항공 사전학습|vd_11m]]**\n−2.3 %p",
-   "color": "1"
-  },
-  {
-   "id": "l",
-   "type": "text",
-   "x": 800,
-   "y": 0,
-   "width": 300,
-   "height": 120,
-   "text": "❌ **[[서버 L1 - yolo11l 1280|L1 · L2 (11l)]]**\n상대 −3~−8 % · AI-Hub ±0",
-   "color": "1"
-  },
-  {
-   "id": "tr",
-   "type": "text",
-   "x": 800,
-   "y": 160,
-   "width": 300,
-   "height": 120,
-   "text": "❌ **translate 0.30**\n−4.9 %p → [[타일 가장자리 효과]]",
-   "color": "1"
-  },
-  {
-   "id": "ng",
-   "type": "text",
-   "x": 800,
-   "y": 320,
-   "width": 300,
-   "height": 130,
-   "text": "❌ **[[서버 v3a - 하드 네거티브 음성 보강|v3a 음성 15.8 %]]**\n오탐 −64 % · 재현율 −7.3 %p",
-   "color": "1"
-  },
-  {
-   "id": "p2",
-   "type": "text",
-   "x": 1200,
-   "y": 160,
-   "width": 300,
-   "height": 120,
-   "text": "🔄 **p2m_place**\nP2 헤드 (stride 4)\n09-24 완료 예정",
-   "color": "3"
-  },
-  {
-   "id": "v6",
-   "type": "text",
-   "x": 1200,
-   "y": 320,
-   "width": 300,
-   "height": 130,
-   "text": "⏳ **v6_obl**\n60° 데이터 · 비스듬 ≥50 %\n→ v6_nwd → 자체 촬영"
-  },
-  {
-   "id": "gn",
-   "type": "group",
-   "label": "노트북 계보 — VisDrone v8s 출발 (08월 · 보관)",
-   "x": -20,
-   "y": 780,
-   "width": 1240,
-   "height": 240
-  },
-  {
-   "id": "vis",
-   "type": "text",
-   "x": 0,
-   "y": 820,
-   "width": 300,
-   "height": 120,
-   "text": "## VisDrone 기성 v8s\n11클래스 · 공개",
-   "color": "6"
-  },
-  {
-   "id": "nom",
-   "type": "text",
-   "x": 400,
-   "y": 820,
-   "width": 300,
-   "height": 120,
-   "text": "NOMAD 10·20·30명\n여름 0.461 → 0.644"
-  },
-  {
-   "id": "s1",
-   "type": "text",
-   "x": 800,
-   "y": 820,
-   "width": 300,
-   "height": 120,
-   "text": "⭐ **[[stage1_all]]**\nNOMAD 30명 + WiSARD\n여름 0.641 · 겨울 0.922",
-   "color": "4"
-  },
-  {
-   "id": "leg",
-   "type": "text",
-   "x": 1300,
-   "y": 820,
-   "width": 320,
-   "height": 150,
-   "text": "### 범례\n🟩 채택·기준선 · 🟥 기각\n🟪 공개 가중치 · 🟨 진행\n⚠ 두 계보는 이어지지 않는다"
-  }
- ],
- "edges": [
-  {
-   "id": "e0",
-   "fromNode": "coco",
-   "fromSide": "right",
-   "toNode": "m1",
-   "toSide": "left"
-  },
-  {
-   "id": "e1",
-   "fromNode": "coco",
-   "fromSide": "right",
-   "toNode": "fov",
-   "toSide": "left"
-  },
-  {
-   "id": "e2",
-   "fromNode": "coco",
-   "fromSide": "right",
-   "toNode": "v3p",
-   "toSide": "left",
-   "label": "장소 분리"
-  },
-  {
-   "id": "e3",
-   "fromNode": "vdp",
-   "fromSide": "right",
-   "toNode": "vd",
-   "toSide": "left"
-  },
-  {
-   "id": "e4",
-   "fromNode": "fov",
-   "fromSide": "right",
-   "toNode": "l",
-   "toSide": "left",
-   "label": "같은 데이터"
-  },
-  {
-   "id": "e5",
-   "fromNode": "fov",
-   "fromSide": "right",
-   "toNode": "tr",
-   "toSide": "left",
-   "label": "같은 데이터"
-  },
-  {
-   "id": "e6",
-   "fromNode": "fov",
-   "fromSide": "right",
-   "toNode": "ng",
-   "toSide": "left",
-   "label": "같은 데이터"
-  },
-  {
-   "id": "e7",
-   "fromNode": "v3p",
-   "fromSide": "right",
-   "toNode": "p2",
-   "toSide": "left",
-   "label": "+ P2"
-  },
-  {
-   "id": "e8",
-   "fromNode": "v3p",
-   "fromSide": "right",
-   "toNode": "v6",
-   "toSide": "left",
-   "label": "+ 60° 데이터"
-  },
-  {
-   "id": "e9",
-   "fromNode": "vis",
-   "fromSide": "right",
-   "toNode": "nom",
-   "toSide": "left"
-  },
-  {
-   "id": "e10",
-   "fromNode": "vis",
-   "fromSide": "right",
-   "toNode": "s1",
-   "toSide": "left"
-  }
- ]
+	"nodes": [
+		{
+			"id": "gs",
+			"type": "group",
+			"label": "서버 계보 — COCO 에서 새로 출발 (09-11~)",
+			"x": -20,
+			"y": -60,
+			"width": 2040,
+			"height": 760
+		},
+		{
+			"id": "coco",
+			"type": "text",
+			"x": 0,
+			"y": 0,
+			"width": 300,
+			"height": 120,
+			"text": "## COCO 사전학습\nyolo11s · 11m · 11l",
+			"color": "6"
+		},
+		{
+			"id": "vdp",
+			"type": "text",
+			"x": 0,
+			"y": 480,
+			"width": 300,
+			"height": 120,
+			"text": "## dronefreak VisDrone 11m\nimgsz 640 · 공개",
+			"color": "6"
+		},
+		{
+			"id": "m1",
+			"type": "text",
+			"x": 400,
+			"y": 0,
+			"width": 300,
+			"height": 120,
+			"text": "M1 · M2 · 11m 1280\nAP50 **0.65 벽** (장소 섞인 val)"
+		},
+		{
+			"id": "fov",
+			"type": "text",
+			"x": 400,
+			"y": 160,
+			"width": 300,
+			"height": 120,
+			"text": "⭐ **fov_11m**\n16~160 px 로그균등 크롭\n가림 40칸 재현율 0.478",
+			"color": "4"
+		},
+		{
+			"id": "v3p",
+			"type": "text",
+			"x": 400,
+			"y": 320,
+			"width": 300,
+			"height": 130,
+			"text": "⭐ **[[서버 v3_place - 장소 분리 학습|v3_place]]**\n장소 분리 데이터\n**test_v2 AP50 0.2233**",
+			"color": "4"
+		},
+		{
+			"id": "vd",
+			"type": "text",
+			"x": 400,
+			"y": 480,
+			"width": 300,
+			"height": 120,
+			"text": "❌ **[[서버 D - VisDrone 항공 사전학습|vd_11m]]**\n−2.3 %p",
+			"color": "1"
+		},
+		{
+			"id": "l",
+			"type": "text",
+			"x": 800,
+			"y": 0,
+			"width": 300,
+			"height": 120,
+			"text": "❌ **[[서버 L1 - yolo11l 1280|L1 · L2 (11l)]]**\n상대 −3~−8 % · AI-Hub ±0",
+			"color": "1"
+		},
+		{
+			"id": "tr",
+			"type": "text",
+			"x": 800,
+			"y": 160,
+			"width": 300,
+			"height": 120,
+			"text": "❌ **translate 0.30**\n−4.9 %p → [[타일 가장자리 효과]]",
+			"color": "1"
+		},
+		{
+			"id": "ng",
+			"type": "text",
+			"x": 800,
+			"y": 320,
+			"width": 300,
+			"height": 130,
+			"text": "❌ **[[서버 v3a - 하드 네거티브 음성 보강|v3a 음성 15.8 %]]**\n오탐 −64 % · 재현율 −7.3 %p",
+			"color": "1"
+		},
+		{
+			"id": "p2",
+			"type": "text",
+			"x": 1200,
+			"y": 160,
+			"width": 300,
+			"height": 120,
+			"text": "✅ **p2m_place**\nP2 헤드 (stride 4)\n옛 데이터 +4.6 %p · v6 위에선 ±0",
+			"color": "4"
+		},
+		{
+			"id": "v6",
+			"type": "text",
+			"x": 1200,
+			"y": 320,
+			"width": 300,
+			"height": 130,
+			"text": "✅ **[[서버 v6_obl - 60° 데이터|v6_obl]]** · r2\n60° 데이터 · 비스듬 ≈50 %\n**test_v2 0.529**",
+			"color": "4"
+		},
+		{
+			"id": "gn",
+			"type": "group",
+			"label": "노트북 계보 — VisDrone v8s 출발 (08월 · 보관)",
+			"x": -20,
+			"y": 780,
+			"width": 1240,
+			"height": 240
+		},
+		{
+			"id": "vis",
+			"type": "text",
+			"x": 0,
+			"y": 820,
+			"width": 300,
+			"height": 120,
+			"text": "## VisDrone 기성 v8s\n11클래스 · 공개",
+			"color": "6"
+		},
+		{
+			"id": "nom",
+			"type": "text",
+			"x": 400,
+			"y": 820,
+			"width": 300,
+			"height": 120,
+			"text": "NOMAD 10·20·30명\n여름 0.461 → 0.644"
+		},
+		{
+			"id": "s1",
+			"type": "text",
+			"x": 800,
+			"y": 820,
+			"width": 300,
+			"height": 120,
+			"text": "⭐ **[[stage1_all]]**\nNOMAD 30명 + WiSARD\n여름 0.641 · 겨울 0.922",
+			"color": "4"
+		},
+		{
+			"id": "leg",
+			"type": "text",
+			"x": 1300,
+			"y": 820,
+			"width": 320,
+			"height": 150,
+			"text": "### 범례\n🟩 채택·기준선 · 🟥 기각\n🟪 공개 가중치 · 🟨 진행\n⚠ 두 계보는 이어지지 않는다"
+		},
+		{
+			"id": "nwd",
+			"type": "text",
+			"x": 1600,
+			"y": 160,
+			"width": 300,
+			"height": 120,
+			"color": "1",
+			"text": "❌ **v6_nwd · v6_p2m**\nNWD −2.4 %p · P2 ±0\n→ [[NWD·P2 효과 없음 - 원인 분석|원인 분석]]"
+		},
+		{
+			"id": "v7",
+			"type": "text",
+			"x": 1200,
+			"y": 480,
+			"width": 300,
+			"height": 130,
+			"color": "4",
+			"text": "✅ **v7** · r2 · r3 · r4\n+ SARD · HERIDAL − NOMAD\n**test_v2 0.578** · v8(+NII-CU) ±0"
+		},
+		{
+			"id": "soup",
+			"type": "text",
+			"x": 1600,
+			"y": 480,
+			"width": 320,
+			"height": 150,
+			"color": "4",
+			"text": "⭐ **[[결정 - 최종 탐지 모델 soup_v7r2|soup_v7r2]]** (최종)\nv7 + v7_r2 가중치 평균\n**test_v2 0.593 · obl 0.633 · kr 0.968**\n18.9 ms · 임계값 0.15"
+		}
+	],
+	"edges": [
+		{
+			"id": "e0",
+			"fromNode": "coco",
+			"fromSide": "right",
+			"toNode": "m1",
+			"toSide": "left"
+		},
+		{
+			"id": "e1",
+			"fromNode": "coco",
+			"fromSide": "right",
+			"toNode": "fov",
+			"toSide": "left"
+		},
+		{
+			"id": "e2",
+			"fromNode": "coco",
+			"fromSide": "right",
+			"toNode": "v3p",
+			"toSide": "left",
+			"label": "장소 분리"
+		},
+		{
+			"id": "e3",
+			"fromNode": "vdp",
+			"fromSide": "right",
+			"toNode": "vd",
+			"toSide": "left"
+		},
+		{
+			"id": "e4",
+			"fromNode": "fov",
+			"fromSide": "right",
+			"toNode": "l",
+			"toSide": "left",
+			"label": "같은 데이터"
+		},
+		{
+			"id": "e5",
+			"fromNode": "fov",
+			"fromSide": "right",
+			"toNode": "tr",
+			"toSide": "left",
+			"label": "같은 데이터"
+		},
+		{
+			"id": "e6",
+			"fromNode": "fov",
+			"fromSide": "right",
+			"toNode": "ng",
+			"toSide": "left",
+			"label": "같은 데이터"
+		},
+		{
+			"id": "e7",
+			"fromNode": "v3p",
+			"fromSide": "right",
+			"toNode": "p2",
+			"toSide": "left",
+			"label": "+ P2"
+		},
+		{
+			"id": "e8",
+			"fromNode": "v3p",
+			"fromSide": "right",
+			"toNode": "v6",
+			"toSide": "left",
+			"label": "+ 60° 데이터"
+		},
+		{
+			"id": "e9",
+			"fromNode": "vis",
+			"fromSide": "right",
+			"toNode": "nom",
+			"toSide": "left"
+		},
+		{
+			"id": "e10",
+			"fromNode": "vis",
+			"fromSide": "right",
+			"toNode": "s1",
+			"toSide": "left"
+		},
+		{
+			"id": "e_v6nwd",
+			"fromNode": "v6",
+			"fromSide": "right",
+			"toNode": "nwd",
+			"toSide": "left",
+			"label": "손실·구조"
+		},
+		{
+			"id": "e_v6v7",
+			"fromNode": "v6",
+			"fromSide": "bottom",
+			"toNode": "v7",
+			"toSide": "top",
+			"label": "데이터"
+		},
+		{
+			"id": "e_v7soup",
+			"fromNode": "v7",
+			"fromSide": "right",
+			"toNode": "soup",
+			"toSide": "left",
+			"label": "평균"
+		}
+	]
 }

@@ -2,14 +2,15 @@
 
 「자율 정찰 드론 관제 시스템」의 비전 코드 — **사람 1클래스 탐지 · 좌표 산정 · 상의 색상 비교**.
 경로는 Capstone 저장소 루트 기준. **수치·경위의 원본은 볼트(`obsidian/`)** 이고, 여기에는 작업 규칙과 함정만 둔다.
-갱신 2026-09-26
+갱신 2026-09-28
 
 ## 1. 먼저 볼 곳
 
 | 무엇 | 어디 |
 |---|---|
 | 현재 상태 · 일정 | `obsidian/00 홈.md` |
-| 학습 계획 (현행 v6 · 60°) | `obsidian/11 서버 학습 계획/00 학습 계획 한눈에.md` → `02 학습 계획 v6 (60° 기준).md` |
+| 학습 계획 · 실제로 간 길 | `obsidian/11 서버 학습 계획/00 학습 계획 한눈에.md` |
+| **최종 모델 (09-28)** | `obsidian/05 결정/결정 - 최종 탐지 모델 soup_v7r2.md` — `runs_person/soup_v7r2/weights/best.pt` · 엔진 `best.engine` |
 | GPU 대기열 · 판정 기준 | `obsidian/11 서버 학습 계획/_학습 큐.md` · 실행 기록 `logs/QUEUE.md` |
 | 할 일 | `obsidian/09 기록/다음 할 일.md` |
 | 실험 · 결정 색인 | `obsidian/04 실험/_실험 색인.md` · `obsidian/05 결정/_결정 색인.md` |
@@ -82,7 +83,8 @@
 - 1920 초과 업스케일 추론 · 2×(1280×1080) 타일 (겹침 없으면 이득 없음)
 - 자세 판별 전반 — 마스크 기하 · 200 px 확대 · lr 만 낮추기
 - ForestPersons (지상 1.5~2 m 시점) · CloudTrack 수치 비교 (제로샷 VLM)
-- 참고: AI-Hub `dataSetSn=190` (45°) 은 90° 시절 기각 — **60° 운용에선 재검토 후보**
+- 조건이 안 맞는 데이터 추가 — NII-CU 45° 야구장 (±0) · AI-Hub 190 (09-28 승인 · 고도 70~80 m · 사람 1920 기준 18 px)
+- 수프에 BN 재계산 (`soup.py --bn`) — 무너진 조합은 살리지만 박스가 넓어져 test_obl 만 오른다 (라벨 습관)
 
 ## 8. 지켜야 할 규칙
 
@@ -104,7 +106,9 @@
 | `analyze_models.py` · `diag_misses.py` | 모델 차이 · 놓친 원인 · 크기/자세/가림 층 |
 | `eval_test_v2.py` | **NFR-V03 판정** — 1920 · 타일 4장 · NMS 0.6 · FP16 · AP50 → `metrics/test_v2_<이름>.csv` |
 | `make_testset_v2.py` · `make_place_split.py` | 장소 분리 평가셋 · 학습 목록 `configs/lists/` |
-| `chain_v2.sh` | 현재 GPU 대기열 |
+| `chain_v12.sh` · `chain_util.py` | 데이터 고르기 → 반복 → 수프 자동 체인 (`pick` · `mklist`) · 최신 체인 `chain_v14.sh` |
+| `bench_trt.py` · `f2_tune.py` | NFR-V01 (TensorRT 엔진 빌드 · 한 장 ms) · NFR-V05 (val 로 F2 임계값) |
+| `make_v7_data.py` · `make_v8_data.py` · `make_testset_kr.py` | v7 (SARD·HERIDAL) · NII-CU 크롭 · test_kr |
 | `eval_tile.py` · `eval_tile_edge.py` · `tune_threshold_fullframe.py` | 타일 추론 · 가장자리 · F2 임계값 |
 | `coord_error.py` · `make_px_table.py` | 좌표 오차 예산 · 사람 px 표 |
 | `survey_tilt2.py` · `make_tilt_tags.py` · `eval_tilt_groups.py` | 마운트각 추정 · 태그 · 층화 평가 |
