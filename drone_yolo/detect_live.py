@@ -103,22 +103,31 @@ class Player:
 
 
 def find_weights():
-    """--weights 를 안 주면 여기서 찾는다. 서버에서 받아 온 것을 먼저 올린다."""
+    """--weights 를 안 주면 여기서 찾는다. soup_v7r2(09-28 확정 최종 모델)를 최우선으로 올린다."""
     here = Path(__file__).resolve().parent
     dirs = [here / "weights", here.parent.parent / "drone_dev" / "weights"]
-    prefer = ("fov_11s", "fov_11m", "l1_", "m2_", "m1_", "e1_", "yolov8s_stage1_all")
+    # 문자열 일부라도 경로에 있으면 매치 (best.pt 처럼 폴더명으로만 구분되는 경우 대응)
+    prefer = ("soup_v7r2", "soup_v7", "soup", "fov_11s", "fov_11m", "l1_", "m2_", "m1_", "e1_", "yolov8s_stage1_all")
     found, seen = [], set()
     for d in dirs:
         if not d.is_dir():
             continue
-        for p in sorted(d.glob("*.pt")):
-            if "pose" in p.name or "cls" in p.name or p.name in seen:
+        for p in sorted(d.rglob("*.pt")):  # soup/ 같은 하위 폴더도 뒤진다
+            key = str(p.resolve())
+            if "pose" in p.name or "cls" in p.name or key in seen:
                 continue  # 자세 판별 트랙은 09-13 중단
-            seen.add(p.name)
+            seen.add(key)
             found.append(p)
-    found.sort(key=lambda p: next((i for i, k in enumerate(prefer) if p.name.startswith(k)), len(prefer)))
+
+    def rank(p):
+        s = str(p).lower()
+        return next((i for i, k in enumerate(prefer) if k in s), len(prefer))
+
+    found.sort(key=rank)
     if found:
-        print("자동으로 찾은 가중치:", ", ".join(p.name for p in found[:6]))
+        # best.pt 처럼 파일명만으론 구분 안 되는 것은 상위 폴더명을 같이 보여준다
+        labels = [f"{p.parent.name}/{p.name}" if p.name in ("best.pt", "last.pt") else p.name for p in found[:6]]
+        print("자동으로 찾은 가중치:", ", ".join(labels))
     return found[:6]
 
 
@@ -136,8 +145,9 @@ def load_models(paths, device):
             m.to(device)
         except Exception:
             pass
-        models.append((p.name, m))
-        print(f"불러옴: {p.name}  클래스 {list(m.names.values())[:4]}")
+        label = f"{p.parent.name}/{p.name}" if p.name in ("best.pt", "last.pt") else p.name
+        models.append((label, m))
+        print(f"불러옴: {label}  클래스 {list(m.names.values())[:4]}")
     if not models:
         raise SystemExit("쓸 수 있는 가중치가 없다. --weights 경로를 확인할 것")
     return models
