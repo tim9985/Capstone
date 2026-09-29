@@ -20,3 +20,5 @@
 | v6_obl_r2 | test_v2 | 0.5156 |
 | v6_nwd | test_obl | 0.5893 |
 | v6_nwd | test_v2 | 0.5151 |
+| v7 | test_obl | 0.6311 |
+| v7 | test_v2 | 0.5777 |
