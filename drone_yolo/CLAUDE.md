@@ -2,7 +2,7 @@
 
 「자율 정찰 드론 관제 시스템」의 비전 코드 — **사람 1클래스 탐지 · 좌표 산정 · 상의 색상 비교**.
 경로는 Capstone 저장소 루트 기준. **수치·경위의 원본은 볼트(`obsidian/`)** 이고, 여기에는 작업 규칙과 함정만 둔다.
-갱신 2026-09-28
+갱신 2026-09-29
 
 ## 1. 먼저 볼 곳
 
@@ -85,6 +85,7 @@
 - ForestPersons (지상 1.5~2 m 시점) · CloudTrack 수치 비교 (제로샷 VLM)
 - 조건이 안 맞는 데이터 추가 — NII-CU 45° 야구장 (±0) · AI-Hub 190 (09-28 승인 · 고도 70~80 m · 사람 1920 기준 18 px)
 - 수프에 BN 재계산 (`soup.py --bn`) — 무너진 조합은 살리지만 박스가 넓어져 test_obl 만 오른다 (라벨 습관)
+- 학습 길이 60 에폭 — val mAP50-95 는 0.424 → 0.441 로 오르는데 **test_obl −4.0 %p** (09-29) · 30 에폭 유지
 
 ## 8. 지켜야 할 규칙
 
@@ -103,12 +104,14 @@
 | `train_person.py` | 학습 — `--hyp` · `--set` · `--smoke` · `--dry-run` · `--model-yaml`(크기 글자 검사) · 끝나면 자동 백업 |
 | `configs/hyp/` | 학습 설정 묶음 — `v3_nadir.yaml` (기준선) · `v6_oblique.yaml` (60°) |
 | `soup.py` | 같은 구조 모델 가중치 평균 → `runs_person/<이름>/weights/best.pt` |
-| `analyze_models.py` · `diag_misses.py` | 모델 차이 · 놓친 원인 · 크기/자세/가림 층 |
+| `analyze_models.py` · `diag_misses.py` | 모델 차이 · 놓친 원인 · 크기/자세/가림 층 · 박스 너비비 (`--out=파일명` 으로 따로 저장) |
 | `eval_test_v2.py` | **NFR-V03 판정** — 1920 · 타일 4장 · NMS 0.6 · FP16 · AP50 → `metrics/test_v2_<이름>.csv` |
 | `make_testset_v2.py` · `make_place_split.py` | 장소 분리 평가셋 · 학습 목록 `configs/lists/` |
-| `chain_v12.sh` · `chain_util.py` | 데이터 고르기 → 반복 → 수프 자동 체인 (`pick` · `mklist`) · 최신 체인 `chain_v14.sh` |
+| `chain_v12.sh` · `chain_util.py` | 데이터 고르기 → 반복 → 수프 자동 체인 (`pick` · `mklist`) · 최신 체인 `chain_v16.sh` (v9 ×2 → 수프 · 층별) |
 | `bench_trt.py` · `f2_tune.py` | NFR-V01 (TensorRT 엔진 빌드 · 한 장 ms) · NFR-V05 (val 로 F2 임계값) |
-| `make_v7_data.py` · `make_v8_data.py` · `make_testset_kr.py` | v7 (SARD·HERIDAL) · NII-CU 크롭 · test_kr |
+| `make_v7_data.py` · `make_v8_data.py` · `make_v9_data.py` · `make_testset_kr.py` | v7 (SARD·HERIDAL) · NII-CU 크롭 · NOMAD 가림·누움 부분집합 · test_kr |
+| `geo_resolver.py` · `ue_geo_validate.py` | 좌표 산정 (발끝 광선 × 지면 · 좌표보류 · 오차 타원) · UE 검증 (노트북 · `configs/settings_geo.json`) |
+| `obs_time.py` | 관측 시간 — test_obl 추적 ID 로 k회 관측 시 찾을 확률 |
 | `eval_tile.py` · `eval_tile_edge.py` · `tune_threshold_fullframe.py` | 타일 추론 · 가장자리 · F2 임계값 |
 | `coord_error.py` · `make_px_table.py` | 좌표 오차 예산 · 사람 px 표 |
 | `survey_tilt2.py` · `make_tilt_tags.py` · `eval_tilt_groups.py` | 마운트각 추정 · 태그 · 층화 평가 |

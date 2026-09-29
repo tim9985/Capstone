@@ -6,7 +6,7 @@
 			"label": "서버 계보 — COCO 에서 새로 출발 (09-11~)",
 			"x": -20,
 			"y": -60,
-			"width": 2040,
+			"width": 2440,
 			"height": 760
 		},
 		{
@@ -194,6 +194,26 @@
 			"height": 150,
 			"color": "4",
 			"text": "⭐ **[[결정 - 최종 탐지 모델 soup_v7r2|soup_v7r2]]** (최종)\nv7 + v7_r2 가중치 평균\n**test_v2 0.593 · obl 0.633 · kr 0.968**\n18.9 ms · 임계값 0.15"
+		},
+		{
+			"id": "e60",
+			"type": "text",
+			"x": 1600,
+			"y": 320,
+			"width": 300,
+			"height": 120,
+			"color": "1",
+			"text": "❌ **v7_e60** (60 에폭)\nval ↑ 인데 test_obl **−4.0 %p**\n→ [[9.29 60 에폭 기각과 v9|09-29]]"
+		},
+		{
+			"id": "v9",
+			"type": "text",
+			"x": 2040,
+			"y": 480,
+			"width": 320,
+			"height": 130,
+			"color": "3",
+			"text": "🔄 **v9** (09-29~)\nv7 + NOMAD 가림·누움·숨음 2,383\n×2 → soup_v9x2"
 		}
 	],
 	"edges": [
@@ -303,6 +323,22 @@
 			"toNode": "soup",
 			"toSide": "left",
 			"label": "평균"
+		},
+		{
+			"id": "e_v7e60",
+			"fromNode": "v7",
+			"fromSide": "right",
+			"toNode": "e60",
+			"toSide": "left",
+			"label": "60 에폭"
+		},
+		{
+			"id": "e_soupv9",
+			"fromNode": "soup",
+			"fromSide": "right",
+			"toNode": "v9",
+			"toSide": "left",
+			"label": "다음 · 데이터"
 		}
 	]
 }
