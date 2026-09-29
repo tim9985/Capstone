@@ -102,6 +102,17 @@ class Player:
         self.cap.release()
 
 
+def weight_label(p: Path) -> str:
+    """best.pt/last.pt 는 파일명만으론 안 구분되니 의미 있는 상위 폴더명을 찾아 붙인다
+    (…/soup_v7r2/weights/best.pt -> soup_v7r2/best.pt)."""
+    if p.name not in ("best.pt", "last.pt"):
+        return p.name
+    parent = p.parent
+    if parent.name == "weights" and parent.parent.name:
+        return f"{parent.parent.name}/{p.name}"
+    return f"{parent.name}/{p.name}"
+
+
 def find_weights():
     """--weights 를 안 주면 여기서 찾는다. soup_v7r2(09-28 확정 최종 모델)를 최우선으로 올린다."""
     here = Path(__file__).resolve().parent
@@ -126,7 +137,7 @@ def find_weights():
     found.sort(key=rank)
     if found:
         # best.pt 처럼 파일명만으론 구분 안 되는 것은 상위 폴더명을 같이 보여준다
-        labels = [f"{p.parent.name}/{p.name}" if p.name in ("best.pt", "last.pt") else p.name for p in found[:6]]
+        labels = [weight_label(p) for p in found[:6]]
         print("자동으로 찾은 가중치:", ", ".join(labels))
     return found[:6]
 
@@ -145,7 +156,7 @@ def load_models(paths, device):
             m.to(device)
         except Exception:
             pass
-        label = f"{p.parent.name}/{p.name}" if p.name in ("best.pt", "last.pt") else p.name
+        label = weight_label(p)
         models.append((label, m))
         print(f"불러옴: {label}  클래스 {list(m.names.values())[:4]}")
     if not models:
