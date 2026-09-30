@@ -1,0 +1,1 @@
+train_posture_cls.py --set s1_aihub
