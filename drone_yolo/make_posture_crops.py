@@ -11,6 +11,9 @@ make_posture_crops.py — 자세 분류 크롭 (상태 인지 A2 · 2026-09-30)
   · 장소 분리 — AI-Hub 학습 산악2·3·4·6·평지(수풀)1 / val 산악8 / 평가 산악5 (= test_kr 장소)
   · Okutama 는 평가 전용 (비스듬 25편 · 수직 15편 · 1초 1장 · 1280×720 추출 프레임)
   · SARD 는 학습 보강용 (비스듬 · 사람이 붙인 자세 · not_defined 제외)
+  · NOMAD 는 학습 보강용 (미국 농장 · 비스듬~수직 · 고도 10~90 m · 10-01 추가) — 자세는 **활동 구간에서 유도**
+    Walking → standing · Laying · Hiding (Laying) → lying · Hiding 은 자세 불명이라 뺀다 · 가시도 50 % 미만 뺀다
+    서기는 상한 3,000 (걷기 프레임이 압도적으로 많다) · 앉기 라벨 없음
 
 출력
   data/pose_cls/<묶음>/{train,val}/{lying,sitting,standing}/*.jpg  — ultralytics 분류 폴더 구조
@@ -22,6 +25,7 @@ make_posture_crops.py — 자세 분류 크롭 (상태 인지 A2 · 2026-09-30)
   python make_posture_crops.py aihub      # AI-Hub 학습·val·평가(산악5)
   python make_posture_crops.py okutama    # Okutama 평가 (비스듬 · 수직)
   python make_posture_crops.py sard       # SARD 학습 보강
+  python make_posture_crops.py nomad      # NOMAD 학습 보강 (10-01)
   python make_posture_crops.py all
 """
 import csv
@@ -53,6 +57,9 @@ AIHUB_SPLIT = {"산악2": "train", "산악3": "train", "산악4": "train", "산�
 OKU_NADIR = set("2.2.2 1.1.8 1.1.4 2.2.10 2.2.5 2.2.1 1.1.11 1.1.7 2.2.7 1.1.5 2.2.4 2.2.3 1.1.9 2.2.6 2.2.8".split())
 OKU_POSE = {"Lying": "lying", "Sitting": "sitting", "Standing": "standing", "Walking": "standing", "Running": "standing"}
 SARD_POSE = {0: "standing", 1: "standing", 2: "lying", 4: "sitting", 5: "standing"}   # 3 = not_defined 제외
+NOMAD = RAW / "NOMAD"
+NOMAD_POSE = {"Walking": "standing", "Laying": "lying", "Hiding (Laying)": "lying"}          # Hiding 은 뺀다
+NOMAD_STAND_CAP, NOMAD_MIN_VIS = 3000, 50
 
 
 def crop(img, box, to1080):
@@ -230,9 +237,70 @@ def sard():
     print(f"  {out.relative_to(BASE)}: {dict(Counter(r[-1] for r in rows))}")
 
 
+# ── NOMAD (학습 보강 · 활동 구간 유도 자세) ─────────────────────────────────
+def _num(x):
+    m = re.search(r"\d+(\.\d+)?", str(x))                    # 원본 오타 '1320}' · '1140.1598'
+    return float(m.group()) if m else None
+
+
+def _nomad_act(acts, actor, dist, frame):
+    for name, spans in acts.get(actor, {}).get(dist, {}).items():
+        for sp in spans:
+            if sp:
+                a, b = _num(sp[0]), _num(sp[-1])
+                if a is not None and b is not None and a <= frame <= b:
+                    return name
+    return None
+
+
+def _nomad_job(job):
+    img_path, boxes, out_dir, tag = job
+    img = cv2.imread(img_path)
+    if img is None:
+        return []
+    to1080 = 1080 / img.shape[0]
+    rows = []
+    for k, (x, y, w, h, pose) in enumerate(boxes):
+        if max(w, h) * to1080 < 12:                           # 1080p 에서 12 px 미만은 자세 단서가 없다
+            continue
+        name = f"nomad_{Path(img_path).stem}_{k}.jpg"
+        cv2.imwrite(str(Path(out_dir) / pose / name), crop(img, (x, y, x + w, y + h), to1080), [cv2.IMWRITE_JPEG_QUALITY, 95])
+        rows.append([f"{pose}/{name}", "nomad", tag, "oblique", tag.split("_")[-1], round(w * to1080, 1), round(h * to1080, 1), pose])
+    return rows
+
+
+def nomad():
+    import random
+    out = OUT_CLS / "nomad" / "train"
+    for c in CLASSES:
+        (out / c).mkdir(parents=True, exist_ok=True)
+    ann = json.load(open(NOMAD / "annotations.json"))
+    acts = {a["id"]: a["labels"] for a in json.load(open(NOMAD / "activityLabels.json"))}
+    by_pose = defaultdict(list)
+    for r in ann:
+        fn = r["file_name"]; actor_s, dist_s, f_s = fn[:-4].split("_")
+        img = NOMAD / "images" / actor_s / f"{actor_s}_{dist_s}" / fn
+        if not img.exists():
+            continue
+        pose = NOMAD_POSE.get(_nomad_act(acts, int(actor_s[5:]), dist_s[1:], int(f_s[1:])))
+        if pose is None:
+            continue
+        boxes = [(*b["bbox"], pose) for b in r["annotations"] if int(b.get("visibility", 100)) >= NOMAD_MIN_VIS]
+        if boxes:
+            by_pose[pose].append((str(img), boxes, str(out), f"{actor_s}_{dist_s}"))
+    rng = random.Random(7)
+    rng.shuffle(by_pose["standing"])
+    jobs = by_pose["lying"] + by_pose["standing"][:NOMAD_STAND_CAP]
+    print("NOMAD 프레임", {k: len(v) for k, v in by_pose.items()}, "→ 서기 상한", NOMAD_STAND_CAP)
+    with Pool(14, initializer=cv2.setNumThreads, initargs=(1,)) as pool:
+        rows = [r for rs in pool.imap(_nomad_job, jobs, chunksize=8) for r in rs]
+    write_rows(out, rows)
+    print(f"  {out.relative_to(BASE)}: {dict(Counter(r[-1] for r in rows))}")
+
+
 if __name__ == "__main__":
     what = sys.argv[1] if len(sys.argv) > 1 else "all"
-    for name, fn in (("aihub", aihub), ("okutama", okutama), ("sard", sard)):
+    for name, fn in (("aihub", aihub), ("okutama", okutama), ("sard", sard), ("nomad", nomad)):
         if what in (name, "all"):
             print(f"== {name}")
             fn()

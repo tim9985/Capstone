@@ -1,0 +1,1 @@
+train_posture_cls.py --set s2_aihub_sard_nomad

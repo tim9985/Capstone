@@ -7,6 +7,7 @@ train_posture_cls.py — 자세 분류기 학습 (상태 인지 A2 · 2026-09-30
 묶음 (한 번에 하나만 바꾼다)
   s1_aihub       AI-Hub 5곳 (수직 90° · 한국)
   s1_aihub_sard  + SARD 전량 (비스듬 · 사람이 붙인 자세)
+  s2_aihub_sard_nomad  + NOMAD (비스듬 · 활동 구간 유도 누움·서기 · 10-01)
 
 실행
   python train_posture_cls.py --set s1_aihub [--model yolo11s-cls.pt] [--epochs 30] [--smoke]
@@ -22,7 +23,7 @@ from pathlib import Path
 
 BASE = Path(__file__).resolve().parent
 CLS = BASE / "data" / "pose_cls"
-SETS = {"s1_aihub": ["aihub"], "s1_aihub_sard": ["aihub", "sard"]}
+SETS = {"s1_aihub": ["aihub"], "s1_aihub_sard": ["aihub", "sard"], "s2_aihub_sard_nomad": ["aihub", "sard", "nomad"]}
 CLASSES = ("lying", "sitting", "standing")
 
 
