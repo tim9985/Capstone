@@ -1,0 +1,1880 @@
+{
+ "user_account": {
+  "comment": "DB-01 user_account · ERD-01 사용자·기체",
+  "cols": [
+   [
+    "user_id",
+    "uuid",
+    "PK",
+    "계정 ID"
+   ],
+   [
+    "login_id",
+    "text",
+    "UQ NN",
+    "로그인 ID"
+   ],
+   [
+    "credential_hash",
+    "text",
+    "NN",
+    "비밀번호 해시"
+   ],
+   [
+    "permissions",
+    "jsonb",
+    "NN",
+    "조회 / 제어 요청 권한"
+   ],
+   [
+    "status",
+    "text",
+    "NN CHECK",
+    "ACTIVE / LOCKED / DISABLED"
+   ],
+   [
+    "created_at",
+    "timestamptz",
+    "NN",
+    "생성 시각"
+   ]
+  ]
+ },
+ "user_session": {
+  "comment": "DB-02 user_session · ERD-01 사용자·기체",
+  "cols": [
+   [
+    "session_id",
+    "uuid",
+    "PK",
+    "세션 ID"
+   ],
+   [
+    "user_id",
+    "uuid",
+    "FK user_account NN",
+    "사용자"
+   ],
+   [
+    "token_digest",
+    "text",
+    "UQ NN",
+    "토큰 해시"
+   ],
+   [
+    "issued_at",
+    "timestamptz",
+    "NN",
+    "발급"
+   ],
+   [
+    "expires_at",
+    "timestamptz",
+    "NN",
+    "만료"
+   ],
+   [
+    "revoked_at",
+    "timestamptz",
+    "NULL",
+    "로그아웃·폐기"
+   ]
+  ]
+ },
+ "drone": {
+  "comment": "DB-03 drone · ERD-01 사용자·기체",
+  "cols": [
+   [
+    "drone_id",
+    "text",
+    "PK",
+    "운용 기체 ID"
+   ],
+   [
+    "name",
+    "text",
+    "NN",
+    "표시 이름 [new]"
+   ],
+   [
+    "gateway_id",
+    "text",
+    "NULL",
+    "짝지은 현장 게이트웨이 [new]"
+   ],
+   [
+    "camera_config_id",
+    "uuid",
+    "FK config_version NULL",
+    "현재 장착 카메라 보정 [new]"
+   ],
+   [
+    "control_user_id",
+    "uuid",
+    "FK user_account NULL",
+    "웹 제어권 보유자 (control_lease.holder_user_id)"
+   ],
+   [
+    "control_session_id",
+    "uuid",
+    "FK user_session NULL",
+    "보유 세션 (control_lease.session_id)"
+   ],
+   [
+    "control_revision",
+    "bigint",
+    "NN >=0",
+    "웹 제어권 변경 세대 · 조건부 갱신 (control_lease.web_revision)"
+   ],
+   [
+    "control_acquired_at",
+    "timestamptz",
+    "NULL",
+    "확보 시각"
+   ],
+   [
+    "control_expires_at",
+    "timestamptz",
+    "NULL",
+    "만료 시각"
+   ],
+   [
+    "control_epoch",
+    "bigint",
+    "NN >=0",
+    "Pi 가 확인한 실행 제어 세대 (observed/last_control_epoch)"
+   ],
+   [
+    "gateway_state",
+    "jsonb",
+    "NN",
+    "현재 게이트웨이 세션: id·시작·SW/정책 버전·시계·기능·권한 상태"
+   ],
+   [
+    "link_state",
+    "jsonb",
+    "NN",
+    "링크별 {state, reason, connection_epoch, last_ok_at, detected_at, metrics}"
+   ],
+   [
+    "updated_at",
+    "timestamptz",
+    "NN",
+    "마지막 갱신 [new]"
+   ]
+  ]
+ },
+ "mission": {
+  "comment": "DB-04 mission · ERD-02 임무·설정",
+  "cols": [
+   [
+    "mission_id",
+    "uuid",
+    "PK",
+    "임무 ID"
+   ],
+   [
+    "drone_id",
+    "text",
+    "FK drone NN",
+    "운용 기체"
+   ],
+   [
+    "creator_user_id",
+    "uuid",
+    "FK user_account NN",
+    "생성 운영자"
+   ],
+   [
+    "draft_revision",
+    "integer",
+    "NN",
+    "편집 중 개정"
+   ],
+   [
+    "active_revision",
+    "integer",
+    "NULL · FK (mission_id, active_revision) DEFERRABLE",
+    "실행 개정"
+   ],
+   [
+    "state",
+    "text",
+    "NN CHECK",
+    "READY / STARTING / RUNNING / PAUSING / PAUSED / RETURNING / LANDING / ENDED / FAILED / UNKNOWN"
+   ],
+   [
+    "state_evidence",
+    "jsonb",
+    "NN",
+    "상태 판정 근거"
+   ],
+   [
+    "readiness",
+    "jsonb",
+    "NULL",
+    "운용 준비·안전 설정 점검 항목별 결과 (UC-0203·1006) [new]"
+   ],
+   [
+    "appearance_query",
+    "jsonb",
+    "NULL",
+    "상의 색상 조건 (UC-0707) [new]"
+   ],
+   [
+    "test_conditions",
+    "jsonb",
+    "NULL",
+    "날씨·지형·장비·통신 등 시험 조건 (SRS 1.2·측정 조건) [new]"
+   ],
+   [
+    "grant_status",
+    "text",
+    "NULL CHECK",
+    "실행 승인 상태 (mission_execution_grant.status)"
+   ],
+   [
+    "approved_by",
+    "uuid",
+    "FK user_account NULL",
+    "실행 승인자"
+   ],
+   [
+    "approved_at",
+    "timestamptz",
+    "NULL",
+    "승인 시각 (grant.issued_at)"
+   ],
+   [
+    "grant_revoked_at",
+    "timestamptz",
+    "NULL",
+    "승인 철회"
+   ],
+   [
+    "started_at",
+    "timestamptz",
+    "NULL",
+    "시작"
+   ],
+   [
+    "ended_at",
+    "timestamptz",
+    "NULL",
+    "종료"
+   ],
+   [
+    "termination_reason",
+    "text",
+    "NULL",
+    "종료 사유"
+   ]
+  ]
+ },
+ "mission_revision": {
+  "comment": "DB-05 mission_revision · ERD-02 임무·설정",
+  "cols": [
+   [
+    "mission_id",
+    "uuid",
+    "PK · FK mission",
+    "임무"
+   ],
+   [
+    "revision",
+    "integer",
+    "PK",
+    "단조 증가 개정"
+   ],
+   [
+    "area_geom",
+    "geometry(MultiPolygon,4326)",
+    "NN",
+    "임무구역"
+   ],
+   [
+    "priority_geom",
+    "geometry(MultiPolygon,4326)",
+    "NULL",
+    "우선구역"
+   ],
+   [
+    "priority_sources",
+    "jsonb",
+    "NULL",
+    "사전 제보·가중치 근거 (prior_evidence 흡수)"
+   ],
+   [
+    "conditions",
+    "jsonb",
+    "NN",
+    "고도·속도·복귀 조건"
+   ],
+   [
+    "area_denominators",
+    "jsonb",
+    "NN",
+    "전체·관측 가능 구역 면적 (시작 시 고정)"
+   ],
+   [
+    "spatial_config_id",
+    "uuid",
+    "FK config_version NN",
+    "공간 기준 (context_id)"
+   ],
+   [
+    "coordinate_config_id",
+    "uuid",
+    "FK config_version NULL",
+    "좌표 설정 (coordinate_id)"
+   ],
+   [
+    "policy_config_id",
+    "uuid",
+    "FK config_version NULL",
+    "정책 묶음 (configuration_id)"
+   ],
+   [
+    "model_config_id",
+    "uuid",
+    "FK config_version NULL",
+    "사용 탐지 모델 [new]"
+   ],
+   [
+    "planner_modes",
+    "jsonb",
+    "NN",
+    "global_mode · local_mode · target_model · coverage_policy"
+   ],
+   [
+    "grid_version",
+    "text",
+    "NN",
+    "관측 격자 버전"
+   ],
+   [
+    "created_at",
+    "timestamptz",
+    "NN",
+    "생성"
+   ],
+   [
+    "approved_at",
+    "timestamptz",
+    "NULL",
+    "확정"
+   ]
+  ]
+ },
+ "config_version": {
+  "comment": "DB-06 config_version · ERD-02 임무·설정",
+  "cols": [
+   [
+    "config_id",
+    "uuid",
+    "PK",
+    "설정 버전 ID"
+   ],
+   [
+    "kind",
+    "text",
+    "NN CHECK",
+    "SPATIAL / CAMERA / COORDINATE / MODEL / POLICY"
+   ],
+   [
+    "version",
+    "text",
+    "NN · UQ(kind, version)",
+    "버전"
+   ],
+   [
+    "schema_version",
+    "text",
+    "NN",
+    "payload 스키마 버전"
+   ],
+   [
+    "payload",
+    "jsonb",
+    "NN",
+    "종류별 내용 (좌표계·원점·보정 K·모델 입력·임계값·탐지율 표 …)"
+   ],
+   [
+    "content_hash",
+    "text",
+    "NN",
+    "내용 해시"
+   ],
+   [
+    "parent_id",
+    "uuid",
+    "FK config_version NULL",
+    "파생 원본 (부모 모델 등)"
+   ],
+   [
+    "asset_id",
+    "uuid",
+    "FK media_asset NULL",
+    "보정 파일·가중치·엔진·평가 파일"
+   ],
+   [
+    "status",
+    "text",
+    "NN CHECK",
+    "DRAFT / VALIDATED / APPROVED / RETIRED"
+   ],
+   [
+    "validation_report",
+    "jsonb",
+    "NULL",
+    "검증 결과 (NFR-V05 임계값 변경 기록 포함)"
+   ],
+   [
+    "approved_by",
+    "uuid",
+    "FK user_account NULL",
+    "승인자"
+   ],
+   [
+    "created_at",
+    "timestamptz",
+    "NN",
+    "생성"
+   ],
+   [
+    "approved_at",
+    "timestamptz",
+    "NULL",
+    "승인"
+   ]
+  ]
+ },
+ "search_region": {
+  "comment": "DB-07 search_region · ERD-03 계획·관측",
+  "cols": [
+   [
+    "region_id",
+    "uuid",
+    "PK",
+    "수색 영역"
+   ],
+   [
+    "mission_id",
+    "uuid",
+    "NN · FK (mission_id, mission_revision)",
+    "임무"
+   ],
+   [
+    "mission_revision",
+    "integer",
+    "NN",
+    "개정"
+   ],
+   [
+    "grid_version",
+    "text",
+    "NN",
+    "격자 버전"
+   ],
+   [
+    "region_type",
+    "text",
+    "NN",
+    "미관측/오래된 관측/우선구역/후보 주변/시설 …"
+   ],
+   [
+    "source_features",
+    "jsonb",
+    "NN",
+    "근거 공간 요소"
+   ],
+   [
+    "region_geom",
+    "geometry(MultiPolygon,4326)",
+    "NN",
+    "영역 경계"
+   ],
+   [
+    "representative_point",
+    "geometry(Point,4326)",
+    "NN",
+    "순서 계산 대표점"
+   ],
+   [
+    "total_area_m2",
+    "double precision",
+    "NN",
+    "전체 면적"
+   ],
+   [
+    "remaining_area_m2",
+    "double precision",
+    "NN · 0<=remain<=total",
+    "남은 면적"
+   ],
+   [
+    "state",
+    "text",
+    "NN CHECK",
+    "PENDING / ACTIVE / PARTIAL / SATISFIED / DEFERRED / BLOCKED"
+   ],
+   [
+    "pass_index",
+    "integer",
+    "NN",
+    "순회 회차"
+   ],
+   [
+    "service_estimate_s",
+    "double precision",
+    "NULL",
+    "처리 시간 추정"
+   ],
+   [
+    "reason",
+    "text",
+    "NULL",
+    "보류 사유"
+   ],
+   [
+    "row_version",
+    "bigint",
+    "NN",
+    "동시성 버전"
+   ]
+  ]
+ },
+ "observation_cell": {
+  "comment": "DB-08 observation_cell · ERD-03 계획·관측",
+  "cols": [
+   [
+    "mission_id",
+    "uuid",
+    "PK · FK mission",
+    "임무"
+   ],
+   [
+    "grid_version",
+    "text",
+    "PK",
+    "격자 버전"
+   ],
+   [
+    "cell_id",
+    "text",
+    "PK",
+    "셀"
+   ],
+   [
+    "region_id",
+    "uuid",
+    "FK search_region NULL",
+    "대표 수색 영역 (membership)"
+   ],
+   [
+    "region_allocations",
+    "jsonb",
+    "NULL",
+    "영역별 배정 형상·면적·분할 버전 (region_cell_membership)"
+   ],
+   [
+    "spatial_config_id",
+    "uuid",
+    "FK config_version NN",
+    "공간 기준 (context_id)"
+   ],
+   [
+    "cell_geom",
+    "geometry(MultiPolygon,4326)",
+    "NN",
+    "셀 형상"
+   ],
+   [
+    "cell_area_m2",
+    "double precision",
+    "NN >0",
+    "셀 면적"
+   ],
+   [
+    "state",
+    "text",
+    "NN CHECK",
+    "미관측 / 유효 관측 / 품질 부족 / 가림·미확인 / 운용 제한"
+   ],
+   [
+    "valid_union_geom",
+    "geometry(MultiPolygon,4326)",
+    "NULL",
+    "유효 관측 합집합 (중복 없는 누적)"
+   ],
+   [
+    "valid_area_m2",
+    "double precision",
+    "NN >=0",
+    "유효 면적"
+   ],
+   [
+    "valid_count",
+    "integer",
+    "NN >=0",
+    "유효 관측 횟수"
+   ],
+   [
+    "valid_group_count",
+    "integer",
+    "NN >=0",
+    "유효 관측 묶음 수 (1초 단위)"
+   ],
+   [
+    "valid_duration_s",
+    "double precision",
+    "NN >=0",
+    "유효 관측 시간"
+   ],
+   [
+    "last_valid_at",
+    "timestamptz",
+    "NULL",
+    "마지막 유효 관측"
+   ],
+   [
+    "excluded_reasons",
+    "jsonb",
+    "NN",
+    "품질 부족·가림·제한 사유"
+   ],
+   [
+    "priority",
+    "double precision",
+    "NULL",
+    "탐색 우선도 (UC-0502·0806)"
+   ],
+   [
+    "belief",
+    "double precision",
+    "NULL · [0,1]",
+    "존재 가능성 현재값 (cell_belief.posterior)"
+   ],
+   [
+    "belief_detail",
+    "jsonb",
+    "NULL",
+    "prior·불확실도·모델 종류·마지막 묶음·근거·갱신 시각"
+   ],
+   [
+    "row_version",
+    "bigint",
+    "NN",
+    "동시성 버전"
+   ]
+  ]
+ },
+ "search_plan": {
+  "comment": "DB-09 search_plan · ERD-03 계획·관측",
+  "cols": [
+   [
+    "plan_id",
+    "uuid",
+    "PK",
+    "계획"
+   ],
+   [
+    "mission_id",
+    "uuid",
+    "NN · FK (mission_id, mission_revision)",
+    "임무"
+   ],
+   [
+    "mission_revision",
+    "integer",
+    "NN",
+    "개정"
+   ],
+   [
+    "plan_version",
+    "integer",
+    "NN · UQ(mission_id, plan_version)",
+    "임무별 계획 번호"
+   ],
+   [
+    "plan_kind",
+    "text",
+    "NN CHECK",
+    "GLOBAL / LOCAL / REOBSERVE / BASELINE"
+   ],
+   [
+    "parent_plan_id",
+    "uuid",
+    "FK search_plan NULL",
+    "상위 (전역) 계획"
+   ],
+   [
+    "supersedes_plan_id",
+    "uuid",
+    "FK search_plan NULL",
+    "대체한 이전 계획"
+   ],
+   [
+    "region_id",
+    "uuid",
+    "FK search_region NULL",
+    "지역 계획 대상 영역 (region_task.region_id) [승격]"
+   ],
+   [
+    "input_versions",
+    "jsonb",
+    "NN",
+    "입력 버전"
+   ],
+   [
+    "objective_mode",
+    "text",
+    "NN",
+    "목적 모드"
+   ],
+   [
+    "visit_order",
+    "jsonb",
+    "NULL",
+    "영역 방문 순서·채택/보류·비용 (region_visit)"
+   ],
+   [
+    "task",
+    "jsonb",
+    "NULL",
+    "영역 작업 계약: 셀·예산·요청 해시·마감·결과·취소 (region_task)"
+   ],
+   [
+    "candidates",
+    "jsonb",
+    "NULL",
+    "관측 후보·가시 셀·이득·비용·선택/기각 사유 (view_candidate)"
+   ],
+   [
+    "route",
+    "jsonb",
+    "NULL",
+    "실행 구간 목록·경로·복귀 비용·상태 (plan_segment)"
+   ],
+   [
+    "status",
+    "text",
+    "NN CHECK",
+    "ACTIVE / SUPERSEDED / DONE / CANCELLED / FAILED"
+   ],
+   [
+    "generated_at",
+    "timestamptz",
+    "NN",
+    "생성"
+   ],
+   [
+    "expires_at",
+    "timestamptz",
+    "NN · > generated_at",
+    "만료"
+   ],
+   [
+    "summary",
+    "jsonb",
+    "NN",
+    "요약"
+   ],
+   [
+    "decision_log",
+    "jsonb",
+    "NN",
+    "우선순위·선택 근거"
+   ]
+  ]
+ },
+ "reobservation_request": {
+  "comment": "DB-10 reobservation_request · ERD-03 계획·관측",
+  "cols": [
+   [
+    "request_id",
+    "uuid",
+    "PK",
+    "요청"
+   ],
+   [
+    "candidate_id",
+    "uuid",
+    "FK person_candidate NN · 진행 중 1건 UQ(부분)",
+    "후보"
+   ],
+   [
+    "mission_id",
+    "uuid",
+    "FK mission NN",
+    "임무"
+   ],
+   [
+    "requester_kind",
+    "text",
+    "NN",
+    "SYSTEM / USER"
+   ],
+   [
+    "requested_by",
+    "uuid",
+    "FK user_account NULL",
+    "요청 운영자"
+   ],
+   [
+    "requested_at",
+    "timestamptz",
+    "NN",
+    "요청 시각"
+   ],
+   [
+    "status",
+    "text",
+    "NN CHECK",
+    "QUEUED / PLANNING / EXECUTING / DONE / DEFERRED / REJECTED"
+   ],
+   [
+    "queue_order",
+    "integer",
+    "NN",
+    "처리 순서 (안전 요청 우선)"
+   ],
+   [
+    "plan_id",
+    "uuid",
+    "FK search_plan NULL",
+    "정밀 관측 계획"
+   ],
+   [
+    "hypothesis",
+    "jsonb",
+    "NN",
+    "재관측 가설"
+   ],
+   [
+    "desired_view",
+    "jsonb",
+    "NN",
+    "원하는 시점"
+   ],
+   [
+    "limits",
+    "jsonb",
+    "NN",
+    "max_time_s · max_attempts"
+   ],
+   [
+    "usage",
+    "jsonb",
+    "NN",
+    "used_time_s · attempts"
+   ],
+   [
+    "result_evidence",
+    "jsonb",
+    "NN",
+    "추가 관측 결과"
+   ],
+   [
+    "deferred_reason",
+    "text",
+    "NULL",
+    "미수행 사유"
+   ]
+  ]
+ },
+ "telemetry_sample": {
+  "comment": "DB-11 telemetry_sample · ERD-04 영상·탐지",
+  "cols": [
+   [
+    "sample_id",
+    "uuid",
+    "PK",
+    "표본"
+   ],
+   [
+    "mission_id",
+    "uuid",
+    "FK mission NULL",
+    "임무 (임무 전 준비 상태 허용)"
+   ],
+   [
+    "drone_id",
+    "text",
+    "FK drone NN",
+    "기체"
+   ],
+   [
+    "producer_id",
+    "text",
+    "NN",
+    "생산자"
+   ],
+   [
+    "producer_session_id",
+    "text",
+    "NN · UQ(producer_session_id, sample_kind, sequence)",
+    "생산 세션"
+   ],
+   [
+    "sample_kind",
+    "text",
+    "NN",
+    "GNSS / ATTITUDE / GIMBAL / STATUS"
+   ],
+   [
+    "sequence",
+    "bigint",
+    "NN >=0",
+    "순번"
+   ],
+   [
+    "sample_time_raw",
+    "bigint",
+    "NULL",
+    "원 시각"
+   ],
+   [
+    "clock_domain",
+    "text",
+    "NN",
+    "시계 영역"
+   ],
+   [
+    "source_time_utc",
+    "timestamptz",
+    "NULL",
+    "측정 시각"
+   ],
+   [
+    "received_at",
+    "timestamptz",
+    "NN",
+    "수신 시각"
+   ],
+   [
+    "time_evidence",
+    "jsonb",
+    "NN",
+    "시각 근거"
+   ],
+   [
+    "pose",
+    "jsonb",
+    "NN",
+    "위치·고도·자세"
+   ],
+   [
+    "flight_state",
+    "jsonb",
+    "NN",
+    "속도·배터리·모드·RC"
+   ],
+   [
+    "validity",
+    "jsonb",
+    "NN",
+    "유효성"
+   ]
+  ]
+ },
+ "video_frame": {
+  "comment": "DB-12 video_frame · ERD-04 영상·탐지",
+  "cols": [
+   [
+    "frame_id",
+    "uuid",
+    "PK",
+    "프레임"
+   ],
+   [
+    "mission_id",
+    "uuid",
+    "FK mission NULL",
+    "임무"
+   ],
+   [
+    "drone_id",
+    "text",
+    "FK drone NN",
+    "기체"
+   ],
+   [
+    "stream_id",
+    "text",
+    "NN",
+    "스트림 (video_stream_epoch.stream_id)"
+   ],
+   [
+    "stream_epoch",
+    "integer",
+    "NN · UQ(stream_id, stream_epoch, frame_seq)",
+    "PTS/코덱 재시작 구간 번호"
+   ],
+   [
+    "frame_seq",
+    "bigint",
+    "NN >=0",
+    "프레임 순번 (video_frame_seq)"
+   ],
+   [
+    "identity_scope",
+    "text",
+    "NN CHECK",
+    "source / gateway_received"
+   ],
+   [
+    "capture_at",
+    "timestamptz",
+    "NULL",
+    "촬영 시각"
+   ],
+   [
+    "gateway_received_at",
+    "timestamptz",
+    "NULL",
+    "게이트웨이 수신 시각 (측정 조건) [new]"
+   ],
+   [
+    "received_at",
+    "timestamptz",
+    "NN",
+    "서버 수신 시각"
+   ],
+   [
+    "capture_time_verified",
+    "boolean",
+    "NN",
+    "촬영 시각 측정/추정"
+   ],
+   [
+    "time_evidence",
+    "jsonb",
+    "NN",
+    "시각 근거·불확실도"
+   ],
+   [
+    "width",
+    "integer",
+    "NN >0",
+    "폭"
+   ],
+   [
+    "height",
+    "integer",
+    "NN >0",
+    "높이"
+   ],
+   [
+    "format",
+    "text",
+    "NN",
+    "형식"
+   ],
+   [
+    "source_quality_status",
+    "text",
+    "NN",
+    "원본 품질"
+   ],
+   [
+    "metadata_state",
+    "text",
+    "NN",
+    "메타데이터 상태"
+   ],
+   [
+    "coordinate_config_id",
+    "uuid",
+    "FK config_version NULL",
+    "자세 결합 좌표 설정 (binding.coordinate_id)"
+   ],
+   [
+    "pose",
+    "jsonb",
+    "NULL",
+    "보간 자세·방법·공분산·앞뒤 표본 ID (frame_pose_binding)"
+   ],
+   [
+    "pose_status",
+    "text",
+    "NN CHECK",
+    "VALID / ESTIMATED / PENDING / INVALID"
+   ],
+   [
+    "pose_reason",
+    "text",
+    "NULL",
+    "보류 사유"
+   ],
+   [
+    "footprint_geom",
+    "geometry(MultiPolygon,4326)",
+    "NULL",
+    "촬영 범위 (UC-0802) [new]"
+   ],
+   [
+    "visible_geom",
+    "geometry(MultiPolygon,4326)",
+    "NULL",
+    "가시 영역 (observation_evidence.visible_geom)"
+   ],
+   [
+    "coverage",
+    "jsonb",
+    "NULL",
+    "셀별 유효 관측 판정·구간·반영 시각 (observation_evidence)"
+   ],
+   [
+    "obs_group",
+    "text",
+    "NULL",
+    "1초 관측 묶음 키 (observation_group)"
+   ],
+   [
+    "plan_id",
+    "uuid",
+    "FK search_plan NULL",
+    "촬영 당시 계획 (UC-0506 관측 결과 연결) [new]"
+   ],
+   [
+    "analysis_mode",
+    "text",
+    "NULL CHECK",
+    "LIVE_DETECT / LIVE_TRACK_ONLY / HISTORICAL"
+   ],
+   [
+    "analysis_state",
+    "text",
+    "NULL CHECK",
+    "SELECTED / RUNNING / DONE / DROPPED / SKIPPED / FAILED"
+   ],
+   [
+    "skip_reason",
+    "text",
+    "NULL",
+    "폐기·선택 제외 사유"
+   ],
+   [
+    "model_config_id",
+    "uuid",
+    "FK config_version NULL",
+    "분석 모델"
+   ],
+   [
+    "pipeline_version",
+    "text",
+    "NULL",
+    "파이프라인 버전"
+   ],
+   [
+    "analysis_times",
+    "jsonb",
+    "NULL",
+    "selected · started · completed 시각"
+   ],
+   [
+    "pre_ms",
+    "double precision",
+    "NULL >=0",
+    "전처리"
+   ],
+   [
+    "infer_ms",
+    "double precision",
+    "NULL >=0",
+    "추론 (NFR-V01)"
+   ],
+   [
+    "post_ms",
+    "double precision",
+    "NULL >=0",
+    "후처리"
+   ],
+   [
+    "task_quality_status",
+    "text",
+    "NULL",
+    "업무별 사용 조건 판정"
+   ]
+  ]
+ },
+ "media_asset": {
+  "comment": "DB-13 media_asset · ERD-04 영상·탐지",
+  "cols": [
+   [
+    "asset_id",
+    "uuid",
+    "PK",
+    "파일 참조"
+   ],
+   [
+    "mission_id",
+    "uuid",
+    "FK mission NULL",
+    "임무"
+   ],
+   [
+    "frame_id",
+    "uuid",
+    "FK video_frame NULL",
+    "프레임"
+   ],
+   [
+    "candidate_id",
+    "uuid",
+    "FK person_candidate NULL",
+    "후보 스냅샷 (candidate_snapshot)"
+   ],
+   [
+    "observation_id",
+    "uuid",
+    "FK detection_observation NULL",
+    "근거 탐지 (candidate_snapshot)"
+   ],
+   [
+    "asset_type",
+    "text",
+    "NN CHECK",
+    "RECORDING / SNAPSHOT / CROP / EXPORT_KML / CALIBRATION / MODEL / EVALUATION"
+   ],
+   [
+    "storage_uri",
+    "text",
+    "NN",
+    "경로"
+   ],
+   [
+    "content_hash",
+    "text",
+    "NN",
+    "해시"
+   ],
+   [
+    "time_start",
+    "timestamptz",
+    "NULL",
+    "구간 시작"
+   ],
+   [
+    "time_end",
+    "timestamptz",
+    "NULL",
+    "구간 끝"
+   ],
+   [
+    "state",
+    "text",
+    "NN CHECK",
+    "WRITING / STORED / FAILED / DELETED"
+   ],
+   [
+    "gaps",
+    "jsonb",
+    "NN",
+    "누락 구간"
+   ],
+   [
+    "quality_status",
+    "text",
+    "NULL",
+    "스냅샷 품질"
+   ],
+   [
+    "historical",
+    "boolean",
+    "NN",
+    "재관측 등으로 대체됨"
+   ],
+   [
+    "retention_class",
+    "text",
+    "NN CHECK",
+    "DEFAULT / FALSE_POSITIVE_KEEP / MODEL (storage_policy_id 대체)"
+   ],
+   [
+    "retained_until",
+    "timestamptz",
+    "NULL",
+    "보존 기한"
+   ],
+   [
+    "source_asset_id",
+    "uuid",
+    "FK media_asset NULL",
+    "파생 원본"
+   ],
+   [
+    "meta",
+    "jsonb",
+    "NULL",
+    "representation_kind · snapshot_kind · captured_at · supersedes · deletion_reason"
+   ],
+   [
+    "created_at",
+    "timestamptz",
+    "NN",
+    "생성"
+   ]
+  ]
+ },
+ "person_candidate": {
+  "comment": "DB-14 person_candidate · ERD-04 영상·탐지",
+  "cols": [
+   [
+    "candidate_id",
+    "uuid",
+    "PK",
+    "후보"
+   ],
+   [
+    "mission_id",
+    "uuid",
+    "FK mission NN",
+    "임무"
+   ],
+   [
+    "first_frame_id",
+    "uuid",
+    "FK video_frame NULL",
+    "첫 탐지 프레임"
+   ],
+   [
+    "first_asset_id",
+    "uuid",
+    "FK media_asset NULL",
+    "첫 스냅샷"
+   ],
+   [
+    "first_seen",
+    "timestamptz",
+    "NULL",
+    "처음"
+   ],
+   [
+    "last_seen",
+    "timestamptz",
+    "NULL",
+    "마지막"
+   ],
+   [
+    "association_state",
+    "text",
+    "NN CHECK",
+    "영상 ID 연결·유실·만료"
+   ],
+   [
+    "evidence_count",
+    "integer",
+    "NN >=0",
+    "탐지 관측 수"
+   ],
+   [
+    "valid_group_count",
+    "integer",
+    "NN >=0",
+    "서로 다른 시각 유효 관측 수 (3회↑ 반복 확인)"
+   ],
+   [
+    "latest_position",
+    "geometry(Point,4326)",
+    "NULL",
+    "WGS84 위치"
+   ],
+   [
+    "geo_status",
+    "text",
+    "NN CHECK",
+    "VALID / PENDING / INVALID"
+   ],
+   [
+    "geo_reason",
+    "text",
+    "NULL",
+    "보류 사유"
+   ],
+   [
+    "ellipse",
+    "jsonb",
+    "NULL",
+    "오차 타원"
+   ],
+   [
+    "coordinate_config_id",
+    "uuid",
+    "FK config_version NULL",
+    "좌표 설정 (coordinate_id)"
+   ],
+   [
+    "appearance",
+    "jsonb",
+    "NN",
+    "상의 색상 1·2순위·확신도·일치 여부"
+   ],
+   [
+    "judgement",
+    "jsonb",
+    "NN",
+    "운영자 판단·판단자·시각"
+   ],
+   [
+    "tracking",
+    "jsonb",
+    "NULL",
+    "개별 추적 진행·위치·유실·종료·마지막 관측 (UC-0708) [new]"
+   ],
+   [
+    "latest_observation_id",
+    "uuid",
+    "FK detection_observation NULL",
+    "최근 근거"
+   ],
+   [
+    "row_version",
+    "bigint",
+    "NN",
+    "동시성 버전"
+   ]
+  ]
+ },
+ "detection_observation": {
+  "comment": "DB-15 detection_observation · ERD-04 영상·탐지",
+  "cols": [
+   [
+    "observation_id",
+    "uuid",
+    "PK",
+    "탐지 관측"
+   ],
+   [
+    "candidate_id",
+    "uuid",
+    "FK person_candidate NULL",
+    "연결 후보"
+   ],
+   [
+    "frame_id",
+    "uuid",
+    "FK video_frame NN",
+    "프레임"
+   ],
+   [
+    "analysis_mode",
+    "text",
+    "NN · UQ(frame_id, analysis_mode, detection_index)",
+    "LIVE / HISTORICAL (analysis_job 대체)"
+   ],
+   [
+    "detection_index",
+    "integer",
+    "NN",
+    "프레임 내 번호"
+   ],
+   [
+    "track_id",
+    "text",
+    "NULL",
+    "영상 ID (UC-0703) [승격]"
+   ],
+   [
+    "bbox",
+    "jsonb",
+    "NN",
+    "경계 상자"
+   ],
+   [
+    "confidence",
+    "double precision",
+    "NN · [0,1]",
+    "신뢰도"
+   ],
+   [
+    "class_name",
+    "text",
+    "NN",
+    "person"
+   ],
+   [
+    "observation_kind",
+    "text",
+    "NN CHECK",
+    "DETECT / TRACK_ONLY"
+   ],
+   [
+    "model_config_id",
+    "uuid",
+    "FK config_version NN",
+    "모델 버전"
+   ],
+   [
+    "coordinate_config_id",
+    "uuid",
+    "FK config_version NULL",
+    "좌표 설정"
+   ],
+   [
+    "association_evidence",
+    "jsonb",
+    "NN",
+    "연결 근거"
+   ],
+   [
+    "geo_result",
+    "jsonb",
+    "NN",
+    "좌표·오차·보류 사유"
+   ],
+   [
+    "historical",
+    "boolean",
+    "NN",
+    "대체됨"
+   ],
+   [
+    "supersedes_id",
+    "uuid",
+    "FK detection_observation NULL",
+    "대체한 관측"
+   ]
+  ]
+ },
+ "flight_command": {
+  "comment": "DB-16 flight_command · ERD-05 명령·이력",
+  "cols": [
+   [
+    "command_id",
+    "uuid",
+    "PK",
+    "명령"
+   ],
+   [
+    "request_hash",
+    "text",
+    "UQ NN",
+    "중복 방지 키"
+   ],
+   [
+    "mission_id",
+    "uuid",
+    "NULL · FK (mission_id, mission_revision)",
+    "임무"
+   ],
+   [
+    "mission_revision",
+    "integer",
+    "NULL",
+    "실행 개정"
+   ],
+   [
+    "plan_id",
+    "uuid",
+    "FK search_plan NULL",
+    "계획 (region_task 포함)"
+   ],
+   [
+    "segment_order",
+    "integer",
+    "NULL",
+    "계획 안 실행 구간 번호 (plan_segment)"
+   ],
+   [
+    "drone_id",
+    "text",
+    "FK drone NN",
+    "기체"
+   ],
+   [
+    "control_epoch",
+    "bigint",
+    "NN",
+    "제어 세대"
+   ],
+   [
+    "sequence",
+    "bigint",
+    "NN",
+    "순번"
+   ],
+   [
+    "issued_at",
+    "timestamptz",
+    "NN",
+    "발행"
+   ],
+   [
+    "expires_at",
+    "timestamptz",
+    "NN · > issued_at",
+    "만료"
+   ],
+   [
+    "schema_version",
+    "text",
+    "NN",
+    "메시지 스키마"
+   ],
+   [
+    "policy_version",
+    "text",
+    "NN",
+    "정책 버전"
+   ],
+   [
+    "coordinate_config_id",
+    "uuid",
+    "FK config_version NULL",
+    "좌표 기준"
+   ],
+   [
+    "requester",
+    "jsonb",
+    "NN",
+    "요청 주체 (사용자/시스템)"
+   ],
+   [
+    "action",
+    "text",
+    "NN",
+    "동작"
+   ],
+   [
+    "payload",
+    "jsonb",
+    "NN",
+    "목표 원문"
+   ],
+   [
+    "state",
+    "text",
+    "NN CHECK",
+    "REQUESTED / ACCEPTED / REJECTED / EXECUTING / COMPLETED / FAILED / UNCONFIRMED / INVALIDATED"
+   ],
+   [
+    "status_revision",
+    "integer",
+    "NN",
+    "상태 변경 번호"
+   ],
+   [
+    "reason_code",
+    "text",
+    "NULL",
+    "거부·실패 사유 [new]"
+   ],
+   [
+    "last_evidence_at",
+    "timestamptz",
+    "NULL",
+    "마지막 근거 시각"
+   ],
+   [
+    "execution_deadline",
+    "timestamptz",
+    "NULL",
+    "실행 마감"
+   ],
+   [
+    "completion_policy",
+    "jsonb",
+    "NULL",
+    "완료 판정 조건"
+   ]
+  ]
+ },
+ "alert": {
+  "comment": "DB-17 alert · ERD-05 명령·이력",
+  "cols": [
+   [
+    "alert_id",
+    "uuid",
+    "PK",
+    "알림"
+   ],
+   [
+    "mission_id",
+    "uuid",
+    "FK mission NULL",
+    "임무"
+   ],
+   [
+    "source_event_id",
+    "uuid",
+    "FK mission_event NULL",
+    "원인 사건"
+   ],
+   [
+    "dedup_key",
+    "text",
+    "UQ NN",
+    "반복 알림 억제 키"
+   ],
+   [
+    "type",
+    "text",
+    "NN",
+    "새 후보 / 색상 일치 / 쓰러짐 의심 / ID 유실 / 장애 / 명령 실패"
+   ],
+   [
+    "priority",
+    "integer",
+    "NN",
+    "우선도"
+   ],
+   [
+    "raised_at",
+    "timestamptz",
+    "NN",
+    "발생"
+   ],
+   [
+    "evidence_refs",
+    "jsonb",
+    "NN",
+    "임무·기체·후보·스냅샷·명령 참조"
+   ],
+   [
+    "ack_user_id",
+    "uuid",
+    "FK user_account NULL",
+    "확인자"
+   ],
+   [
+    "acknowledged_at",
+    "timestamptz",
+    "NULL",
+    "확인 시각"
+   ]
+  ]
+ },
+ "mission_event": {
+  "comment": "DB-18 mission_event · ERD-05 명령·이력",
+  "cols": [
+   [
+    "event_id",
+    "uuid",
+    "PK",
+    "사건"
+   ],
+   [
+    "event_seq",
+    "bigint",
+    "UQ NN",
+    "재동기화 커서"
+   ],
+   [
+    "mission_id",
+    "uuid",
+    "FK mission NULL",
+    "임무"
+   ],
+   [
+    "drone_id",
+    "text",
+    "FK drone NULL",
+    "기체"
+   ],
+   [
+    "event_type",
+    "text",
+    "NN CHECK",
+    "COMMAND_STATE / EXECUTION_REPORT / SAFETY / OPERATOR_ACTION / STREAM_GAP / STREAM_EPOCH / LINK / GATEWAY / CONTROL / MISSION_STATE / OBS_GROUP / BELIEF_UPDATE / READINESS …"
+   ],
+   [
+    "code",
+    "text",
+    "NULL",
+    "EX-xx · 장애 종류 · 사유 코드 [승격]"
+   ],
+   [
+    "use_case_id",
+    "text",
+    "NULL",
+    "관련 UC"
+   ],
+   [
+    "actor_user_id",
+    "uuid",
+    "FK user_account NULL",
+    "수행 운영자 (operator_action.user_id) [승격]"
+   ],
+   [
+    "ref_table",
+    "text",
+    "NULL",
+    "대상 테이블 [new]"
+   ],
+   [
+    "ref_id",
+    "text",
+    "NULL",
+    "대상 ID (명령·후보·영역 …) [new]"
+   ],
+   [
+    "source_time",
+    "timestamptz",
+    "NULL",
+    "발생 시각"
+   ],
+   [
+    "stored_at",
+    "timestamptz",
+    "NN",
+    "저장 시각"
+   ],
+   [
+    "source_epoch",
+    "text",
+    "NN",
+    "생산 epoch"
+   ],
+   [
+    "correlation_id",
+    "text",
+    "NN",
+    "상관 ID"
+   ],
+   [
+    "payload",
+    "jsonb",
+    "NN",
+    "종류별 내용"
+   ],
+   [
+    "refs",
+    "jsonb",
+    "NN",
+    "근거 참조"
+   ],
+   [
+    "producer_id",
+    "text",
+    "NN",
+    "생산자"
+   ],
+   [
+    "producer_session_id",
+    "text",
+    "NN",
+    "생산 세션"
+   ],
+   [
+    "sequence",
+    "bigint",
+    "NN · UQ(producer_id, producer_session_id, sequence, event_type)",
+    "생산 순번"
+   ],
+   [
+    "publish_state",
+    "text",
+    "NN",
+    "전파 상태"
+   ],
+   [
+    "published_at",
+    "timestamptz",
+    "NULL",
+    "전파 시각"
+   ]
+  ]
+ }
+}
