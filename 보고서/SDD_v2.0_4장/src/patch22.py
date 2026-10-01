@@ -27,6 +27,7 @@ zin = zipfile.ZipFile(SRC)
 root = etree.fromstring(zin.read("Contents/section0.xml"))
 _ids = [int(e.get("id")) for e in root.iter() if e.get("id", "").isdigit()]
 B["NEXT"][0] = max(_ids) + 10
+ID0 = B["NEXT"][0] + 1                      # 이 스크립트가 만든 요소의 첫 id
 txt = lambda e: "".join(t.text or "" for t in e.iter(q("t")))
 ctext = lambda tc: " ".join(txt(p).strip() for p in tc.find(q("subList")).findall(q("p")) if txt(p).strip())   # 셀 안 줄나눔 문단은 띄어 잇는다
 LOG = []                                     # 변경 기록 (위치 · 전 · 후)
@@ -207,6 +208,7 @@ pic.find(q("imgClip")).set("right", str(pw * 75)); pic.find(q("imgClip")).set("b
 pic.find(q("imgDim")).set("dimwidth", str(pw * 75)); pic.find(q("imgDim")).set("dimheight", str(ph * 75))
 pic.find(".//{%s}img" % HC).set("binaryItemIDRef", "image22dd1")
 pic.find(q("shapeComment")).text = "DD-01 실기체 3티어 운용도 (무채색 · GRACE 크롭 구간 반영)"
+DD_PIC = pic
 buf = io.BytesIO(); dd.convert("RGB").save(buf, "PNG", optimize=True); B["BIN"]["image22dd1"] = buf.getvalue()
 tc = pic
 while tc.tag != q("tc"): tc = tc.getparent()
@@ -265,39 +267,93 @@ new07 = gen(lambda: class_specs("07"))
 replace_range(i0 + 1, i1, new07)
 LOG.append(("4.2.7 CD-07 (1/4) · C-0704", "TargetService 의존 8개", "+ cropDelivery : ICropDeliveryService (원본 분석 결과로 크롭 요청)"))
 
+# ── 한글 저장 규칙에 맞춘다 — 한글이 쓴 파일과 다른 점을 없앤다 ──
+def hangulize():
+    HC_ = "{%s}" % B["HC"]
+    used_ids = set(int(e.get("id")) for e in root.iter() if (e.get("id") or "").isdigit())
+    nxt = [2000001000]                        # 한글은 표·그림 id·instid 를 2^31 아래로 쓴다
+
+    def fresh():
+        while nxt[0] in used_ids: nxt[0] += 1
+        used_ids.add(nxt[0]); return str(nxt[0])
+    objs = [e for e in root.iter(q("tbl"), q("pic"))]
+    zmax = max(int(e.get("zOrder")) for e in objs if int(e.get("id")) < ID0)
+    new_pics = [DD_PIC]
+    for e in objs:
+        if int(e.get("id")) >= ID0:
+            e.set("id", fresh())
+            if e.get("instid") is not None: e.set("instid", fresh())
+            zmax += 1; e.set("zOrder", str(zmax))
+            if e.tag == q("pic"): new_pics.append(e)
+    for pc in new_pics:                       # 원본 크기 = 픽셀 × 75 · 표시 크기 = sz · 비율은 scaMatrix
+        ref = pc.find(HC_ + "img").get("binaryItemIDRef")
+        im = Image.open(io.BytesIO(B["BIN"][ref])); pw_, ph_ = im.size
+        ow, oh = pw_ * 75, ph_ * 75
+        nw_, nh_ = int(pc.find(q("sz")).get("width")), int(pc.find(q("sz")).get("height"))
+        pc.find(q("offset")).set("x", "0"); pc.find(q("offset")).set("y", "0")
+        pc.find(q("orgSz")).set("width", str(ow)); pc.find(q("orgSz")).set("height", str(oh))
+        pc.find(q("curSz")).set("width", str(nw_)); pc.find(q("curSz")).set("height", str(nh_))
+        ri_ = pc.find(q("rotationInfo")); ri_.set("centerX", str(nw_ // 2)); ri_.set("centerY", str(nh_ // 2))
+        rinfo_ = pc.find(q("renderingInfo"))
+        for tag, vals in (("transMatrix", ("1", "0", "0", "0", "1", "0")), ("scaMatrix", (f"{nw_ / ow:.6f}", "0", "0", "0", f"{nh_ / oh:.6f}", "0")),
+                          ("rotMatrix", ("1", "0", "0", "0", "1", "0"))):
+            m = rinfo_.find(HC_ + tag)
+            for k, v in zip(("e1", "e2", "e3", "e4", "e5", "e6"), vals): m.set(k, v)
+        for pt, (x, y) in zip(list(pc.find(q("imgRect"))), [(0, 0), (ow, 0), (ow, oh), (0, oh)]):
+            pt.set("x", str(x)); pt.set("y", str(y))
+        cl = pc.find(q("imgClip")); cl.set("left", "0"); cl.set("top", "0"); cl.set("right", str(ow)); cl.set("bottom", str(oh))
+        pc.find(q("imgDim")).set("dimwidth", str(ow)); pc.find(q("imgDim")).set("dimheight", str(oh))
+    return len(new_pics), nxt[0]
+
+
+# PD-01 은 matplotlib PNG(RGBA·메타 덧붙음) 대신 다른 그림과 같은 RGB PNG 로 넣는다
+_b = io.BytesIO(); Image.open("out2/pd01.png").convert("RGB").save(_b, "PNG", optimize=True); PD01 = _b.getvalue()
+print("한글 규칙 적용 — 그림", *hangulize())
+
 # ── 7) 6장·기타 문구 — 연구 경로 표현이 남았는지 ──
 sec = etree.tostring(root, xml_declaration=True, encoding="UTF-8", standalone=True)
 for bad in ["GRACE_LAB", "research/grace", "research.grace", "연구 경로", "BASELINE_SRT", "GraceCodecAdapter(Pi)", "GRACE 부분 수신"]:
     n = sec.decode().count(bad)
     print(f"남은 '{bad}':", n)
 
-# ── 쓰기 ──
+# ── 쓰기 — 항목 순서·압축 방식은 한글이 쓴 파일을 따른다 (PNG·version.xml 은 무압축, 새 그림은 BinData 끝에) ──
 used = set(re.findall(rb'binaryItemIDRef="([^"]+)"', sec))
 hpf = zin.read("Contents/content.hpf").decode("utf-8")
 for iid in re.findall(r'<opf:item id="(image[^"]+)" href="BinData/[^"]+"[^>]*/>', hpf):
     if iid.encode() not in used:
         hpf = re.sub(r'<opf:item id="%s" href="[^"]+"[^>]*/>' % re.escape(iid), "", hpf)
-hpf = hpf.replace("</opf:manifest>", "".join(f'<opf:item id="{k}" href="BinData/{k}.png" media-type="image/png" isEmbeded="1"/>' for k in B["BIN"]) + "</opf:manifest>")
+last_img = list(re.finditer(r'<opf:item id="image[^"]+" href="BinData/[^"]+"[^>]*/>', hpf))[-1]
+hpf = hpf[:last_img.end()] + "".join(f'<opf:item id="{k}" href="BinData/{k}.png" media-type="image/png" isEmbeded="1"/>' for k in B["BIN"]) + hpf[last_img.end():]
+infos = zin.infolist()
+last_bin = max(i for i, inf in enumerate(infos) if inf.filename.startswith("BinData/"))
+png_info = next(inf for inf in infos if inf.filename.endswith(".png"))
 zout = zipfile.ZipFile(DST, "w")
-for info in zin.infolist():
+
+
+def put(fn, data, like):
+    zi = zipfile.ZipInfo(fn, date_time=like.date_time)
+    zi.create_system, zi.create_version = like.create_system, like.create_version
+    zi.compress_type = zipfile.ZIP_STORED if (fn in ("mimetype", "version.xml") or fn.endswith(".png")) else zipfile.ZIP_DEFLATED
+    zout.writestr(zi, data)
+
+
+for i, info in enumerate(infos):
     fn = info.filename
     if fn == "Contents/section0.xml":
         data = sec
     elif fn == "Contents/content.hpf":
         data = hpf.encode("utf-8")
-    elif fn.startswith("BinData/"):
-        iid = fn.split("/")[1].rsplit(".", 1)[0]
-        if iid.encode() not in used:
-            continue
-        data = open("out2/pd01.png", "rb").read() if fn == "BinData/image15.png" else zin.read(fn)
+    elif fn.startswith("BinData/") and fn.split("/")[1].rsplit(".", 1)[0].encode() not in used:
+        data = None
+    elif fn == "BinData/image15.png":
+        data = PD01
     else:
         data = zin.read(fn)
-    zi = zipfile.ZipInfo(fn, date_time=info.date_time)
-    zi.compress_type = zipfile.ZIP_STORED if fn == "mimetype" else zipfile.ZIP_DEFLATED
-    zout.writestr(zi, data)
-for k, v in B["BIN"].items():
-    zi = zipfile.ZipInfo(f"BinData/{k}.png", date_time=(2026, 10, 1, 21, 0, 0)); zi.compress_type = zipfile.ZIP_DEFLATED
-    zout.writestr(zi, v)
+    if data is not None:
+        put(fn, data, info)
+    if i == last_bin:
+        for k, v in B["BIN"].items():
+            put(f"BinData/{k}.png", v, png_info)
 zout.close()
 LOG.append(("4.2 PD-01", "research.grace (점선 · 연구 경로) · 학습 서버 · 연구 경로", "services.media.crop_grace · web 에 GraceCropDecoder · api 에 CropStreamEndpoint · 크롭 경로 주석"))
 import json
