@@ -1,6 +1,7 @@
 """영상 관리 — services.media · gateway.media · research.grace"""
 from mdl import K, I, DTO, ENT, DAO, unit
 from seq import S, call, alt, opt, note, loop
+from mdl import SEQS
 from cdkit import CD, layered, box
 
 unit("06", "영상 관리", "영상·저장")
@@ -44,9 +45,11 @@ K("C-0603", "LatestFrameBuffer", "component", M, "추론 대기 프레임을 제
     ("qualityGate", "FrameQualityGate", "업무별 사용 조건"), ("latestFrame", "SyncedFrameDTO?", "최신 처리 가능 프레임 (최대 2칸)"),
     ("droppedCount", "int64", "폐기 누적수"),
 ], [("offer", "SyncedFrameDTO", "BufferResult", "최신 유효 프레임을 대기열에 넣는다.")], impl="C-0613", old="C-0603")
-K("C-0608", "FrameQualityGate", "component", M, "표시·분석·좌표·관측 완료·자동 이동의 업무 사용 조건 분리", [
-    ("policyVersion", "VersionId", "프로파일·모델·손실별 승인 조건"),
-], [("evaluate", "SyncedFrameDTO", "TaskQualityDTO", "시각·참조·품질·나이·버전을 검사해 업무별 허용을 반환한다.")], old="C-0608")
+K("C-0608", "FrameQualityGate", "component", M, "원본 프레임의 업무별 사용 조건(표시·분석·좌표·관측 완료·자동 이동) 분리 + GRACE 크롭 표시 조건을 별도 정의", [
+    ("policyVersion", "VersionId", "원본 업무별 승인 조건"), ("cropDisplayPolicy", "CropDisplayPolicy", "GRACE 크롭 표시 조건 (원본 업무 기준과 별도)"),
+], [("evaluate", "SyncedFrameDTO", "TaskQualityDTO", "원본 프레임의 시각·참조·품질·나이·버전을 검사해 업무별 허용을 반환한다."),
+    ("cropPolicy", "", "CropDisplayPolicy", "FULL 표시 · PARTIAL 은 '복원 영상' 표지 · NONE 은 표시하지 않음 · 허용 나이 초과 시 오래된 영상 표지."),
+    ("evaluateCropDisplay", "CropFeedbackDTO, CropFrameDTO", "CropDisplayDecision", "크롭 표시 상태를 판정·기록한다. 탐지·좌표·관측 완료 판정에는 쓰지 않는다.")], old="C-0608")
 K("C-0604", "MediaStore", "service", M, "녹화 구간·스냅샷·위치 보류 영상의 저장 및 조회 (IMediaStore 구현)", [
     ("assetDao", "MediaAssetDAO", "파일 참조 기록"), ("permissionPolicy", "IPermissionPolicy", "조회 권한"),
     ("rootPath", "Path", "중앙 미디어 저장 루트"), ("retentionPolicy", "RetentionPolicy", "보존 기간·용량 (현장 용량 확인 후 확정)"),
@@ -65,27 +68,68 @@ K("C-0607", "ArchiveRecoveryService", "service", M, "잔여 대역폭으로 Pi �
 K("C-0628", "VideoRelay", "component", "gateway.media", "Pi 의 영상 수신·현장 기록·서버 중계 (SRT 송신)", [
     ("recorder", "FieldRecorder", "현장 순환 기록"), ("srtSession", "SrtSession", "서버 송신 세션"),
 ], [("relay", "packet", "RelayResult", "수신 영상을 현장에 기록하고 서버로 보낸다.")])
-K("C-0606", "VideoProfileManager", "component", "research.grace", "기본 SRT 와 조건부 GRACE 프로파일의 명시적 협상·전환 (연구 경로)", [
-    ("activeProfile", "VideoProfile", "초기 BASELINE_SRT"), ("capabilities", "CapabilitySet", "실제 장비·연산·검증 상태"),
+K("C-0606", "VideoProfileManager", "component", "services.media.crop_grace", "서버→관제 단말 크롭 제공 프로파일(CROP_GRACE · CROP_BASELINE) 협상·전환 — 드론→게이트웨이→서버 상향 SRT 와 별개", [
+    ("activeProfile", "CropProfile", "초기 CROP_BASELINE (기존 크롭 제공)"), ("capabilities", "TerminalCapabilityDTO", "단말 디코더 가용·modelVersion·패킷 형식·성능 측정값"),
+    ("approvedPolicy", "ApprovedPolicy", "CROP_GRACE 허용 조건 (실험 초기값 기준 · 미검증)"),
 ], [
-    ("negotiate", "PeerCapabilities, ApprovedPolicy", "ProfileDecision", "양단 모델·패킷화·처리량·검증 조건을 확인한다."),
-    ("switchProfile", "VideoProfile", "StreamEpoch", "새 epoch·코덱 세션을 발급하고 재동기화를 요구한다."),
+    ("negotiate", "TerminalCapabilityDTO, ApprovedPolicy", "ProfileDecision", "디코더 가용·모델/패킷 호환·성능 조건을 모두 만족할 때만 CROP_GRACE, 아니면 CROP_BASELINE 을 고른다."),
+    ("switchProfile", "sessionId, CropProfile, ReasonCode", "CropSessionDTO", "새 epoch·코덱 세션을 발급하고 참조 재동기화를 요구한다. 상향 SRT 경로는 바꾸지 않는다."),
 ], old="C-0606")
-K("C-0609", "GraceCodecAdapter", "component", "research.grace", "GRACE 실험용 양단 코덱과 부분 패킷 전송 경계", [
-    ("session", "CodecSession", "모델·패킷화·참조 세대"), ("limits", "CodecLimits", "600 ms·1200 B·캐시 상한 (연구 초기값)"),
+K("C-0609", "GraceCodecAdapter", "component", "services.media.crop_grace", "서버 측 GRACE 크롭 인코딩·패킷화 — 단말의 부분 패킷 디코딩은 GraceCropDecoder(C-0633)가 맡는다 (같은 modelVersion 필요)", [
+    ("session", "CodecSession", "modelVersion·패킷 형식·참조 세대·epoch"), ("limits", "CodecLimits", "600 ms·1200 B (실험 초기값 · 운용 성능 미검증)"),
 ], [
-    ("encode", "PixelFrame", "EncodedPackets", "짝을 이룬 인코더로 잠재 표현을 독립 패킷화한다."),
-    ("assembleAndDecode", "PacketSubset, Deadline", "DecodedRepresentation", "FULL/PARTIAL/NONE 을 구분하고 사용 bitmap 을 기록한다."),
-    ("requestBaseReference", "ReasonCode", "ResyncRequest", "전체 유실·캐시 만료 시 새 기준으로 재시작한다."),
+    ("encodeCrop", "CropImage, CodecSession", "LatentFrame", "서버 참조 상태로 크롭을 잠재 표현으로 바꾼다."),
+    ("packetize", "LatentFrame, CodecLimits", "EncodedPackets", "독립 디코딩 가능한 패킷으로 나누고 frameId·epoch·순번을 붙인다."),
+    ("requestBaseReference", "ReasonCode", "ResyncRequest", "참조 복구 불가 시 새 기준 프레임으로 다시 시작한다."),
 ], old="C-0609")
-K("C-0610", "CodecStateSync", "component", "research.grace", "실제 디코딩에 쓴 패킷 집합으로 양단 참조를 일치", [
-    ("referenceGeneration", "int64", "참조 상태 세대"), ("cacheLimit", "CacheBudget", "32프레임 또는 256 MiB"),
+K("C-0610", "CodecStateSync", "component", "services.media.crop_grace", "단말이 실제 디코딩에 쓴 패킷 bitmap 으로 서버·단말 참조 상태를 일치", [
+    ("referenceGeneration", "int64", "참조 상태 세대"), ("cacheLimit", "CacheBudget", "32프레임 또는 256 MiB (실험 초기값)"),
+    ("cropKey", "targetId, cropSize", "바뀌면 참조 초기화"),
 ], [
-    ("feedback", "frameId, UsedPacketBitmap", "Feedback", "디코딩에 실제 사용한 패킷 목록을 보낸다."),
-    ("applyFeedback", "Feedback", "ResyncTag", "양단이 같은 캐시 보정을 하도록 잇는다."),
-    ("reset", "ReasonCode", "CodecSession", "복구 불가이면 새 세션 또는 기본 프로파일로 돌아간다."),
+    ("applyFeedback", "CropFeedbackDTO", "ResyncTag", "usedPacketBitmap 대로 서버 참조를 갱신해 단말과 같은 참조를 쓴다."),
+    ("checkReset", "targetId, cropBox", "bool", "대상 변경·크롭 크기 변경·epoch 불일치·캐시 만료면 참조를 초기화한다."),
+    ("reset", "ReasonCode", "CodecSession", "새 세션(epoch + 1)을 발급한다. 복구가 다시 실패하면 CROP_BASELINE 대체를 요청한다."),
 ], old="C-0610")
-
+I("C-0630", "ICropDeliveryService", "services.media.crop_grace", "관제 단말 대상 크롭 제공 계약 (비전·api 가 의존)", [
+    ("openSession", "targetId, TerminalCapabilityDTO", "CropSessionDTO", "단말 조건으로 제공 프로파일을 협상하고 세션·epoch·표시 조건을 발급한다."),
+    ("publishCrop", "SyncedFrameDTO, targetId, cropBox", "CropFrameDTO", "원본 프레임에서 대상 크롭을 만들어 원본 크롭을 보존하고 협상된 프로파일로 보낸다. 좌표 보류 후보도 대상이다."),
+    ("acceptFeedback", "CropFeedbackDTO", "ResyncTag", "단말이 실제 사용한 패킷 bitmap 과 수신 상태를 받아 참조·표시 상태를 갱신한다."),
+    ("closeSession", "sessionId, ReasonCode", "ResultDTO", "대상 해제·화면 이탈 시 세션과 참조를 정리한다."),
+], impl="C-0631")
+K("C-0631", "CropDeliveryService", "service", "services.media.crop_grace", "대상 크롭 생성·GRACE 제공·기존 방식 대체 (ICropDeliveryService 구현) — 원본 분석 경로와 분리", [
+    ("profileManager", "VideoProfileManager", "제공 프로파일"), ("codec", "GraceCodecAdapter", "서버 인코딩·패킷화"),
+    ("stateSync", "CodecStateSync", "참조 동기화"), ("qualityGate", "FrameQualityGate", "크롭 표시 조건"),
+    ("mediaStore", "IMediaStore", "원본 크롭 보존 · 기존 크롭 제공"), ("endpoint", "CropStreamEndpoint", "단말 송신 경계"),
+], [
+    ("-cropFrame", "SyncedFrameDTO, cropBox", "CropImage", "원본 해상도에서 대상 영역을 잘라 크롭 frameId 를 붙인다 (sourceFrameId 유지)."),
+    ("-deliverFallback", "CropFrameDTO, ReasonCode", "SendResult", "보존한 원본 크롭을 기존 방식으로 보낸다."),
+], impl="C-0630")
+K("C-0632", "CropStreamEndpoint", "boundary", "api", "서버 쪽 크롭 스트림 끝점 — 단말 세션 열기 · 서버→관제 단말 크롭 패킷 송신 · 단말→서버 디코딩 결과 피드백 수신 (전송 기술은 구현·호환 검증 후 확정)", [
+    ("cropService", "ICropDeliveryService", "세션·피드백 전달"),
+], [
+    ("open", "targetId, TerminalCapabilityDTO", "CropSessionDTO", "단말의 세션 요청을 ICropDeliveryService.openSession 으로 넘긴다."),
+    ("sendPackets", "CropFrameDTO, EncodedPackets", "SendResult", "크롭 메타데이터와 패킷을 해당 단말 세션으로 보낸다."),
+    ("sendFallback", "CropFrameDTO, MediaRefDTO", "SendResult", "기존 방식 크롭(보존한 원본 크롭 참조)을 보낸다."),
+    ("onFeedback", "CropFeedbackDTO", "void", "받은 피드백을 ICropDeliveryService.acceptFeedback 으로 넘긴다."),
+])
+K("C-0633", "GraceCropDecoder", "component", "web", "관제 단말 전용 GRACE 디코더 — 부분 패킷 디코딩·FULL/PARTIAL/NONE 판정·사용 패킷 보고 (PWA·WebCodecs 기본 지원을 가정하지 않음)", [
+    ("runtime", "DecoderRuntime", "전용 디코더 실행 환경 (배포 조건 · 미검증)"), ("modelVersion", "String", "서버 인코더와 같은 버전"),
+    ("reference", "ReferenceState", "참조 세대·epoch"),
+], [
+    ("probe", "", "TerminalCapabilityDTO", "디코더 가용·modelVersion·패킷 형식·디코딩 시간을 보고한다."),
+    ("decodePartial", "PacketSubset, Deadline", "DecodedCrop", "기한 안에 받은 패킷만으로 복원하고 FULL/PARTIAL/NONE·usedPacketBitmap 을 기록한다. NONE 은 복원하지 않는다."),
+    ("reportUsed", "frameId", "CropFeedbackDTO", "실제 사용한 패킷 bitmap 과 수신 상태를 만든다."),
+])
+K("C-0634", "CropViewModel", "viewmodel", "web", "후보 화면(UI-05)의 크롭 표시 상태 — 복원 영상과 원본 크롭을 구분해 표시 (클라이언트)", [
+    ("decoder", "GraceCropDecoder", "단말 디코더"), ("session", "CropSessionDTO", "프로파일·epoch·표시 조건"),
+    ("lastShown", "DecodedCrop?", "마지막 표시 영상과 captureTime"),
+], [
+    ("openCandidate", "targetId", "void", "후보 상세에서 크롭 표시를 시작한다 — 디코더를 확인하고 세션을 연다."),
+    ("onCropPackets", "CropFrameDTO, PacketSubset", "void", "받은 크롭 메타데이터·패킷을 디코더에 넘기고 표시를 갱신한다."),
+    ("show", "DecodedCrop, CropDisplayPolicy", "void", "표시 조건을 만족하면 '복원 영상' 표지와 원본 촬영 시각을 함께 표시한다."),
+    ("holdLast", "captureTime, ReasonCode", "void", "NONE·대체 지연 시 마지막 영상을 유지하고 관측 시각·오래된 영상 표지를 붙인다."),
+    ("showFallback", "MediaViewDTO", "void", "기존 방식으로 받은 원본 크롭을 표시한다."),
+])
 K("C-0614", "VideoController", "controller", "api", "영상 처리 상태·녹화본 조회 요청의 입구 (REST)", [
     ("videoIngest", "IVideoIngestService", ""), ("mediaStore", "IMediaStore", ""),
 ], [
@@ -103,7 +147,8 @@ DTO("C-0617", "MediaRefDTO", "저장 파일 참조", [("assetId", "UUID", "파�
 DTO("C-0618", "MediaViewDTO", "녹화본·스냅샷 조회 결과", [("assetId", "UUID", "파일"), ("assetType", "AssetType", "종류"), ("url", "String", "재생 주소"),
     ("timeRange", "TimeRange", "구간"), ("gaps", "List<TimeRange>", "결손")])
 DTO("C-0619", "VideoStatusDTO", "영상 처리 상태", [("receiveFps", "float", "수신 FPS"), ("analyzeFps", "float", "실제 분석 FPS"),
-    ("latencyMs", "float", "지연"), ("dropped", "int64", "폐기"), ("lossRate", "float", "손실"), ("lastAnalyzedAt", "Time", "최근 분석")])
+    ("latencyMs", "float", "지연"), ("dropped", "int64", "폐기"), ("lossRate", "float", "손실"), ("lastAnalyzedAt", "Time", "최근 분석"),
+    ("cropStats", "CropDisplayStats?", "관제 단말 크롭 FULL·PARTIAL·NONE 비율·대체 횟수")])
 DTO("C-0620", "SegmentManifestDTO", "영상 조각 묶음", [("segmentId", "UUID", "조각"), ("files", "List<FileEntry>", "영상·sidecar 크기·sha256"),
     ("timeRange", "TimeRange", "구간"), ("missionId", "UUID?", "임무")])
 DTO("C-0621", "TaskQualityDTO", "업무별 사용 조건 판정", [("display", "bool", "표시"), ("detect", "bool", "분석"), ("geo", "bool", "좌표"),
@@ -111,6 +156,16 @@ DTO("C-0621", "TaskQualityDTO", "업무별 사용 조건 판정", [("display", "
 DTO("C-0629", "AnalysisJobDTO", "분석 배정", [("jobId", "UUID", "작업"), ("frameId", "UUID", "프레임"), ("mode", "LIVE_DETECT | LIVE_TRACK_ONLY | HISTORICAL", "방식"),
     ("modelConfigId", "UUID", "모델")])
 
+DTO("C-0635", "CropFrameDTO", "크롭 프레임 연결 — sourceFrameId(원본) 1 : N frameId(크롭) · cropBox 는 원본 좌표계 · captureTime 은 원본 촬영 시각 · (frameId, epoch, modelVersion) 이 맞을 때만 디코딩·피드백 적용", [("sourceFrameId", "UUID", "원본 분석 프레임 (video_frame)"), ("frameId", "UUID", "크롭 프레임"),
+    ("targetId", "UUID", "대상 후보"), ("cropBox", "Box", "원본 좌표계 크롭 영역"), ("captureTime", "Time", "원본 촬영 시각"),
+    ("epoch", "int", "코덱 세션 세대"), ("modelVersion", "String", "코덱 모델"), ("originalRef", "MediaRefDTO", "보존한 원본 크롭")])
+DTO("C-0636", "CropFeedbackDTO", "단말 디코딩 결과 — (frameId, epoch) 로 CropFrameDTO 와 연결 · usedPacketBitmap 은 그 크롭 프레임 패킷 순번 중 실제 사용분", [("frameId", "UUID", "크롭 프레임"), ("epoch", "int", "세션 세대"),
+    ("reception", "FULL | PARTIAL | NONE", "수신 상태"), ("usedPacketBitmap", "Bitmap", "디코딩에 실제 사용한 패킷"), ("decodeMs", "float", "디코딩 시간"),
+    ("displayed", "bool", "표시 여부")])
+DTO("C-0637", "CropSessionDTO", "크롭 제공 세션", [("sessionId", "UUID", "세션"), ("targetId", "UUID", "대상"), ("profile", "CROP_GRACE | CROP_BASELINE", "제공 방식"),
+    ("epoch", "int", "세션 세대"), ("modelVersion", "String", "코덱 모델"), ("cropSize", "Size", "크롭 크기"), ("displayPolicy", "CropDisplayPolicy", "표시 조건")])
+DTO("C-0638", "TerminalCapabilityDTO", "관제 단말 디코더 조건", [("decoderAvailable", "bool", "전용 디코더 가용"), ("modelVersion", "String", "디코더 모델"),
+    ("packetFormat", "String", "패킷 형식"), ("decodeMs", "float", "측정 디코딩 시간"), ("runtime", "String", "실행 환경")])
 DAO("C-0622", "VideoFrameDAO", "video_frame", [
     ("insert", "VideoFrame", "UUID", "수신 프레임을 기록한다 (스트림·epoch·순번 유일)."),
     ("updatePose", "frameId, pose, poseStatus", "bool", "촬영 자세 결합 결과를 저장한다."),
@@ -131,24 +186,35 @@ ENT("C-0625", "MediaAsset", "media_asset", "녹화본·스냅샷·모델 등 파
 
 
 def _cd():
-    a = layered("cd06a", "(1/2) 계층 구조", svc_pkg=M, ctl=["C-0614"],
+    a = layered("cd06a", "(1/3) 계층 구조", svc_pkg=M, ctl=["C-0614"],
                 dto=["C-0615", "C-0616", "C-0617", "C-0618", "C-0619", "C-0620", "C-0621", "C-0629"],
                 pairs=[("C-0611", "C-0601"), ("C-0612", "C-0604"), ("C-0613", "C-0603"), ("C-0627", "C-1206")],
                 comps=["C-0602", "C-0608"],
                 ext=[("C-0206", "services.vehicle"), ("C-0205", "services.vehicle"), ("C-0306", "services.spatial"), ("C-0108", "services.auth")],
                 daos=[("C-0622", False), ("C-0623", False)], ents=["C-0624", "C-0625"], api_w=0.33, dto_cols=4, ext_w=0.22)
-    B = {k: box(k) for k in ["C-0628", "C-0607", "C-0606", "C-0609", "C-0610"]}
+    B = {k: box(k) for k in ["C-0628", "C-0607"]}
     B["fr"] = box("C-1202", ref=True); B["sm"] = box("C-1205", ref=True)
     B["gl"] = box("C-0909", ref=True); B["ms"] = box("C-0612", ref=True); B["al"] = box("C-0627", ref=True)
-    B["gate"] = box("C-0608", ref=True)
     P = [dict(name="gateway.media", row=0, x=0.005, w=0.49, rows=[[("C-0628", 1.0)], [("fr", .5), ("sm", .5)]]),
          dict(name=M, row=0, x=0.505, w=0.49, rows=[[("C-0607", 1.0)], [("ms", .5), ("al", .5)]]),
-         dict(name="research.grace", row=1, x=0.005, w=0.99, rows=[[("C-0606", .333), ("C-0609", .333), ("C-0610", .334)]]),
-         dict(name="services.command · services.media", row=2, x=0.25, w=0.5, rows=[[("gl", .5), ("gate", .5)]])]
+         dict(name="services.command", row=1, x=0.505, w=0.49, rows=[[("gl", 1.0)]])]
     R = [("C-0628", "fr", "assoc", "", {"elbow": 1}), ("C-0607", "ms", "dep", "", {"elbow": 1}), ("C-0607", "al", "dep", "", {"elbow": 1}),
-         ("C-0607", "gl", "dep", "", {"elbow": 1, "ax": 0.85}), ("C-0606", "C-0609", "assoc", "", {}), ("C-0609", "C-0610", "assoc", "", {}),
-         ("C-0609", "gate", "dep", "재구성 영상 품질", {"elbow": 1})]
-    return [a, ("cd06b", "(2/2) 현장 중계·원본 회수·GRACE 연구 경로", P, B, R)]
+         ("C-0607", "gl", "dep", "", {"elbow": 1, "ax": 0.85})]
+    C3 = {k: box(k) for k in ["C-0632", "C-0633", "C-0634", "C-0630", "C-0631", "C-0606", "C-0609", "C-0610",
+                              "C-0635", "C-0636", "C-0637", "C-0638"]}
+    C3["gate"] = box("C-0608", ref=True); C3["ms2"] = box("C-0612", ref=True)
+    P3 = [dict(name="api — 서버 경계", row=0, x=0.005, w=0.49, rows=[[("C-0632", 1.0)]]),
+          dict(name="web — 관제 운용자 단말 (apps/web)", row=0, x=0.505, w=0.49, rows=[[("C-0634", .5), ("C-0633", .5)]]),
+          dict(name="services.media.crop_grace (서버)", row=1, x=0.005, w=0.74,
+               rows=[[("C-0630", .5), ("C-0631", .5)], [("C-0606", .333), ("C-0609", .333), ("C-0610", .334)]]),
+          dict(name="services.media", row=1, x=0.755, w=0.24, rows=[[("gate", 1.0)], [("ms2", 1.0)]]),
+          dict(name="contracts — 크롭 DTO", row=2, x=0.005, w=0.99, rows=[[("C-0635", .25), ("C-0636", .25), ("C-0637", .25), ("C-0638", .25)]])]
+    R3 = [("C-0632", "C-0630", "dep", "세션·피드백", {"x": 0.29}), ("C-0631", "C-0630", "real", "", {}),
+          ("C-0631", "C-0606", "assoc", "", {"elbow": 1}), ("C-0631", "C-0609", "assoc", "", {"elbow": 1}),
+          ("C-0631", "C-0610", "assoc", "", {"elbow": 1}), ("C-0631", "C-0632", "assoc", "송신", {}),
+          ("C-0631", "gate", "dep", "", {}), ("C-0631", "ms2", "dep", "", {}),
+          ("C-0634", "C-0633", "assoc", "", {})]
+    return [a, ("cd06b", "(2/3) 현장 중계·원본 회수", P, B, R), ("cd06c", "(3/3) GRACE 크롭 제공 — 서버 인코딩 → 관제 단말 디코딩", P3, C3, R3)]
 
 
 CD("CD-06", "영상·저장", "06", _cd)
@@ -226,20 +292,73 @@ S("SD-0607", "06", [("ts", "TargetService", "service"), ("sw", "SnapshotWriter",
         opt("저장 실패", [call("sw", "hs", "append(MissionEventDTO)", "EventRefDTO", "실패와 누락 상태를 기록한다 (후보는 유지).")]),
     ]),
 ], entry="SnapshotWriter.save", 시작="첫 탐지 또는 명시적 스냅샷 생성 (TargetService)")
-S("SD-X06", "06", [("vp", "VideoProfileManager", "component"), ("ge", "GraceCodecAdapter\n(Pi)", "component"), ("gd", "GraceCodecAdapter\n(서버)", "component"),
-                   ("cs", "CodecStateSync", "component"), ("qg", "FrameQualityGate", "component")], [
-    call("vp", "vp", "negotiate(PeerCapabilities, ApprovedPolicy)", "ProfileDecision", "양단 모델·패킷화·검증 조건을 확인한다."),
-    call("vp", "ge", "switchProfile(GRACE)", "StreamEpoch", "새 epoch·코덱 세션을 발급한다."),
-    loop("프레임마다", [
-        call("ge", "gd", "encode(PixelFrame) → 패킷 전송", "EncodedPackets", "잠재 표현을 독립 패킷으로 보낸다."),
-        call("gd", "gd", "assembleAndDecode(PacketSubset, Deadline)", "DecodedRepresentation", "FULL/PARTIAL/NONE 을 구분한다."),
-        call("gd", "cs", "feedback(frameId, UsedPacketBitmap)", "Feedback", "실제 사용 패킷을 알린다."),
-        call("gd", "qg", "evaluate(SyncedFrameDTO)", "TaskQualityDTO", "표시와 업무 사용 승인을 분리한다."),
+# SD-X06 — 한 장에 담으면 생명선 11개·22단계로 글자가 너무 작아져 세 장으로 나눠 그린다 (번호·처리표는 하나로 잇는다)
+X6_A = [
+    call("op", "vm", "openCandidate(targetId)", None, "후보 상세(UI-05)에서 크롭 영상을 연다 — UC-0702 후보 조회 · UC-0705 판단 전 확인.", [
+        call("vm", "dec", "probe()", "TerminalCapabilityDTO", "전용 디코더 실행 환경·modelVersion·패킷 형식·디코딩 시간을 확인한다."),
+        call("vm", "ep", "open(targetId, TerminalCapabilityDTO)", "CropSessionDTO", "단말 → 서버 경계로 크롭 세션을 연다 (전송 기술 미정).", [
+            call("ep", "cds", "openSession(targetId, TerminalCapabilityDTO)", "CropSessionDTO", "세션·epoch·표시 조건을 발급한다.", [
+                call("cds", "vp", "negotiate(TerminalCapabilityDTO, ApprovedPolicy)", "ProfileDecision", "디코더 가용·모델/패킷 호환·성능 조건을 모두 만족하면 CROP_GRACE, 아니면 CROP_BASELINE 을 고른다 (상향 SRT 와 무관)."),
+                call("cds", "qg", "cropPolicy()", "CropDisplayPolicy", "원본 업무 기준과 별도인 크롭 표시 조건을 세션에 싣는다."),
+            ]),
+        ]),
     ]),
-    alt([("참조 복구 실패", [call("cs", "cs", "reset(ReasonCode)", "CodecSession", "새 코덱 세션 또는 BASELINE_SRT 로 돌아간다.")]),
-         ("패킷 미수신", [note("gd", "qg", "NONE 기록 · 비행 재개는 별도 승인")])]),
-], title="GRACE 부분 수신·참조 재동기화", uc="UC-0601~0605, UC-0701, UC-0802~0803, UC-1203~1206",
-   개요="조건부 GRACE 경로(연구)에서 화면 표시와 업무 사용 승인을 분리한다.", 시작="프로파일 협상 (VideoProfileManager)",
-   선행="양단 장비·모델이 GRACE 검증 조건을 만족한다.", 사후="프레임별 수신 상태와 업무 사용 판정이 기록된다.",
-   예외="패킷 미수신은 NONE 으로 기록한다. 참조 복구 실패 시 새 세션 또는 BASELINE_SRT 로 전환한다.",
-   경계="연구 경로 (인수 시험 범위 밖) | 결과 화면: UI-04 | 연결 시험: —")
+]
+X6_B = [
+    call("ts", "cds", "publishCrop(SyncedFrameDTO, targetId, cropBox)", "CropFrameDTO", "원본 분석 경로의 탐지 결과로 크롭을 요청한다 — 탐지·좌표·관측 완료 판정은 원본으로 이미 수행했다.", [
+        call("cds", "ms", "createSnapshot(frameId, cropBox, targetId)", "MediaRefDTO", "원본 크롭을 보존한다 — 복원 영상과 구분 (UC-0607 스냅샷)."),
+        call("cds", "ss", "checkReset(targetId, cropBox)", "bool", "대상·크롭 크기가 바뀌면 참조를 초기화하고 epoch 를 올린다."),
+        alt([("CROP_GRACE", [
+                call("cds", "gc", "encodeCrop(CropImage, CodecSession)", "LatentFrame", "서버 참조 상태로 크롭을 인코딩한다."),
+                call("cds", "gc", "packetize(LatentFrame, CodecLimits)", "EncodedPackets", "frameId·epoch·순번을 붙인다 (1200 B 는 실험 초기값)."),
+                call("cds", "ep", "sendPackets(CropFrameDTO, EncodedPackets)", "SendResult", "서버 → 단말 경계로 보낸다 (전송 기술 미정).", [
+                    call("ep", "vm", "onCropPackets(CropFrameDTO, PacketSubset)", None, "단말은 기한 안에 받은 패킷만 넘긴다.", [
+                        call("vm", "dec", "decodePartial(PacketSubset, Deadline)", "DecodedCrop", "FULL·PARTIAL 은 받은 패킷으로 복원하고 NONE 은 복원하지 않는다."),
+                        alt([("FULL · PARTIAL", [call("vm", "vm", "show(DecodedCrop, CropDisplayPolicy)", None, "'복원 영상' 표지와 원본 촬영 시각을 함께 표시한다.")]),
+                             ("NONE", [call("vm", "vm", "holdLast(captureTime, ReasonCode)", None, "마지막 영상을 유지하고 관측 시각·오래된 영상 표지를 붙인다.")])]),
+                    ]),
+                ]),
+             ]),
+             ("CROP_BASELINE", [
+                call("cds", "ep", "sendFallback(CropFrameDTO, MediaRefDTO)", "SendResult", "기존 크롭 제공 방식으로 보낸다.", [
+                    call("ep", "vm", "showFallback(MediaViewDTO)", None, "보존한 원본 크롭을 기존 방식으로 표시한다."),
+                ]),
+             ])]),
+    ]),
+]
+X6_C = [
+    call("vm", "dec", "reportUsed(frameId)", "CropFeedbackDTO", "수신 상태(FULL·PARTIAL·NONE)와 실제 사용 패킷 bitmap 을 만든다."),
+    call("vm", "ep", "onFeedback(CropFeedbackDTO)", None, "단말 → 서버 경계로 피드백을 보낸다.", [
+        call("ep", "cds", "acceptFeedback(CropFeedbackDTO)", "ResyncTag", "피드백을 넘긴다.", [
+            call("cds", "ss", "applyFeedback(CropFeedbackDTO)", "ResyncTag", "단말이 실제 사용한 패킷으로 서버 참조를 맞춘다."),
+            call("cds", "qg", "evaluateCropDisplay(CropFeedbackDTO, CropFrameDTO)", "CropDisplayDecision", "표시 상태를 기록한다 — UC-0604 처리 상태에 집계, 업무 판정에는 쓰지 않는다."),
+            alt([("참조 불일치 · epoch 불일치 · 캐시 만료", [
+                    call("cds", "ss", "reset(ReasonCode)", "CodecSession", "새 세션(epoch + 1)을 발급한다."),
+                    call("cds", "gc", "requestBaseReference(ReasonCode)", "ResyncRequest", "다음 크롭부터 새 기준 프레임으로 다시 보낸다."),
+                 ]),
+                 ("디코더 미가용 · 호환 불일치 · 복구 반복 실패", [
+                    call("cds", "vp", "switchProfile(sessionId, CROP_BASELINE, ReasonCode)", "CropSessionDTO", "이후 크롭은 기존 제공 방식으로 대체한다 — 원본 분석 경로는 영향 없음."),
+                 ])]),
+        ]),
+    ]),
+]
+X6_LOOP = "대상이 관측된 원본 프레임마다 (좌표 보류 후보 포함)"
+X6_P = {"op": ("op", "관제 운영자", "actor"), "vm": ("vm", "CropViewModel", "viewmodel"), "dec": ("dec", "GraceCropDecoder", "component"),
+        "ep": ("ep", "CropStreamEndpoint", "boundary"), "ts": ("ts", "TargetService", "service"), "cds": ("cds", "ICropDeliveryService", "interface"),
+        "vp": ("vp", "VideoProfileManager", "component"), "qg": ("qg", "FrameQualityGate", "component"), "ms": ("ms", "IMediaStore", "interface"),
+        "ss": ("ss", "CodecStateSync", "component"), "gc": ("gc", "GraceCodecAdapter", "component")}
+S("SD-X06", "06", [X6_P[k] for k in ["op", "vm", "dec", "ep", "ts", "cds", "vp", "qg", "ms", "ss", "gc"]],
+  X6_A + [loop(X6_LOOP, X6_B + X6_C)],
+  title="GRACE 대상 크롭 제공 — 서버 → 관제 운용자 단말", uc="UC-0702 · UC-0705 (중심), UC-0604 · UC-0607 (연계)",
+  개요="서버가 원본 영상으로 만든 대상 크롭을 GRACE 로 관제 단말에 제공한다. 복원 크롭은 운용자 확인용이며 탐지·좌표·관측 완료 판정은 원본 분석 경로를 쓴다.",
+  시작="관제 운영자 (웹/PWA · 후보 상세 크롭 확인)",
+  선행="후보(좌표 보류 포함)가 있고 원본 프레임에서 대상 상자를 얻었다. 단말 디코더 가용성은 세션 협상으로 확인한다.",
+  사후="크롭 프레임별 FULL/PARTIAL/NONE·사용 패킷·표시 상태가 기록되고, 원본 크롭은 복원 영상과 구분해 보존된다.",
+  예외="NONE 프레임은 복원을 보장하지 않는다 — 마지막 영상에 관측 시각·오래된 영상 표지를 붙인다. 디코더 미가용·호환 불일치·참조 복구 실패 시 CROP_BASELINE(기존 크롭 제공)으로 대체한다.",
+  경계="CropStreamEndpoint — 단말 세션 · 서버→단말 크롭 패킷 · 단말→서버 피드백 (전송 기술 미정) | 결과 화면: UI-05 | 연결 시험: — (미검증)")
+SEQS["SD-X06"]["split"] = [
+    ("(1/3) 세션 협상 · 제공 프로파일 선택", ["op", "vm", "dec", "ep", "cds", "vp", "qg"], X6_A),
+    ("(2/3) 크롭 생성 · 인코딩 · 전송 · 단말 표시", ["vm", "dec", "ep", "ts", "cds", "gc", "ss", "ms"], [loop(X6_LOOP, X6_B)]),
+    ("(3/3) 사용 패킷 피드백 · 참조 복구 · 대체 제공", ["vm", "dec", "ep", "cds", "ss", "gc", "qg", "vp"], [loop(X6_LOOP + " — 계속", X6_C)]),
+]
+SEQS["SD-X06"]["split_parts"] = X6_P

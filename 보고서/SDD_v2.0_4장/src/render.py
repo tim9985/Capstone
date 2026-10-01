@@ -24,6 +24,14 @@ def render_cd(cd):
 
 
 def render_sd(sd):
+    if SEQS[sd].get("split"):                      # 큰 통합 시퀀스는 나눠 그리고 번호를 잇는다
+        out, n0, P = {}, 0, SEQS[sd]["split_parts"]
+        for i, (sub, keys, flow) in enumerate(SEQS[sd]["split"], start=1):
+            part = dict(parts=[P[k] for k in keys], flow=flow)
+            items, steps = flatten(part, start=n0); n0 += len(steps)
+            H, W = mono.sequence(str(OUT / f"{sd}_{i}.png"), 2000, part["parts"], items, fs=28, fit_self=True)
+            out[f"{sd}_{i}"] = (W, H)
+        return out
     items, steps = flatten(SEQS[sd])
     H, W = mono.sequence(str(OUT / f"{sd}.png"), 2000, SEQS[sd]["parts"], items, fs=28)
     return {sd: (W, H)}

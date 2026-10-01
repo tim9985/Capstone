@@ -53,10 +53,10 @@ def S(sd, unit_, parts, flow, entry=None, **over):
     UNITS[unit_]["sds"].append(sd)
 
 
-def flatten(s):
+def flatten(s, start=0):
     names = {k: nm.replace("\n", "") for k, nm, _ in s["parts"]}
     items, steps = [], []
-    cnt = [0]
+    cnt = [start]
 
     def walk(nodes):
         for nd in nodes:

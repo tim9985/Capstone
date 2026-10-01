@@ -298,7 +298,7 @@ def class_diagram(path, W, packages, boxes, rels, fs=28, legend=True, title=None
 
 
 # ───────────────────────── 시퀀스 ─────────────────────────
-def sequence(path, W, parts, items, fs=28, numbered=True):
+def sequence(path, W, parts, items, fs=28, numbered=True, fit_self=False):
     """parts: [(key, 이름, 종류)]  종류: actor · controller · interface · service · component · dao · entity · boundary · external
        items (평탄화된 행): ("call", a, b, label, depth_key) · ("ret", b, a, label) · ("self", a, label) · ("note", a, b, text)
                           · ("frame", kind, cond) · ("else", cond) · ("end",) · ("act_end", key)
@@ -449,6 +449,9 @@ def sequence(path, W, parts, items, fs=28, numbered=True):
             head(c.ax, (x + w, y2), (x + AW * 0.45 + 2, y2), "solid", fs * 0.9, INK)
             spans.append((a, d + 1, y + step * 0.1, y2 + step * 0.25))
             c.text(x + w + fs * 0.35, y1 + step * 0.05, lab, fs * 0.86, va="center", bbox=BB, zorder=7)
+            if fit_self:                                # 틀 안 자기 호출 라벨이 틀 오른쪽 선에 걸리지 않게
+                xr = x + w + fs * 0.35 + max(c.tw(t_, fs * 0.86) for t_ in lab.split("\n")) + fs * 0.6
+                for fr in frames: fr[5] = max(fr[5], xr)
         elif kd == "note":
             _, a, b, txt = it[:4]
             tw_ = c.tw(txt, fs * 0.8) + fs * 1.2; cx = (xs[a] + xs[b]) / 2
@@ -458,17 +461,17 @@ def sequence(path, W, parts, items, fs=28, numbered=True):
                                     (x2, y + step * 0.38), (x1, y + step * 0.38)], fc="#f3f3f3", ec=MID, lw=1.4, zorder=6))
             c.text((x1 + x2) / 2, y, txt, fs * 0.8, ha="center", zorder=7)
         elif kd == "frame":
-            frames.append([it[1], it[2], y - step * 0.3, [], set()])
+            frames.append([it[1], it[2], y - step * 0.3, [], set(), 0.0])
             y += step * U["frame"]; continue
         elif kd == "else":
             frames[-1][3].append((y - step * 0.42, it[1])); y += step * U["else"]; continue
         elif kd == "end":
-            fk, cond, ys, elses, used = frames.pop()
+            fk, cond, ys, elses, used, xr = frames.pop()
             ks = [k for k in keys if k in used] or keys
             if frames:
-                frames[-1][4].update(used)
+                frames[-1][4].update(used); frames[-1][5] = max(frames[-1][5], xr + fs * 0.6)
             ix = [keys.index(k) for k in ks]
-            x1 = xs[keys[min(ix)]] - fs * 2.2; x2 = xs[keys[max(ix)]] + fs * 2.2
+            x1 = xs[keys[min(ix)]] - fs * 2.2; x2 = max(xs[keys[max(ix)]] + fs * 2.2, xr)
             x1 = max(x1, 4); x2 = min(x2, W - 4); ye = y - step * 0.1
             c.ax.add_patch(Rectangle((x1, ys), x2 - x1, ye - ys, fc="none", ec=MID, lw=1.6, zorder=1))
             twk = c.tw(fk, fs * 0.82, bold=True) + fs * 0.9

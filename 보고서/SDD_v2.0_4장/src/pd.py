@@ -1,13 +1,13 @@
 """pd.py — PD-01 패키지 다이어그램 (무채색)"""
 from mono import Canvas, INK, LINE, MID, head, PKG_TAB
-from matplotlib.patches import Rectangle
+from matplotlib.patches import Rectangle, Polygon
 
 W = 2000; fs = 27
 
 
 def pkg(c, x, y, w, h, name, desc, bold=True, fill="#ffffff", dashed=False):
     tw_ = c.tw(name, fs * 0.82, bold=True) + fs * 1.0
-    c.ax.add_patch(Rectangle((x, y), min(tw_, w * 0.7), fs * 1.2, fc=PKG_TAB, ec=LINE, lw=1.6, zorder=3))
+    c.ax.add_patch(Rectangle((x, y), min(tw_, w * 0.95), fs * 1.2, fc=PKG_TAB, ec=LINE, lw=1.6, zorder=3))
     c.ax.add_patch(Rectangle((x, y + fs * 1.2), w, h - fs * 1.2, fc=fill, ec=LINE, lw=1.8, zorder=3, ls=(0, (6, 4)) if dashed else "-"))
     c.text(x + fs * 0.4, y + fs * 0.62, name, fs * 0.82, bold=True, zorder=4)
     yy = y + fs * 1.2 + (h - fs * 1.2) / 2
@@ -37,19 +37,20 @@ def render(path):
     c = Canvas(W, H)
     # ── 중앙 서버 ──
     frame(c, 10, 10, 1530, 1700, "중앙 서버 (FastAPI · PostgreSQL/PostGIS · RTX 4080 SUPER)")
-    api = pkg(c, 40, 70, 1470, 150, "api", "«controller» Auth · Control · Drone · Map · Mission · Plan · Video · Candidate · MissionMap · Command\n· Safety · Alert · History   «boundary» EventPublisher (WebSocket) · GatewayController (Pi 보고 WSS)")
+    api = pkg(c, 40, 70, 1470, 150, "api", "«controller» Auth · Control · Drone · Map · Mission · Plan · Video · Candidate · MissionMap · Command\n· Safety · Alert · History   «boundary» EventPublisher (WebSocket) · GatewayController (Pi 보고 WSS) · CropStreamEndpoint (크롭 패킷·피드백)")
     c.ax.add_patch(Rectangle((40, 270), 1470, 760, fc="#fbfbfb", ec=LINE, lw=1.8, zorder=2))
     c.text(60, 295, "services   — 패키지마다 «interface» I… + 구현 + 구성요소", fs * 0.85, bold=True, zorder=3)
     names = [("services.auth", "사용자·제어권"), ("services.vehicle", "기체·게이트웨이 상태"), ("services.spatial", "지도·좌표 기준"),
              ("services.mission", "임무 실행"), ("services.mission.global", "전역 방문 계획"), ("services.mission.local", "구역 IPP · 계획 진입점"),
              ("services.media", "영상 수신·저장"), ("services.vision", "사람 탐지·좌표·후보"), ("services.mission_map", "상황지도·관측"),
-             ("services.command", "비행 명령 · IGatewayLink"), ("services.safety", "안전·복구"), ("services.alert", "알림"), ("services.history", "이력·결과")]
+             ("services.command", "비행 명령 · IGatewayLink"), ("services.safety", "안전·복구"), ("services.alert", "알림"), ("services.history", "이력·결과"),
+             ("services.media.crop_grace", "관제 단말 크롭 GRACE 제공")]
     bw, bh, gx, gy = 340, 150, 26, 26
     sv = {}
     for i, (n, d) in enumerate(names):
         r, col = divmod(i, 4)
         x = 66 + col * (bw + gx); y = 330 + r * (bh + gy)
-        sv[n] = pkg(c, x, y, bw, bh, n, d)
+        sv[n] = pkg(c, x, y, bw * 2 + gx if n == "services.media.crop_grace" else bw, bh, n, d)
     ct = pkg(c, 40, 1080, 460, 170, "contracts", "«DTO» 계층·패키지 사이 전달 객체\n(shared/contracts · 웹과 스키마 공유)")
     po = pkg(c, 540, 1080, 450, 170, "policies", "CommandValidator · SafetyPolicy\nDetectionLikelihoodModel (서버·Pi 공유)")
     dao = pkg(c, 1030, 1080, 480, 170, "storage.dao", "«DAO» 18개 — 테이블 1:1\nSQL 은 이 패키지에만")
@@ -63,11 +64,16 @@ def render(path):
                                 ("gateway.storage", "«DAO» CommandJournalDAO\nSegmentManifestStore (로컬)")]):
         gw[n] = pkg(c, 1585, 70 + i * 250, 380, 200, n, d)
     # ── 웹 · 학습 ──
-    frame(c, 10, 1740, 640, 260, "관제 웹 (React · PWA)")
-    web = pkg(c, 40, 1800, 580, 170, "web", "«view model» MapViewModel 등 화면 상태\nHTTP·WebSocket 으로 api 만 호출")
-    frame(c, 670, 1740, 1320, 260, "학습 서버 (RTX 3090) · 연구 경로")
+    frame(c, 10, 1740, 640, 260, "관제 운용자 단말 (React · PWA)")
+    web = pkg(c, 40, 1800, 580, 170, "web", "«view model» MapViewModel · CropViewModel 등\nGraceCropDecoder — 전용 GRACE 디코더\napi 만 호출 (HTTP · WebSocket · 크롭 스트림)")
+    frame(c, 670, 1740, 650, 260, "학습 서버 (RTX 3090)")
     vt = pkg(c, 700, 1800, 600, 170, "vision_train", "«tool» DatasetBuilder · Trainer · Evaluator\nPairedComparator · WeightSouper · EngineBuilder")
-    gr = pkg(c, 1340, 1800, 620, 170, "research.grace", "VideoProfileManager · GraceCodecAdapter · CodecStateSync\n→ services.media 프로파일 협상 (인수 시험 범위 밖)", dashed=True)
+    note_x, note_y, note_w, note_h = 1340, 1760, 650, 230
+    c.ax.add_patch(Polygon([(note_x, note_y), (note_x + note_w - 26, note_y), (note_x + note_w, note_y + 26), (note_x + note_w, note_y + note_h),
+                            (note_x, note_y + note_h)], fc="#f4f4f4", ec=MID, lw=1.5, zorder=3))
+    for i, l in enumerate(["GRACE 크롭 제공 경로 (서버 → 관제 운용자 단말)", "crop_grace 인코딩·패킷화 → CropStreamEndpoint", "→ web GraceCropDecoder 디코딩·표시",
+                           "사용 패킷 피드백은 반대 방향 · 원본 분석과 분리"]):
+        c.text(note_x + 20, note_y + 40 + i * 48, l, fs * (0.78 if i == 0 else 0.72), bold=(i == 0), color=INK if i == 0 else MID, zorder=4)
     # ── 의존 ──
     arrow(c, [(775, 220), (775, 270)], "«import» I… 만", dy=0, dx=120)
     arrow(c, [(1210, 1030), (1210, 1080)], "«import»", dy=0, dx=70)
@@ -83,7 +89,7 @@ def render(path):
     arrow(c, [(1010, 1800), (1010, 1030)], "IModelRegistry (services.vision)", lab_at=0.18, dy=0, dx=170)
     arrow(c, [(330, 1800), (330, 1720), (150, 1720), (150, 1250)], "DTO 스키마", lab_at=0.35)
     # 네트워크 경계 설명
-    c.text(230, 1600, "HTTP · WSS · SRT 는 관계로 그리지 않는다 — api(Controller) · IGatewayLink(GatewayClient) · ServerReporter 가 네트워크 경계를 맡는다",
+    c.text(230, 1600, "HTTP · WSS · SRT · 크롭 스트림은 관계로 그리지 않는다 — api(Controller · CropStreamEndpoint) · IGatewayLink · ServerReporter 가 경계를 맡는다",
            fs * 0.72, color=MID, zorder=6)
     c.save(path)
     return H

@@ -42,6 +42,7 @@ K("C-0704", "TargetService", "service", V, "초기 후보 보존·조회·운영
     ("candidateDao", "PersonCandidateDAO", "후보 조회"), ("permission", "IPermissionPolicy", "판단·명령 권한"),
     ("planner", "IViewpointPlanner", "정밀 관측 요청"), ("mediaStore", "IMediaStore", "스냅샷 조회"),
     ("alerts", "IAlertService", "첫 탐지 알림"), ("history", "IHistoryService", "판단 이력"),
+    ("cropDelivery", "ICropDeliveryService", "관제 단말 대상 크롭 제공 (원본 분석 결과로 요청)"),
 ], [("-toDTO", "PersonCandidate", "CandidateDTO", "엔티티를 화면용 DTO 로 바꾼다.")], impl="C-0722", old="C-0704")
 K("C-0703", "TargetGeoLocator", "service", V, "유효 촬영 시점 자세·보정값·지형으로 대상 위치 산출 (ITargetGeoLocator 구현)", [
     ("resolver", "GeoResolver", "광선 × 지면"), ("transform", "ICoordinateTransform", "WGS84 변환"),
@@ -175,7 +176,8 @@ def _cd():
                 dto=["C-0730", "C-0731", "C-0732", "C-0733", "C-0734", "C-0735", "C-0736", "C-0729"],
                 pairs=[("C-0722", "C-0704"), ("C-0724", "C-0706")], comps=["C-0713", "C-0712"],
                 ext=[("C-0108", "services.auth"), ("C-0516", "services.mission.local"), ("C-0612", "services.media"),
-                     ("C-1105", "services.alert"), ("C-1207", "services.history"), ("C-0908", "services.command")],
+                     ("C-1105", "services.alert"), ("C-1207", "services.history"), ("C-0908", "services.command"),
+                     ("C-0630", "services.media.crop_grace")],
                 daos=[("C-0742", False), ("C-0743", False)], ents=["C-0744", "C-0745"], api_w=0.4, dto_cols=4, ext_w=0.25,
                 extra=[("k0713", "k0743", "dep", "", {"elbow": 1})])
     b = layered("cd07b", "(2/4) 탐지·좌표·모델 — 계층 구조", svc_pkg=V, dto=["C-0727", "C-0728", "C-0729", "C-0737"],
