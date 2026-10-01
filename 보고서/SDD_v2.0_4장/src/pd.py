@@ -53,7 +53,7 @@ def render(path):
     ct = pkg(c, 40, 1080, 460, 170, "contracts", "«DTO» 계층·패키지 사이 전달 객체\n(shared/contracts · 웹과 스키마 공유)")
     po = pkg(c, 540, 1080, 450, 170, "policies", "CommandValidator · SafetyPolicy\nDetectionLikelihoodModel (서버·Pi 공유)")
     dao = pkg(c, 1030, 1080, 480, 170, "storage.dao", "«DAO» 18개 — 테이블 1:1\nSQL 은 이 패키지에만")
-    ent = pkg(c, 1030, 1330, 480, 170, "storage.entity", "«entity» 18개 — DB-01 ~ DB-18\n(2.2 ERD 와 1:1)")
+    ent = pkg(c, 1030, 1330, 480, 170, "storage.entity", "«entity» 18개 — 테이블 1:1\n(2.2 전체 ERD 기준)")
     db = pkg(c, 540, 1330, 450, 170, "PostgreSQL / PostGIS", "storage/migrations · 중앙 DB", fill="#f0f0f0")
     # ── 게이트웨이 ──
     frame(c, 1560, 10, 430, 1700, "현장 게이트웨이 (Pi)")
