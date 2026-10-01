@@ -36,7 +36,11 @@ GRACE 는 **서버 → 관제 운용자 단말의 대상 크롭 제공**에만 �
 - 대체: 디코더 미가용·호환 불일치·참조 복구 실패 → `CROP_BASELINE` (기존 크롭 제공)
 - 600 ms · 1200 B · 32프레임 · 256 MiB 는 **실험 초기값** · 전송 기술 · 디코더 실행 환경은 **미검증**
 - `그림/SD-X06.png` 는 이전(연구 경로) 그림 — 문서에서는 쓰지 않음
-- 적용: `src/patch22.py <v2.1 입력.hwpx> <출력.hwpx>` (src 에서 `python render.py` · `python pd.py` · `python dd.py` 뒤 실행)
+- 적용 (src 에서 `python render.py` · `python pd.py` · `python dd.py` 뒤)
+  1. `python patch21b.py <관리단위재구성.hwpx> <중간.hwpx> ../그림/pd01_v21_0812.png` — '액터' · DB-\* 제거
+  2. `python patch22.py <중간.hwpx> <v2.1.hwpx>` — GRACE 변경 · 한글 저장 규칙 맞춤
+
+> **HWPX 를 고칠 때 — 글자를 바꾼 문단은 `linesegarray`(줄 배치 정보)를 지운다.** 남겨 두면 위치값이 글자 수와 어긋나 한글 13 이 '손상·변조'로 판단해 열지 않는다 (10-01 v2.1 첫 판). 지운 문단은 한글이 열 때 다시 계산한다. 표·그림 id·instid 는 2^31 아래로 둔다.
 
 ## 계층 규칙
 
