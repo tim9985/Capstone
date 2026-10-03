@@ -128,6 +128,8 @@
 | `state_pipeline.py` · `posture_runtime.py` | 상태 인지 — 탐지 + BoT-SORT + 자세 + 무동작 → 점수 · `--posture=box·p3·ft_s0` · `--dump` (1초 표본 → `runs_state/`, git 밖) |
 | `posture_v2_data.py` · `posture_v2.py` · `posture_ft.py` · `chain_p.sh` | 자세 판별 P0~P5 — C2A 크롭 · 상대 키 · 출처 빼기 고르기 · 짝 판정 · DINOv2 부분 미세조정 · 보고 `metrics/AUTO_RESULT_posture.md` (state 환경 `/home/se/venvs/state/bin/python`) |
 | `state_diag.py` | 파이프라인 1초 표본 진단 — 중앙값이 누움을 놓친 원인 (ID 바뀜 · 전환) · 창 규칙 관찰 |
+| `state_trackfix.py` · `configs/trackers/` · `chain_q.sh` | 추적 고치기 Q1 (추적 문턱 0.15 · ID 바뀜 끊기 · ReID · Okutama 영상 반반 A 고르기 / B 판정) · YOLO26m 반복 (10-03) |
+| `ue_posture_capture.py` | UE (Cosys-AirSim) 자세 데이터 캡처 — 배우 이름 `Person_<자세>_<번호>` · 마운트 × 고도 × 방위 · 서버 자세 크롭 형식 (노트북) |
 
 결과: `runs_person/<이름>/` · `metrics/*.csv` · `metrics/AUTO_RESULT*.md` · 서버 진행 기록 `SERVER_PROGRESS.md`
 옛 문서(쓰지 않음): `EXPERIMENTS.md` (E1~E8) · `MODELS.md` · `REBOOT_PLAN.md` (자세 트랙)
