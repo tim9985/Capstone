@@ -119,6 +119,19 @@ def iou(a, b):
     return ix * iy / u if u > 0 else 0.0
 
 
+def read_csv(path):
+    if not path.exists():
+        return []
+    with open(path, newline="", encoding="utf-8") as f:
+        return list(csv.DictReader(f))
+
+
+def scene_id(name):
+    """level01_01600.jpg · level01_01600_Person_Lying_03.jpg -> 1600"""
+    m = re.search(r"_(\d{5})(?:_|\.)", name)
+    return int(m.group(1)) if m else 0
+
+
 def write_csvs(out, crow, mrow):
     for fn, rows in (("crops.csv", crow), ("meta.csv", mrow)):
         if rows:
@@ -136,6 +149,8 @@ def main():
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--weights", default=None, help="주면 탐지 모델로 배우별 det_hit 기록")
     ap.add_argument("--tod", action="store_true", help="장면마다 시각(09 · 12 · 16시)을 바꿔 그림자 · 밝기 변화 (API 가 되면)")
+    ap.add_argument("--resume", action="store_true",
+                    help="끊긴 실행 이어 하기 — 중간 저장된 meta.csv 의 마지막 장면 다음부터. 그 뒤에 남은 이미지·크롭은 지운다")
     args = ap.parse_args()
     rnd = random.Random(args.seed)
     out = Path(args.out)
@@ -156,12 +171,23 @@ def main():
     print(f"배우 {len(acts)} 명 {cnt} · 수직 화각 {VFOV:.1f}° · 장면 {len(acts) * len(args.mounts) * len(args.alts) * args.az:,} 예정")
 
     crow, mrow, n = [], [], 0
+    start_n = 0
+    if args.resume and (out / "meta.csv").exists():
+        crow, mrow = read_csv(out / "crops.csv"), read_csv(out / "meta.csv")
+        start_n = max((scene_id(r["image"]) for r in mrow), default=0)
+        removed = 0
+        for f in list((out / "images").glob("*.jpg")) + list((out / "labels").glob("*.txt")) + list((out / "crops").glob("*/*.jpg")):
+            if scene_id(f.name) > start_n:
+                f.unlink(); removed += 1
+        print(f"이어 하기 — 장면 {start_n:,} 까지 있음 (크롭 {len(crow):,}) · 뒤쪽 남은 파일 {removed} 개 지움")
     for name, a in acts.items():
         tx, ty, tz = a["pos"]
         for mount in args.mounts:
             for h in args.alts:
                 for k in range(args.az):
                     n += 1
+                    if n <= start_n:
+                        continue
                     if args.tod:
                         try:
                             client.simSetTimeOfDay(True, f"2026-10-15 {rnd.choice((9, 12, 16)):02d}:00:00", False, 1, 60, True)
