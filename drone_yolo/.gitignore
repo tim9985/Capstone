@@ -69,3 +69,7 @@ autoheal/*.tmp
 *.hwpx
 *.docx
 *.pptx
+
+# UE 자세 캡처 산출물 · 실시간 탐지 화면 저장 (derivative · git 제외)
+ue_posture/
+runs_live/
