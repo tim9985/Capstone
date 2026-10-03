@@ -18,6 +18,9 @@ state_pipeline.py — 요구조자 상태 인지 v1: 추적 → 자세 · 무동
   자세 판정기 갈아끼우기 (10-03 · P5): --posture=box (v1 · 기본) | p3 | ft_s0 → posture_runtime.py
     · 1초 표본마다 한 장 확률 · 5초 중앙값 확률을 남기고 탐지 박스 기준 자세 지표 (누움 AUROC · 매크로 F1 · 앉음 F1) 를 낸다
     · --dump → runs_state/samples_<tag>.json (1초 표본 전부 · 맞은 정답 ID · 최근 5표본 누움 확률 · git 밖 — Okutama 파생물)
+  추적 고치기 (10-03 · Q1): --tracker=configs/trackers/<yaml> (기본 botsort.yaml)
+    · --reset-jump → 1초 이동이 JUMP(3 몸높이/초 · 10-01 값) 를 넘으면 ID 가 바뀐 것으로 보고 그 추적의 이력(자세 · 속도 · 무동작)을 비운다
+                     + 자세 누적은 "최근 5표본" 대신 "최근 5초 안 표본" (끊겼다 다시 잡힌 오래된 표본 제외)
 실행: python state_pipeline.py [--limit=3] [--video=1.1.1] [--weights=runs_person/soup_v9x2/weights/best.pt] [--tag=v9x2] [--no-render] [--posture=p3]
 출력: metrics/state_pipeline[_<tag>].json · runs_state/<영상>.mp4 (git 밖 · Okutama 파생물)
 """
@@ -37,6 +40,7 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 WEIGHTS = os.path.join(BASE, "runs_person", "soup_v7r2", "weights", "best.pt")
 OUT = os.path.join(BASE, "metrics", "state_pipeline.json")
 STEP, JUMP, STILL = 3, 3.0, 0.25
+TRACKER, RESET = "botsort.yaml", False                       # main 에서 --tracker · --reset-jump 로 바꾼다
 TO1080 = 1080 / 720                                          # Okutama 1280×720 → 1080p 환산 (학습 크롭과 같은 단위)
 COLOR = {"🔴": (0, 0, 255), "🟠": (0, 140, 255), "❔": (200, 200, 0), "⚪": (200, 200, 200)}
 TXT = {"🔴": "URGENT", "🟠": "HIGH", "❔": "CHECK", "⚪": "normal"}
@@ -83,7 +87,7 @@ def run_video(vid, fdir, model, rt, orb, bf, render=False):
         img = cv2.imread(f"{fdir}/{fr}.jpg")
         if img is None:
             continue
-        r = model.track(img, persist=k > 0, tracker="botsort.yaml", conf=0.15, iou=0.6, imgsz=1280, half=True, verbose=False)[0]
+        r = model.track(img, persist=k > 0, tracker=TRACKER, conf=0.15, iou=0.6, imgsz=1280, half=True, verbose=False)[0]
         cur = {}
         if r.boxes.id is not None:
             cur = {int(i): (tuple(map(float, b)), float(c)) for i, b, c in zip(r.boxes.id.tolist(), r.boxes.xyxy.tolist(), r.boxes.conf.tolist())}
@@ -105,10 +109,15 @@ def run_video(vid, fdir, model, rt, orb, bf, render=False):
                     sp = float(np.linalg.norm(np.array([(b[0] + b[2]) / 2, b[3]]) - wa) / max(((a[3] - a[1]) + (b[3] - b[1])) / 2, 1))
                     if sp <= JUMP:
                         s["sp"].append(sp)
+                    elif RESET:                                # ID 바뀜 — 앞사람 이력을 버리고 지금 표본부터 새로
+                        for key in ("ly", "si", "stp", "frs"):
+                            s[key] = s[key][-1:]
+                        s["sp"], s["seen"], s["conf"] = [], 1, [c]
                 med = float(np.median(s["sp"][-3:])) if s["sp"] else None
                 moving = med is not None and med >= 0.4
                 s["still"] = s["still"] + 1 if (med is not None and med < STILL) else 0
-                st = {"lying": float(np.median(s["ly"][-5:])), "sitting": float(np.median(s["si"][-5:])),
+                win = [i for i, f in enumerate(s["frs"]) if f > fr - 5 * FPS][-5:] if RESET else list(range(len(s["ly"])))[-5:]
+                st = {"lying": float(np.median([s["ly"][i] for i in win])), "sitting": float(np.median([s["si"][i] for i in win])),
                       "still": s["still"], "obs": s["seen"], "moving": moving}
                 g, score = grade(st)
                 s["last"] = (g, score, st)
@@ -117,8 +126,9 @@ def run_video(vid, fdir, model, rt, orb, bf, render=False):
                     samples.append({"vid": vid, "t": t, "fr": fr, "pose": pose, "grade": g, "score": score,
                                     "conf": c, "lying_p": round(st["lying"], 3), "still": st["still"],
                                     "p": [round(float(v), 4) for v in p],
-                                    "agg": [round(st["lying"], 4), round(st["sitting"], 4), round(float(np.median(s["stp"][-5:])), 4)],
-                                    "gt": gid, "h_ly": [round(float(v), 3) for v in s["ly"][-5:]], "h_fr": s["frs"][-5:]})
+                                    "agg": [round(st["lying"], 4), round(st["sitting"], 4), round(float(np.median([s["stp"][i] for i in win])), 4)],
+                                    "gt": gid, "h_ly": [round(float(v), 3) for v in s["ly"][-5:]], "h_si": [round(float(v), 3) for v in s["si"][-5:]],
+                                    "h_fr": s["frs"][-5:]})
             prev = (fr, cur, gray)
         if render:
             if writer is None:
@@ -145,6 +155,9 @@ def main():
     tag = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--tag=")), None)
     out = OUT.replace(".json", f"_{tag}.json") if tag else OUT
     posture = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--posture=")), "box")
+    global TRACKER, RESET
+    TRACKER = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--tracker=")), TRACKER)
+    RESET = "--reset-jump" in sys.argv
     render_ok = "--no-render" not in sys.argv
     from ultralytics import YOLO
     frame_dir = {os.path.basename(d): d for d in glob.glob(f"{OK}/Drone*/*/Extracted-Frames-1280x720/*")}
@@ -179,7 +192,8 @@ def main():
     for k, f in (("한 장", "p"), ("5초 중앙값", "agg")):
         pr = np.array([s[f] for s in allS]) if allS else np.zeros((0, 3))
         pose_m[k] = {kk: round(vv, 3) for kk, vv in stats(y3, pr).items()} if len(pr) else {}
-    res = {"탐지 가중치": os.path.relpath(weights, BASE), "자세 판정기": posture, "자세 지표 (탐지 박스)": pose_m,
+    res = {"탐지 가중치": os.path.relpath(weights, BASE), "자세 판정기": posture, "추적기": TRACKER, "ID 바뀜 끊기": RESET,
+           "자세 지표 (탐지 박스)": pose_m,
            "영상": len(vids), "1초 표본": len(allS),
            "누움 1초 표본 (탐지·추적으로 잡힌 것)": int(y.sum()), "누움 정답 1초 표본": int(gt_lying),
            "누움 잡힌 비율": round(int(y.sum()) / max(gt_lying, 1), 3), "데모": f"runs_state/{demo}.mp4" if render_ok else None,
