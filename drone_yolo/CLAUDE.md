@@ -2,7 +2,7 @@
 
 「자율 정찰 드론 관제 시스템」의 비전 코드 — **사람 1클래스 탐지 · 좌표 산정 · 상의 색상 비교**.
 경로는 Capstone 저장소 루트 기준. **수치·경위의 원본은 볼트(`obsidian/`)** 이고, 여기에는 작업 규칙과 함정만 둔다.
-갱신 2026-09-30
+갱신 2026-10-03
 
 ## 1. 먼저 볼 곳
 
@@ -58,6 +58,13 @@
 - 노트북 가중치는 `--resume` 금지 (Windows 경로) — `--weights` 로
 - ⚠ **`seed` 를 바꿔도 같은 학습이 된다** — ultralytics 8.4 데이터 로더가 고정 상수로 섞는다 (09-25 확인). 반복 학습은 **학습 목록 순서를 섞어** 만든다 (`configs/lists/train_v6_r2.txt`)
 
+### 상태 인지 (10-03~)
+
+- 자세 판정기는 **정답 박스 크롭**으로 고르고, **탐지 박스 파이프라인**(`state_pipeline.py --posture=`)으로 다시 확인한다 — 둘이 다르게 나온다
+- ⚠ 추적 이력을 쓰는 신호(자세 누적 · 무동작 · 속도)는 **추적 ID 바뀜**에 오염된다 — 누운 사람은 확신도가 낮아 띄엄띄엄 잡히고 주변 추적에 붙는다 (5초 중앙값 누움 0.98 → 0.80 · `state_diag.py`)
+- 출처 하나 빼기로 고를 땐 **클래스마다 진짜 출처가 2개 이상인지** 먼저 본다 — 비스듬 앉음은 SARD 뿐이라 합성 C2A 가 구조적으로 뽑혔다
+- Okutama 자세 크롭 `crops.csv` 의 w1080 · h1080 은 **720p px 그대로** → 1080p 로 쓰려면 ×1.5 (`posture_v2.load_set` 이 보정) · `eval_posture.auc` 는 동점 미처리 → `posture_v2.auc`
+
 ## 5. 서버 운영 (RTX 3090 · 대여 서버)
 
 - **GPU 를 쉬게 두지 않는다** — 긴 작업은 `chain_*.sh` 로 잇고 `logs/QUEUE.md` 에 남긴다
@@ -86,6 +93,7 @@
 - 조건이 안 맞는 데이터 추가 — NII-CU 45° 야구장 (±0) · AI-Hub 190 (09-28 승인 · 고도 70~80 m · 사람 1920 기준 18 px)
 - 수프에 BN 재계산 (`soup.py --bn`) — 무너진 조합은 살리지만 박스가 넓어져 test_obl 만 오른다 (라벨 습관)
 - 학습 길이 60 에폭 — val mAP50-95 는 0.424 → 0.441 로 오르는데 **test_obl −4.0 %p** (09-29) · 30 에폭 유지
+- 자세 분류기 (10-03 · `chain_p.sh`): 합성 C2A 로 비스듬 앉음 메우기 (**앉음 F1 −0.47**) · 같은 장면 상대 키 (전부 손해) · DINOv2 부분 미세조정 (한국 수직만 오르고 Okutama 앉음 재현율 0.07~0.13) — 앉음은 진짜 비스듬 앉음 데이터가 생길 때까지 손대지 않는다
 
 ## 8. 지켜야 할 규칙
 
@@ -117,6 +125,9 @@
 | `survey_tilt2.py` · `make_tilt_tags.py` · `eval_tilt_groups.py` | 마운트각 추정 · 태그 · 층화 평가 |
 | `nomad_prep.py` · `wisard_prep.py` · `aihub_prep.py` · `okutama3_prep.py` | 원본 → 크롭 |
 | `video_infer.py` | 영상 일괄 추론 (`live_view.py` 는 화면이 필요해 서버에서 못 쓴다) |
+| `state_pipeline.py` · `posture_runtime.py` | 상태 인지 — 탐지 + BoT-SORT + 자세 + 무동작 → 점수 · `--posture=box·p3·ft_s0` · `--dump` (1초 표본 → `runs_state/`, git 밖) |
+| `posture_v2_data.py` · `posture_v2.py` · `posture_ft.py` · `chain_p.sh` | 자세 판별 P0~P5 — C2A 크롭 · 상대 키 · 출처 빼기 고르기 · 짝 판정 · DINOv2 부분 미세조정 · 보고 `metrics/AUTO_RESULT_posture.md` (state 환경 `/home/se/venvs/state/bin/python`) |
+| `state_diag.py` | 파이프라인 1초 표본 진단 — 중앙값이 누움을 놓친 원인 (ID 바뀜 · 전환) · 창 규칙 관찰 |
 
 결과: `runs_person/<이름>/` · `metrics/*.csv` · `metrics/AUTO_RESULT*.md` · 서버 진행 기록 `SERVER_PROGRESS.md`
 옛 문서(쓰지 않음): `EXPERIMENTS.md` (E1~E8) · `MODELS.md` · `REBOOT_PLAN.md` (자세 트랙)

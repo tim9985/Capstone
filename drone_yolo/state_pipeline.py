@@ -17,6 +17,7 @@ state_pipeline.py — 요구조자 상태 인지 v1: 추적 → 자세 · 무동
   ⚠ Okutama 는 공원에서 배우가 연출한 행동 · 정답 박스로 자세를 붙인다 · 낙상 없음
   자세 판정기 갈아끼우기 (10-03 · P5): --posture=box (v1 · 기본) | p3 | ft_s0 → posture_runtime.py
     · 1초 표본마다 한 장 확률 · 5초 중앙값 확률을 남기고 탐지 박스 기준 자세 지표 (누움 AUROC · 매크로 F1 · 앉음 F1) 를 낸다
+    · --dump → runs_state/samples_<tag>.json (1초 표본 전부 · 맞은 정답 ID · 최근 5표본 누움 확률 · git 밖 — Okutama 파생물)
 실행: python state_pipeline.py [--limit=3] [--video=1.1.1] [--weights=runs_person/soup_v9x2/weights/best.pt] [--tag=v9x2] [--no-render] [--posture=p3]
 출력: metrics/state_pipeline[_<tag>].json · runs_state/<영상>.mp4 (git 밖 · Okutama 파생물)
 """
@@ -30,7 +31,7 @@ import sys
 import cv2
 import numpy as np
 from okutama_motion import FPS, LAB, NADIR, OK, auc, homography, load_boxes
-from okutama_motion_det import iou, match_pose
+from okutama_motion_det import iou
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 WEIGHTS = os.path.join(BASE, "runs_person", "soup_v7r2", "weights", "best.pt")
@@ -42,6 +43,16 @@ TXT = {"🔴": "URGENT", "🟠": "HIGH", "❔": "CHECK", "⚪": "normal"}
 
 
 POSE3 = {"Lying": 0, "Sitting": 1}                           # 나머지 (서기 · 걷기 · 달리기) = 2
+
+
+def match_gt(box, gt):
+    """추적 박스 ↔ 정답 박스 IoU 최대 (≥0.5) 의 (자세, 정답 ID) — match_pose 와 같은 규칙 + ID."""
+    best, out = 0.5, (None, None)
+    for gid, (x1, y1, x2, y2, p) in gt.items():
+        v = iou(box, (x1, y1, x2, y2))
+        if v >= best:
+            best, out = v, (p, gid)
+    return out
 
 
 def grade(st):
@@ -64,7 +75,7 @@ def run_video(vid, fdir, model, rt, orb, bf, render=False):
     from ultralytics import YOLO  # noqa: F401  (model 은 밖에서 만든다)
     gt = load_boxes(f"{LAB}/{vid}.txt")
     n = len(glob.glob(f"{fdir}/*.jpg"))
-    hist = collections.defaultdict(lambda: {"ly": [], "si": [], "stp": [], "sp": [], "seen": 0, "still": 0, "conf": []})
+    hist = collections.defaultdict(lambda: {"ly": [], "si": [], "stp": [], "frs": [], "sp": [], "seen": 0, "still": 0, "conf": []})
     rt.reset()
     prev = None                                               # (fr, 박스 dict, 회색 영상)
     samples, writer = [], None
@@ -86,7 +97,7 @@ def run_video(vid, fdir, model, rt, orb, bf, render=False):
             for t, (b, c) in cur.items():
                 s = hist[t]; s["seen"] += 1; s["conf"].append(c)
                 p = P[t]
-                s["ly"].append(p[0]); s["si"].append(p[1]); s["stp"].append(p[2])
+                s["ly"].append(p[0]); s["si"].append(p[1]); s["stp"].append(p[2]); s["frs"].append(fr)
                 if H is not None and t in prev[1]:
                     a = prev[1][t][0]
                     fa = np.float32([[(a[0] + a[2]) / 2, a[3]]]).reshape(1, 1, 2)
@@ -101,12 +112,13 @@ def run_video(vid, fdir, model, rt, orb, bf, render=False):
                       "still": s["still"], "obs": s["seen"], "moving": moving}
                 g, score = grade(st)
                 s["last"] = (g, score, st)
-                pose = match_pose(b, gt.get(fr, {}))
+                pose, gid = match_gt(b, gt.get(fr, {}))
                 if pose:
                     samples.append({"vid": vid, "t": t, "fr": fr, "pose": pose, "grade": g, "score": score,
                                     "conf": c, "lying_p": round(st["lying"], 3), "still": st["still"],
                                     "p": [round(float(v), 4) for v in p],
-                                    "agg": [round(st["lying"], 4), round(st["sitting"], 4), round(float(np.median(s["stp"][-5:])), 4)]})
+                                    "agg": [round(st["lying"], 4), round(st["sitting"], 4), round(float(np.median(s["stp"][-5:])), 4)],
+                                    "gt": gid, "h_ly": [round(float(v), 3) for v in s["ly"][-5:]], "h_fr": s["frs"][-5:]})
             prev = (fr, cur, gray)
         if render:
             if writer is None:
@@ -178,6 +190,9 @@ def main():
            "정답 자세 × 등급 (1초 표본)": {p: dict(c) for p, c in tab.items()},
            "영상별 상위 5 (ID · 등급 · 점수)": ranks}
     json.dump(res, open(out, "w"), ensure_ascii=False, indent=1)
+    if "--dump" in sys.argv:
+        os.makedirs(os.path.join(BASE, "runs_state"), exist_ok=True)
+        json.dump(allS, open(os.path.join(BASE, "runs_state", f"samples_{tag or 'default'}.json"), "w"), default=int)
     print(json.dumps({k: v for k, v in res.items() if k != "영상별 상위 5 (ID · 등급 · 점수)"}, ensure_ascii=False, indent=1))
 
 
