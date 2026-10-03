@@ -119,6 +119,13 @@ def iou(a, b):
     return ix * iy / u if u > 0 else 0.0
 
 
+def write_csvs(out, crow, mrow):
+    for fn, rows in (("crops.csv", crow), ("meta.csv", mrow)):
+        if rows:
+            with open(out / fn, "w", newline="", encoding="utf-8") as f:
+                w = csv.DictWriter(f, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--place", required=True, help="레벨(장소) 이름 — 장소 분리 평가의 단위")
@@ -197,10 +204,9 @@ def main():
                                  "az_deg": round(math.degrees(b), 1), "yaw_deg": round(math.degrees(yaw), 1), "people": len(bx)})
                     if n % 50 == 0:
                         print(f"  장면 {n:,} · 크롭 {len(crow):,}", flush=True)
-    for fn, rows in (("crops.csv", crow), ("meta.csv", mrow)):
-        if rows:
-            with open(out / fn, "w", newline="", encoding="utf-8") as f:
-                w = csv.DictWriter(f, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
+                    if n % 200 == 0:
+                        write_csvs(out, crow, mrow)   # 중간 저장 — 끊겨도 표가 남는다
+    write_csvs(out, crow, mrow)
     by = {}
     for r in crow:
         by[r["pose"]] = by.get(r["pose"], 0) + 1
