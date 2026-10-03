@@ -20,11 +20,11 @@ import analyze_models as A
 import diag_misses as D
 
 BASE = Path(__file__).resolve().parent
-A.SETS.setdefault("test_kr", ("tile", 0.6))
 OP_CONF = 0.15
 
 
 def build(model, tag):
+    A.SETS.setdefault(tag, ("tile", 0.6))                    # test_obl 말고는 전부 1920 · 타일 4장
     recs = A.predict_cached(model, tag)
     op = A.SETS[tag][1]; key = f"eval_{model}"
     ds = fo.load_dataset(tag) if fo.dataset_exists(tag) else fo.Dataset(tag, persistent=True)
