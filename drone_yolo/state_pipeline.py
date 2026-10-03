@@ -15,7 +15,9 @@ state_pipeline.py — 요구조자 상태 인지 v1: 추적 → 자세 · 무동
     · 누움 표본을 점수로 가려내는 AUROC (기준선 = 탐지 확신도) · 정답 자세 × 등급 표
     · 추적 단위: 추적 최고 점수로 "누운 적 있는 사람" 가려내기 AUROC
   ⚠ Okutama 는 공원에서 배우가 연출한 행동 · 정답 박스로 자세를 붙인다 · 낙상 없음
-실행: python state_pipeline.py [--limit=3] [--video=1.1.1] [--weights=runs_person/soup_v9x2/weights/best.pt] [--tag=v9x2] [--no-render]
+  자세 판정기 갈아끼우기 (10-03 · P5): --posture=box (v1 · 기본) | p3 | ft_s0 → posture_runtime.py
+    · 1초 표본마다 한 장 확률 · 5초 중앙값 확률을 남기고 탐지 박스 기준 자세 지표 (누움 AUROC · 매크로 F1 · 앉음 F1) 를 낸다
+실행: python state_pipeline.py [--limit=3] [--video=1.1.1] [--weights=runs_person/soup_v9x2/weights/best.pt] [--tag=v9x2] [--no-render] [--posture=p3]
 출력: metrics/state_pipeline[_<tag>].json · runs_state/<영상>.mp4 (git 밖 · Okutama 파생물)
 """
 import collections
@@ -27,8 +29,6 @@ import sys
 
 import cv2
 import numpy as np
-from sklearn.linear_model import LogisticRegression
-
 from okutama_motion import FPS, LAB, NADIR, OK, auc, homography, load_boxes
 from okutama_motion_det import iou, match_pose
 
@@ -41,14 +41,7 @@ COLOR = {"🔴": (0, 0, 255), "🟠": (0, 140, 255), "❔": (200, 200, 0), "⚪"
 TXT = {"🔴": "URGENT", "🟠": "HIGH", "❔": "CHECK", "⚪": "normal"}
 
 
-def posture_model():
-    """비스듬 박스 모양 3자세 판정 — SARD + NOMAD 크롭 (posture_fusion 과 같은 특징)."""
-    X, y = [], []
-    for part in ("sard", "nomad"):
-        for r in csv.DictReader(open(os.path.join(BASE, "data", "pose_cls", part, "train", "crops.csv"))):
-            w, h = max(float(r["w1080"]), 1), max(float(r["h1080"]), 1)
-            X.append([np.log(h / w), np.log(max(w, h))]); y.append(("lying", "sitting", "standing").index(r["pose"]))
-    return LogisticRegression(max_iter=2000, class_weight="balanced").fit(np.array(X), np.array(y))
+POSE3 = {"Lying": 0, "Sitting": 1}                           # 나머지 (서기 · 걷기 · 달리기) = 2
 
 
 def grade(st):
@@ -67,11 +60,12 @@ def grade(st):
     return g, round(score, 3)
 
 
-def run_video(vid, fdir, model, pm, orb, bf, render=False):
+def run_video(vid, fdir, model, rt, orb, bf, render=False):
     from ultralytics import YOLO  # noqa: F401  (model 은 밖에서 만든다)
     gt = load_boxes(f"{LAB}/{vid}.txt")
     n = len(glob.glob(f"{fdir}/*.jpg"))
-    hist = collections.defaultdict(lambda: {"ly": [], "si": [], "sp": [], "seen": 0, "still": 0, "conf": []})
+    hist = collections.defaultdict(lambda: {"ly": [], "si": [], "stp": [], "sp": [], "seen": 0, "still": 0, "conf": []})
+    rt.reset()
     prev = None                                               # (fr, 박스 dict, 회색 영상)
     samples, writer = [], None
     for k, fr in enumerate(range(0, n, STEP)):
@@ -88,11 +82,11 @@ def run_video(vid, fdir, model, pm, orb, bf, render=False):
             if prev is not None and prev[0] == fr - FPS:
                 fake = lambda d: {t: (*v[0], None) for t, v in d.items()}
                 H, _ = homography(prev[2], gray, fake(prev[1]), fake(cur), orb, bf)
+            P = rt.predict(img, cur)
             for t, (b, c) in cur.items():
                 s = hist[t]; s["seen"] += 1; s["conf"].append(c)
-                w, h = (b[2] - b[0]) * TO1080, (b[3] - b[1]) * TO1080
-                p = pm.predict_proba([[np.log(max(h, 1) / max(w, 1)), np.log(max(w, h, 1))]])[0]
-                s["ly"].append(p[0]); s["si"].append(p[1])
+                p = P[t]
+                s["ly"].append(p[0]); s["si"].append(p[1]); s["stp"].append(p[2])
                 if H is not None and t in prev[1]:
                     a = prev[1][t][0]
                     fa = np.float32([[(a[0] + a[2]) / 2, a[3]]]).reshape(1, 1, 2)
@@ -110,7 +104,9 @@ def run_video(vid, fdir, model, pm, orb, bf, render=False):
                 pose = match_pose(b, gt.get(fr, {}))
                 if pose:
                     samples.append({"vid": vid, "t": t, "fr": fr, "pose": pose, "grade": g, "score": score,
-                                    "conf": c, "lying_p": round(st["lying"], 3), "still": st["still"]})
+                                    "conf": c, "lying_p": round(st["lying"], 3), "still": st["still"],
+                                    "p": [round(float(v), 4) for v in p],
+                                    "agg": [round(st["lying"], 4), round(st["sitting"], 4), round(float(np.median(s["stp"][-5:])), 4)]})
             prev = (fr, cur, gray)
         if render:
             if writer is None:
@@ -136,6 +132,7 @@ def main():
     weights = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--weights=")), WEIGHTS)
     tag = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--tag=")), None)
     out = OUT.replace(".json", f"_{tag}.json") if tag else OUT
+    posture = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--posture=")), "box")
     render_ok = "--no-render" not in sys.argv
     from ultralytics import YOLO
     frame_dir = {os.path.basename(d): d for d in glob.glob(f"{OK}/Drone*/*/Extracted-Frames-1280x720/*")}
@@ -145,12 +142,13 @@ def main():
     vids = vids[:limit]
     # 데모 영상: 누움 정답이 가장 많은 비스듬 영상 하나
     demo = max(vids, key=lambda v: sum(p[4] == "Lying" for f in load_boxes(f"{LAB}/{v}.txt").values() for p in f.values()))
-    pm = posture_model(); orb, bf = cv2.ORB_create(3000), cv2.BFMatcher(cv2.NORM_HAMMING)
+    from posture_runtime import Runtime
+    rt = Runtime(posture); orb, bf = cv2.ORB_create(3000), cv2.BFMatcher(cv2.NORM_HAMMING)
     allS, ranks = [], {}
     gt_lying = sum(1 for v in vids for f, d in load_boxes(f"{LAB}/{v}.txt").items() if f % FPS == 0 for b in d.values() if b[4] == "Lying")
     for v in vids:
         model = YOLO(weights)                                 # 영상마다 추적 상태를 새로
-        S, rk = run_video(v, frame_dir[v], model, pm, orb, bf, render=(render_ok and v == demo))
+        S, rk = run_video(v, frame_dir[v], model, rt, orb, bf, render=(render_ok and v == demo))
         allS += S; ranks[v] = rk
         print(f"{v}: 표본 {len(S)} · 상위 {rk[:3]}", flush=True)
     y = np.array([s["pose"] == "Lying" for s in allS]); sc = np.array([s["score"] for s in allS]); cf = np.array([s["conf"] for s in allS])
@@ -163,7 +161,14 @@ def main():
     for s in allS:
         k = (s["vid"], s["t"]); per[k][0] = max(per[k][0], s["score"]); per[k][1] |= s["pose"] == "Lying"; per[k][2] = max(per[k][2], s["conf"])
     tp = np.array([v[0] for v in per.values()]); tl = np.array([v[1] for v in per.values()]); tc = np.array([v[2] for v in per.values()])
-    res = {"탐지 가중치": os.path.relpath(weights, BASE), "영상": len(vids), "1초 표본": len(allS),
+    from posture_v2 import stats
+    y3 = np.array([POSE3.get(s["pose"], 2) for s in allS])
+    pose_m = {"n": {c: int((y3 == i).sum()) for i, c in enumerate(("lying", "sitting", "standing"))}}
+    for k, f in (("한 장", "p"), ("5초 중앙값", "agg")):
+        pr = np.array([s[f] for s in allS]) if allS else np.zeros((0, 3))
+        pose_m[k] = {kk: round(vv, 3) for kk, vv in stats(y3, pr).items()} if len(pr) else {}
+    res = {"탐지 가중치": os.path.relpath(weights, BASE), "자세 판정기": posture, "자세 지표 (탐지 박스)": pose_m,
+           "영상": len(vids), "1초 표본": len(allS),
            "누움 1초 표본 (탐지·추적으로 잡힌 것)": int(y.sum()), "누움 정답 1초 표본": int(gt_lying),
            "누움 잡힌 비율": round(int(y.sum()) / max(gt_lying, 1), 3), "데모": f"runs_state/{demo}.mp4" if render_ok else None,
            "누움 가려내기 AUROC (1초 표본)": {"요구조 점수": round(auc(sc[y], sc[~y]), 3), "탐지 확신도(기준선)": round(auc(cf[y], cf[~y]), 3)},
