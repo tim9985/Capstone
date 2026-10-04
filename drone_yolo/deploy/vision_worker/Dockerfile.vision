@@ -1,0 +1,12 @@
+# 비전 worker 이미지 — 동료 이미지 위에 패키지 한 층만 얹는다 (기반 이미지는 다시 빌드하지 않는다)
+# 코드는 이미지에 넣지 않는다: 기존처럼 ./workspace 마운트 + scripts/sync-workspace.sh 로 반영
+# 빌드 (샌드박스 루트에서): scripts/docker.sh build -f Dockerfile.vision -t drone-sandbox-vision:20261005 .
+FROM drone-sandbox:20261003
+USER root
+COPY requirements-vision.txt /tmp/requirements-vision.txt
+RUN pip install --no-cache-dir -r /tmp/requirements-vision.txt \
+    && pip install --no-cache-dir --no-deps ultralytics==8.4.102 \
+    && python -c "import ultralytics, tensorrt, cv2; print(ultralytics.__version__, tensorrt.__version__, cv2.__version__)" \
+    && pip freeze > /opt/requirements-vision.lock
+ENV YOLO_CONFIG_DIR=/tmp/Ultralytics
+USER 1001:1001

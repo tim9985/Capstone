@@ -1,0 +1,11 @@
+# 비전 worker 추가 패키지 — 동료 requirements.lock 위에 얹는다 (2026-10-05)
+# 동료 lock 에 이미 같은 버전이 있는 것은 넣지 않는다: pillow 12.3.0 · psutil 7.2.2 · requests 2.34.2 · PyYAML 6.0.3 · filelock 3.32.3
+# torch 2.8.0+cu128 · torchvision 0.23.0 · numpy · opencv-python-headless 는 동료 것 그대로 쓴다
+# ultralytics 는 의존성을 따로 설치한다 (pip install --no-deps ultralytics==8.4.102) — opencv-python 이 headless 와 겹치지 않게
+matplotlib==3.10.9
+polars==1.44.2
+nvidia-ml-py==13.610.43
+ultralytics-thop==2.1.6
+onnx==1.21.0
+onnxslim==0.1.96
+tensorrt-cu12==11.3.0.99
