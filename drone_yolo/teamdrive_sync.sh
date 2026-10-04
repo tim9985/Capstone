@@ -4,6 +4,7 @@
 #     --update : 드라이브 쪽이 더 최신인 파일은 덮지 않는다 (팀원이 드라이브에서 고친 것 보호)
 #     copy     : 드라이브에만 있는 파일은 지우지 않는다 (병합)
 #  ② 받기:  드라이브 전체 → 서버 팀드라이브/   (비젼/obsidian 은 제외 — ①과 도는 고리를 막는다)
+#     --drive-skip-shortcuts : 드라이브 루트에 루트 자신을 가리키는 "프로젝트" 바로가기가 있어 끝없이 중첩 복사됐다 (10-04 · 115 GB)
 #  팀드라이브/ 는 .gitignore — 전자서명·공문서가 있어 공개 저장소에 올리지 않는다
 set -u
 F=1seoJ7f9Vk9BMP_XQiH3CYpvy62DUFDzE
@@ -16,5 +17,5 @@ rclone copy $C/obsidian gdrive:비젼/obsidian --drive-root-folder-id=$F --updat
   --exclude ".obsidian/workspace*.json" --stats-one-line >> $L 2>&1
 echo "[$(ts) KST] ② 받기 시작" >> $L
 rclone copy gdrive: $C/팀드라이브 --drive-root-folder-id=$F \
-  --exclude "비젼/obsidian/**" --transfers 8 --checkers 16 --stats-one-line >> $L 2>&1
+  --exclude "비젼/obsidian/**" --drive-skip-shortcuts --transfers 8 --checkers 16 --stats-one-line >> $L 2>&1
 echo "[$(ts) KST] 완료" >> $L

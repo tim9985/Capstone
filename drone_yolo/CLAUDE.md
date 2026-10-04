@@ -2,7 +2,7 @@
 
 「자율 정찰 드론 관제 시스템」의 비전 코드 — **사람 1클래스 탐지 · 좌표 산정 · 상의 색상 비교**.
 경로는 Capstone 저장소 루트 기준. **수치·경위의 원본은 볼트(`obsidian/`)** 이고, 여기에는 작업 규칙과 함정만 둔다.
-갱신 2026-10-03
+갱신 2026-10-04
 
 ## 1. 먼저 볼 곳
 
@@ -22,7 +22,7 @@
 - 우선순위: **미탐 → 오탐 → 상의 색상(12색) → 좌표**
 - **목적에 데이터를 맞춘다** — 데이터가 그렇다는 이유로 운용 조건을 정하지 않는다
 - 카메라 IMX415 · 1920×1080 · 주 렌즈 LN012 **대각 88° = 수평 80.2° · f 1,141 px** · 보조 62°·78° 는 호환 확인 중
-- 짐벌 GM3 V2 · **기본 마운트각 60° (잠정)** · 대응 45~75° · 고도 16~30 m · 합성 데이터 보류
+- 짐벌 GM3 V2 · **기본 마운트각 45°** (09-29 · 60° 비교 · 재학습 불필요) · 대응 45~75° · 고도 16~20 m 권장 (30 m 까지) · 합성 데이터 보류
 - 기준 문서: 캡스톤 디자인 계획서 §3.2 (최종 예산안) · 요구명세서 v1.7 — 볼트와 어긋나면 이쪽이 우선
 
 ## 3. 합격선 (요구명세서 v1.7) — 현재값은 `obsidian/10 성능 요구사항/`
@@ -132,6 +132,9 @@
 | `posture_v2_data.py` · `posture_v2.py` · `posture_ft.py` · `chain_p.sh` | 자세 판별 P0~P5 — C2A 크롭 · 상대 키 · 출처 빼기 고르기 · 짝 판정 · DINOv2 부분 미세조정 · 보고 `metrics/AUTO_RESULT_posture.md` (state 환경 `/home/se/venvs/state/bin/python`) |
 | `state_diag.py` | 파이프라인 1초 표본 진단 — 중앙값이 누움을 놓친 원인 (ID 바뀜 · 전환) · 창 규칙 관찰 |
 | `state_trackfix.py` · `configs/trackers/` · `chain_q.sh` | 추적 고치기 Q1 (추적 문턱 0.15 · ID 바뀜 끊기 · ReID · Okutama 영상 반반 A 고르기 / B 판정) · YOLO26m 반복 (10-03) |
+| `chain_r.sh` · `chain_r3.sh` · `judge_pairs.py` | R2 공통 출발 수프 → R3 v10 (+LADD) → R5 · 판정 규칙을 compare_ci 출력에 자동 적용 (Q2 기각 재현) |
+| `bn_dist.py` · `make_v10_data.py` | 수프 재료끼리 BN · 가중치 거리 (붕괴 진단) · LADD 크롭 + `test_ladd_h` (번호 뒤 30 % 참고 평가) |
+| `deploy/vision_worker/` | **동료 서버 샌드박스 Vision worker 인계 꾸러미** — 탐지 · 좌표 · 후보 기억 · RTSP · sidecar · 패키지 한 층 Dockerfile · 인수 검증 |
 | `ue_posture_capture.py` | UE (Cosys-AirSim) 자세 데이터 캡처 — 배우 이름 `Person_<자세>_<번호>` · 마운트 × 고도 × 방위 · 서버 자세 크롭 형식 (노트북) |
 
 결과: `runs_person/<이름>/` · `metrics/*.csv` · `metrics/AUTO_RESULT*.md` · 서버 진행 기록 `SERVER_PROGRESS.md`

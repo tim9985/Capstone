@@ -1,0 +1,5 @@
+# ft_s41 (chain_v12 · 2026-09-26) — train_v7.txt + nomad_v9.txt · 순서 시드 41 · val = val_v6b
+train: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/train_ft_s41.txt
+val: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/val_v6b.txt
+nc: 1
+names: ['person']
