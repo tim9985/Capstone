@@ -47,6 +47,8 @@ class Candidate:
     geo_status: str = "PENDING"
     last_box: tuple = None
     confirmed: bool = False
+    color: object = None                         # ColorAccumulator (worker 가 붙인다)
+    color_t: float = -1e9                        # 마지막 색 판정 시각 (s)
 
     def to_json(self):
         return {"candidate_id": self.cid, "first_seen_s": round(self.first_t, 3), "last_seen_s": round(self.last_t, 3),
@@ -54,7 +56,8 @@ class Candidate:
                 "geo_status": self.geo_status,
                 "lat": None if self.lat is None else round(self.lat, 7),
                 "lon": None if self.lon is None else round(self.lon, 7),
-                "sigma_m": None if self.sigma_m is None else round(self.sigma_m, 2)}
+                "sigma_m": None if self.sigma_m is None else round(self.sigma_m, 2),
+                "upper_color": None if self.color is None else self.color.result().get("top")}
 
 
 class CandidateRegistry:

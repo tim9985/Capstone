@@ -24,6 +24,7 @@ RTSP_BASE = os.environ.get("VISION_RTSP_BASE", "rtsp://127.0.0.1:18554")
 FPS = float(os.environ.get("VISION_FPS", "10"))
 CONF = float(os.environ.get("VISION_CONF", "0.15"))
 BUILD_ENGINE = os.environ.get("VISION_BUILD_ENGINE", "1") == "1"
+COLOR_EVERY_S = float(os.environ.get("VISION_COLOR_EVERY_S", "0.5"))
 STATUS = ROOT / "worker-status.json"
 
 state = {"worker": "vision", "cuda_available": False, "model_loaded": False, "flight_enabled": False,
@@ -90,6 +91,7 @@ def load_detector():
 def run_mission(det, ctl):
     import cv2
     import numpy as np
+    from app.vision.color import ColorAccumulator, ColorProfiler, frame_stats, match
     from app.vision.geo import GeoResolver
     from app.vision.registry import CandidateRegistry
     from app.vision.sources import FileSource, LiveSource
@@ -103,6 +105,7 @@ def run_mission(det, ctl):
     live = src_s.startswith(("rtsp://", "srt://", "udp://"))
     src = LiveSource(src_s) if live else FileSource(src_s, FPS)
     tel, geo, reg = TelemetryStore(mdir), GeoResolver(), CandidateRegistry(mid)
+    colorer, query = ColorProfiler(), ctl.get("query_color")      # 찾는 사람 상의 색 (UC-0707 · 없으면 판정만)
     det_f = open(mdir / "results" / "detections.jsonl", "a", encoding="utf-8")
     cand_f = open(mdir / "results" / "candidates.jsonl", "a", encoding="utf-8")
     log = open(mdir / "logs" / "vision.log", "a", encoding="utf-8")
@@ -129,11 +132,17 @@ def run_mission(det, ctl):
             boxes, confs, ms = det.detect(frame)
             lat_ms.append(ms); lat_ms = lat_ms[-200:]
             pose = tel.at(t_cap) if t_cap is not None else None
+            fstats = frame_stats(frame) if len(boxes) else None
             recs = []
             for b, cf in zip(boxes, confs):
                 g = geo.to_world(tuple(float(v) for v in b), pose) if pose is not None else None
                 n_geo += 1; n_geo_ok += int(g is not None and g.status == "OK")
                 cand, ev = reg.update(t_us / 1e6, b, float(cf), g)
+                if t_us / 1e6 - cand.color_t >= COLOR_EVERY_S:      # 후보마다 0.5초에 한 번 (CPU)
+                    cand.color_t = t_us / 1e6
+                    if cand.color is None:
+                        cand.color = ColorAccumulator()
+                    cand.color.add(colorer.profile(frame, b, stats=fstats))
                 r = {"bbox": [round(float(v), 1) for v in b], "conf": round(float(cf), 4), "candidate_id": cand.cid,
                      "geo": None if g is None else {"status": g.status, "lat": g.lat, "lon": g.lon,
                                                     "ellipse": g.ellipse, "reasons": g.reasons}}
@@ -144,7 +153,10 @@ def run_mission(det, ctl):
                     crop = frame[max(0, y1 - pad):y2 + pad, max(0, x1 - pad):x2 + pad]
                     if crop.size:
                         cv2.imwrite(str(mdir / "crops" / f"{cand.cid}.jpg"), crop, [cv2.IMWRITE_JPEG_QUALITY, 90])
-                    cand_f.write(json.dumps({"event": ev, "t_us": int(t_us), **cand.to_json(),
+                    cj = cand.to_json()
+                    if query:
+                        cj["color_status"], cj["color_score"] = match(cand.color.result(), query)
+                    cand_f.write(json.dumps({"event": ev, "t_us": int(t_us), **cj,
                                              "crop": f"crops/{cand.cid}.jpg"}, ensure_ascii=False) + "\n")
             det_f.write(json.dumps({"t_us": int(t_us), "time_source": tsrc, "pts_ms": pts_ms,
                                     "infer_ms": round(ms, 1), "detections": recs}, ensure_ascii=False) + "\n")
