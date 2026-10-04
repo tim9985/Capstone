@@ -15,7 +15,7 @@ for n in names:
     c.simSetCameraPose("0", airsim.Pose(airsim.Vector3r(0, 0, 0), euler_to_quaternion(0, -0.785, 0)))
     time.sleep(0.5)
     r = c.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Scene, False, False)])[0]
-    img = Image.fromarray(np.frombuffer(r.image_data_uint8, np.uint8).reshape(r.height, r.width, 3)[:, :, ::-1])
+    img = Image.fromarray(np.frombuffer(r.image_data_uint8, np.uint8).reshape(r.height, r.width, 3))
     w, h = img.size
     img = img.crop((w // 2 - 450, h // 2 - 300, w // 2 + 450, h // 2 + 300)).resize((300, 200))
     ImageDraw.Draw(img).text((5, 5), n, fill=(255, 0, 0))
