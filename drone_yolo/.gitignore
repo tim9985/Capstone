@@ -74,3 +74,4 @@ autoheal/*.tmp
 ue_posture/
 runs_live/
 ue_flight/
+ue_geo/
