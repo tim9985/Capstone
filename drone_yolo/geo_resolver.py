@@ -116,11 +116,14 @@ class GeoResolver:
             res.status = "PENDING"; res.reasons.append("광선이 지평선 위"); return res
         z0 = -tel.alt_agl                                  # 기체 z (NED · 지면 0)
         ground = 0.0
-        for _ in range(5 if self.terrain else 1):          # 지형: 교차 → 그 지점 높이로 다시
+        if self.terrain:
+            hit = self._terrain_hit(d, tel.alt_agl)
+            if hit is None:
+                res.status = "PENDING"; res.reasons.append("지형 교차 없음 (거리 안)"); return res
+            n, e, ground = hit
+        else:
             t = (-ground - z0) / d[2]
             n, e = t * d[0], t * d[1]
-            if self.terrain:
-                ground = self.terrain(n, e)
         rng = math.hypot(n, e)
         if rng > self.MAX_RANGE_M:
             res.status = "PENDING"; res.reasons.append(f"거리 {rng:.0f} m > {self.MAX_RANGE_M:.0f} m"); return res
@@ -131,6 +134,31 @@ class GeoResolver:
         if res.reasons:
             res.status = "PENDING"
         return res
+
+    def _terrain_hit(self, d, alt, step_m=1.0):
+        """광선 × 지형 — 수평 step_m 씩 전진하며 처음 지면 아래로 내려가는 구간을 찾고 이분법 (10-05)
+        고정점 반복은 경사 > 하향각이면 발산 · 진동해서 바꿈. 광선이 먼저 걸리는 능선(가림)도 맞게 잡는다."""
+        hz = math.hypot(d[0], d[1])
+        if hz < 1e-9:                                      # 연직 아래
+            g = self.terrain(0.0, 0.0)
+            return (0.0, 0.0, g) if alt > g else None
+        k = d[2] / hz                                      # 수평 1 m 당 하강
+        above = lambda s: alt - k * s - self.terrain(s * d[0] / hz, s * d[1] / hz)   # 광선 높이 − 지면
+        s0, a0 = 0.0, above(0.0)
+        if a0 <= 0:
+            return None
+        s = step_m
+        while s <= self.MAX_RANGE_M * 1.5:
+            a = above(s)
+            if a <= 0:
+                lo, hi = s0, s
+                for _ in range(30):
+                    mid = (lo + hi) / 2
+                    lo, hi = (mid, hi) if above(mid) > 0 else (lo, mid)
+                n, e = hi * d[0] / hz, hi * d[1] / hz
+                return n, e, self.terrain(n, e)
+            s0, s = s, s + step_m
+        return None
 
     def ellipse(self, h, dep_deg, rng, bearing_deg):
         """거리 방향: ∂d/∂φ = −h/sin²φ · ∂d/∂h = 1/tanφ · 기복 Δz/tanφ · 옆 방향: 거리 × 방위 오차"""
