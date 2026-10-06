@@ -79,7 +79,7 @@ def run_video(vid, fdir, model, rt, orb, bf, render=False):
     from ultralytics import YOLO  # noqa: F401  (model 은 밖에서 만든다)
     gt = load_boxes(f"{LAB}/{vid}.txt")
     n = len(glob.glob(f"{fdir}/*.jpg"))
-    hist = collections.defaultdict(lambda: {"ly": [], "si": [], "stp": [], "frs": [], "sp": [], "seen": 0, "still": 0, "conf": []})
+    hist = collections.defaultdict(lambda: {"ly": [], "si": [], "stp": [], "frs": [], "sp": [], "seen": 0, "still": 0, "conf": [], "wh": []})
     rt.reset()
     prev = None                                               # (fr, 박스 dict, 회색 영상)
     samples, writer = [], None
@@ -102,6 +102,7 @@ def run_video(vid, fdir, model, rt, orb, bf, render=False):
                 s = hist[t]; s["seen"] += 1; s["conf"].append(c)
                 p = P[t]
                 s["ly"].append(p[0]); s["si"].append(p[1]); s["stp"].append(p[2]); s["frs"].append(fr)
+                s["wh"].append((round((b[2] - b[0]) * 1080 / img.shape[0], 1), round((b[3] - b[1]) * 1080 / img.shape[0], 1)))   # 1080p 환산 박스 (10-07 A5)
                 if H is not None and t in prev[1]:
                     a = prev[1][t][0]
                     fa = np.float32([[(a[0] + a[2]) / 2, a[3]]]).reshape(1, 1, 2)
@@ -110,7 +111,7 @@ def run_video(vid, fdir, model, rt, orb, bf, render=False):
                     if sp <= JUMP:
                         s["sp"].append(sp)
                     elif RESET:                                # ID 바뀜 — 앞사람 이력을 버리고 지금 표본부터 새로
-                        for key in ("ly", "si", "stp", "frs"):
+                        for key in ("ly", "si", "stp", "frs", "wh"):
                             s[key] = s[key][-1:]
                         s["sp"], s["seen"], s["conf"] = [], 1, [c]
                 med = float(np.median(s["sp"][-3:])) if s["sp"] else None
@@ -128,7 +129,7 @@ def run_video(vid, fdir, model, rt, orb, bf, render=False):
                                     "p": [round(float(v), 4) for v in p],
                                     "agg": [round(st["lying"], 4), round(st["sitting"], 4), round(float(np.median([s["stp"][i] for i in win])), 4)],
                                     "gt": gid, "h_ly": [round(float(v), 3) for v in s["ly"][-5:]], "h_si": [round(float(v), 3) for v in s["si"][-5:]],
-                                    "h_fr": s["frs"][-5:]})
+                                    "h_fr": s["frs"][-5:], "h_wh": s["wh"][-6:]})
             prev = (fr, cur, gray)
         if render:
             if writer is None:
