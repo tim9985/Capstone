@@ -1,8 +1,24 @@
 ---
 tags: [프로젝트, 규격, 비전, 연동]
 날짜: 2026-10-06
-상태: 초안 v0.1 — 팀 조율 전 (이시원 · 서성훈 · 통합 담당)
+상태: ⛔ 초안 v0.1 — **v1.0 으로 결정됨 (10-06 · 통합 담당)** · 이 노트는 기록용
 ---
+
+> [!warning] **결정판 v1.0 (10-06)** — `drone_yolo/deploy/vision_worker/schema/vision_backend_handoff_v1.0.md` · `openapi-vision.json` (통합 샌드박스 원본과 같음)
+> | 이 초안 | v1.0 결정 |
+> |---|---|
+> | JSONL 파일을 백엔드가 꼬리 읽기 | **FastAPI** — 워커가 `GET /internal/v1/frames` 로 프레임을 받고 결과는 `/scratch/outbox.jsonl` → 전송기가 `POST /internal/v1/vision/results` |
+> | 후보 사건 (`CREATED` · `CONFIRMED` · `LOST` …) 전체 상태 | **프레임 하나 = 결과 하나** (`VisionResult`) · 그 안에 관측 (`observations[]` ≤ 128) · 무탐지도 `DONE` + `[]` 로 꼭 보냄 |
+> | `rev` · 파일 `seq` | 관측마다 `worker_revision` (후보별 **엄격히 증가** · 문자열) · 결과마다 `sequence` (문자열) · `message_id` uuid (재전송 때 그대로) |
+> | `CONFIRMED` | `auto_confirmed` (모델 주장) — 운영자 판단 `judgement` 와 별개 |
+> | 좌표 `VALID` · `ellipse.along/cross` | `geo.status` + `error_ellipse {major_m, minor_m, azimuth_deg, k=1}` · 백엔드는 **워커 좌표를 주장으로만 보존** (`PENDING / PHYSICAL_VALIDATION_REQUIRED`) |
+> | 박스 배열 · 이미지 경로 | 박스 `{x1,y1,x2,y2}` (원본 화소 · 폭·높이 안) · 크롭 · 클립은 **미디어 API 업로드 후 `snapshot_asset_id` · `clip_asset_id`** |
+> | 모델 이름 | 등록된 `model_config_id` (uuid · `environment=REAL` · `pipeline_version`) |
+> | `state` 등급 | `state` 는 그대로 받아 `tracking.reported_state` 에 보존 — 후보 삭제 · 비행 결정에 안 씀 |
+> | 재관측 SYSTEM | `POST /internal/v1/vision/reobservations` (`PENDING` 제안 · 이동 명령 아님) |
+>
+> **워커가 할 일 · 막힌 것** → [[비전 worker v1.0 연결 계획]]
+
 
 > [!summary] 비전 worker → 백엔드로 보내는 **후보 · 프레임 · 재관측 요청** 메시지 규격 (W1-2)
 > - 기준: SDD ERD 의 `person_candidate` (DB-14) · `detection_observation` (DB-15) · `reobservation_request` (DB-10) 에 **그대로 넣을 수 있게** 칸을 맞췄다
