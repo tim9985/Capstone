@@ -36,7 +36,7 @@ TO1080 = 1080 / H_SRC
 POSE = {"person- standing": ("standing", "standing"), "person- walking": ("standing", "walking"),
         "person- lying down": ("lying", "lying"), "person- kneeling": ("kneeling", "kneeling"),
         "person- crawling": ("crawling", "crawling")}
-NAME = re.compile(r"AA_BP_(\d+)_([\d-]+)_(\d+)_(\d+)_\d+_\d+_EO")
+NAME = re.compile(r"AA_BP_(\d+)_([\d-]+)_(\d+)_(\d+)_(?:(moving)_)?\d+_\d+_EO")   # 움직이는 대상 영상은 _moving_ 이 붙는다
 
 
 def load_ann():
@@ -64,18 +64,13 @@ def load_ann():
 
 
 def unzip_videos(names):
+    """시스템 unzip 으로 푼다 — Archangel_30m.zip 은 Deflate64 라 파이썬 zipfile 이 못 푼다"""
+    import subprocess
     VID.mkdir(parents=True, exist_ok=True)
-    want = {f"{n}.mp4" for n in names}
     for z in sorted(RAW.glob("Archangel_*m.zip")) + [RAW / "Archangel_moving.zip"]:
         if "mannequin" in z.name:
             continue
-        with zipfile.ZipFile(z) as zf:
-            for n in zf.namelist():
-                b = Path(n).name
-                if b in want and not (VID / b).exists():
-                    with zf.open(n) as src, open(VID / b, "wb") as dst:
-                        while chunk := src.read(1 << 24):
-                            dst.write(chunk)
+        subprocess.run(["unzip", "-n", "-j", "-q", str(z), "*.mp4", "-d", str(VID)], check=False)
 
 
 def main():
@@ -106,7 +101,7 @@ def main():
                 (OUT / pose).mkdir(parents=True, exist_ok=True)
                 cv2.imwrite(str(OUT / pose / name), crop(img, (x1, y1, x2, y2), TO1080), [cv2.IMWRITE_JPEG_QUALITY, 95])
                 rows.append({"file": f"{pose}/{name}", "source": "archangel", "place": vid, "view": "oblique", "alt": alt,
-                             "radius": radius, "x_code": x_code, "pose": pose, "label": lab, "track": tr, "frame": fi,
+                             "radius": radius, "x_code": x_code, "moving": int(bool(m.group(5))), "pose": pose, "label": lab, "track": tr, "frame": fi,
                              "frame_n": n, "w1080": round((x2 - x1) * TO1080, 1), "h1080": round((y2 - y1) * TO1080, 1),
                              "x_c": round((x1 + x2) / 2 / W, 4), "y_bottom": round(y2 / H, 4)})
                 cnt[pose] += 1
