@@ -1,0 +1,41 @@
+{
+ "방법": "Qwen3-VL-4B-Instruct",
+ "T1": {
+  "okutama_obl": {
+   "n": 2,
+   "도움필요_누움AUROC": 1.0,
+   "P누움_AUROC": 0.5,
+   "3자세_정확도": 0.5,
+   "재현율": {
+    "lying": 1.0,
+    "sitting": 0.0,
+    "standing": NaN
+   }
+  },
+  "aihub_test": {
+   "n": 4,
+   "도움필요_누움AUROC": NaN,
+   "P누움_AUROC": NaN,
+   "3자세_정확도": 0.0,
+   "재현율": {
+    "lying": NaN,
+    "sitting": 0.0,
+    "standing": 0.0
+   }
+  },
+  "전체": {
+   "n": 6,
+   "도움필요_누움AUROC": 0.9,
+   "P누움_AUROC": 0.6,
+   "3자세_정확도": 0.167,
+   "재현율": {
+    "lying": 1.0,
+    "sitting": 0.0,
+    "standing": 0.0
+   }
+  },
+  "지연_ms_중앙": 151.9
+ },
+ "T2": null,
+ "GPU_최대_GB": 8.3
+}
