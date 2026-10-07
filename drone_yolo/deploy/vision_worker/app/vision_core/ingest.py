@@ -150,10 +150,17 @@ class IngestWorker:
             return self.result_body(fr, "DROPPED", reason="DECODE_FAILED")
         if (img.shape[1], img.shape[0]) != (W, H):
             return self.result_body(fr, "DROPPED", reason=f"SIZE_MISMATCH {img.shape[1]}x{img.shape[0]}")
-        boxes, confs, ms = self.det.detect(img)
-        order = np.argsort(-confs)[:128]
         tel = telemetry_from_pose(fr.get("pose"))
         t = datetime.fromisoformat(fr["capture_at"].replace("Z", "+00:00")).timestamp() if fr.get("capture_at") else time.time()
+        obs = self.observe(mid, img, t, tel, self.upload_crops)
+        self.stats["frames"] += 1; self.stats["observations"] += len(obs)
+        return self.result_body(fr, "DONE", obs)
+
+    def observe(self, mid, img, t, tel, upload_crops):
+        """디코드된 한 장 → 관측 목록 (vision-ingest/1.0 형식) · SIM 어댑터도 이걸 쓴다"""
+        H, W = img.shape[:2]
+        boxes, confs, ms = self.det.detect(img)
+        order = np.argsort(-confs)[:128]
         reg = self.reg.setdefault(mid, CandidateRegistry(mid))
         stats = frame_stats(img) if len(order) else None
         obs = []
@@ -173,7 +180,7 @@ class IngestWorker:
                 cand.color.add(self.colorer.profile(img, (x1, y1, x2, y2), stats=stats))
             col = cand.color.result() if cand.color else {"status": "undetermined", "top": [], "n_obs": 0}
             snap = None
-            if self.upload_crops and ev in ("new", "best"):
+            if upload_crops and ev in ("new", "best"):
                 pad = max(8, int(0.3 * max(x2 - x1, y2 - y1)))
                 crop = img[max(0, int(y1) - pad):int(y2) + pad, max(0, int(x1) - pad):int(x2) + pad]
                 ok, enc = cv2.imencode(".jpg", crop, [cv2.IMWRITE_JPEG_QUALITY, 90]) if crop.size else (False, None)
@@ -186,8 +193,7 @@ class IngestWorker:
                         "appearance": {"upper": {"status": "OK" if col.get("status") == "ok" else "UNDETERMINED",
                                                  "top": [{"color": c, "p": p} for c, p in col.get("top", [])], "n_obs": col.get("n_obs", 0)}},
                         "state": None, "worker_revision": str(self.rev[cid]), "snapshot_asset_id": snap, "clip_asset_id": None})
-        self.stats["frames"] += 1; self.stats["observations"] += len(obs)
-        return self.result_body(fr, "DONE", obs)
+        return obs
 
     def poll_once(self, send=None):
         """대기 프레임을 한 번 훑는다 · 처리한 수"""

@@ -1,0 +1,1381 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "SIM vision analysis-runs (subset)",
+  "version": "0.1.2-school.1",
+  "description": "학교 SIM 업무 서비스 계약 중 비전 worker 가 쓰는 부분만 (2026-10-07 추출 · 원본 openapi.school.json)"
+ },
+ "paths": {
+  "/internal/v1/analysis-runs/claim": {
+   "post": {
+    "summary": "Claim",
+    "operationId": "claim_internal_v1_analysis_runs_claim_post",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "anyOf": [
+          {
+           "$ref": "#/components/schemas/Claim"
+          },
+          {
+           "$ref": "#/components/schemas/NoJob"
+          }
+         ],
+         "title": "Response Claim Internal V1 Analysis Runs Claim Post"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "409": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "413": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "servers": [
+     {
+      "url": "https://backend.internal",
+      "description": "Logical HTTPS authority over Unix socket; no TCP listener"
+     }
+    ],
+    "security": [
+     {
+      "ServiceBearer": [],
+      "WorkloadTLS": []
+     }
+    ],
+    "x-unix-socket": "/run/backend-socket/service.sock"
+   }
+  },
+  "/internal/v1/analysis-runs/{rid}": {
+   "get": {
+    "summary": "Get Job",
+    "operationId": "get_job_internal_v1_analysis_runs__rid__get",
+    "parameters": [
+     {
+      "name": "rid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Rid"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/JobStatus"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "409": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "413": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "servers": [
+     {
+      "url": "https://backend.internal",
+      "description": "Logical HTTPS authority over Unix socket; no TCP listener"
+     }
+    ],
+    "security": [
+     {
+      "ServiceBearer": [],
+      "WorkloadTLS": []
+     }
+    ],
+    "x-unix-socket": "/run/backend-socket/service.sock"
+   }
+  },
+  "/internal/v1/analysis-runs/{rid}/input": {
+   "get": {
+    "summary": "Input File",
+    "operationId": "input_file_internal_v1_analysis_runs__rid__input_get",
+    "parameters": [
+     {
+      "name": "rid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Rid"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Verified file bytes",
+      "headers": {
+       "X-Content-SHA256": {
+        "schema": {
+         "type": "string",
+         "pattern": "^[0-9a-f]{64}$"
+        }
+       }
+      },
+      "content": {
+       "application/octet-stream": {
+        "schema": {
+         "type": "string",
+         "format": "binary"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "409": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "413": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "206": {
+      "description": "Partial file bytes for a valid Range request",
+      "headers": {
+       "X-Content-SHA256": {
+        "schema": {
+         "type": "string",
+         "pattern": "^[0-9a-f]{64}$"
+        }
+       }
+      },
+      "content": {
+       "application/octet-stream": {
+        "schema": {
+         "type": "string",
+         "format": "binary"
+        }
+       }
+      }
+     }
+    },
+    "servers": [
+     {
+      "url": "https://backend.internal",
+      "description": "Logical HTTPS authority over Unix socket; no TCP listener"
+     }
+    ],
+    "security": [
+     {
+      "ServiceBearer": [],
+      "WorkloadTLS": []
+     }
+    ],
+    "x-unix-socket": "/run/backend-socket/service.sock"
+   }
+  },
+  "/internal/v1/analysis-runs/{rid}/completion": {
+   "post": {
+    "summary": "Complete",
+    "operationId": "complete_internal_v1_analysis_runs__rid__completion_post",
+    "parameters": [
+     {
+      "name": "rid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Rid"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Result"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Completed"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "409": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "413": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "servers": [
+     {
+      "url": "https://backend.internal",
+      "description": "Logical HTTPS authority over Unix socket; no TCP listener"
+     }
+    ],
+    "security": [
+     {
+      "ServiceBearer": [],
+      "WorkloadTLS": []
+     }
+    ],
+    "x-unix-socket": "/run/backend-socket/service.sock"
+   }
+  },
+  "/internal/v1/analysis-runs/{rid}/final-failure": {
+   "post": {
+    "summary": "Failure",
+    "operationId": "failure_internal_v1_analysis_runs__rid__final_failure_post",
+    "parameters": [
+     {
+      "name": "rid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Rid"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AttemptFailure"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Failed"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "409": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "413": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "servers": [
+     {
+      "url": "https://backend.internal",
+      "description": "Logical HTTPS authority over Unix socket; no TCP listener"
+     }
+    ],
+    "security": [
+     {
+      "ServiceBearer": [],
+      "WorkloadTLS": []
+     }
+    ],
+    "x-unix-socket": "/run/backend-socket/service.sock"
+   }
+  },
+  "/internal/v1/analysis-runs/{rid}/attempt-failures": {
+   "post": {
+    "summary": "Failure",
+    "operationId": "failure_internal_v1_analysis_runs__rid__attempt_failures_post",
+    "parameters": [
+     {
+      "name": "rid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "format": "uuid",
+       "title": "Rid"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AttemptFailure"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Failed"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "401": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "403": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "404": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "409": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "413": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     },
+     "503": {
+      "description": "Structured error code",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Error"
+        }
+       }
+      }
+     }
+    },
+    "servers": [
+     {
+      "url": "https://backend.internal",
+      "description": "Logical HTTPS authority over Unix socket; no TCP listener"
+     }
+    ],
+    "security": [
+     {
+      "ServiceBearer": [],
+      "WorkloadTLS": []
+     }
+    ],
+    "x-unix-socket": "/run/backend-socket/service.sock"
+   }
+  }
+ },
+ "components": {
+  "schemas": {
+   "AttemptFailure": {
+    "properties": {
+     "claim_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Claim Id"
+     },
+     "attempt_no": {
+      "type": "integer",
+      "minimum": 1.0,
+      "title": "Attempt No"
+     },
+     "reason": {
+      "type": "string",
+      "maxLength": 512,
+      "minLength": 1,
+      "title": "Reason"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "claim_id",
+     "attempt_no",
+     "reason"
+    ],
+    "title": "AttemptFailure"
+   },
+   "Claim": {
+    "properties": {
+     "analysis_run_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Analysis Run Id"
+     },
+     "frame_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Frame Id"
+     },
+     "input_asset_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Input Asset Id"
+     },
+     "model_config_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Model Config Id"
+     },
+     "coordinate_config_id": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Coordinate Config Id"
+     },
+     "analysis_mode": {
+      "type": "string",
+      "title": "Analysis Mode"
+     },
+     "input_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Input Hash"
+     },
+     "environment": {
+      "type": "string",
+      "const": "SIM",
+      "title": "Environment"
+     },
+     "pipeline_version": {
+      "type": "string",
+      "title": "Pipeline Version"
+     },
+     "analysis_revision": {
+      "type": "integer",
+      "title": "Analysis Revision"
+     },
+     "job_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Job Hash"
+     },
+     "attempt_no": {
+      "type": "integer",
+      "title": "Attempt No"
+     },
+     "worker_id": {
+      "type": "string",
+      "title": "Worker Id"
+     },
+     "claim_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Claim Id"
+     },
+     "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Expires At"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "analysis_run_id",
+     "frame_id",
+     "input_asset_id",
+     "model_config_id",
+     "analysis_mode",
+     "input_hash",
+     "environment",
+     "pipeline_version",
+     "analysis_revision",
+     "job_hash",
+     "attempt_no",
+     "worker_id",
+     "claim_id",
+     "expires_at"
+    ],
+    "title": "Claim"
+   },
+   "Completed": {
+    "properties": {
+     "completed": {
+      "type": "boolean",
+      "title": "Completed"
+     },
+     "duplicate": {
+      "type": "boolean",
+      "title": "Duplicate"
+     },
+     "result_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Result Hash"
+     },
+     "detection_count": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Detection Count"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "completed",
+     "duplicate",
+     "result_hash"
+    ],
+    "title": "Completed"
+   },
+   "Error": {
+    "additionalProperties": false,
+    "properties": {
+     "error": {
+      "$ref": "#/components/schemas/ErrorDetail"
+     }
+    },
+    "required": [
+     "error"
+    ],
+    "title": "Error",
+    "type": "object"
+   },
+   "ErrorDetail": {
+    "additionalProperties": false,
+    "properties": {
+     "code": {
+      "title": "Code",
+      "type": "string"
+     },
+     "request_id": {
+      "anyOf": [
+       {
+        "format": "uuid",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Request Id"
+     },
+     "fields": {
+      "anyOf": [
+       {
+        "items": {
+         "items": {
+          "anyOf": [
+           {
+            "type": "string"
+           },
+           {
+            "type": "integer"
+           }
+          ]
+         },
+         "type": "array"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Fields"
+     }
+    },
+    "required": [
+     "code"
+    ],
+    "title": "ErrorDetail",
+    "type": "object"
+   },
+   "Failed": {
+    "properties": {
+     "failed": {
+      "type": "boolean",
+      "title": "Failed"
+     },
+     "duplicate": {
+      "type": "boolean",
+      "title": "Duplicate"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "failed",
+     "duplicate"
+    ],
+    "title": "Failed"
+   },
+   "Job": {
+    "properties": {
+     "analysis_run_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Analysis Run Id"
+     },
+     "frame_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Frame Id"
+     },
+     "input_asset_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Input Asset Id"
+     },
+     "model_config_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Model Config Id"
+     },
+     "coordinate_config_id": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Coordinate Config Id"
+     },
+     "analysis_mode": {
+      "type": "string",
+      "title": "Analysis Mode"
+     },
+     "input_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Input Hash"
+     },
+     "environment": {
+      "type": "string",
+      "const": "SIM",
+      "title": "Environment"
+     },
+     "pipeline_version": {
+      "type": "string",
+      "title": "Pipeline Version"
+     },
+     "analysis_revision": {
+      "type": "integer",
+      "title": "Analysis Revision"
+     },
+     "job_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Job Hash"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "analysis_run_id",
+     "frame_id",
+     "input_asset_id",
+     "model_config_id",
+     "analysis_mode",
+     "input_hash",
+     "environment",
+     "pipeline_version",
+     "analysis_revision",
+     "job_hash"
+    ],
+    "title": "Job"
+   },
+   "JobStatus": {
+    "properties": {
+     "job": {
+      "$ref": "#/components/schemas/Job"
+     },
+     "claim": {
+      "$ref": "#/components/schemas/Claim"
+     },
+     "terminal": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/MissionEvent"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "job",
+     "claim"
+    ],
+    "title": "JobStatus"
+   },
+   "MissionEvent": {
+    "properties": {
+     "event_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Event Id"
+     },
+     "event_seq": {
+      "type": "string",
+      "maxLength": 19,
+      "pattern": "^(0|[1-9][0-9]{0,18})$",
+      "title": "Event Seq"
+     },
+     "mission_id": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Mission Id"
+     },
+     "drone_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Drone Id"
+     },
+     "event_type": {
+      "type": "string",
+      "title": "Event Type"
+     },
+     "code": {
+      "type": "string",
+      "title": "Code"
+     },
+     "use_case_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Use Case Id"
+     },
+     "actor_user_id": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "uuid"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Actor User Id"
+     },
+     "ref_table": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ref Table"
+     },
+     "ref_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Ref Id"
+     },
+     "source_time": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Source Time"
+     },
+     "stored_at": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Stored At"
+     },
+     "source_epoch": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Source Epoch"
+     },
+     "correlation_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Correlation Id"
+     },
+     "payload": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Payload"
+     },
+     "refs": {
+      "items": {},
+      "type": "array",
+      "title": "Refs"
+     },
+     "producer_id": {
+      "type": "string",
+      "title": "Producer Id"
+     },
+     "producer_session_id": {
+      "type": "string",
+      "title": "Producer Session Id"
+     },
+     "sequence": {
+      "type": "string",
+      "maxLength": 19,
+      "pattern": "^(0|[1-9][0-9]{0,18})$",
+      "title": "Sequence"
+     },
+     "publish_state": {
+      "type": "string",
+      "title": "Publish State"
+     },
+     "published_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Published At"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "event_id",
+     "event_seq",
+     "event_type",
+     "code",
+     "stored_at",
+     "payload",
+     "refs",
+     "producer_id",
+     "producer_session_id",
+     "sequence",
+     "publish_state"
+    ],
+    "title": "MissionEvent"
+   },
+   "NoJob": {
+    "properties": {
+     "job": {
+      "type": "null",
+      "title": "Job"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "job"
+    ],
+    "title": "NoJob"
+   },
+   "Observation": {
+    "properties": {
+     "observation_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Observation Id"
+     },
+     "candidate_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Candidate Id"
+     },
+     "detection_index": {
+      "type": "integer",
+      "minimum": 0.0,
+      "title": "Detection Index"
+     },
+     "bbox": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Bbox"
+     },
+     "confidence": {
+      "type": "number",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence"
+     },
+     "geo_result": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Geo Result"
+     },
+     "class_name": {
+      "type": "string",
+      "const": "person",
+      "title": "Class Name",
+      "default": "person"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "observation_id",
+     "candidate_id",
+     "detection_index",
+     "bbox",
+     "confidence",
+     "geo_result"
+    ],
+    "title": "Observation"
+   },
+   "Result": {
+    "properties": {
+     "claim_id": {
+      "type": "string",
+      "format": "uuid",
+      "title": "Claim Id"
+     },
+     "attempt_no": {
+      "type": "integer",
+      "minimum": 1.0,
+      "title": "Attempt No"
+     },
+     "observations": {
+      "items": {
+       "$ref": "#/components/schemas/Observation"
+      },
+      "type": "array",
+      "maxItems": 128,
+      "title": "Observations"
+     }
+    },
+    "additionalProperties": false,
+    "type": "object",
+    "required": [
+     "claim_id",
+     "attempt_no",
+     "observations"
+    ],
+    "title": "Result"
+   }
+  }
+ }
+}

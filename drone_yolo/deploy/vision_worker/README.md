@@ -126,3 +126,31 @@ INGEST_BASE_URL=http://127.0.0.1:18080 INGEST_TOKEN=test INGEST_MODEL_DIR=<모�
 - **`GET /internal/v1/frames` 응답에 `pose` 가 없다** → 좌표 전부 `PENDING/NO_POSE` (worker 는 `pose` 가 오면 바로 씀 · 키: `lat · lon · alt_agl_m · roll_deg · pitch_deg · yaw_deg · gimbal_pitch_deg · gimbal_yaw_deg · gimbal_stabilized`)
 - 결과가 422/409 로 거절되면 그 프레임은 다시 처리하지 않는다 (outbox 전송기가 그 줄에서 멈춤 → 확인 · 격리는 사람이)
 - 상태 인지 (`state`) · 근거 클립 (`clip_asset_id`) · 재관측 제안은 다음 판
+
+## SIM 어댑터 — 학교 SIM 업무 서비스 (10-07) · 시연은 이쪽
+
+SIM 은 **분석 작업 방식** (`schema/openapi-sim-vision.json` · SIM 백엔드 `analysis.py` 규칙). 탐지 · 좌표 · 후보 · 색 코드는 REAL 과 같고 주고받기만 다르다.
+
+| 파일 | 내용 |
+|---|---|
+| `app/vision_sim.py` | 실행 — `python -m app.vision_sim` (SIM compose 의 vision `command`) |
+| `app/vision_core/sim.py` | claim → input (SHA-256 = `input_hash`) → `IngestWorker.observe` → SIM 관측 → completion · 실패는 attempt/final-failure |
+| `tools/mock_sim_backend.py` | 가짜 SIM 백엔드 — 임대 · 시도 한도 3 · 멱등 · 후보 임무 · geo DB 검사 흉내 · `--drop` 응답 끊기 · `--expire` 임대 만료 · `--missions` |
+
+```bash
+python tools/mock_sim_backend.py <JPEG 폴더> --model=<active.json 의 id> --n=30 [--missions=2 --drop=2 --expire=1] &
+INGEST_BASE_URL=http://127.0.0.1:18081 INGEST_MODEL_DIR=<모델 폴더> INGEST_SCRATCH=<빈 폴더> INGEST_STOP_AFTER_IDLE=6 python -m app.vision_sim
+```
+- 10-07 통과 (UE level01): 기본 30장 → 완료 30 · 관측 737 · 계약 위반 0 · 시도 1회씩
+- 거친 조건 20장 (임무 2 · 응답 끊김 2 · 임대 만료 1) → 완료 20 · 재전송 2건 모두 duplicate 로 받아들여짐 · 만료 작업은 2번째 시도로 완료 · 임무 바뀜 403 1건 → 후보 기억 새로 시작 후 통과 · 임무 사이 후보 섞임 0
+- 모델 id 가 다르면 작업마다 attempt-failure (`MODEL_CONFIG_NOT_LOADED`) — `active.json` 의 id 를 비우면 작업이 고른 것을 받음
+
+SIM 에서 못 하는 것 (SIM 백엔드 요청 사항)
+
+| 무엇 | 지금 SIM | 결과 |
+|---|---|---|
+| 좌표 | `geo_result` VALID 면 503 · 프레임에 자세 없음 (`SIM_HAS_NO_REAL_POSE`) | 늘 PENDING → **지도에 위치 안 뜸** · 계산되면 `sim_estimate` 에만 |
+| 색 · 상태 · 크롭 | 관측 칸 없음 (`additionalProperties: false`) | 후보 카드에 색 · 상태 · 사진 없음 |
+| 임무 id · 촬영 시각 | 작업 (Claim) 에 없음 | 후보 기억 범위 하나 (`sim`) · 임무 바뀌면 403 보고 다시 시작 · 시각 = 받은 시각 |
+| 작업 만들기 | 운영자가 프레임마다 `POST /api/v1/analysis-runs` | 프레임이 들어오면 자동으로 작업이 생겨야 시연이 돈다 |
+| 모델 설정 | `environment: SIM` · APPROVED 인 MODEL 설정 | 등록 필요 |
