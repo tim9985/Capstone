@@ -9,7 +9,7 @@
 |---|---|
 | `Dockerfile.vision` · `requirements-vision.txt` | 기존 이미지 + ultralytics 8.4.102 · TensorRT 11.3 (CUDA 12판) 등 7개 (기존 lock 과 겹치는 버전 없음) |
 | `app/vision_worker.py` | 기존 `app/vision_worker.py` 교체본 — 상태 파일 규칙 (20초 헬스체크 · 기존 키) 유지 |
-| `app/vision/` | `detector` 타일 4장 탐지 · `geo` 좌표 (발끝 광선 × 지면 · 오차 타원 · 보류 사유) · `registry` 후보 기억 v0 · `sources` RTSP · 파일 · `telemetry` 촬영 시각 · 자세 sidecar |
+| `app/vision_core/` | `detector` 타일 4장 탐지 · `geo` 좌표 (발끝 광선 × 지면 · 오차 타원 · 보류 사유) · `registry` 후보 기억 v0 · `sources` RTSP · 파일 · `telemetry` 촬영 시각 · 자세 sidecar |
 | `app/tools/verify_detector.py` | 인수 검증 — 평가셋에서 AP50 이 우리 값과 같은지 |
 | `app/tools/build_engine.py` | TensorRT 엔진 미리 만들기 (worker 도 처음 뜰 때 자동으로 만든다) |
 
@@ -65,7 +65,7 @@ rm data/vision-control.json                                        # 멈춤
 
 ## 합의가 필요한 것
 
-1. **촬영 시각 · 자세 sidecar** (`metadata/telemetry.jsonl` · `frames.jsonl` · 형식은 `app/vision/telemetry.py` 머리말 — **제안**)
+1. **촬영 시각 · 자세 sidecar** (`metadata/telemetry.jsonl` · `frames.jsonl` · 형식은 `app/vision_core/telemetry.py` 머리말 — **제안**)
    - 없으면 좌표를 못 낸다 (`time_source=receive` · geo 없음) · Pi · 서버 시계 동기 (NTP/PTP) 필요
    - ⚠ MediaMTX 를 거친 RTSP 의 PTS 가 Pi 가 적은 PTS 와 같은지 확인 필요 — 다르면 프레임에 시각을 싣는 방식으로 바꾼다
 2. **DB** — 후보를 DB 에 넣는 쪽 (vision 이 직접 · API 가 `candidates.jsonl` 을 읽어서) · 테이블은 관제 담당 ERD 기준
@@ -91,7 +91,7 @@ rm data/vision-control.json                                        # 멈춤
 | 파일 | 내용 |
 |---|---|
 | `app/vision_ingest.py` | 실행 파일 — `python -m app.vision_ingest` (compose 의 vision `command` 를 이것으로) |
-| `app/vision/ingest.py` | 핵심 — 프레임 API → 탐지 → 좌표 → 후보 → 색 → 크롭 업로드 → `/scratch/outbox.jsonl` → 전송 |
+| `app/vision_core/ingest.py` | 핵심 — 프레임 API → 탐지 → 좌표 → 후보 → 색 → 크롭 업로드 → `/scratch/outbox.jsonl` → 전송 |
 | `tools/mock_backend.py` | 서버 밖 왕복 시험용 가짜 백엔드 (OpenAPI 스키마 · 백엔드 규칙 흉내) |
 | `tools/make_model_pack.py` | 후보 모델 폴더 (가중치 + `model.json` + `active.json`) — 데이터셋 없이 모델만 |
 
@@ -116,7 +116,7 @@ INGEST_BASE_URL=http://127.0.0.1:18080 INGEST_TOKEN=test INGEST_MODEL_DIR=<모�
 
 ### 샌드박스에 넣기 (통합 담당 · sudo)
 
-1. `app/vision_ingest.py` · `app/vision/` → 샌드박스 `app/` (기존 `app/common.py` · `app/vision_outbox.py` 는 그대로 — worker 가 `send_pending` 을 가져다 씀)
+1. `app/vision_ingest.py` · `app/vision_core/` → 샌드박스 `app/` (기존 `app/common.py` · `app/vision_outbox.py` 는 그대로 — worker 가 `send_pending` 을 가져다 씀)
 2. 모델 폴더 → `data/models/` (UID 2202 읽기)
 3. 이미지 한 층 (`Dockerfile.vision` · ultralytics 8.4.102 · TensorRT) + compose vision: `command: ["python", "-m", "app.vision_ingest"]` · **GPU 연결**
 4. 모델 설정 등록 → `active.json` 의 `model_config_id`

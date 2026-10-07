@@ -1,7 +1,7 @@
 """
 verify_detector.py — 컨테이너에서도 우리 수치가 나오는지 확인 (인수 검증)
 
-  평가셋 (images/ + labels/ · YOLO 형식 · 1920×1080) 에 app.vision.detector 를 돌려
+  평가셋 (images/ + labels/ · YOLO 형식 · 1920×1080) 에 app.vision_core.detector 를 돌려
   AP50 (101점 · 확신도 ≥0.01 · IoU 0.5 · eval_test_v2.py 와 같은 식) · 재현율@0.15 · 한 장 ms 를 낸다
   --expect 를 주면 |AP50 − 기대값| ≤ --tol 인지 판정 (exit 0 통과 · 1 실패)
 
@@ -16,7 +16,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from app.vision.detector import PersonDetector
+from app.vision_core.detector import PersonDetector
 
 
 def load_gt(img_path, w, h):

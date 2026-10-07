@@ -58,7 +58,7 @@ def engine_path():
 
 
 def load_detector():
-    from app.vision.detector import PersonDetector
+    from app.vision_core.detector import PersonDetector
     import torch
     write_status(cuda_available=torch.cuda.is_available())
     w = MODEL_DIR / "best.pt"
@@ -91,11 +91,11 @@ def load_detector():
 def run_mission(det, ctl):
     import cv2
     import numpy as np
-    from app.vision.color import ColorAccumulator, ColorProfiler, frame_stats, match
-    from app.vision.geo import GeoResolver
-    from app.vision.registry import CandidateRegistry
-    from app.vision.sources import FileSource, LiveSource
-    from app.vision.telemetry import TelemetryStore
+    from app.vision_core.color import ColorAccumulator, ColorProfiler, frame_stats, match
+    from app.vision_core.geo import GeoResolver
+    from app.vision_core.registry import CandidateRegistry
+    from app.vision_core.sources import FileSource, LiveSource
+    from app.vision_core.telemetry import TelemetryStore
 
     mid = ctl["mission_id"]
     mdir = ROOT / "missions" / mid

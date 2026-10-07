@@ -65,7 +65,7 @@ def local_send_pending(api, token, root=ROOT):
 
 
 def load_detector():
-    from app.vision.detector import PersonDetector
+    from app.vision_core.detector import PersonDetector
     act = json.loads((MODELS / "active.json").read_text())
     d = MODELS / act["name"]
     eng = next(iter(sorted(d.glob("best*.engine"))), None)
@@ -81,7 +81,7 @@ def main():
         det, act = load_detector()
     except Exception as e:
         status(state="waiting_for_model", error=f"{type(e).__name__}: {e}"[:300]); raise
-    from app.vision.ingest import IngestWorker
+    from app.vision_core.ingest import IngestWorker
     w = IngestWorker(api, token, det, act["model_config_id"], scratch=ROOT, upload_crops=bool(act.get("upload_crops", True)))
     try:
         from app.vision_outbox import send_pending as sp
