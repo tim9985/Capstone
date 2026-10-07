@@ -105,7 +105,7 @@ class State:
 
 
 class IngestWorker:
-    def __init__(self, api, token, detector, model_config_id, scratch="/scratch", upload_crops=True, color_every_s=0.5):
+    def __init__(self, api, token, detector, model_config_id, scratch="/scratch", upload_crops=True, color_every_s=0.5, posture=None):
         self.api, self.token, self.det = api, token, detector
         self.model_config_id = str(model_config_id)
         self.session = str(uuid.uuid4())                 # producer_session_id — 실행마다 새로
@@ -114,6 +114,8 @@ class IngestWorker:
         self.upload_crops, self.color_every_s = upload_crops, color_every_s
         self.reg = {}                                     # 임무 → CandidateRegistry
         self.uid, self.rev = {}, {}                      # (임무, 후보 라벨) → uuid · uuid → revision
+        self.posture = posture if posture and Path(posture).exists() else None   # posture.json 없으면 상태 없이 (state: null)
+        self.trk, self.tcand = {}, {}                    # 임무 → StateTracker · (임무, 추적 키) → 후보
         self.stats = {"frames": 0, "observations": 0, "dropped": 0, "uploads": 0, "upload_fail": 0}
 
     def _h(self):
@@ -163,14 +165,28 @@ class IngestWorker:
         order = np.argsort(-confs)[:128]
         reg = self.reg.setdefault(mid, CandidateRegistry(mid))
         stats = frame_stats(img) if len(order) else None
-        obs = []
-        for k, i in enumerate(order):
+        kept = []                                         # 화면 안으로 자른 박스 (확신도 높은 순)
+        for i in order:
             x1, y1, x2, y2 = [float(v) for v in boxes[i]]
             x1, y1 = max(0.0, x1), max(0.0, y1); x2, y2 = min(float(W), x2), min(float(H), y2)
-            if x2 <= x1 or y2 <= y1:
-                continue
+            if x2 > x1 and y2 > y1:
+                kept.append((i, (x1, y1, x2, y2)))
+        states = [(None, None)] * len(kept)
+        if self.posture:                                  # 추적 · 상태 (프레임마다 · 시각 순서)
+            if mid not in self.trk:
+                from .state import StateTracker
+                self.trk[mid] = StateTracker(self.posture)
+            states = self.trk[mid].update(t, img, [b for _, b in kept], [float(confs[i]) for i, _ in kept])
+        obs = []
+        for (i, (x1, y1, x2, y2)), (tkey, st) in zip(kept, states):
             g = self.geo.to_world((x1, y1, x2, y2), tel) if tel is not None else None
-            cand, ev = reg.update(t, (x1, y1, x2, y2), float(confs[i]), g)
+            known = self.tcand.get((mid, tkey)) if tkey else None
+            if known is not None and known.last_t != t:   # 추적기가 같은 사람이라고 한 후보
+                cand, ev = reg.attach(known, t, (x1, y1, x2, y2), float(confs[i]), g)
+            else:
+                cand, ev = reg.update(t, (x1, y1, x2, y2), float(confs[i]), g)
+            if tkey:
+                self.tcand[(mid, tkey)] = cand
             key = (mid, cand.cid)
             cid = self.uid.setdefault(key, str(uuid.uuid4()))
             self.rev[cid] = self.rev.get(cid, 0) + 1
@@ -188,11 +204,12 @@ class IngestWorker:
                     snap = self.upload_crop(mid, enc.tobytes())
             obs.append({"observation_id": str(uuid.uuid4()), "candidate_id": cid, "detection_index": len(obs),
                         "bbox": {"x1": round(x1, 1), "y1": round(y1, 1), "x2": round(x2, 1), "y2": round(y2, 1)},
-                        "confidence": round(float(confs[i]), 4), "kind": "DETECT", "track_id": None,
+                        "confidence": round(float(confs[i]), 4), "kind": "DETECT",
+                        "track_id": f"{self.session[:8]}:{tkey}" if tkey else None,
                         "geo": geo_json(g), "auto_confirmed": bool(cand.confirmed),
                         "appearance": {"upper": {"status": "OK" if col.get("status") == "ok" else "UNDETERMINED",
                                                  "top": [{"color": c, "p": p} for c, p in col.get("top", [])], "n_obs": col.get("n_obs", 0)}},
-                        "state": None, "worker_revision": str(self.rev[cid]), "snapshot_asset_id": snap, "clip_asset_id": None})
+                        "state": st, "worker_revision": str(self.rev[cid]), "snapshot_asset_id": snap, "clip_asset_id": None})
         return obs
 
     def poll_once(self, send=None):

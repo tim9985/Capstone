@@ -63,6 +63,7 @@
 - 자세 판정기는 **정답 박스 크롭**으로 고르고, **탐지 박스 파이프라인**(`state_pipeline.py --posture=`)으로 다시 확인한다 — 둘이 다르게 나온다
 - ⚠ 추적 이력을 쓰는 신호(자세 누적 · 무동작 · 속도)는 **추적 ID 바뀜**에 오염된다 — 누운 사람은 확신도가 낮아 띄엄띄엄 잡히고 주변 추적에 붙는다 (5초 중앙값 누움 0.98 → 0.80 · `state_diag.py`)
 - **추적기 문턱 = 탐지 운용 임계 0.15** (BoT-SORT 기본 0.25 면 누운 사람이 새 추적을 못 만든다) + `--reset-jump` (ID 바뀜 끊기) + 자세 항은 지금 한 장 → 점수 누움 AUROC 0.78 → 0.95 (10-03 Q1 · `state_trackfix.py`)
+- ⚠ **`model.track(img, persist=k > 0)` 는 추적이 안 된다** (ultralytics 8.4.102) — 첫 호출의 `persist=False` 가 콜백에 고정돼 **매 프레임 추적기를 새로 만든다** → ID = 확신도 순번 (10-07 발견 · 10-01~10-07 상태 연구의 이력 · 무동작 · 추적 단위 지표가 오염) · 추적은 **처음부터 `persist=True`** 로 부르거나 `BOTSORT` 를 직접 이어 쓴다 (`deploy/vision_worker/app/vision_core/state.py`)
 - 출처 하나 빼기로 고를 땐 **클래스마다 진짜 출처가 2개 이상인지** 먼저 본다 — 비스듬 앉음은 SARD 뿐이라 합성 C2A 가 구조적으로 뽑혔다
 - Okutama 자세 크롭 `crops.csv` 의 w1080 · h1080 은 **720p px 그대로** → 1080p 로 쓰려면 ×1.5 (`posture_v2.load_set` 이 보정) · `eval_posture.auc` 는 동점 미처리 → `posture_v2.auc`
 

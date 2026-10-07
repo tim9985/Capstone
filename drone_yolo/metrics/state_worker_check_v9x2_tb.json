@@ -1,0 +1,76 @@
+{
+ "태그": "v9x2_tb",
+ "가중치": "runs_person/soup_v9x2/weights/best.pt",
+ "탐지 방식": "타일 4장 1080p (worker)",
+ "추적 영상": "1080p (키움)",
+ "채점 박스": "추적기 박스",
+ "영상 (B)": 11,
+ "1초 표본": 3112,
+ "누움 표본": 64,
+ "누움 정답 1초 표본": 131,
+ "점수 누움 AUROC": 0.9161,
+ "95% (영상 블록)": [
+  0.7904,
+  0.983
+ ],
+ "탐지 확신도 AUROC (기준선)": 0.2517,
+ "누움 잡힌 비율": 0.489,
+ "판정 (≥0.90 · ≥0.50)": "FAIL",
+ "Q1 V2·single (연구 · 참고)": {
+  "점수 누움 AUROC": 0.953,
+  "누움 잡힌 비율": 0.573
+ },
+ "정답 자세 × 등급": {
+  "Standing": {
+   "CHECK": 340,
+   "NORMAL": 826,
+   "HIGH": 6
+  },
+  "Sitting": {
+   "CHECK": 210,
+   "NORMAL": 162,
+   "HIGH": 18
+  },
+  "Running": {
+   "CHECK": 37,
+   "NORMAL": 158,
+   "HIGH": 2
+  },
+  "Walking": {
+   "NORMAL": 1054,
+   "CHECK": 235
+  },
+  "Lying": {
+   "CHECK": 55,
+   "NORMAL": 6,
+   "HIGH": 3
+  }
+ },
+ "정답 자세 × 표시 자세 (V3)": {
+  "standing": {
+   "standing": 1988,
+   "sitting": 445,
+   "lying": 225
+  },
+  "sitting": {
+   "sitting": 206,
+   "standing": 88,
+   "lying": 96
+  },
+  "lying": {
+   "lying": 58,
+   "standing": 5,
+   "sitting": 1
+  }
+ },
+ "추적 · 갱신": {
+  "frames": 6514,
+  "ticks": 655,
+  "homography_fail": 63,
+  "id_jumps": 10
+ },
+ "탐지+상태 ms (중앙 · P95)": [
+  56.6,
+  111.3
+ ]
+}

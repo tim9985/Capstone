@@ -125,7 +125,7 @@ INGEST_BASE_URL=http://127.0.0.1:18080 INGEST_TOKEN=test INGEST_MODEL_DIR=<모�
 
 - **`GET /internal/v1/frames` 응답에 `pose` 가 없다** → 좌표 전부 `PENDING/NO_POSE` (worker 는 `pose` 가 오면 바로 씀 · 키: `lat · lon · alt_agl_m · roll_deg · pitch_deg · yaw_deg · gimbal_pitch_deg · gimbal_yaw_deg · gimbal_stabilized`)
 - 결과가 422/409 로 거절되면 그 프레임은 다시 처리하지 않는다 (outbox 전송기가 그 줄에서 멈춤 → 확인 · 격리는 사람이)
-- 상태 인지 (`state`) · 근거 클립 (`clip_asset_id`) · 재관측 제안은 다음 판
+- ~~상태 인지 (`state`)~~ → V4 절 · 근거 클립 (`clip_asset_id`) · 재관측 제안은 다음 판
 
 ## SIM 어댑터 — 학교 SIM 업무 서비스 (10-07) · 시연은 이쪽
 
@@ -154,3 +154,32 @@ SIM 에서 못 하는 것 (SIM 백엔드 요청 사항)
 | 임무 id · 촬영 시각 | 작업 (Claim) 에 없음 | 후보 기억 범위 하나 (`sim`) · 임무 바뀌면 403 보고 다시 시작 · 시각 = 받은 시각 |
 | 작업 만들기 | 운영자가 프레임마다 `POST /api/v1/analysis-runs` | 프레임이 들어오면 자동으로 작업이 생겨야 시연이 돈다 |
 | 모델 설정 | `environment: SIM` · APPROVED 인 MODEL 설정 | 등록 필요 |
+
+## V4 — 상태 인지 (10-07) · `app/vision_core/state.py`
+
+연구 파이프라인 (`state_pipeline.py` + Q1 채택 설정) 을 worker 로 옮겼다. **후보를 거르지 않고 순위만** 바꾸는 보조 신호다.
+
+- 흐름 (프레임마다): 타일 탐지 → **BoT-SORT 추적** (문턱 0.15 · GMC · ReID 끔) → 추적 키 → 후보 (같은 추적이면 같은 후보)
+- 1초마다 (촬영 시각 기준): 배경 호모그래피로 기체 움직임 빼기 → 발끝 이동 ÷ 몸 높이 = 속도 · 3 넘게 튀면 ID 바뀜 → 이력 비움
+- 자세: `/models/posture.json` (박스 2특징 로지스틱 계수 · `export_posture_models.py` 로 만듦 · git 밖)
+  - 점수 · 등급용 = B0 (SARD+NOMAD · 지금 한 장) · 표시용 = V3 (Archangel 실제 + UE)
+- 등급: `URGENT` 누움 ≥0.7 & 무동작 ≥10초 · `HIGH` 누움+앉음 ≥0.7 & 무동작 ≥10초 · `CHECK` 관측 <3초 또는 누움 0.3~0.7 · `NORMAL`
+- 점수 = 0.5 누움 + 0.2 앉음 + 0.3 × min(무동작, 20)/20
+- `posture.json` 이 없으면 추적 · 상태 없이 예전처럼 (`state: null`)
+
+`observation.state` (REAL · 백엔드는 `tracking.reported_state` 에 원본 보존)
+
+```json
+{"schema": "state/0.1", "grade": "CHECK", "score": 0.302,
+ "posture": {"label": "lying", "p": {"lying": 0.652, "sitting": 0.277, "standing": 0.072}, "model": "box-geometry V3"},
+ "score_terms": {"lying": 0.419, "sitting": 0.463, "model": "box-geometry B0 (single frame)"},
+ "motion": {"speed_bh_s": null, "moving": false, "still_s": 0, "measured": false},
+ "observed_s": 1, "updated_at_s": 1791342000.0, "note": "priority aid only — operator decides (UC-0705)"}
+```
+- `track_id` = `<세션 앞 8자>:<추적 번호>.<ID 바뀜 횟수>` · 새 추적은 1초 갱신 전까지 `state: null` (최대 1초)
+- SIM 은 관측에 `state` 칸이 없다 → 추적은 후보 묶기에만 쓰이고 상태는 안 보냄 (SIM 백엔드 요청 사항)
+- 한계: 시선 방향으로 누운 사람은 서 있는 박스와 같아 보인다 · `URGENT` 는 Okutama 에서 한 번도 안 뜬다 (W2-3 등급 다시 맞추기)
+
+시험 (10-07)
+- 계약: 가짜 REAL 30장 · 20장 (pose) → 계약 위반 0 · 한 줄 최대 29 KB · 가짜 SIM 20장 회귀 0
+- 성능 (Okutama 비스듬 B 11편 · 판정 기준은 `_학습 큐` 에 미리) → `metrics/state_worker_check_*.json` · 볼트 V4 노트

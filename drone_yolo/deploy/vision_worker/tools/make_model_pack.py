@@ -3,7 +3,8 @@ make_model_pack.py — 후보 모델을 "갈아 끼우는 폴더" 로 묶는다 
 
   출력 <out>/<이름>/best.pt · model.json (이름 · SHA-256 · 세 평가셋 AP50 · 속도 · 파이프라인 판)  ·  <out>/active.json (지금 쓸 모델)
   model.json 의 내용으로 백엔드에 모델 설정을 등록하고 (POST /api/v1/configs/models · 설정 관리자) 받은 uuid 를 active.json 의 model_config_id 에 적는다
-실행: python tools/make_model_pack.py <out> soup_v7r2 [soup_v9x2 …] [--active=soup_v7r2]
+  상태 인지 계수: --posture=<posture.json> (export_posture_models.py 출력) → <out>/posture.json (모델과 상관없이 하나)
+실행: python tools/make_model_pack.py <out> soup_v7r2 [soup_v9x2 …] [--active=soup_v7r2] [--posture=posture.json]
 """
 import csv, hashlib, json, shutil, sys
 from pathlib import Path
@@ -22,6 +23,9 @@ for name in args[1:]:
             "environment": "REAL", "ap50": {t: ap(MET / f"{t}_{name}.csv") for t in ("test_v2", "test_obl", "test_kr")}}
     (d / "model.json").write_text(json.dumps(card, ensure_ascii=False, indent=1))
     print(name, h[:16], card["ap50"])
+pst = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--posture=")), None)
+if pst:
+    shutil.copy2(pst, out / "posture.json"); print("posture →", out / "posture.json")
 if active:
     (out / "active.json").write_text(json.dumps({"name": active, "model_config_id": "<백엔드에 등록한 uuid>", "conf": 0.15, "upload_crops": True}, ensure_ascii=False, indent=1))
     print("active →", active)

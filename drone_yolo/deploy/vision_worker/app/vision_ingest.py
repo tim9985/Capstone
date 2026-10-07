@@ -3,6 +3,7 @@ vision_ingest.py — 비전 worker v1.0 실행 파일 (vision-ingest/1.0 · 2026
 
   샌드박스 vision 컨테이너에서:  python -m app.vision_ingest
     · 백엔드 = unix 소켓 + mTLS + Bearer (app.common.client · /run/identity) — 비밀 파일은 읽기만, 출력 · 로그에 안 남김
+    · 상태 = /models/posture.json (자세 판별 계수 · export_posture_models.py) 이 있으면 추적 · 자세 · 무동작 · 등급 → observation.state
     · 모델 = /models/active.json {"name": "soup_v7r2", "model_config_id": "<등록된 uuid>"} → /models/<name>/best.pt
              (같은 폴더에 best*.engine 이 있으면 TensorRT · 없으면 PyTorch FP16) · 후보 모델은 폴더만 갈아 끼우면 된다
     · 쓰기 = /scratch (outbox.jsonl · ack.json · ingest_state.json · worker-status.json)
@@ -82,7 +83,8 @@ def main():
     except Exception as e:
         status(state="waiting_for_model", error=f"{type(e).__name__}: {e}"[:300]); raise
     from app.vision_core.ingest import IngestWorker
-    w = IngestWorker(api, token, det, act["model_config_id"], scratch=ROOT, upload_crops=bool(act.get("upload_crops", True)))
+    w = IngestWorker(api, token, det, act["model_config_id"], scratch=ROOT, upload_crops=bool(act.get("upload_crops", True)),
+                     posture=str(MODELS / "posture.json"))
     try:
         from app.vision_outbox import send_pending as sp
         send = lambda: sp(api, ROOT)
@@ -91,6 +93,7 @@ def main():
         send = lambda: local_send_pending(api, token)
         sender = "내장"
     status(state="running", model_loaded=True, model=act["name"], model_config_id=act["model_config_id"], backend=det.backend,
+           state_model=bool(w.posture),
            sender=sender, producer_session_id=w.session, error=None)
     last = 0.0
     while True:

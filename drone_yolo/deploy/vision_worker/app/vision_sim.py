@@ -11,7 +11,7 @@ import os
 import re
 import time
 
-from app.vision_ingest import ROOT, load_detector, make_client, status
+from app.vision_ingest import MODELS, ROOT, load_detector, make_client, status
 
 UUID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
 
@@ -27,7 +27,8 @@ def main():
     from app.vision_core.ingest import IngestWorker
     from app.vision_core.sim import SimWorker
     mid = str(act.get("model_config_id") or "")
-    core = IngestWorker(api, token, det, mid or "unset", scratch=ROOT, upload_crops=False)
+    core = IngestWorker(api, token, det, mid or "unset", scratch=ROOT, upload_crops=False,
+                        posture=str(MODELS / "posture.json"))   # SIM 은 state 칸이 없어 추적만 후보 묶기에 쓰임
     w = SimWorker(core, accept_model=mid if UUID.match(mid) else None, scratch=ROOT)
     status(state="running", model_loaded=True, model=act["name"], accept_model=w.accept_model, backend=det.backend, error=None)
     last, stop_after = 0.0, int(os.environ.get("INGEST_STOP_AFTER_IDLE", "0"))

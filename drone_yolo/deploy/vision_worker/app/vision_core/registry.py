@@ -9,7 +9,8 @@ registry.py — 후보 기억 v0 (설계명세서 CandidateRegistry · 2026-10-0
   확정 = CONFIRM_WINDOW_S 안에 서로 다른 프레임 CONFIRM_HITS 장 이상에서 탐지 (관측 시간 규칙 · 9.28 — 팀 합의 전 기본값)
   후보를 지우지 않는다 — 운영자 판단 전까지 남는다 (UC · 거르지 않고 순위만)
 
-  v0 의 한계 (W1-3 에서 고침): 추적기 · 추적 기반 재점수 (R1) · 문턱 시뮬레이션 (W3-2) 전 기본값
+  추적기 연결 (V4 · 10-07): worker 가 BoT-SORT 추적 키 → 후보를 기억해 같은 추적이면 attach 로 바로 붙인다 (ID 바뀜 끊기 뒤엔 새 키)
+  남은 한계: 추적 기반 재점수 (R1) · 문턱 시뮬레이션 (W3-2) 전 기본값
 """
 import math
 from dataclasses import dataclass, field
@@ -93,10 +94,14 @@ class CandidateRegistry:
                     if o >= IMG_IOU and (best is None or o > best[0]):
                         best = (o, c)
             match = best[1] if best else None
-        event = "update"
         if match is None:
-            match, event = self._new(t), "new"
-        c = match
+            return self.attach(self._new(t), t, box, conf, geo, "new")
+        return self.attach(match, t, box, conf, geo)
+
+    def attach(self, c, t, box, conf, geo, event="update"):
+        """정해진 후보에 탐지를 붙인다 (추적기가 같은 사람이라고 한 경우도 여기로) · 반환 (후보, 사건)"""
+        geo_ok = geo is not None and geo.status == "OK"
+        sig = max(geo.ellipse[0], geo.ellipse[1]) if geo_ok else None
         c.last_t, c.last_box = t, tuple(float(v) for v in box)
         c.hits.append(t)
         if geo_ok:
