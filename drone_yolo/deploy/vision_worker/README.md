@@ -81,3 +81,48 @@ rm data/vision-control.json                                        # 멈춤
 | 샌드박스 녹화 파일 (sample) 읽기 | 1920×1080 · 초당 337장 디코딩 (CPU) |
 
 - 아직 안 한 것: **컨테이너 안 (Python 3.12 · torch 2.8) 검증** · 실시간 RTSP · 실제 sidecar · 후보 묶기 문턱 (시뮬레이션 · UE 비행으로 정할 예정)
+
+---
+
+## v1.0 — vision-ingest/1.0 (10-07) · 이 절이 최신
+
+결정된 연동 규격 (`schema/vision_backend_handoff_v1.0.md` · `schema/openapi-vision.json`) 에 맞춘 worker. **v0 (`app/vision_worker.py` · RTSP · 임무 폴더 JSONL) 은 쓰지 않는다.**
+
+| 파일 | 내용 |
+|---|---|
+| `app/vision_ingest.py` | 실행 파일 — `python -m app.vision_ingest` (compose 의 vision `command` 를 이것으로) |
+| `app/vision/ingest.py` | 핵심 — 프레임 API → 탐지 → 좌표 → 후보 → 색 → 크롭 업로드 → `/scratch/outbox.jsonl` → 전송 |
+| `tools/mock_backend.py` | 서버 밖 왕복 시험용 가짜 백엔드 (OpenAPI 스키마 · 백엔드 규칙 흉내) |
+| `tools/make_model_pack.py` | 후보 모델 폴더 (가중치 + `model.json` + `active.json`) — 데이터셋 없이 모델만 |
+
+### 모델 폴더 (`/models` · 읽기 전용) — 갈아 끼우기
+
+```
+/models/active.json          {"name": "soup_v7r2", "model_config_id": "<등록 uuid>", "conf": 0.15, "upload_crops": true}
+/models/soup_v7r2/best.pt     (같은 폴더 best*.engine 이 있으면 TensorRT)
+/models/soup_v7r2/model.json  이름 · SHA-256 · 세 평가셋 AP50 · 파이프라인 판
+/models/soup_v9x2/…           후보
+```
+- 교체 = `active.json` 의 `name` · `model_config_id` 를 바꾸고 vision 재시작 · 후보마다 `POST /api/v1/configs/models` 로 한 번 등록 (`environment: REAL` · `pipeline_version`)
+
+### 서버 밖 시험 (10-07 통과)
+
+```bash
+python tools/mock_backend.py <1920×1080 JPEG 폴더> --n=30 [--pose] &
+INGEST_BASE_URL=http://127.0.0.1:18080 INGEST_TOKEN=test INGEST_MODEL_DIR=<모델 폴더> INGEST_SCRATCH=<빈 폴더> python -m app.vision_ingest
+```
+- UE level01 30장 (pose 없음): 결과 30 · 관측 737 · 계약 위반 0 · 좌표 전부 PENDING/NO_POSE · 크롭 업로드 681
+- 20장 + 가짜 pose: 관측 477 전부 VALID (오차 타원 포함) · 후보 묶기 동작 (60 후보) · worker_revision 증가 위반 0 · outbox 전부 전송 (ack)
+
+### 샌드박스에 넣기 (통합 담당 · sudo)
+
+1. `app/vision_ingest.py` · `app/vision/` → 샌드박스 `app/` (기존 `app/common.py` · `app/vision_outbox.py` 는 그대로 — worker 가 `send_pending` 을 가져다 씀)
+2. 모델 폴더 → `data/models/` (UID 2202 읽기)
+3. 이미지 한 층 (`Dockerfile.vision` · ultralytics 8.4.102 · TensorRT) + compose vision: `command: ["python", "-m", "app.vision_ingest"]` · **GPU 연결**
+4. 모델 설정 등록 → `active.json` 의 `model_config_id`
+
+### 남은 것 (백엔드 쪽)
+
+- **`GET /internal/v1/frames` 응답에 `pose` 가 없다** → 좌표 전부 `PENDING/NO_POSE` (worker 는 `pose` 가 오면 바로 씀 · 키: `lat · lon · alt_agl_m · roll_deg · pitch_deg · yaw_deg · gimbal_pitch_deg · gimbal_yaw_deg · gimbal_stabilized`)
+- 결과가 422/409 로 거절되면 그 프레임은 다시 처리하지 않는다 (outbox 전송기가 그 줄에서 멈춤 → 확인 · 격리는 사람이)
+- 상태 인지 (`state`) · 근거 클립 (`clip_asset_id`) · 재관측 제안은 다음 판
