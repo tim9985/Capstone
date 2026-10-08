@@ -1,0 +1,225 @@
+[
+ {
+  "file": "KakaoTalk_20261008_120037964.jpg",
+  "truncated": false,
+  "op_v7r2": {
+   "n": 12,
+   "n_conf50": 6,
+   "tiles": 6,
+   "postures": {
+    "standing": 7,
+    "sitting": 4,
+    "lying": 1
+   }
+  },
+  "op_v9x2": {
+   "n": 8,
+   "n_conf50": 6,
+   "tiles": 6,
+   "postures": {
+    "standing": 6,
+    "sitting": 2,
+    "lying": 0
+   }
+  },
+  "full_v7r2": {
+   "n": 35,
+   "n_conf50": 11,
+   "tiles": 48,
+   "postures": {
+    "standing": 11,
+    "sitting": 15,
+    "lying": 9
+   }
+  }
+ },
+ {
+  "file": "KakaoTalk_20261008_120037964_01.jpg",
+  "truncated": false,
+  "op_v7r2": {
+   "n": 6,
+   "n_conf50": 2,
+   "tiles": 6,
+   "postures": {
+    "standing": 3,
+    "sitting": 1,
+    "lying": 2
+   }
+  },
+  "op_v9x2": {
+   "n": 6,
+   "n_conf50": 4,
+   "tiles": 6,
+   "postures": {
+    "standing": 4,
+    "sitting": 0,
+    "lying": 2
+   }
+  },
+  "full_v7r2": {
+   "n": 23,
+   "n_conf50": 7,
+   "tiles": 48,
+   "postures": {
+    "standing": 6,
+    "sitting": 14,
+    "lying": 3
+   }
+  }
+ },
+ {
+  "file": "KakaoTalk_20261008_120037964_02.jpg",
+  "truncated": false,
+  "op_v7r2": {
+   "n": 8,
+   "n_conf50": 1,
+   "tiles": 6,
+   "postures": {
+    "standing": 4,
+    "sitting": 4,
+    "lying": 0
+   }
+  },
+  "op_v9x2": {
+   "n": 4,
+   "n_conf50": 2,
+   "tiles": 6,
+   "postures": {
+    "standing": 2,
+    "sitting": 1,
+    "lying": 1
+   }
+  },
+  "full_v7r2": {
+   "n": 22,
+   "n_conf50": 1,
+   "tiles": 48,
+   "postures": {
+    "standing": 7,
+    "sitting": 12,
+    "lying": 3
+   }
+  }
+ },
+ {
+  "file": "KakaoTalk_20261008_120037964_03.jpg",
+  "truncated": false,
+  "op_v7r2": {
+   "n": 9,
+   "n_conf50": 6,
+   "tiles": 6,
+   "postures": {
+    "standing": 5,
+    "sitting": 3,
+    "lying": 1
+   }
+  },
+  "op_v9x2": {
+   "n": 6,
+   "n_conf50": 5,
+   "tiles": 6,
+   "postures": {
+    "standing": 4,
+    "sitting": 1,
+    "lying": 1
+   }
+  },
+  "full_v7r2": {
+   "n": 25,
+   "n_conf50": 10,
+   "tiles": 48,
+   "postures": {
+    "standing": 8,
+    "sitting": 14,
+    "lying": 3
+   }
+  }
+ },
+ {
+  "file": "KakaoTalk_20261008_120037964_04.jpg",
+  "truncated": false,
+  "op_v7r2": {
+   "n": 9,
+   "n_conf50": 4,
+   "tiles": 6,
+   "postures": {
+    "standing": 5,
+    "sitting": 4,
+    "lying": 0
+   }
+  },
+  "op_v9x2": {
+   "n": 7,
+   "n_conf50": 4,
+   "tiles": 6,
+   "postures": {
+    "standing": 4,
+    "sitting": 3,
+    "lying": 0
+   }
+  },
+  "full_v7r2": {
+   "n": 16,
+   "n_conf50": 7,
+   "tiles": 48,
+   "postures": {
+    "standing": 7,
+    "sitting": 8,
+    "lying": 1
+   }
+  }
+ },
+ {
+  "file": "KakaoTalk_20261008_120037964_05.jpg",
+  "truncated": false,
+  "op_v7r2": {
+   "n": 12,
+   "n_conf50": 7,
+   "tiles": 6,
+   "postures": {
+    "standing": 7,
+    "sitting": 5,
+    "lying": 0
+   }
+  },
+  "op_v9x2": {
+   "n": 11,
+   "n_conf50": 5,
+   "tiles": 6,
+   "postures": {
+    "standing": 10,
+    "sitting": 1,
+    "lying": 0
+   }
+  },
+  "full_v7r2": {
+   "n": 19,
+   "n_conf50": 6,
+   "tiles": 48,
+   "postures": {
+    "standing": 9,
+    "sitting": 10,
+    "lying": 0
+   }
+  }
+ },
+ {
+  "op_v7r2 눈 검토 (10-08)": {
+   "tp": 27,
+   "fp": 25,
+   "unsure": 4
+  },
+  "확신도별": {
+   "≥0.5": {
+    "tp": 21,
+    "fp": 5,
+    "unsure": 0
+   },
+   "<0.5": {
+    "tp": 6,
+    "fp": 20,
+    "unsure": 4
+   }
+  }
+ }
+]
