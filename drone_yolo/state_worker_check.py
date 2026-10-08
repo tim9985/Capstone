@@ -5,6 +5,7 @@ state_worker_check.py — V4 판정: worker 상태 모듈 (app/vision_core/state
   흐름  프레임 3장마다 (초당 10장) → 1920×1080 으로 키움 → worker 타일 탐지 (PersonDetector) → StateTracker.update (시각 = 프레임/30)
         → 1초마다 (프레임 % 30 == 0) 이번에 갱신된 상태를 정답 박스 (×1.5 · IoU ≥ 0.5) 의 자세와 맞춤
   출력  metrics/state_worker_check_<태그>.json · runs_state/worker_samples_<태그>.json (1초 표본 · git 밖 — Okutama 파생)
+  --all        비스듬 23편 전부 + 표본에 1초 이력 (p · h) — S1 · S2 · S3 (state_s123.py) 입력
   --trackbox   원인 분리용 — 정답 맞추기에 추적기 (칼만) 박스 (연구 채점과 같음)
   --native     원인 분리용 — 추적 · 움직임 보정도 720p 원본 영상으로 (연구와 완전히 같은 조건)
   --fullframe  원인 분리용 — 탐지만 연구 방식 (720p 전체 화면 · imgsz 1280 · conf 0.15 · NMS 0.6 · FP16) · 박스 ×1.5 로 1080p 에 맞춰 같은 상태 모듈에 넣음
@@ -33,6 +34,7 @@ UP = 1.5                                                     # 720p → 1080p
 FULL = "--fullframe" in sys.argv
 TBOX = "--trackbox" in sys.argv                              # 정답 맞추기에 추적기 박스 (state_pipeline 과 같은 채점)
 NATIVE = "--native" in sys.argv                              # 추적 · 상태도 720p 원본 영상으로 (연구와 같은 조건 · --fullframe 과 같이)
+ALL = "--all" in sys.argv                                    # 비스듬 23편 전부 (A 고르기 · B 판정 — S1 · S2)
 
 
 def arg(k, d=None):
@@ -80,7 +82,10 @@ def run(vid, fdir, det, posture):
             if pose:
                 S.append({"vid": vid, "fr": fr, "track": tkey, "pose": pose, "score": s["score"], "grade": s["grade"], "conf": c,
                           "lying_p": s["score_terms"]["lying"], "display": s["posture"]["label"], "still": s["motion"]["still_s"],
-                          "moving": s["motion"]["moving"], "measured": s["motion"]["measured"]})
+                          "moving": s["motion"]["moving"], "measured": s["motion"]["measured"],
+                          "p": [s["score_terms"]["lying"], s["score_terms"]["sitting"]], "tracked": s.get("tracked", True),
+                          "wh": [round(b[2] - b[0], 1), round(b[3] - b[1], 1)],
+                          "h": list(st.hist[int(tkey.split(".")[0])].h) if (tkey and s.get("tracked", True)) else []})
     return S, st.stats, ms
 
 
@@ -99,8 +104,8 @@ def boot(S, vids, f, reps=1000, seed=0):
 
 def main():
     weights, tag, posture = arg("weights"), arg("tag", "check"), arg("posture")
-    _, _, B = videos()
-    B = B[: int(arg("limit", len(B)))]
+    allv, _, B = videos()
+    B = (allv if ALL else B)[: int(arg("limit", len(B)))]
     frame_dir = {os.path.basename(d): d for d in glob.glob(f"{OK}/Drone*/*/Extracted-Frames-1280x720/*")}
     wpath = os.path.join(BASE, weights) if not os.path.isabs(weights) else weights
     if FULL:

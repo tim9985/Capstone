@@ -108,10 +108,10 @@ def grade(ly, si, still, obs, moving):
 
 
 class _Hist:
-    __slots__ = ("seen", "still", "sp", "state", "epoch")
+    __slots__ = ("seen", "still", "sp", "state", "epoch", "h")
 
     def __init__(self):
-        self.seen, self.still, self.sp, self.state, self.epoch = 0, 0, [], None, 0
+        self.seen, self.still, self.sp, self.state, self.epoch, self.h = 0, 0, [], None, 0, []   # h = 1초 표본 (t, 누움, 앉음, w, h) 최근 10개
 
 
 class StateTracker:
@@ -195,11 +195,12 @@ class StateTracker:
                     h.sp.append(sp)
                 else:                                        # ID 바뀜 — 앞사람 이력을 버리고 지금부터 새로
                     self.stats["id_jumps"] += 1
-                    h.sp, h.seen, h.still, h.epoch = [], 1, 0, h.epoch + 1
+                    h.sp, h.seen, h.still, h.epoch, h.h = [], 1, 0, h.epoch + 1, []
             med = float(np.median(h.sp[-3:])) if h.sp else None
             moving = med is not None and med >= MOVING
             h.still = h.still + 1 if (med is not None and med < STILL) else 0
             ly, si = float(P[j, 0]), float(P[j, 1])
+            h.h = (h.h + [(round(float(t), 3), round(ly, 4), round(si, 4), round(float(wh[j, 0]), 1), round(float(wh[j, 1]), 1))])[-10:]
             g, score = grade(ly, si, h.still, h.seen, moving)
             h.state = self._state(t, g, score, P[j], D[j], med, moving, h.still, h.seen)
         self.prev = (t, small, sb)

@@ -54,6 +54,21 @@ def mklist(name, seed, lists):
     print(f"{name}: {len(items)}장 → {out.name}")
 
 
+def mklistf(name, seed, frac, lists):
+    """진짜 반복용 (10-08) — 목록에서 frac 만큼 무작위로 뽑는다 · ultralytics 가 목록을 이름순 정렬하므로 순서 섞기는 효과 없음 → 데이터 자체를 다르게"""
+    items = []
+    for l in lists:
+        items += [x.strip() for x in open(BASE / "configs" / "lists" / l) if x.strip()]
+    rnd = random.Random(int(seed)); k = int(round(len(items) * float(frac)))
+    pick = sorted(rnd.sample(items, k))
+    out = BASE / "configs" / "lists" / f"train_{name}.txt"
+    out.write_text("\n".join(pick) + "\n")
+    (BASE / "configs" / f"data_{name}.yaml").write_text(
+        f"# {name} (chain_sd · 2026-10-08) — {' + '.join(lists)} · {float(frac):.0%} 무작위 뽑기 시드 {seed} · val = val_v6b\n"
+        f"train: {out}\nval: {BASE / 'configs' / 'lists' / 'val_v6b.txt'}\nnc: 1\nnames: ['person']\n")
+    print(f"{name}: {k}/{len(items)}장 ({float(frac):.0%}) → {out.name}")
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1]
     if cmd == "pick":
@@ -61,3 +76,5 @@ if __name__ == "__main__":
         print(w, "|", " · ".join(why))
     elif cmd == "mklist":
         mklist(sys.argv[2], sys.argv[3], sys.argv[4:])
+    elif cmd == "mklistf":
+        mklistf(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5:])
