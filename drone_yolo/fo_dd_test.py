@@ -1,7 +1,7 @@
 """
 fo_dd_test.py — 디지털관 높은 층 사진 (휴대폰 · 4032×3024) 간단 탐지 시험 → FiftyOne `digital_department_test` (10-08)
 
-  사진: data/digital_department_test/*.jpg (정답 없음 · 눈으로 확인용 · git 밖)
+  사진: data/digital_department_test/*.jpg (정답 없음 · 눈으로 확인용 · git 밖) · 다시 돌리면 새 사진만 추가 (10-08 · 12시 6장 + 17시 9장)
   탐지 (conf 0.15 · 타일 1280×720 겹침 50 % · NMS 0.6 — worker 와 같은 방식을 크기만 일반화)
     op_v7r2   운용 크기 — 긴 변 1920 으로 줄임 (1920×1440 · 타일 6장) · soup_v7r2 (배포 모델)
     op_v9x2   같은 크기 · soup_v9x2 (상태 인지용)
@@ -58,16 +58,19 @@ def main():
     score_m, disp_m = load_posture(POSTURE)
     M = {"v7r2": YOLO(str(BASE / "runs_person/soup_v7r2/weights/best.pt")), "v9x2": YOLO(str(BASE / "runs_person/soup_v9x2/weights/best.pt"))}
     name = "digital_department_test"
-    if fo.dataset_exists(name):
-        fo.delete_dataset(name)
-    ds = fo.Dataset(name); ds.persistent = True
-    summary = []
+    ds = fo.load_dataset(name) if fo.dataset_exists(name) else fo.Dataset(name)
+    ds.persistent = True
+    have = set(ds.values("filepath"))                               # 이미 올린 사진은 그대로 (눈 검토 표시 보존) · 새 사진만 추가
+    out = BASE / "metrics" / "dd_test.json"
+    summary = json.loads(out.read_text()) if out.exists() else []
     for f in sorted(glob.glob(str(SRC / "*.jpg"))):
+        if f in have:
+            continue
         img = cv2.imread(f)
         H0, W0 = img.shape[:2]
-        truncated = os.path.getsize(f) < 3_000_000                  # 05 는 전송이 덜 됐다 (아래 55 % 회색)
-        s = fo.Sample(filepath=f, tags=["truncated"] if truncated else [])
-        row = {"file": os.path.basename(f), "truncated": truncated}
+        batch = os.path.basename(f).split("_")[2].split(".")[0]      # 촬영 묶음 (카톡 파일 이름의 시각)
+        s = fo.Sample(filepath=f, tags=[f"batch_{batch}"])
+        row = {"file": os.path.basename(f), "batch": batch}
         for key, mname, scale in (("op_v7r2", "v7r2", 1920 / W0), ("op_v9x2", "v9x2", 1920 / W0), ("full_v7r2", "v7r2", 1.0)):
             im = cv2.resize(img, (round(W0 * scale), round(H0 * scale))) if scale != 1.0 else img
             b, c, nt = detect(M[mname], im)
@@ -87,7 +90,6 @@ def main():
                         "postures": {k: sum(d.posture == k for d in dets) for k in ("standing", "sitting", "lying")}}
         ds.add_sample(s); summary.append(row)
     ds.save()
-    out = BASE / "metrics" / "dd_test.json"
     out.write_text(json.dumps(summary, ensure_ascii=False, indent=1))
     print(json.dumps(summary, ensure_ascii=False, indent=1))
 

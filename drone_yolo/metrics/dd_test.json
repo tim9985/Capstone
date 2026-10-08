@@ -1,7 +1,6 @@
 [
  {
   "file": "KakaoTalk_20261008_120037964.jpg",
-  "truncated": false,
   "op_v7r2": {
    "n": 12,
    "n_conf50": 6,
@@ -31,11 +30,11 @@
     "sitting": 15,
     "lying": 9
    }
-  }
+  },
+  "batch": "120037964"
  },
  {
   "file": "KakaoTalk_20261008_120037964_01.jpg",
-  "truncated": false,
   "op_v7r2": {
    "n": 6,
    "n_conf50": 2,
@@ -65,11 +64,11 @@
     "sitting": 14,
     "lying": 3
    }
-  }
+  },
+  "batch": "120037964"
  },
  {
   "file": "KakaoTalk_20261008_120037964_02.jpg",
-  "truncated": false,
   "op_v7r2": {
    "n": 8,
    "n_conf50": 1,
@@ -99,11 +98,11 @@
     "sitting": 12,
     "lying": 3
    }
-  }
+  },
+  "batch": "120037964"
  },
  {
   "file": "KakaoTalk_20261008_120037964_03.jpg",
-  "truncated": false,
   "op_v7r2": {
    "n": 9,
    "n_conf50": 6,
@@ -133,11 +132,11 @@
     "sitting": 14,
     "lying": 3
    }
-  }
+  },
+  "batch": "120037964"
  },
  {
   "file": "KakaoTalk_20261008_120037964_04.jpg",
-  "truncated": false,
   "op_v7r2": {
    "n": 9,
    "n_conf50": 4,
@@ -167,11 +166,11 @@
     "sitting": 8,
     "lying": 1
    }
-  }
+  },
+  "batch": "120037964"
  },
  {
   "file": "KakaoTalk_20261008_120037964_05.jpg",
-  "truncated": false,
   "op_v7r2": {
    "n": 12,
    "n_conf50": 7,
@@ -201,7 +200,8 @@
     "sitting": 10,
     "lying": 0
    }
-  }
+  },
+  "batch": "120037964"
  },
  {
   "op_v7r2 눈 검토 (10-08)": {
@@ -219,6 +219,312 @@
     "tp": 6,
     "fp": 20,
     "unsure": 4
+   }
+  }
+ },
+ {
+  "file": "KakaoTalk_20261008_174710847.jpg",
+  "batch": "174710847",
+  "op_v7r2": {
+   "n": 21,
+   "n_conf50": 9,
+   "tiles": 6,
+   "postures": {
+    "standing": 10,
+    "sitting": 11,
+    "lying": 0
+   }
+  },
+  "op_v9x2": {
+   "n": 11,
+   "n_conf50": 7,
+   "tiles": 6,
+   "postures": {
+    "standing": 10,
+    "sitting": 1,
+    "lying": 0
+   }
+  },
+  "full_v7r2": {
+   "n": 24,
+   "n_conf50": 9,
+   "tiles": 48,
+   "postures": {
+    "standing": 7,
+    "sitting": 16,
+    "lying": 1
+   }
+  }
+ },
+ {
+  "file": "KakaoTalk_20261008_174710847_01.jpg",
+  "batch": "174710847",
+  "op_v7r2": {
+   "n": 17,
+   "n_conf50": 9,
+   "tiles": 6,
+   "postures": {
+    "standing": 8,
+    "sitting": 9,
+    "lying": 0
+   }
+  },
+  "op_v9x2": {
+   "n": 11,
+   "n_conf50": 7,
+   "tiles": 6,
+   "postures": {
+    "standing": 8,
+    "sitting": 3,
+    "lying": 0
+   }
+  },
+  "full_v7r2": {
+   "n": 26,
+   "n_conf50": 12,
+   "tiles": 48,
+   "postures": {
+    "standing": 9,
+    "sitting": 16,
+    "lying": 1
+   }
+  }
+ },
+ {
+  "file": "KakaoTalk_20261008_174710847_02.jpg",
+  "batch": "174710847",
+  "op_v7r2": {
+   "n": 21,
+   "n_conf50": 9,
+   "tiles": 6,
+   "postures": {
+    "standing": 11,
+    "sitting": 10,
+    "lying": 0
+   }
+  },
+  "op_v9x2": {
+   "n": 18,
+   "n_conf50": 9,
+   "tiles": 6,
+   "postures": {
+    "standing": 13,
+    "sitting": 4,
+    "lying": 1
+   }
+  },
+  "full_v7r2": {
+   "n": 28,
+   "n_conf50": 15,
+   "tiles": 48,
+   "postures": {
+    "standing": 9,
+    "sitting": 19,
+    "lying": 0
+   }
+  }
+ },
+ {
+  "file": "KakaoTalk_20261008_174710847_03.jpg",
+  "batch": "174710847",
+  "op_v7r2": {
+   "n": 25,
+   "n_conf50": 12,
+   "tiles": 6,
+   "postures": {
+    "standing": 16,
+    "sitting": 9,
+    "lying": 0
+   }
+  },
+  "op_v9x2": {
+   "n": 17,
+   "n_conf50": 10,
+   "tiles": 6,
+   "postures": {
+    "standing": 15,
+    "sitting": 2,
+    "lying": 0
+   }
+  },
+  "full_v7r2": {
+   "n": 38,
+   "n_conf50": 19,
+   "tiles": 48,
+   "postures": {
+    "standing": 17,
+    "sitting": 21,
+    "lying": 0
+   }
+  }
+ },
+ {
+  "file": "KakaoTalk_20261008_174710847_04.jpg",
+  "batch": "174710847",
+  "op_v7r2": {
+   "n": 16,
+   "n_conf50": 11,
+   "tiles": 6,
+   "postures": {
+    "standing": 11,
+    "sitting": 5,
+    "lying": 0
+   }
+  },
+  "op_v9x2": {
+   "n": 15,
+   "n_conf50": 10,
+   "tiles": 6,
+   "postures": {
+    "standing": 12,
+    "sitting": 3,
+    "lying": 0
+   }
+  },
+  "full_v7r2": {
+   "n": 27,
+   "n_conf50": 10,
+   "tiles": 48,
+   "postures": {
+    "standing": 12,
+    "sitting": 14,
+    "lying": 1
+   }
+  }
+ },
+ {
+  "file": "KakaoTalk_20261008_174710847_05.jpg",
+  "batch": "174710847",
+  "op_v7r2": {
+   "n": 7,
+   "n_conf50": 4,
+   "tiles": 6,
+   "postures": {
+    "standing": 4,
+    "sitting": 3,
+    "lying": 0
+   }
+  },
+  "op_v9x2": {
+   "n": 6,
+   "n_conf50": 3,
+   "tiles": 6,
+   "postures": {
+    "standing": 5,
+    "sitting": 1,
+    "lying": 0
+   }
+  },
+  "full_v7r2": {
+   "n": 26,
+   "n_conf50": 13,
+   "tiles": 48,
+   "postures": {
+    "standing": 10,
+    "sitting": 15,
+    "lying": 1
+   }
+  }
+ },
+ {
+  "file": "KakaoTalk_20261008_174710847_06.jpg",
+  "batch": "174710847",
+  "op_v7r2": {
+   "n": 10,
+   "n_conf50": 6,
+   "tiles": 6,
+   "postures": {
+    "standing": 4,
+    "sitting": 6,
+    "lying": 0
+   }
+  },
+  "op_v9x2": {
+   "n": 6,
+   "n_conf50": 2,
+   "tiles": 6,
+   "postures": {
+    "standing": 5,
+    "sitting": 1,
+    "lying": 0
+   }
+  },
+  "full_v7r2": {
+   "n": 22,
+   "n_conf50": 12,
+   "tiles": 48,
+   "postures": {
+    "standing": 3,
+    "sitting": 19,
+    "lying": 0
+   }
+  }
+ },
+ {
+  "file": "KakaoTalk_20261008_174710847_07.jpg",
+  "batch": "174710847",
+  "op_v7r2": {
+   "n": 10,
+   "n_conf50": 3,
+   "tiles": 6,
+   "postures": {
+    "standing": 4,
+    "sitting": 6,
+    "lying": 0
+   }
+  },
+  "op_v9x2": {
+   "n": 4,
+   "n_conf50": 2,
+   "tiles": 6,
+   "postures": {
+    "standing": 4,
+    "sitting": 0,
+    "lying": 0
+   }
+  },
+  "full_v7r2": {
+   "n": 21,
+   "n_conf50": 12,
+   "tiles": 48,
+   "postures": {
+    "standing": 5,
+    "sitting": 16,
+    "lying": 0
+   }
+  }
+ },
+ {
+  "file": "KakaoTalk_20261008_174710847_08.jpg",
+  "batch": "174710847",
+  "op_v7r2": {
+   "n": 16,
+   "n_conf50": 10,
+   "tiles": 6,
+   "postures": {
+    "standing": 9,
+    "sitting": 7,
+    "lying": 0
+   }
+  },
+  "op_v9x2": {
+   "n": 12,
+   "n_conf50": 8,
+   "tiles": 6,
+   "postures": {
+    "standing": 11,
+    "sitting": 1,
+    "lying": 0
+   }
+  },
+  "full_v7r2": {
+   "n": 30,
+   "n_conf50": 15,
+   "tiles": 48,
+   "postures": {
+    "standing": 17,
+    "sitting": 12,
+    "lying": 1
    }
   }
  }
