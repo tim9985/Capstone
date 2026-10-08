@@ -105,7 +105,8 @@ def boot(S, vids, f, reps=1000, seed=0):
 def main():
     weights, tag, posture = arg("weights"), arg("tag", "check"), arg("posture")
     allv, _, B = videos()
-    B = (allv if ALL else B)[: int(arg("limit", len(B)))]
+    B = allv if ALL else B
+    B = B[: int(arg("limit", len(B)))]                      # (10-08 고침: --all 인데 기본 개수를 B 11편으로 잘랐었다)
     frame_dir = {os.path.basename(d): d for d in glob.glob(f"{OK}/Drone*/*/Extracted-Frames-1280x720/*")}
     wpath = os.path.join(BASE, weights) if not os.path.isabs(weights) else weights
     if FULL:
