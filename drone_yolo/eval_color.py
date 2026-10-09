@@ -24,7 +24,7 @@ import numpy as np
 
 BASE = Path(__file__).resolve().parent
 sys.path.insert(0, str(BASE / "deploy" / "vision_worker"))
-from app.vision.color import COLORS, ColorAccumulator, ColorProfiler, frame_stats, match  # noqa: E402
+from app.vision_core.color import COLORS, ColorAccumulator, ColorProfiler, frame_stats, match  # noqa: E402
 from make_posture_crops import NOMAD, _nomad_act  # noqa: E402
 
 MAP = {"blue": {"blue"}, "cyan": {"blue", "green"}, "gray": {"gray"}, "light gray": {"gray", "white"},

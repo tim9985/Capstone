@@ -113,6 +113,8 @@ class SimWorker:
         if img is None:
             return None, "DECODE_FAILED", True
         obs = [to_sim(o) for o in self.core.observe(job["mission_id"], img, time.time(), None, False)]
+        self.stats["reobs_not_sent"] = self.stats.get("reobs_not_sent", 0) + len(self.core.pending_reobs)   # SIM 은 비전 재관측 경로가 없다 (요청 사항)
+        self.core.pending_reobs = []
         for k, o in enumerate(obs):
             o["detection_index"] = k
         self.journal.put(rid, obs)

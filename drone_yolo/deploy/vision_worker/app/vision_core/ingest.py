@@ -23,9 +23,11 @@ from pathlib import Path
 import cv2
 import numpy as np
 
+from .appearance import AppearanceComparator
 from .color import ColorAccumulator, ColorProfiler, frame_stats
 from .geo import GeoResolver, Telemetry
 from .registry import CandidateRegistry
+from .reobserve import ReobservePlanner
 
 SCHEMA = "vision-ingest/1.0"
 REASON_CODE = (("기울기", "TILT_GT_6"), ("자세 변화", "RATE_GT_1_5"), ("발끝", "FOOT_AT_EDGE"),
@@ -116,10 +118,22 @@ class IngestWorker:
         self.uid, self.rev = {}, {}                      # (임무, 후보 라벨) → uuid · uuid → revision
         self.posture = posture if posture and Path(posture).exists() else None   # posture.json 없으면 상태 없이 (state: null)
         self.trk, self.tcand = {}, {}                    # 임무 → StateTracker · (임무, 추적 키) → 후보
+        self.appear, self.planner, self.pending_reobs, self.known_cands = AppearanceComparator(), ReobservePlanner(), [], set()
+        self.query_file = Path(os.environ.get("INGEST_APPEARANCE_FILE", str(Path(scratch) / "appearance_query.json")))
         self.stats = {"frames": 0, "observations": 0, "dropped": 0, "uploads": 0, "upload_fail": 0}
 
     def _h(self):
         return {"Authorization": "Bearer " + self.token()}
+
+    def query_for(self, fr):
+        """찾는 사람 외형 조건 — 프레임 기록의 appearance_query (백엔드 요청 사항) · 없으면 파일 {임무 id 또는 "*": 조건}"""
+        if fr.get("appearance_query"):
+            return fr["appearance_query"]
+        try:
+            q = json.loads(self.query_file.read_text()) if self.query_file.exists() else {}
+        except Exception:
+            return None
+        return q.get(str(fr.get("mission_id"))) or q.get("*")
 
     # ── 미디어 업로드 (FRAME 한 장 · 결과보다 먼저 저장 완료) ──
     def upload_crop(self, mission_id, jpg):
@@ -154,11 +168,11 @@ class IngestWorker:
             return self.result_body(fr, "DROPPED", reason=f"SIZE_MISMATCH {img.shape[1]}x{img.shape[0]}")
         tel = telemetry_from_pose(fr.get("pose"))
         t = datetime.fromisoformat(fr["capture_at"].replace("Z", "+00:00")).timestamp() if fr.get("capture_at") else time.time()
-        obs = self.observe(mid, img, t, tel, self.upload_crops)
+        obs = self.observe(mid, img, t, tel, self.upload_crops, query=self.query_for(fr))
         self.stats["frames"] += 1; self.stats["observations"] += len(obs)
         return self.result_body(fr, "DONE", obs)
 
-    def observe(self, mid, img, t, tel, upload_crops):
+    def observe(self, mid, img, t, tel, upload_crops, query=None):
         """디코드된 한 장 → 관측 목록 (vision-ingest/1.0 형식) · SIM 어댑터도 이걸 쓴다"""
         H, W = img.shape[:2]
         boxes, confs, ms = self.det.detect(img)
@@ -202,14 +216,19 @@ class IngestWorker:
                 ok, enc = cv2.imencode(".jpg", crop, [cv2.IMWRITE_JPEG_QUALITY, 90]) if crop.size else (False, None)
                 if ok:
                     snap = self.upload_crop(mid, enc.tobytes())
+            appearance = {"upper": {"status": "OK" if col.get("status") == "ok" else "UNDETERMINED",
+                                    "top": [{"color": c, "p": p} for c, p in col.get("top", [])], "n_obs": col.get("n_obs", 0)}}
+            if query:
+                appearance["match"] = self.appear.compare(col, query)          # C-0705 인상착의 비교
+            gj = geo_json(g)
+            self.pending_reobs += self.planner.on_observation(mid, t, cand, cid, gj, st, appearance)   # SD-0706
             obs.append({"observation_id": str(uuid.uuid4()), "candidate_id": cid, "detection_index": len(obs),
                         "bbox": {"x1": round(x1, 1), "y1": round(y1, 1), "x2": round(x2, 1), "y2": round(y2, 1)},
                         "confidence": round(float(confs[i]), 4), "kind": "DETECT",
                         "track_id": f"{self.session[:8]}:{tkey}" if tkey else None,
-                        "geo": geo_json(g), "auto_confirmed": bool(cand.confirmed),
-                        "appearance": {"upper": {"status": "OK" if col.get("status") == "ok" else "UNDETERMINED",
-                                                 "top": [{"color": c, "p": p} for c, p in col.get("top", [])], "n_obs": col.get("n_obs", 0)}},
+                        "geo": gj, "auto_confirmed": bool(cand.confirmed), "appearance": appearance,
                         "state": st, "worker_revision": str(self.rev[cid]), "snapshot_asset_id": snap, "clip_asset_id": None})
+        self.pending_reobs += self.planner.sweep(mid, t, reg, self.uid)
         return obs
 
     def poll_once(self, send=None):
@@ -234,6 +253,14 @@ class IngestWorker:
             for k, o in enumerate(body["observations"]):
                 o["detection_index"] = k
             self.outbox.append("result", body)
+            if body["analysis_state"] == "DONE":                        # 결과 (후보 생성) 뒤에 재관측 제안 — 후보가 먼저 있어야 한다
+                sent = {o["candidate_id"] for o in body["observations"]} | set(self.known_cands)
+                for rb in self.pending_reobs:
+                    if rb["candidate_id"] in sent:
+                        self.outbox.append("reobservation", rb)
+                        self.stats["reobservations"] = self.stats.get("reobservations", 0) + 1
+                self.known_cands |= {o["candidate_id"] for o in body["observations"]}
+            self.pending_reobs = []
             self.state.mark(fid); n += 1
         if n:
             self.state.save()

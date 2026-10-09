@@ -9,7 +9,8 @@ mock_backend.py — 비전 worker v1.0 서버 밖 왕복 시험용 가짜 백엔
     POST /internal/v1/vision/reobservations      Reobserve 스키마
   인증: Authorization: Bearer <토큰> (기본 test)
 
-실행: python tools/mock_backend.py <JPEG 폴더> [--port=18080] [--n=40] [--pose] [--out=summary.json]
+실행: python tools/mock_backend.py <JPEG 폴더> [--port=18080] [--n=40] [--pose] [--dt=0.1] [--out=summary.json]
+      --dt: 프레임 간격 초 (기본 0.1 · 재관측 규칙은 3초 넘게 봐야 나온다)
       --pose: 프레임에 가짜 자세 (위경도 · 고도 20 m · 짐벌 −45°) 를 넣어 좌표 VALID 경로를 시험
 """
 import glob
@@ -40,7 +41,7 @@ MISSION = str(uuid.uuid4()); T0 = datetime(2026, 10, 7, 3, 0, tzinfo=timezone.ut
 FRAMES = {}
 for i, f in enumerate(FILES):
     fid = str(uuid.uuid4()); data = open(f, "rb").read()
-    rec = {"frame_id": fid, "mission_id": MISSION, "capture_at": (T0 + timedelta(seconds=0.1 * i)).isoformat().replace("+00:00", "Z"),
+    rec = {"frame_id": fid, "mission_id": MISSION, "capture_at": (T0 + timedelta(seconds=float(OPT.get("dt", 0.1)) * i)).isoformat().replace("+00:00", "Z"),
            "width": 1920, "height": 1080, "format": "JPEG", "time_evidence": {"time_source": "SIDECAR"}}
     if OPT.get("pose"):
         rec["pose"] = {"lat": 36.145, "lon": 128.393, "alt_agl_m": 20.0, "roll_deg": 0.5, "pitch_deg": -1.0, "yaw_deg": 90.0,
@@ -120,7 +121,13 @@ class H(BaseHTTPRequestHandler):
                 b["state"] = "PERSISTED"; LOG["uploads"] += 1
                 return self.reply(200, {"bundle_id": m.group(1), "persistence_status": "PERSISTED"})
             if self.path == "/internal/v1/vision/reobservations":
-                jsonschema.validate(j, schema("Reobserve")); LOG["reobservations"] += 1
+                jsonschema.validate(j, schema("Reobserve"))
+                with LOCK:
+                    if j["candidate_id"] not in CAND:                 # 실제 백엔드: 후보가 없으면 404
+                        return self.fail(404, "RESOURCE_NOT_FOUND (reobserve candidate)")
+                    LOG["reobservations"] += 1
+                    LOG.setdefault("reobserve_reasons", {}); LOG["reobserve_reasons"][j["reason"]] = LOG["reobserve_reasons"].get(j["reason"], 0) + 1
+                    LOG.setdefault("reobserve_per_cand", {}); LOG["reobserve_per_cand"][j["candidate_id"]] = LOG["reobserve_per_cand"].get(j["candidate_id"], 0) + 1
                 return self.reply(201, {"request_id": j["request_id"]})
             if self.path == "/internal/v1/vision/results":
                 jsonschema.validate(j, schema("VisionResult"))
@@ -149,6 +156,9 @@ class H(BaseHTTPRequestHandler):
                             return self.fail(422, "GEO_PENDING_HAS_POSITION")
                     for o in j["observations"]:
                         CAND[o["candidate_id"]] = int(o["worker_revision"]); LOG["geo"][o["geo"]["status"]] = LOG["geo"].get(o["geo"]["status"], 0) + 1
+                        m = (o.get("appearance") or {}).get("match")
+                        if m:
+                            LOG.setdefault("appearance_verdicts", {}); LOG["appearance_verdicts"][m["verdict"]] = LOG["appearance_verdicts"].get(m["verdict"], 0) + 1
                     f["state"] = "COMPLETED"; LOG["messages"].add(j["message_id"])
                     LOG["results"] += 1; LOG["observations"] += len(j["observations"])
                 return self.reply(200, {"message_id": j["message_id"]})
@@ -158,7 +168,9 @@ class H(BaseHTTPRequestHandler):
 
 
 def summary():
-    d = {k: v for k, v in LOG.items() if k != "messages"}
+    d = {k: v for k, v in LOG.items() if k not in ("messages", "reobserve_per_cand")}
+    pc = LOG.get("reobserve_per_cand", {})
+    d["reobserve_max_per_candidate"] = max(pc.values(), default=0)
     d.update(frames=len(FRAMES), completed=sum(v["state"] == "COMPLETED" for v in FRAMES.values()), candidates=len(CAND))
     return d
 
