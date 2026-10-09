@@ -136,6 +136,13 @@ class GeoResolver:
             res.status = "PENDING"
         return res
 
+    def bearing(self, bbox, tel: Telemetry):
+        """발끝점 광선의 수평 방위 (북 0 · 시계 +) = 드론에서 사람을 보는 방향 · 지면 교차 · 거리와 상관없이 낸다
+        (재관측 STATE_UNCERTAIN 에서 「방위를 90° 바꿔 다시 보기」 의 기준 · 10-09)"""
+        x1, y1, x2, y2 = bbox
+        d = _matvec(self.cam_to_ned(tel), self.cam.ray((x1 + x2) / 2, y2))
+        return math.degrees(math.atan2(d[1], d[0])) % 360
+
     def _terrain_hit(self, d, alt, step_m=1.0):
         """광선 × 지형 — 수평 step_m 씩 전진하며 처음 지면 아래로 내려가는 구간을 찾고 이분법 (10-05)
         고정점 반복은 경사 > 하향각이면 발산 · 진동해서 바꿈. 광선이 먼저 걸리는 능선(가림)도 맞게 잡는다."""

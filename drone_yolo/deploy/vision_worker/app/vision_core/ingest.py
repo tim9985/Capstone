@@ -194,6 +194,7 @@ class IngestWorker:
         obs = []
         for (i, (x1, y1, x2, y2)), (tkey, st) in zip(kept, states):
             g = self.geo.to_world((x1, y1, x2, y2), tel) if tel is not None else None
+            vb = self.geo.bearing((x1, y1, x2, y2), tel) if tel is not None else None      # 드론 → 사람 방위 (재관측 방위 바꾸기)
             known = self.tcand.get((mid, tkey)) if tkey else None
             if known is not None and known.last_t != t:   # 추적기가 같은 사람이라고 한 후보
                 cand, ev = reg.attach(known, t, (x1, y1, x2, y2), float(confs[i]), g)
@@ -221,7 +222,7 @@ class IngestWorker:
             if query:
                 appearance["match"] = self.appear.compare(col, query)          # C-0705 인상착의 비교
             gj = geo_json(g)
-            self.pending_reobs += self.planner.on_observation(mid, t, cand, cid, gj, st, appearance)   # SD-0706
+            self.pending_reobs += self.planner.on_observation(mid, t, cand, cid, gj, st, appearance, view_bearing=vb)   # SD-0706
             obs.append({"observation_id": str(uuid.uuid4()), "candidate_id": cid, "detection_index": len(obs),
                         "bbox": {"x1": round(x1, 1), "y1": round(y1, 1), "x2": round(x2, 1), "y2": round(y2, 1)},
                         "confidence": round(float(confs[i]), 4), "kind": "DETECT",

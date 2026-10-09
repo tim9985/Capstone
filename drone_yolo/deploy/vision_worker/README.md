@@ -141,12 +141,14 @@ INGEST_BASE_URL=http://127.0.0.1:18080 INGEST_TOKEN=test INGEST_MODEL_DIR=<모�
 | reason | 조건 | desired_view (권고 · 짐벌 −45° · 좌표 있으면 target) |
 |---|---|---|
 | `GEO_PENDING` | 확정 후보 · 처음 본 뒤 3초 · 다시 보면 풀리는 보류 사유 (`FOOT_AT_EDGE` · `RANGE_GT_200` 등 · `NO_POSE` 만이면 안 냄) | `APPROACH_CENTER` 16~20 m · 3초 |
-| `STATE_UNCERTAIN` | 추적 3초 이상 · 멈춤 · 누움 확률 0.3~0.7 | `HOVER` 16~20 m · 10초 |
+| `STATE_UNCERTAIN` | 추적 3초 이상 · 멈춤 · 누움 확률 0.3~0.7 | **`REVIEW_BEARING`** 방위 ±90° 바꿔 16~20 m · 10초 (10-09) |
 | `COLOR_UNDETERMINED` | 외형 조건 있음 · 3회 이상 봤는데 판정 불가 | `CLOSER` 12~16 m · 3초 |
 | `LOW_EVIDENCE` | 1회 탐지 · 확신도 < 0.4 · 2초 넘게 안 보임 | `REVISIT` 16~20 m · 3초 |
 
+- `REVIEW_BEARING` (경로 계획이 읽는 값): `current_bearing_deg` = 지금 드론 → 사람 방위 (북 0 · 시계 + · 발끝 광선 · 좌표 보류여도 있음 · 자세 없으면 null) · `desired_bearings_deg` = [+90, −90] 두 후보 · `standoff_m` 16~20 (45° 에서 사람을 화면 가운데에 두는 수평 거리 ≈ 고도) · `target` 위경도
+  - 왜: 45° 에서 **시선 방향으로 누운 사람은 서 있는 사람과 박스가 같다** — 박스 · 관절점 · 기하 특징으로 원리상 못 가른다 (K1 · A3 ❌) → 옆에서 다시 보면 몸 길이가 드러난다
 - SIM 은 재관측 엔드포인트가 없다 → 만들기만 하고 버림 (`reobs_not_sent` 집계)
-- 검증 (`_학습 큐` 10-09 C): C1 similar 가산 이득 없음 → 지정 색만 · 점수 AUROC 0.77 · 자기 색 MATCH 0.38 · 오일치 0.08 · C2 단위 시험 13/13 (`python tests_reobserve.py`) · C3 가짜 백엔드 끝까지 (자세 10장 · 없음 6장 · SIM 4장) 계약 위반 0 · 재관측 전부 201 · 모든 관측에 `appearance.match`
+- 검증 (`_학습 큐` 10-09 C): C1 similar 가산 이득 없음 → 지정 색만 · 점수 AUROC 0.77 · 자기 색 MATCH 0.38 · 오일치 0.08 · C2 단위 시험 17/17 (`python tests_reobserve.py` · 방위 4개 더함) · C3 가짜 백엔드 끝까지 (자세 10장 · 없음 6장 · SIM 4장) 계약 위반 0 · 재관측 전부 201 · 모든 관측에 `appearance.match`
 
 ## SIM 어댑터 — 학교 SIM 업무 서비스 (10-07) · 시연은 이쪽
 
