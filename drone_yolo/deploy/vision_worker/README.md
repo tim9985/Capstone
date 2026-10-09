@@ -125,7 +125,28 @@ INGEST_BASE_URL=http://127.0.0.1:18080 INGEST_TOKEN=test INGEST_MODEL_DIR=<모�
 
 - **`GET /internal/v1/frames` 응답에 `pose` 가 없다** → 좌표 전부 `PENDING/NO_POSE` (worker 는 `pose` 가 오면 바로 씀 · 키: `lat · lon · alt_agl_m · roll_deg · pitch_deg · yaw_deg · gimbal_pitch_deg · gimbal_yaw_deg · gimbal_stabilized`)
 - 결과가 422/409 로 거절되면 그 프레임은 다시 처리하지 않는다 (outbox 전송기가 그 줄에서 멈춤 → 확인 · 격리는 사람이)
-- ~~상태 인지 (`state`)~~ → V4 절 · 근거 클립 (`clip_asset_id`) · 재관측 제안은 다음 판
+- ~~상태 인지 (`state`)~~ → V4 절 · ~~재관측 제안~~ → 아래 절 · 근거 클립 (`clip_asset_id`) 남음
+- **`mission.appearance_query` 가 프레임 응답에 없다** → worker 는 프레임 필드 `appearance_query` 또는 파일에서 읽는다 (아래)
+
+### 인상착의 비교 (C-0705) · 재관측 제안 (SD-0706) — 10-09
+
+| 파일 | 내용 |
+|---|---|
+| `app/vision_core/appearance.py` | 찾는 사람 상의 색 (`{"upper": ["red"]}` · 한글 이름도 됨) ↔ 후보 누적 색 → `appearance.match` = `{verdict: MATCH·PARTIAL·MISMATCH·UNDETERMINED, score, top}` · **순위 보조** (불일치여도 후보를 지우지 않음) |
+| `app/vision_core/reobserve.py` | 후보마다 재관측 제안 → `POST /internal/v1/vision/reobservations` (outbox · **이미 보낸 후보만** — 백엔드가 모르는 후보면 404) |
+
+- 외형 조건 읽는 곳: ① 프레임 필드 `appearance_query` ② 파일 `INGEST_APPEARANCE_FILE` (기본 `<scratch>/appearance_query.json` · `{"<임무 id>": {...}, "*": {...}}`)
+- 재관측 이유 (후보마다 이유당 1번 · 후보당 ≤3 · 임무당 분당 ≤6)
+
+| reason | 조건 | desired_view (권고 · 짐벌 −45° · 좌표 있으면 target) |
+|---|---|---|
+| `GEO_PENDING` | 확정 후보 · 처음 본 뒤 3초 · 다시 보면 풀리는 보류 사유 (`FOOT_AT_EDGE` · `RANGE_GT_200` 등 · `NO_POSE` 만이면 안 냄) | `APPROACH_CENTER` 16~20 m · 3초 |
+| `STATE_UNCERTAIN` | 추적 3초 이상 · 멈춤 · 누움 확률 0.3~0.7 | `HOVER` 16~20 m · 10초 |
+| `COLOR_UNDETERMINED` | 외형 조건 있음 · 3회 이상 봤는데 판정 불가 | `CLOSER` 12~16 m · 3초 |
+| `LOW_EVIDENCE` | 1회 탐지 · 확신도 < 0.4 · 2초 넘게 안 보임 | `REVISIT` 16~20 m · 3초 |
+
+- SIM 은 재관측 엔드포인트가 없다 → 만들기만 하고 버림 (`reobs_not_sent` 집계)
+- 검증 (`_학습 큐` 10-09 C): C1 similar 가산 이득 없음 → 지정 색만 · 점수 AUROC 0.77 · 자기 색 MATCH 0.38 · 오일치 0.08 · C2 단위 시험 13/13 (`python tests_reobserve.py`) · C3 가짜 백엔드 끝까지 (자세 10장 · 없음 6장 · SIM 4장) 계약 위반 0 · 재관측 전부 201 · 모든 관측에 `appearance.match`
 
 ## SIM 어댑터 — 학교 SIM 업무 서비스 (10-07) · 시연은 이쪽
 
