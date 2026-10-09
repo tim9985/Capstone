@@ -1,0 +1,275 @@
+{
+ "groups": 329,
+ "queries": [
+  "black",
+  "blue",
+  "gray",
+  "green",
+  "pink",
+  "purple",
+  "red",
+  "white",
+  "yellow"
+ ],
+ "posture_model_on_NOMAD": {
+  "b0 누움 예측 · 정답 lying": "392/1295 (0.303)",
+  "b0 누움 예측 · 정답 standing": "144/1984 (0.073)",
+  "v3 누움 예측 · 정답 lying": "304/1295 (0.235)",
+  "v3 누움 예측 · 정답 standing": "135/1984 (0.068)"
+ },
+ "conditions": {
+  "none": {
+   "all": {
+    "pairs": 2961,
+    "AUROC": 0.7591,
+    "own_MATCH": 0.378,
+    "own_UNDETERMINED": 0.048,
+    "false_MATCH_excl_similar": 0.061
+   },
+   "standing": {
+    "pairs": 1512,
+    "AUROC": 0.795,
+    "own_MATCH": 0.451,
+    "own_UNDETERMINED": 0.01,
+    "false_MATCH_excl_similar": 0.056
+   },
+   "lying": {
+    "pairs": 1449,
+    "AUROC": 0.7243,
+    "own_MATCH": 0.301,
+    "own_UNDETERMINED": 0.087,
+    "false_MATCH_excl_similar": 0.066
+   },
+   "by_distance": {
+    "a10": {
+     "pairs": 756,
+     "AUROC": 0.8083,
+     "own_MATCH": 0.441,
+     "own_UNDETERMINED": 0.0,
+     "false_MATCH_excl_similar": 0.071
+    },
+    "a30": {
+     "pairs": 729,
+     "AUROC": 0.7929,
+     "own_MATCH": 0.424,
+     "own_UNDETERMINED": 0.0,
+     "false_MATCH_excl_similar": 0.066
+    },
+    "a50": {
+     "pairs": 738,
+     "AUROC": 0.7506,
+     "own_MATCH": 0.343,
+     "own_UNDETERMINED": 0.03,
+     "false_MATCH_excl_similar": 0.061
+    },
+    "a70": {
+     "pairs": 738,
+     "AUROC": 0.6826,
+     "own_MATCH": 0.3,
+     "own_UNDETERMINED": 0.16,
+     "false_MATCH_excl_similar": 0.045
+    }
+   }
+  },
+  "gt": {
+   "all": {
+    "pairs": 2961,
+    "AUROC": 0.768,
+    "own_MATCH": 0.38,
+    "own_UNDETERMINED": 0.015,
+    "false_MATCH_excl_similar": 0.069
+   },
+   "standing": {
+    "pairs": 1512,
+    "AUROC": 0.795,
+    "own_MATCH": 0.451,
+    "own_UNDETERMINED": 0.01,
+    "false_MATCH_excl_similar": 0.056
+   },
+   "lying": {
+    "pairs": 1449,
+    "AUROC": 0.7393,
+    "own_MATCH": 0.306,
+    "own_UNDETERMINED": 0.02,
+    "false_MATCH_excl_similar": 0.084
+   },
+   "by_distance": {
+    "a10": {
+     "pairs": 756,
+     "AUROC": 0.8032,
+     "own_MATCH": 0.412,
+     "own_UNDETERMINED": 0.0,
+     "false_MATCH_excl_similar": 0.078
+    },
+    "a30": {
+     "pairs": 729,
+     "AUROC": 0.7846,
+     "own_MATCH": 0.424,
+     "own_UNDETERMINED": 0.0,
+     "false_MATCH_excl_similar": 0.066
+    },
+    "a50": {
+     "pairs": 738,
+     "AUROC": 0.7452,
+     "own_MATCH": 0.333,
+     "own_UNDETERMINED": 0.01,
+     "false_MATCH_excl_similar": 0.073
+    },
+    "a70": {
+     "pairs": 738,
+     "AUROC": 0.7315,
+     "own_MATCH": 0.35,
+     "own_UNDETERMINED": 0.05,
+     "false_MATCH_excl_similar": 0.061
+    }
+   }
+  },
+  "v3": {
+   "all": {
+    "pairs": 2961,
+    "AUROC": 0.7583,
+    "own_MATCH": 0.378,
+    "own_UNDETERMINED": 0.043,
+    "false_MATCH_excl_similar": 0.064
+   },
+   "standing": {
+    "pairs": 1512,
+    "AUROC": 0.7935,
+    "own_MATCH": 0.446,
+    "own_UNDETERMINED": 0.01,
+    "false_MATCH_excl_similar": 0.057
+   },
+   "lying": {
+    "pairs": 1449,
+    "AUROC": 0.7241,
+    "own_MATCH": 0.306,
+    "own_UNDETERMINED": 0.077,
+    "false_MATCH_excl_similar": 0.071
+   },
+   "by_distance": {
+    "a10": {
+     "pairs": 756,
+     "AUROC": 0.8048,
+     "own_MATCH": 0.441,
+     "own_UNDETERMINED": 0.0,
+     "false_MATCH_excl_similar": 0.076
+    },
+    "a30": {
+     "pairs": 729,
+     "AUROC": 0.7941,
+     "own_MATCH": 0.414,
+     "own_UNDETERMINED": 0.0,
+     "false_MATCH_excl_similar": 0.068
+    },
+    "a50": {
+     "pairs": 738,
+     "AUROC": 0.7486,
+     "own_MATCH": 0.354,
+     "own_UNDETERMINED": 0.02,
+     "false_MATCH_excl_similar": 0.064
+    },
+    "a70": {
+     "pairs": 738,
+     "AUROC": 0.6846,
+     "own_MATCH": 0.3,
+     "own_UNDETERMINED": 0.15,
+     "false_MATCH_excl_similar": 0.048
+    }
+   }
+  },
+  "b0": {
+   "all": {
+    "pairs": 2961,
+    "AUROC": 0.7596,
+    "own_MATCH": 0.367,
+    "own_UNDETERMINED": 0.033,
+    "false_MATCH_excl_similar": 0.068
+   },
+   "standing": {
+    "pairs": 1512,
+    "AUROC": 0.7927,
+    "own_MATCH": 0.441,
+    "own_UNDETERMINED": 0.01,
+    "false_MATCH_excl_similar": 0.059
+   },
+   "lying": {
+    "pairs": 1449,
+    "AUROC": 0.7267,
+    "own_MATCH": 0.291,
+    "own_UNDETERMINED": 0.056,
+    "false_MATCH_excl_similar": 0.077
+   },
+   "by_distance": {
+    "a10": {
+     "pairs": 756,
+     "AUROC": 0.8075,
+     "own_MATCH": 0.431,
+     "own_UNDETERMINED": 0.0,
+     "false_MATCH_excl_similar": 0.074
+    },
+    "a30": {
+     "pairs": 729,
+     "AUROC": 0.7932,
+     "own_MATCH": 0.404,
+     "own_UNDETERMINED": 0.0,
+     "false_MATCH_excl_similar": 0.07
+    },
+    "a50": {
+     "pairs": 738,
+     "AUROC": 0.7473,
+     "own_MATCH": 0.343,
+     "own_UNDETERMINED": 0.02,
+     "false_MATCH_excl_similar": 0.062
+    },
+    "a70": {
+     "pairs": 738,
+     "AUROC": 0.6834,
+     "own_MATCH": 0.29,
+     "own_UNDETERMINED": 0.11,
+     "false_MATCH_excl_similar": 0.064
+    }
+   }
+  }
+ },
+ "AUROC_diff_vs_none_95": {
+  "b0 all": [
+   -0.0038,
+   0.0056
+  ],
+  "b0 lying": [
+   -0.0052,
+   0.0122
+  ],
+  "b0 standing": [
+   -0.0045,
+   -0.0003
+  ],
+  "gt all": [
+   -0.0017,
+   0.0223
+  ],
+  "gt lying": [
+   -0.0045,
+   0.0413
+  ],
+  "gt standing": [
+   0.0,
+   0.0
+  ],
+  "v3 all": [
+   -0.0035,
+   0.0028
+  ],
+  "v3 lying": [
+   -0.0049,
+   0.0063
+  ],
+  "v3 standing": [
+   -0.0033,
+   0.0002
+  ]
+ },
+ "C4 판정 (③ v3 채택)": false,
+ "상한 (② − ①) AUROC": 0.0089,
+ "색 쪽 관절점 트랙": "접음 (상한 < 0.02)"
+}
