@@ -50,7 +50,7 @@ class Det:
         return out
 
 
-def run(det, data, mode, tag, op_conf=(0.3, 0.5, 0.7)):
+def run(det, data, mode, tag, op_conf=(0.3, 0.5, 0.7), prefix="ext_flypose"):
     imgs = sorted((data / "images").glob("*.jpg"))
     scores, tps, pimg, ngt_img, names = [], [], [], [], []
     n_gt = n_neg = 0; fp_neg = {c: 0 for c in op_conf}; ms = []
@@ -88,7 +88,7 @@ def run(det, data, mode, tag, op_conf=(0.3, 0.5, 0.7)):
     rp = {c: (round(float(tp[S[o] >= c][-1] / n_gt), 4) if (S >= c).any() else 0.0, round(float(prec[S[o] >= c][-1]), 4) if (S >= c).any() else 0.0) for c in op_conf}
     blk, nblk, ngrp = blocks_of(names); I, G = np.array(pimg, int), np.array(ngt_img, float)
     bs = boot_ap(S, T, I, G, blk, nblk, 1000); lo, hi = np.percentile(bs, [2.5, 97.5])
-    out = BASE / "runs_person" / f"ext_flypose_{mode}"; out.mkdir(parents=True, exist_ok=True)
+    out = BASE / "runs_person" / f"{prefix}_{mode}"; out.mkdir(parents=True, exist_ok=True)
     np.savez_compressed(out / f"eval_{tag}.npz", s=S, t=T, img=I, ngt=G, names=np.array(names))
     return {"set": tag, "mode": mode, "n_gt": n_gt, "AP50": round(ap, 4), "ci": [round(float(lo), 4), round(float(hi), 4)],
             "recall/precision@conf": rp, "fp_per_neg_frame@conf": {c: round(v / max(n_neg, 1), 3) for c, v in fp_neg.items()},
