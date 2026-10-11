@@ -12,7 +12,7 @@ tags: [실험, 탐지]
 
 - 평가셋 · 채점: test_v2 (WiSARD 숲) · test_obl (Okutama 비스듬) · test_kr (AI-Hub 한국 수직) — 101점 AP50 · IoU 0.5 · 같은 블록 짝 부트스트랩 (우리 교체 규칙: 한 셋 이상 > 0 그리고 어디서도 유의 손해 없음)
 - **학습 데이터 겹침 확인** — 세 평가셋 모두 외부 모델 학습에 없음 (FlyPose 검출기: VisDrone · Manipal · HIT-UAV · TinyPerson · SeaDronesSee · HERIDAL · VTSaR 등 11종)
-- FlyPose 검출기 (RT-DETRv2-S · WACV 2026 · 폼 신청 · 라이선스 문구 없음) — 공식 전처리 (통째 1280×1280) · TensorRT 24 ms
+- FlyPose 검출기 (RT-DETRv2-S · WACV 2026 · 폼 신청 · 폼 동의 = 「non-commercial and research purposes only」 (10-12 확인 · 저장소 LICENSE 없음)) — 공식 전처리 (통째 1280×1280) · TensorRT 24 ms
 - VisDrone (HF dronefreak · AGPL-3.0 · mAP50 1~3위 YOLOv9e · YOLO11x · YOLO26x) — pedestrian + people = 사람 · 우리 방식 (타일 4장 · imgsz 1280)
 
 ## 결과 (AP50 · soup_v7r2 대비 %p · 95 % 구간)

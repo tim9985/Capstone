@@ -97,10 +97,16 @@ def main():
     ap.add_argument("--boot", type=int, default=1000, help="블록 부트스트랩 횟수 (0 이면 끔)")
     ap.add_argument("--merge", choices=("nms", "edge"), default="nms",
                     help="타일 합치기 — nms: NMS 0.6 (지금까지) · edge: NMS 0.6 + 안쪽 경계 잘린 박스 지우기 (10-11 · tile_merge.py) → 태그 뒤에 _edge")
+    ap.add_argument("--ignore", default=None,
+                    help="무시 영역 json (10-12 · ignore_regions.py · test_v2 는 data/test_v2/ignore_v1.json) → 태그 뒤에 _ign")
     args = ap.parse_args()
     if args.merge == "edge":
         from tile_merge import edge_merge
         args.tag += "_edge"
+    ign = None
+    if args.ignore:
+        from ignore_regions import Ignore
+        ign = Ignore(args.ignore); args.tag += "_ign"
 
     import cv2
     from ultralytics import YOLO
@@ -153,6 +159,9 @@ def main():
             fp_neg += int((cf >= args.op_conf).sum())
         order = np.argsort(-cf)
         box, cf = box[order], cf[order]
+        out = np.zeros(len(box), bool)
+        if ign is not None:                  # 평가 구역으로 자르기 (정답도 그 경계에서 잘려 있다)
+            box, out = ign.prepare(p.stem, box)
         M = iou_mat(gt, box); used = np.zeros(len(gt), bool)
         for j in range(len(box)):
             k = -1
@@ -160,6 +169,8 @@ def main():
                 cand = np.where((M[:, j] >= 0.5) & ~used)[0]
                 if len(cand):
                     k = cand[np.argmax(M[cand, j])]
+            if k < 0 and ign is not None and ign.skip(p.stem, box[j], out[j]):
+                continue                     # 무시 영역 · 구역 밖 — 맞음도 오탐도 아님
             scores.append(float(cf[j])); tps.append(k >= 0); pimg.append(ii)
             if k >= 0:
                 used[k] = True

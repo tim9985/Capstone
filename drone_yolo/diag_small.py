@@ -1,7 +1,7 @@
 """
 diag_small.py — S 팔 설명용 표 (판정 아님 · chain_s.sh S4) → 마크다운을 표준 출력으로
 
-  모델마다 (soup_v7r2 대비) test_v2 장소별 AP50 (edge 합치기) · 크기별 재현율@0.15 (test_v2 · test_obl)
+  모델마다 (soup_v7r2 대비) test_v2 장소별 AP50 (edge 합치기 + 무시 영역 · 10-12) · 크기별 재현율@0.15 (test_v2 · test_obl)
   입력: runs_person/dumps/<모델>_<tag>.npz (dump_dets.py)
 실행: /home/se/miniconda3/envs/drone/bin/python diag_small.py v11s_f71 v11s_f72 [soup_v11s]
 """
@@ -10,8 +10,9 @@ from collections import defaultdict
 
 import numpy as np
 
-from analyze_dets import ap_at, match
+from analyze_dets import match
 from diag_tile_merge import run
+from ignore_regions import Ignore, ap_ign
 
 BINS = [(0, 24), (24, 36), (36, 50), (50, 80), (80, 1e9)]
 
@@ -26,6 +27,9 @@ def size_recall(dets, gts, op=0.15):
     return [hit[x][0] / max(hit[x][1], 1) for x in BINS]
 
 
+IGN = Ignore()
+
+
 def main():
     models = ["soup_v7r2"] + sys.argv[1:]
     print("\n## S4 설명용 — 장소별 · 크기별 (판정 아님)\n")
@@ -33,11 +37,11 @@ def main():
     for m in models:
         d, g, names = run(m, "test_v2", "edge")
         places = sorted({n.rsplit("_", 1)[0] for n in names})
-        pa = [ap_at(d, g, 0.5, sel=lambda i, p=p: names[i].rsplit("_", 1)[0] == p) for p in places]
+        pa = [ap_ign(d, g, names, IGN, sel=lambda i, p=p: names[i].rsplit("_", 1)[0] == p) for p in places]
         do, go, _ = run(m, "test_obl", "base")
         rows[m] = (pa, size_recall(d, g), size_recall(do, go))
     short = [p.split("_")[1] + ("_" + p[-4:] if p[-4:].isdigit() else "") for p in places]
-    print("| 모델 | " + " | ".join(f"v2 {s}" for s in short) + " |\n|---|" + "---|" * len(short))
+    print("test_v2 장소별 AP50 (edge + 무시 영역)\n\n| 모델 | " + " | ".join(f"v2 {s}" for s in short) + " |\n|---|" + "---|" * len(short))
     for m, (pa, _, _) in rows.items():
         print(f"| {m} | " + " | ".join(f"{x:.3f}" for x in pa) + " |")
     lab = [f"{lo}-{hi if hi < 1e9 else '∞'}" for lo, hi in BINS]

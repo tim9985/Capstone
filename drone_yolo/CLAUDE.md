@@ -52,7 +52,8 @@
 - ⚠ `--hyp` 없이 `--stage 1` 만 주면 **옛 수직 전제**(degrees 180 · flipud 0.5 · imgsz 960) 로 돈다 — 체인 호환용
 - 커스텀 구조는 `--model-yaml` + `.load()` · yaml **파일명에 크기 글자**가 있어야 한다 (`yolo11m-p2.yaml`, 없으면 nano 로 학습된다)
 - 추론: 1920 → **타일 4장 1280×720 (겹침 50 %) + NMS 0.6** · 항상 **FP16** · TensorRT 는 `imgsz=[736,1280]` (정수 하나면 정사각 엔진) · 엔진은 GPU 마다 재빌드
-- ⚠ NMS 0.6 만으론 **타일 경계에서 잘린 박스**가 남는다 (온전한 박스와 IoU < 0.6) → 판정은 test_v2 · test_kr 을 `eval_test_v2.py --merge edge` (태그 `_edge` · `tile_merge.py`) 로도 잰다 (10-11 I1 · soup_v7r2 그대로 v2 +0.8 · kr +2.2 %p) · worker 반영은 사용자 확인 뒤
+- ⚠ NMS 0.6 만으론 **타일 경계에서 잘린 박스**가 남는다 (온전한 박스와 IoU < 0.6) → 판정은 test_v2 · test_kr 을 `eval_test_v2.py --merge edge` (태그 `_edge` · `tile_merge.py`) 로 잰다 (10-11 I1 · soup_v7r2 그대로 v2 +0.8 · kr +2.2 %p) · worker 는 10-12 부터 기본 켜짐 (파이프라인 1.1)
+- **test_v2 는 무시 영역으로 판정** (10-12 사용자 결정) — `--merge edge --ignore data/test_v2/ignore_v1.json` (태그 `test_v2_edge_ign` · `ignore_regions.py`) · Carnation_Inspire 는 x < 1605 만 라벨 · 라벨 없는 사람 14 · 애매 27 트랙 · 반복 폭 v2 **3.3 %p** · ⚠ 확신 높은 오탐 대부분은 라벨 구멍이 아니라 **물체** (수레 · 상자 · 표지물)
 - AI-Hub 182 는 **학습용** — 가림이 없어 검증에 쓰면 부풀려진다 (AP50 0.995)
 - Okutama 는 **평가 전용** (test_obl) · WiSARD val 앞 291장은 음성 — `--limit` 으로 앞에서 자르지 않는다
 - `det_fullframe` 등 옛 시험셋 칸 이름(s38 · l128)은 **사람 px** 다 — 붙어 있는 "54° · 25 m" 표기는 틀린 가정
