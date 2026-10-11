@@ -8,7 +8,7 @@ detector.py — 사람 1클래스 탐지 (운용 설정 · 2026-10-05)
   백엔드: TensorRT 엔진 (FP16 · [736,1280] · batch 4) 이 있으면 엔진 · 없으면 .pt FP16
   엔진은 GPU · TensorRT 버전마다 따로 만든다 → tools/build_engine.py
 
-  edge_merge (10-11 · 기본 꺼짐 · 켜는 건 비전 담당 확인 뒤): NMS 0.6 만으론 타일 안쪽 경계에서 잘린 박스가 남는다
+  edge_merge (10-11 · **10-12 기본 켜짐** · 끄려면 edge_merge=False): NMS 0.6 만으론 타일 안쪽 경계에서 잘린 박스가 남는다
   (온전한 박스와 IoU < 0.6 → 한 사람이 후보 둘) → 잘린 박스가 다른 타일의 더 큰 박스 안에 60 % 이상이면 지우고 점수는 큰 박스로
   soup_v7r2 그대로 test_v2 AP50 +0.8 · test_kr +2.2 %p (drone_yolo/tile_merge.py 와 같은 규칙)
 """
@@ -45,7 +45,7 @@ def edge_merge(b, s, t, e=3.0, thr=0.6):
 
 
 class PersonDetector:
-    def __init__(self, weights, engine=None, conf=0.15, nms_iou=0.6, imgsz=1280, edge_merge=False):
+    def __init__(self, weights, engine=None, conf=0.15, nms_iou=0.6, imgsz=1280, edge_merge=True):
         from ultralytics import YOLO
         self.conf, self.nms_iou, self.imgsz, self.edge_merge = conf, nms_iou, imgsz, edge_merge
         self.weights = Path(weights)

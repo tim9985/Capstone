@@ -19,7 +19,7 @@ for name in args[1:]:
     src = RUNS / name / "weights" / "best.pt"; d = out / name; d.mkdir(exist_ok=True)
     shutil.copy2(src, d / "best.pt")
     h = hashlib.sha256((d / "best.pt").read_bytes()).hexdigest()
-    card = {"name": name, "sha256": h, "framework": "ultralytics 8.4.102 · YOLO11m", "pipeline_version": "vision_worker 1.0 (타일 4장 · NMS 0.6 · conf 0.15)",
+    card = {"name": name, "sha256": h, "framework": "ultralytics 8.4.102 · YOLO11m", "pipeline_version": "vision_worker 1.1 (타일 4장 · NMS 0.6 + 경계 잘린 박스 지우기 · conf 0.15)",
             "environment": "REAL", "ap50": {t: ap(MET / f"{t}_{name}.csv") for t in ("test_v2", "test_obl", "test_kr")}}
     (d / "model.json").write_text(json.dumps(card, ensure_ascii=False, indent=1))
     print(name, h[:16], card["ap50"])

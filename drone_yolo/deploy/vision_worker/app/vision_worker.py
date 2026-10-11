@@ -23,7 +23,7 @@ CONTROL = Path(os.environ.get("VISION_CONTROL", str(ROOT / "vision-control.json"
 RTSP_BASE = os.environ.get("VISION_RTSP_BASE", "rtsp://127.0.0.1:18554")
 FPS = float(os.environ.get("VISION_FPS", "10"))
 CONF = float(os.environ.get("VISION_CONF", "0.15"))
-EDGE_MERGE = os.environ.get("VISION_EDGE_MERGE", "0") == "1"   # 10-11 타일 경계 잘린 박스 지우기 (기본 꺼짐)
+EDGE_MERGE = os.environ.get("VISION_EDGE_MERGE", "1") == "1"   # 타일 경계 잘린 박스 지우기 (10-12 기본 켜짐 · 끄기 = 0)
 BUILD_ENGINE = os.environ.get("VISION_BUILD_ENGINE", "1") == "1"
 COLOR_EVERY_S = float(os.environ.get("VISION_COLOR_EVERY_S", "0.5"))
 STATUS = ROOT / "worker-status.json"
