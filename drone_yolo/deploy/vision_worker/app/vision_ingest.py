@@ -70,7 +70,7 @@ def load_detector():
     act = json.loads((MODELS / "active.json").read_text())
     d = MODELS / act["name"]
     eng = next(iter(sorted(d.glob("best*.engine"))), None)
-    det = PersonDetector(d / "best.pt", engine=eng, conf=float(act.get("conf", 0.15)))
+    det = PersonDetector(d / "best.pt", engine=eng, conf=float(act.get("conf", 0.15)), edge_merge=bool(act.get("edge_merge", False)))
     return det, act
 
 

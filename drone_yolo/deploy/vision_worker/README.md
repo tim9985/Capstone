@@ -104,6 +104,7 @@ rm data/vision-control.json                                        # 멈춤
 /models/soup_v9x2/…           후보
 ```
 - 교체 = `active.json` 의 `name` · `model_config_id` 를 바꾸고 vision 재시작 · 후보마다 `POST /api/v1/configs/models` 로 한 번 등록 (`environment: REAL` · `pipeline_version`)
+- **타일 경계 잘린 박스 지우기** (10-11 · 기본 꺼짐) — `active.json` 에 `"edge_merge": true` (ingest) · 환경변수 `VISION_EDGE_MERGE=1` (worker) · 한 사람이 타일 두 장에서 잘린 박스 + 온전한 박스로 잡혀 후보가 둘 되는 것을 막는다 · soup_v7r2 그대로 test_v2 AP50 +0.8 · test_kr +2.2 %p · 확인 `python tests_tile_merge.py` (GPU 없이 · 연구 규칙과 같은지까지)
 
 ### 서버 밖 시험 (10-07 통과)
 
