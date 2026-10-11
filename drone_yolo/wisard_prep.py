@@ -161,7 +161,11 @@ def process_frame(job):
         ref = float(np.median(longs))
         if ref <= 1:
             continue
-        if TARGET_DIST == "loguniform":
+        if TARGET_DIST == "native":
+            # 10-11 (T1): 그림을 1080p 로 맞춘 원래 크기 ±15 % — 평가셋 (test_v2 = WiSARD 1080p 원본) · 운용 카메라와 같은 크기 분포
+            #   94 px 규칙은 54° 렌즈 가정 + 2.2배 넘게 키워야 하는 고고도 프레임을 버렸다 (작은 사람이 학습에서 빠짐)
+            target = ref * (1080.0 / H) * rnd.uniform(0.85, 1.15)
+        elif TARGET_DIST == "loguniform":
             # 원본마다 만들 수 있는 크기 범위와 목표 범위의 교집합에서 로그 균등 (nomad_prep.py 와 같은 규칙)
             s_fill = max(CROP_W / W, CROP_H / H)
             lo, hi = max(TARGET_MIN, ref * s_fill), min(TARGET_MAX, ref * MAX_UPSCALE)
@@ -242,7 +246,7 @@ def main():
                     help="시간분할 시 뒤쪽 몇 비율을 val 로 쓸지 (기본 0.3)")
     ap.add_argument("--workers", type=int, default=0,
                     help="병렬 워커 수. 0이면 CPU 코어 수 그대로 (서버는 16코어)")
-    ap.add_argument("--target-dist", default="jitter", choices=("jitter", "loguniform"),
+    ap.add_argument("--target-dist", default="jitter", choices=("jitter", "loguniform", "native"),
                     help="jitter = --target-px × SCALE_JITTER (기존) · loguniform = [--target-min, --target-max] 로그 균등")
     ap.add_argument("--target-min", type=float, default=22.0)
     ap.add_argument("--target-max", type=float, default=120.0)

@@ -14,6 +14,9 @@ LINE = re.compile(r"^(test_\w+)\s+(\S+) − (\S+) = ([+-][\d.]+) %p\s+\(95 % ([+
 
 
 def main():
+    if sys.argv[1].startswith("--band="):          # 10-11: 평가셋 · 반복 폭을 통째로 바꿀 때 (예: --band=test_obl:3.1,test_v2_edge:2.9,test_kr_edge:1.2)
+        band = {k: float(v) for k, v in (x.split(":") for x in sys.argv.pop(1)[7:].split(","))}
+        BAND.clear(); BAND.update(band)
     lines = open(sys.argv[1], encoding="utf-8").read().splitlines()
     res = {}
     for l in lines:

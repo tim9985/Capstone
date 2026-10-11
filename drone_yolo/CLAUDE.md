@@ -2,7 +2,7 @@
 
 「자율 정찰 드론 관제 시스템」의 비전 코드 — **사람 1클래스 탐지 · 좌표 산정 · 상의 색상 비교**.
 경로는 Capstone 저장소 루트 기준. **수치·경위의 원본은 볼트(`obsidian/`)** 이고, 여기에는 작업 규칙과 함정만 둔다.
-갱신 2026-10-07
+갱신 2026-10-11
 
 ## 1. 먼저 볼 곳
 
@@ -52,6 +52,7 @@
 - ⚠ `--hyp` 없이 `--stage 1` 만 주면 **옛 수직 전제**(degrees 180 · flipud 0.5 · imgsz 960) 로 돈다 — 체인 호환용
 - 커스텀 구조는 `--model-yaml` + `.load()` · yaml **파일명에 크기 글자**가 있어야 한다 (`yolo11m-p2.yaml`, 없으면 nano 로 학습된다)
 - 추론: 1920 → **타일 4장 1280×720 (겹침 50 %) + NMS 0.6** · 항상 **FP16** · TensorRT 는 `imgsz=[736,1280]` (정수 하나면 정사각 엔진) · 엔진은 GPU 마다 재빌드
+- ⚠ NMS 0.6 만으론 **타일 경계에서 잘린 박스**가 남는다 (온전한 박스와 IoU < 0.6) → 판정은 test_v2 · test_kr 을 `eval_test_v2.py --merge edge` (태그 `_edge` · `tile_merge.py`) 로도 잰다 (10-11 I1 · soup_v7r2 그대로 v2 +0.8 · kr +2.2 %p) · worker 반영은 사용자 확인 뒤
 - AI-Hub 182 는 **학습용** — 가림이 없어 검증에 쓰면 부풀려진다 (AP50 0.995)
 - Okutama 는 **평가 전용** (test_obl) · WiSARD val 앞 291장은 음성 — `--limit` 으로 앞에서 자르지 않는다
 - `det_fullframe` 등 옛 시험셋 칸 이름(s38 · l128)은 **사람 px** 다 — 붙어 있는 "54° · 25 m" 표기는 틀린 가정
@@ -118,6 +119,8 @@
 | `soup.py` | 같은 구조 모델 가중치 평균 → `runs_person/<이름>/weights/best.pt` |
 | `analyze_models.py` · `diag_misses.py` | 모델 차이 · 놓친 원인 · 크기/자세/가림 층 · 박스 너비비 (`--out=파일명` 으로 따로 저장) |
 | `eval_test_v2.py` | **NFR-V03 판정** — 1920 · 타일 4장 · NMS 0.6 · FP16 · AP50 → `metrics/test_v2_<이름>.csv` |
+| `dump_dets.py` · `analyze_dets.py` · `diag_tile_merge.py` · `tile_merge.py` | 평가셋 검출 덤프 → 오프라인 진단 (IoU별 AP · 오탐 종류 · 장소 · 크기 · 앙상블) · 타일 합치기 규칙 (10-11) |
+| `make_v11_small.py` · `chain_s.sh` · `diag_small.py` | S 팔 — 야생 지형 작은 사람 (2×2 칸에 줄여 넣기) · 반복 ×2 → 수프 · 설명용 표 |
 | `make_testset_v2.py` · `make_place_split.py` | 장소 분리 평가셋 · 학습 목록 `configs/lists/` |
 | `chain_v12.sh` · `chain_util.py` | 데이터 고르기 → 반복 → 수프 자동 체인 (`pick` · `mklist`) · 최신 체인 `chain_v16.sh` (v9 ×2 → 수프 · 층별) |
 | `bench_trt.py` · `f2_tune.py` | NFR-V01 (TensorRT 엔진 빌드 · 한 장 ms) · NFR-V05 (val 로 F2 임계값) |

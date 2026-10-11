@@ -95,7 +95,12 @@ def main():
     ap.add_argument("--tag", default="test_v2", help="결과 파일 접두사 → metrics/<tag>_<모델>.csv")
     ap.add_argument("--imgsz", type=int, default=1280, help="모델 입력 크기 (single 모드에서 1920 이면 원본 그대로 한 장)")
     ap.add_argument("--boot", type=int, default=1000, help="블록 부트스트랩 횟수 (0 이면 끔)")
+    ap.add_argument("--merge", choices=("nms", "edge"), default="nms",
+                    help="타일 합치기 — nms: NMS 0.6 (지금까지) · edge: NMS 0.6 + 안쪽 경계 잘린 박스 지우기 (10-11 · tile_merge.py) → 태그 뒤에 _edge")
     args = ap.parse_args()
+    if args.merge == "edge":
+        from tile_merge import edge_merge
+        args.tag += "_edge"
 
     import cv2
     from ultralytics import YOLO
@@ -124,20 +129,22 @@ def main():
             offs, tiles = [(0, 0)], [img]
         res = model.predict(tiles, imgsz=args.imgsz, conf=args.conf_min, batch=len(tiles),
                             quantize="fp16", verbose=False)
-        box, cf = [], []
-        for (ox, oy), r in zip(offs, res):
+        box, cf, tl = [], [], []
+        for k, ((ox, oy), r) in enumerate(zip(offs, res)):
             b = r.boxes
             if not len(b):
                 continue
             box.append(b.xyxy.cpu().numpy() + np.array([ox, oy, ox, oy], np.float32))
-            cf.append(b.conf.cpu().numpy())
+            cf.append(b.conf.cpu().numpy()); tl.append(np.full(len(b), k if len(offs) > 1 else -1))
         if box:
-            box = np.concatenate(box); cf = np.concatenate(cf)
+            box = np.concatenate(box); cf = np.concatenate(cf); tl = np.concatenate(tl)
             keep = cv2.dnn.NMSBoxes(
                 [[float(x1), float(y1), float(x2 - x1), float(y2 - y1)] for x1, y1, x2, y2 in box],
                 cf.tolist(), args.conf_min, 0.6)
             keep = np.array(keep).ravel().astype(int) if len(keep) else np.array([], int)
-            box, cf = box[keep], cf[keep]
+            box, cf, tl = box[keep], cf[keep], tl[keep]
+            if args.merge == "edge":
+                box, cf = edge_merge(box, cf, tl, iw, ih)
         else:
             box, cf = np.zeros((0, 4), np.float32), np.zeros(0, np.float32)
 

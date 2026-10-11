@@ -42,3 +42,13 @@ test_v2,soup_v7r2,soup_ft3b,-0.025,-0.048,-0.0028,72,차이 있음
 test_v2,v10_f61,v10_f62,0.0293,0.0156,0.0489,72,차이 있음
 test_v2,soup_v7r2,v10_f61,-0.0035,-0.0326,0.0287,72,구분 안 됨
 test_v2,soup_v7r2,v10_f62,0.0258,0.0037,0.0578,72,차이 있음
+test_v2,soup_v7r2,ext_flypose_official,0.0643,0.0221,0.0988,72,차이 있음
+test_v2,soup_v7r2,ext_flypose_rgb,0.0699,0.0304,0.1015,72,차이 있음
+test_v2,soup_v7r2,ext_flypose_tile,0.102,0.057,0.1386,72,차이 있음
+test_v2,soup_v7r2,ext_visdrone_yolov9e_tile,-0.136,-0.2057,-0.0664,72,차이 있음
+test_v2,soup_v7r2,ext_visdrone_yolo11x_tile,-0.1683,-0.2546,-0.091,72,차이 있음
+test_v2,soup_v7r2,ext_visdrone_yolo26x_tile,-0.1239,-0.2014,-0.0486,72,차이 있음
+test_v2,soup_v7r2,ext_visdrone_yolo11x_official,-0.0686,-0.1326,-0.0138,72,차이 있음
+test_v2,soup_v7r2_base,soup_v7r2_edge,0.0082,0.0034,0.0112,72,차이 있음
+test_v2,soup_v7r2,soup_v7r2_base,-0.0002,-0.0011,0.0001,72,구분 안 됨
+test_v2,soup_v7r2,soup_v7r2@test_v2_edge,0.0083,0.0035,0.0113,72,차이 있음
