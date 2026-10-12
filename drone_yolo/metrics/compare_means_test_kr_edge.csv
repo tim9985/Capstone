@@ -1,0 +1,2 @@
+tag,base_group,model_group,diff,lo,hi,blocks,verdict
+test_kr_edge,"v7,v7_r2,v7_r3,v7_r4","v11s_f71,v11s_f72",0.0079,0.003,0.015,61,차이 있음

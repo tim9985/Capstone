@@ -39,7 +39,7 @@ RAW = BASE / "data" / "raw"
 OUT = BASE / "data" / "det_v12"
 LISTS = BASE / "configs" / "lists"
 CW, CH = 1280, 720
-VIS_MIN, NEG_EVERY = 0.25, 12            # 잘린 사람 라벨 기준 · 선택 프레임 12장마다 음성 창 1장 (≈ 8 %)
+VIS_MIN, NEG_EVERY, PX_MIN = 0.25, 8, 10.0   # 잘린 사람 라벨 기준 · 선택 프레임 8장마다 음성 창 1장 · 긴 변 10 px 미만은 가림 (운용 · 평가 밖 · VisDrone 군중)
 TEST_WISARD = ("Karen", "Carnation")
 WISARD_VAL = ("200426_SkookumCreek_Mavic_Mini_VIS_0006", "210924_FHL_Enterprise_VIS_0403", "210924_FHL_Enterprise_VIS_0409")
 
@@ -186,8 +186,8 @@ def src_aihub():
 # 출처 → (어댑터, 학습 양성 창 예산, 시퀀스당 상한, val 창 상한)
 SOURCES = {
     "visdrone_obl": (None, 3000, 40, 300), "visdrone_nadir": (None, 1200, 40, 0), "unicamp": (src_unicamp, 450, 150, 60),
-    "niicu": (src_niicu, 500, 250, 0), "nomad": (src_nomad, 3000, 15, 300), "sard": (src_sard, 1500, 20, 0),
-    "archangel": (src_archangel, 1500, 20, 0), "wisard": (src_wisard, 2800, 110, 300), "heridal": (src_heridal, 1600, 10, 0),
+    "niicu": (src_niicu, 500, 250, 0), "nomad": (src_nomad, 3000, 25, 300), "sard": (src_sard, 1500, 20, 0),
+    "archangel": (src_archangel, 1500, 20, 0), "wisard": (src_wisard, 2800, 125, 300), "heridal": (src_heridal, 1600, 10, 0),
     "ladd": (src_ladd, 900, 20, 0), "aihub": (src_aihub, 2500, 10, 300),
 }
 
@@ -249,8 +249,16 @@ def window(job):
     b = b * s; ign = ign * s
     # 타일처럼 창 위치를 고르게 — 양성은 사람이 하나 이상 (보이는 넓이 ≥ 50 %) · 음성은 사람과 안 겹치게
     best = None
-    for _ in range(30):
-        x0 = r.randint(0, max(nw - CW, 0)); y0 = r.randint(0, max(nh - CH, 0))
+    big = [i for i in range(len(b)) if max(b[i, 2] - b[i, 0], b[i, 3] - b[i, 1]) >= PX_MIN]
+    for t in range(30):
+        if not want_neg and big and t < 25:                        # 사람 하나가 창에 온전히 드는 위치들 중 고르게 (타일 위치처럼 · 가운데 고정 아님)
+            x1, y1, x2, y2 = b[r.choice(big)]
+            lo_x, hi_x = max(0, int(math.ceil(x2)) - CW), min(int(x1), max(nw - CW, 0))
+            lo_y, hi_y = max(0, int(math.ceil(y2)) - CH), min(int(y1), max(nh - CH, 0))
+            x0 = r.randint(lo_x, hi_x) if hi_x >= lo_x else r.randint(0, max(nw - CW, 0))
+            y0 = r.randint(lo_y, hi_y) if hi_y >= lo_y else r.randint(0, max(nh - CH, 0))
+        else:
+            x0 = r.randint(0, max(nw - CW, 0)); y0 = r.randint(0, max(nh - CH, 0))
         if len(b):
             ix = np.clip(np.minimum(b[:, 2], x0 + CW) - np.maximum(b[:, 0], x0), 0, None)
             iy = np.clip(np.minimum(b[:, 3], y0 + CH) - np.maximum(b[:, 1], y0), 0, None)
@@ -272,7 +280,7 @@ def window(job):
         if v <= 0:
             continue
         cx1, cy1, cx2, cy2 = max(x1 - x0, 0), max(y1 - y0, 0), min(x2 - x0, CW), min(y2 - y0, CH)
-        if v >= VIS_MIN and cx2 - cx1 >= 2 and cy2 - cy1 >= 2:
+        if v >= VIS_MIN and max(cx2 - cx1, cy2 - cy1) >= PX_MIN and min(cx2 - cx1, cy2 - cy1) >= 2:
             lines.append(f"0 {(cx1 + cx2) / 2 / CW:.6f} {(cy1 + cy2) / 2 / CH:.6f} {(cx2 - cx1) / CW:.6f} {(cy2 - cy1) / CH:.6f}")
             px.append(max(cx2 - cx1, cy2 - cy1))
         else:                                                      # 잘린 조각 · 너무 작은 사람 → 가림 (라벨 없는 사람을 배경으로 배우지 않게)
@@ -290,6 +298,18 @@ def window(job):
     cv2.imwrite(str(oi), crop, [cv2.IMWRITE_JPEG_QUALITY, 92])
     (OUT / "labels" / sp / f"{stem}.txt").write_text("\n".join(lines) + ("\n" if lines else ""))
     return dict(path=str(oi), src=rec["src"], dom=rec["dom"], split=sp, neg=want_neg, px=px, s=s, masked=nmask)
+
+
+def has_person(rec):
+    """라벨에 사람이 있나 (싸게) — aihub · 크롭은 있다고 본다"""
+    k, l = rec["kind"], rec["lab"]
+    if k in ("aihub", "yolo_crop"):
+        return True
+    if not Path(l).exists():
+        return False
+    if k == "visdrone":
+        return any(len(t) >= 6 and t[5] in ("1", "2") for t in (ln.strip().split(",") for ln in open(l)))
+    return any(len(ln.split()) == 5 for ln in open(l, encoding="utf-8", errors="replace"))
 
 
 def select(recs, budget, cap, rng):
@@ -328,18 +348,21 @@ def main():
         if a.only and name not in a.only.split(","):
             continue
         recs = pool_by_src.get(name, [])
-        tr = [x for x in recs if x["split"] == "train"]; va = [x for x in recs if x["split"] == "val"]
-        sel = select(tr, int(budget * 1.15), cap, rng)            # 양성 실패 (사람 없음 · 창 못 찾음) 여유 15 %
+        tr_all = [x for x in recs if x["split"] == "train"]; va = [x for x in recs if x["split"] == "val" and has_person(x)]
+        tr = [x for x in tr_all if has_person(x)]; empty = [x for x in tr_all if not has_person(x)]
+        sel = select(tr, int(budget * 1.10), cap, rng)            # 양성 실패 여유 10 %
         vsel = select(va, vcap, max(1, math.ceil(vcap / max(len({x["seq"] for x in va}), 1))), rng) if vcap else []
-        plan[name] = {"원본 학습 프레임": len(tr), "원본 val 프레임": len(va), "시퀀스": len({x["seq"] for x in tr}),
-                      "고른 학습": len(sel), "고른 val": len(vsel)}
+        plan[name] = {"원본 학습 프레임 (사람 있음)": len(tr), "빈 프레임": len(empty), "원본 val 프레임": len(va),
+                      "시퀀스": len({x["seq"] for x in tr}), "고른 학습": len(sel), "고른 val": len(vsel)}
+        negsrc = select(empty, len(sel) // NEG_EVERY, max(1, cap // 4), rng) if empty else []
         for i, x in enumerate(sel):
             jobs.append((x, 0, False))
-            if i % NEG_EVERY == 0:
+            if not negsrc and i % NEG_EVERY == 0:                  # 빈 프레임이 없으면 사람 있는 그림의 빈 자리
                 jobs.append((x, 1, True))
-        if name.startswith("visdrone") and len(sel) < budget * 1.15:  # VisDrone DET 은 시퀀스당 그림이 적다 → 큰 그림 (창 2장 넘는 넓이) 에서 다른 위치 창 하나 더
-            big = [x for x in sel if (lambda w, h: w * h >= 2 * CW * CH)(*imsize(x["img"]))]
-            extra = big[: int(budget * 1.15) - len(sel)]
+        jobs += [(x, 1, True) for x in negsrc]; plan[name]["음성 (빈 프레임)"] = len(negsrc)
+        if name in ("visdrone_obl", "visdrone_nadir", "heridal") and len(sel) < budget * 1.10:  # 그림이 적은 출처 → 큰 그림 (창 2장 넘는 넓이) 에서 다른 위치 창 하나 더
+            big = [x for x in sel if (lambda w, h: w * h * (0.47 ** 2 if name == "heridal" else 1) >= 2 * CW * CH)(*imsize(x["img"]))]
+            extra = big[: int(budget * 1.10) - len(sel)]
             jobs += [(x, 2, False) for x in extra]; plan[name]["큰 그림 둘째 창"] = len(extra)
         jobs += [(x, 0, False) for x in vsel]
     print(json.dumps(plan, ensure_ascii=False, indent=1), flush=True)
