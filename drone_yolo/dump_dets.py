@@ -16,7 +16,7 @@ import numpy as np
 from eval_test_v2 import TH, TILES, TW, load_gt
 
 BASE = Path(__file__).resolve().parent
-SETS = {t: BASE / "data" / t for t in ("test_v2", "test_obl", "test_kr", "test_ladd", "test_nii", "test_cy", "test_auair")}
+SETS = {t: BASE / "data" / t for t in ("test_v2", "test_obl", "test_kr", "test_ladd", "test_nii", "test_cy", "test_auair")} | {"val_v12": BASE / "data" / "val_v12_set"}
 OUT = BASE / "runs_person" / "dumps"
 
 
