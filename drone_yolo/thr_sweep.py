@@ -108,7 +108,6 @@ def main():
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    plt.rcParams["font.family"] = ["NanumGothic", "DejaVu Sans"]
     fig, ax = plt.subplots(1, 4, figsize=(18, 4.2))
     cols = {"test_v2": "#2a9d8f", "test_obl": "#e76f51", "test_kr": "#264653", "val_v12": "#8d99ae"}
     for m, ls in zip(models, ("-", "--", ":")):
@@ -121,9 +120,9 @@ def main():
             ax[2].plot(TH, [v["F2"] for v in y], ls, color=c)
         if "test_auair" in res[m]:
             ax[3].plot(TH, [res[m]["test_auair"][str(t)]["음성장_오탐"] for t in TH], ls, color="k", label=m)
-    for a, tt in zip(ax, ("정밀도", "재현율", "F2", "AU-AIR 사람 없는 장 오탐 (건/장)")):
-        a.set_title(tt); a.set_xlabel("임계값"); a.grid(alpha=.3); a.axvline(0.15, color="gray", lw=.8)
-    ax[3].axhline(1.0, color="r", lw=.8); ax[3].legend(fontsize=7); ax[0].legend(fontsize=6)
+    for a, tt in zip(ax, ("Precision", "Recall", "F2", "AU-AIR FP per person-free frame")):
+        a.set_title(tt); a.set_xlabel("confidence threshold"); a.grid(alpha=.3); a.axvline(0.15, color="gray", lw=.8)
+    ax[3].axhline(1.0, color="r", lw=.8); ax[3].set_ylim(0, 5); ax[3].legend(fontsize=7); ax[0].legend(fontsize=6)
     out = BASE.parent / "obsidian" / "_첨부" / "fig_임계값_스윕.png"
     fig.tight_layout(); fig.savefig(out, dpi=110); print("그림", out)
 
