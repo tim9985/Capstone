@@ -1,0 +1,10 @@
+tag,base,model,diff,lo,hi,blocks,verdict
+test_kr_edge,soup_v7r2,v11s_f71,0.0097,-0.0,0.0102,61,구분 안 됨
+test_kr_edge,v11s_f71,v11s_f72,-0.0098,-0.0103,0.0001,61,구분 안 됨
+test_kr_edge,soup_v7r2,v11s_f71,0.0097,-0.0,0.0102,61,구분 안 됨
+test_kr_edge,soup_v7r2,v11s_f72,-0.0001,-0.0095,0.0091,61,구분 안 됨
+test_kr_edge,soup_v7r2,v11s_f71,0.0097,-0.0,0.0102,61,구분 안 됨
+test_kr_edge,soup_v7r2,v11s_f72,-0.0001,-0.0095,0.0091,61,구분 안 됨
+test_kr_edge,v12_f91,v12_f92,-0.0003,-0.0005,-0.0,61,차이 있음
+test_kr_edge,soup_v7r2,v12_f92_swa,0.0098,0.0,0.0105,61,차이 있음
+test_kr_edge,soup_v7r2,v12_f91_swa,0.0101,0.0003,0.0106,61,차이 있음

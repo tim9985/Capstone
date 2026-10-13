@@ -1,2 +1,5 @@
 tag,base_group,model_group,diff,lo,hi,blocks,verdict
 test_kr_edge,"v7,v7_r2,v7_r3,v7_r4","v11s_f71,v11s_f72",0.0079,0.003,0.015,61,차이 있음
+test_kr_edge,"v7,v7_r2,v7_r3,v7_r4","v12_f91,v12_f92",0.013,0.0058,0.0183,61,차이 있음
+test_kr_edge,"v7,v7_r2,v7_r3,v7_r4","v12_f91_swa,v12_f92_swa",0.013,0.0058,0.0183,61,차이 있음
+test_kr_edge,"v12_f91,v12_f92","v12_f91_swa,v12_f92_swa",-0.0,-0.0,0.0,61,구분 안 됨

@@ -1,0 +1,4 @@
+tag,base,model,diff,lo,hi,blocks,verdict
+test_v2_edge,v11s_f71,v11s_f72,0.007,-0.0103,0.0198,72,구분 안 됨
+test_v2_edge,soup_v7r2,v11s_f71,-0.0051,-0.0252,0.02,72,구분 안 됨
+test_v2_edge,soup_v7r2,v11s_f72,0.0019,-0.0221,0.027,72,구분 안 됨
