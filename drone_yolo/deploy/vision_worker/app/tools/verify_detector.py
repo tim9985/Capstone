@@ -2,7 +2,7 @@
 verify_detector.py — 컨테이너에서도 우리 수치가 나오는지 확인 (인수 검증)
 
   평가셋 (images/ + labels/ · YOLO 형식 · 1920×1080) 에 app.vision_core.detector 를 돌려
-  AP50 (101점 · 확신도 ≥0.01 · IoU 0.5 · eval_test_v2.py 와 같은 식) · 재현율@0.15 · 한 장 ms 를 낸다
+  AP50 (101점 · 확신도 ≥0.01 · IoU 0.5 · eval_test_v2.py 와 같은 식) · 재현율@운용 임계 (--conf · 기본 0.20) · 한 장 ms 를 낸다
   --expect 를 주면 |AP50 − 기대값| ≤ --tol 인지 판정 (exit 0 통과 · 1 실패)
 
   기대값 (우리 환경 · soup_v7r2 · test_v2 1,407장): AP50 0.5927 (.pt FP16)
@@ -55,6 +55,7 @@ def main():
     ap.add_argument("--weights", required=True)
     ap.add_argument("--engine", default=None)
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--conf", type=float, default=0.20, help="재현율을 셀 운용 임계 (10-14 확정 0.20)")
     ap.add_argument("--expect", type=float, default=None)
     ap.add_argument("--tol", type=float, default=0.003)
     a = ap.parse_args()
@@ -83,10 +84,10 @@ def main():
             scores.append(float(cf[j])); tps.append(k >= 0)
             if k >= 0:
                 used[k] = True
-                hit15 += int(cf[j] >= 0.15)
+                hit15 += int(cf[j] >= a.conf)
     s, t = np.array(scores), np.array(tps, bool)
     out = {"모델": det.name, "백엔드": det.backend, "장수": len(imgs), "정답": int(n_gt),
-           "AP50": round(ap101(s, t, n_gt), 4), "재현율@0.15": round(hit15 / max(n_gt, 1), 4),
+           "AP50": round(ap101(s, t, n_gt), 4), f"재현율@{a.conf:.2f}": round(hit15 / max(n_gt, 1), 4),
            "한 장 ms (확신도 0.01 · 중앙)": round(float(np.median(ms)), 1) if ms else None}
     ok = True
     if a.expect is not None:

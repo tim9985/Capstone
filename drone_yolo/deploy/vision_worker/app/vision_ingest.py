@@ -4,7 +4,7 @@ vision_ingest.py — 비전 worker v1.0 실행 파일 (vision-ingest/1.0 · 2026
   샌드박스 vision 컨테이너에서:  python -m app.vision_ingest
     · 백엔드 = unix 소켓 + mTLS + Bearer (app.common.client · /run/identity) — 비밀 파일은 읽기만, 출력 · 로그에 안 남김
     · 상태 = /models/posture.json (자세 판별 계수 · export_posture_models.py) 이 있으면 추적 · 자세 · 무동작 · 등급 → observation.state
-    · 모델 = /models/active.json {"name": "soup_v7r2", "model_config_id": "<등록된 uuid>"} → /models/<name>/best.pt
+    · 모델 = /models/active.json {"name": "v12_f91_swa", "model_config_id": "<등록된 uuid>"} → /models/<name>/best.pt
              (같은 폴더에 best*.engine 이 있으면 TensorRT · 없으면 PyTorch FP16) · 후보 모델은 폴더만 갈아 끼우면 된다
     · 쓰기 = /scratch (outbox.jsonl · ack.json · ingest_state.json · worker-status.json)
     · 전송 = app.vision_outbox.send_pending (통합 담당 전송기 · 같은 컨테이너에 있으면) · 없으면 같은 규칙의 내장 전송기
@@ -70,7 +70,7 @@ def load_detector():
     act = json.loads((MODELS / "active.json").read_text())
     d = MODELS / act["name"]
     eng = next(iter(sorted(d.glob("best*.engine"))), None)
-    det = PersonDetector(d / "best.pt", engine=eng, conf=float(act.get("conf", 0.15)), edge_merge=bool(act.get("edge_merge", True)))
+    det = PersonDetector(d / "best.pt", engine=eng, conf=float(act.get("conf", 0.20)), edge_merge=bool(act.get("edge_merge", True)))
     return det, act
 
 

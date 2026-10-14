@@ -18,17 +18,17 @@
 ```bash
 cd <샌드박스 루트>
 # 1) 꾸러미 반영 — app/ 아래 (vision_worker.py · vision/ · tools/) 를 샌드박스 app/ 로 (sync-workspace.sh 가 app/ 을 옮긴다), Dockerfile.vision · requirements-vision.txt 는 루트로
-# 2) 모델 — 가중치를 data/models/soup_v7r2/best.pt 로 (비전 담당이 서버 안에서 복사해 줌 · git 에 올리지 않는다)
+# 2) 모델 — 가중치를 data/models/v12_f91_swa/best.pt 로 (10-14 교체 · 비전 담당이 서버 안에서 복사해 줌 · git 에 올리지 않는다)
 # 3) 이미지 한 층 빌드
 scripts/docker.sh build -f Dockerfile.vision -t drone-sandbox-vision:20261005 .
 # 4) compose.yml 의 vision 서비스에 image: drone-sandbox-vision:20261005 한 줄 (나머지 설정 · GPU · 헬스체크는 그대로)
 scripts/sync-workspace.sh && scripts/stack.sh up -d vision
 # 5) 인수 검증 (평가셋을 data/eval/test_v2 에 두고 — 비전 담당이 서버 안에서 복사 · git 금지 데이터)
 scripts/stack.sh exec -T vision python -m app.tools.verify_detector --data /data/eval/test_v2 \
-    --weights /data/models/soup_v7r2/best.pt --engine /data/models/soup_v7r2/best_trt11.3.0.99_RTX3090.engine --expect 0.5927
+    --weights /data/models/v12_f91_swa/best.pt --engine /data/models/v12_f91_swa/best_trt11.3.0.99_RTX3090.engine --expect 0.6417
 ```
 
-- 처음 뜰 때 엔진을 만든다 (수 분 · 상태 `building_engine`) → `data/models/soup_v7r2/best_trt<버전>_<GPU>.engine`
+- 처음 뜰 때 엔진을 만든다 (수 분 · 상태 `building_engine`) → `data/models/v12_f91_swa/best_trt<버전>_<GPU>.engine`
 - 엔진을 못 만들면 PyTorch FP16 으로 돈다 (상태 `backend`) — 한 장 약 40 ms 라 30 ms 기준 (NFR-V01) 은 넘지만 초당 5장 (NFR-V02) 은 된다
 
 ## 쓰는 법 — 임무 지정
@@ -46,7 +46,7 @@ rm data/vision-control.json                                        # 멈춤
 | 키 | 뜻 |
 |---|---|
 | `state` | `starting` · `waiting_for_model` · `building_engine` · `idle_no_mission` · `running` · `waiting_for_video` · `finished_file` · `model_error` · `mission_error` |
-| `model` · `backend` | `soup_v7r2` · `tensorrt` 또는 `pytorch_fp16` |
+| `model` · `backend` | `v12_f91_swa` (10-14 · 이전 `soup_v7r2`) · `tensorrt` 또는 `pytorch_fp16` |
 | `fps` · `latency_ms_p50` · `last_frame_age_s` | 처리 속도 · 한 장 탐지 시간 · 마지막 장이 얼마나 오래됐나 |
 | `time_source` | `sidecar` (촬영 시각) · `receive` (받은 시각 — 좌표 못 냄) |
 | `frames_processed` · `frames_dropped` · `detections` · `candidates` · `confirmed` · `geo_ok_ratio` | 누적 |
@@ -75,7 +75,7 @@ rm data/vision-control.json                                        # 멈춤
 
 | 항목 | 결과 |
 |---|---|
-| `verify_detector` test_v2 1,407장 · .pt FP16 | AP50 **0.5927** (평가 스크립트와 같음) · 재현율@0.15 0.682 |
+| `verify_detector` test_v2 1,407장 · v12_f91_swa (경계 합치기 켬) | .pt FP16 AP50 **0.6426** · TensorRT **0.6417** · 재현율@0.20 0.726 (둘 다) · 한 장 37 → 21 ms (10-14) · 이전 soup_v7r2 .pt 0.5927 (합치기 전) |
 | 같은 셋 · TensorRT FP16 | AP50 **0.5933** (+0.0006) · 한 장 21.5 ms (확신도 0.01 기준) |
 | worker 전체 (녹화 200장 · 가짜 sidecar) | 200장 처리 · TensorRT · 탐지 중앙 24.6 ms · 좌표 OK 100 % · 상태 파일 · 재실행 없음 확인 |
 | 샌드박스 녹화 파일 (sample) 읽기 | 1920×1080 · 초당 337장 디코딩 (CPU) |
@@ -98,9 +98,9 @@ rm data/vision-control.json                                        # 멈춤
 ### 모델 폴더 (`/models` · 읽기 전용) — 갈아 끼우기
 
 ```
-/models/active.json          {"name": "soup_v7r2", "model_config_id": "<등록 uuid>", "conf": 0.15, "upload_crops": true}
-/models/soup_v7r2/best.pt     (같은 폴더 best*.engine 이 있으면 TensorRT)
-/models/soup_v7r2/model.json  이름 · SHA-256 · 세 평가셋 AP50 · 파이프라인 판
+/models/active.json          {"name": "v12_f91_swa", "model_config_id": "<등록 uuid>", "conf": 0.20, "upload_crops": true}
+/models/v12_f91_swa/best.pt   (같은 폴더 best*.engine 이 있으면 TensorRT)
+/models/v12_f91_swa/model.json 이름 · SHA-256 · 평가셋 AP50 (경계 합치기 · 무시 영역 포함) · 파이프라인 판 1.2
 /models/soup_v9x2/…           후보
 ```
 - 교체 = `active.json` 의 `name` · `model_config_id` 를 바꾸고 vision 재시작 · 후보마다 `POST /api/v1/configs/models` 로 한 번 등록 (`environment: REAL` · `pipeline_version`)
@@ -183,7 +183,7 @@ SIM 에서 못 하는 것 (SIM 백엔드 요청 사항)
 
 연구 파이프라인 (`state_pipeline.py` + Q1 채택 설정) 을 worker 로 옮겼다. **후보를 거르지 않고 순위만** 바꾸는 보조 신호다.
 
-- 흐름 (프레임마다): 타일 탐지 → **BoT-SORT 추적** (문턱 0.15 · GMC · ReID 끔) → 추적 키 → 후보 (같은 추적이면 같은 후보)
+- 흐름 (프레임마다): 타일 탐지 → **BoT-SORT 추적** (문턱 0.15 = 운용 임계 0.20 아래라 들어온 탐지 모두 추적 · GMC · ReID 끔) → 추적 키 → 후보 (같은 추적이면 같은 후보)
 - 1초마다 (촬영 시각 기준): 배경 호모그래피로 기체 움직임 빼기 → 발끝 이동 ÷ 몸 높이 = 속도 · 3 넘게 튀면 ID 바뀜 → 이력 비움
 - 자세: `/models/posture.json` (박스 2특징 로지스틱 계수 · `export_posture_models.py` 로 만듦 · git 밖)
   - 점수 · 등급용 = B0 (SARD+NOMAD · 지금 한 장) · 표시용 = V3 (Archangel 실제 + UE)

@@ -466,8 +466,8 @@ def report_md(res):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("run", nargs="?")
-    ap.add_argument("--weights", default=str(BASE / "runs_person" / "soup_v7r2" / "weights" / "best.pt"))
-    ap.add_argument("--engine", default=str(BASE / "runs_person" / "soup_v7r2" / "weights" / "best.engine"), help="'' 이면 PyTorch FP16")
+    ap.add_argument("--weights", default=str(BASE / "runs_person" / "v12_f91_swa" / "weights" / "best.pt"))
+    ap.add_argument("--engine", default=str(BASE / "runs_person" / "v12_f91_swa" / "weights" / "best.engine"), help="'' 이면 PyTorch FP16")
     ap.add_argument("--posture", default=str(BASE / "runs_state" / "posture.json"), help="없으면 상태 없이")
     ap.add_argument("--query", default=None, help="찾는 사람 상의 색 (예: red · 남색)")
     ap.add_argument("--min-px", type=int, default=40, help="정답으로 칠 최소 마스크 화소")

@@ -2,7 +2,7 @@
 state.py — 상태 인지 (V4 · 2026-10-07) — 추적 → 자세 · 움직임 · 무동작 → 등급 · 점수
 
   연구 코드 state_pipeline.py + Q1 채택 설정 (obsidian 「추적 고치기 Q1」) 을 worker 로 옮긴 것
-    · 추적  BoT-SORT (ultralytics 8.4.102) · 추적 문턱 0.15 (운용 탐지 임계와 같게) · GMC sparseOptFlow · ReID 끔 · track_buffer 30
+    · 추적  BoT-SORT (ultralytics 8.4.102) · 추적 문턱 0.15 (운용 탐지 임계 0.20 아래 — 들어온 탐지는 모두 추적 시작 가능 · 10-14) · GMC sparseOptFlow · ReID 끔 · track_buffer 30
             탐지는 worker 의 타일 탐지 결과를 그대로 넣는다 (프레임마다)
     · 1초마다 (촬영 시각 기준) — 배경 호모그래피 (사람 박스 가림 · ORB 3000 · 1280 폭으로 줄여 계산) 로 기체 움직임을 빼고
             발끝점 이동 ÷ 몸 높이 = 속도 (몸높이/초) · 3 초과 = ID 바뀜 → 그 추적 이력 비움 (--reset-jump)

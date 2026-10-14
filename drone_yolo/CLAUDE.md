@@ -2,7 +2,7 @@
 
 「자율 정찰 드론 관제 시스템」의 비전 코드 — **사람 1클래스 탐지 · 좌표 산정 · 상의 색상 비교**.
 경로는 Capstone 저장소 루트 기준. **수치·경위의 원본은 볼트(`obsidian/`)** 이고, 여기에는 작업 규칙과 함정만 둔다.
-갱신 2026-10-11
+갱신 2026-10-14
 
 ## 1. 먼저 볼 곳
 
@@ -10,7 +10,7 @@
 |---|---|
 | 현재 상태 · 일정 | `obsidian/00 홈.md` |
 | 학습 계획 · 실제로 간 길 | `obsidian/11 서버 학습 계획/00 학습 계획 한눈에.md` |
-| **최종 모델 (09-28)** | `obsidian/05 결정/결정 - 최종 탐지 모델 soup_v7r2.md` — `runs_person/soup_v7r2/weights/best.pt` · 엔진 `best.engine` |
+| **배포 모델 (10-14)** | `obsidian/05 결정/결정 - 배포 탐지 모델 v12_f91_swa · 임계값 0.20.md` — `runs_person/v12_f91_swa/weights/best.pt` · 엔진 `best.engine` · 임계값 **0.20** (이전 soup_v7r2 · 0.15) |
 | GPU 대기열 · 판정 기준 | `obsidian/11 서버 학습 계획/_학습 큐.md` · 실행 기록 `logs/QUEUE.md` |
 | 할 일 | `obsidian/09 기록/다음 할 일.md` |
 | 실험 · 결정 색인 | `obsidian/04 실험/_실험 색인.md` · `obsidian/05 결정/_결정 색인.md` |
@@ -33,7 +33,7 @@
 | NFR-V02 | ≥5 FPS | |
 | **NFR-V03** | **사람 AP50 ≥0.80 · 학습/평가 장소 분리** | `eval_test_v2.py` (test_v2) · test_obl · test_kr |
 | NFR-V04 | 안정 프레임 수평 오차 10~15 m | `coord_error.py` |
-| NFR-V05 | F2 로 임계값 · 기본 0.15 | |
+| NFR-V05 | F2 로 임계값 · 운용 **0.20** (10-14 확정 · F2 평평 → 오탐 기준이 정함) | `thr_sweep.py` |
 | NFR-V06 | 사람 없는 영상 오탐 ≤1건/프레임 | |
 
 ## 4. 학습 · 평가 규칙
@@ -64,7 +64,7 @@
 
 - 자세 판정기는 **정답 박스 크롭**으로 고르고, **탐지 박스 파이프라인**(`state_pipeline.py --posture=`)으로 다시 확인한다 — 둘이 다르게 나온다
 - ⚠ 추적 이력을 쓰는 신호(자세 누적 · 무동작 · 속도)는 **추적 ID 바뀜**에 오염된다 — 누운 사람은 확신도가 낮아 띄엄띄엄 잡히고 주변 추적에 붙는다 (5초 중앙값 누움 0.98 → 0.80 · `state_diag.py`)
-- **추적기 문턱 = 탐지 운용 임계 0.15** (BoT-SORT 기본 0.25 면 누운 사람이 새 추적을 못 만든다) + `--reset-jump` (ID 바뀜 끊기) + 자세 항은 지금 한 장 → 점수 누움 AUROC 0.78 → 0.95 (10-03 Q1 · `state_trackfix.py`)
+- **추적기 문턱 0.15** (10-14 부터 운용 탐지 임계 0.20 아래 — 들어온 탐지 모두 추적) (BoT-SORT 기본 0.25 면 누운 사람이 새 추적을 못 만든다) + `--reset-jump` (ID 바뀜 끊기) + 자세 항은 지금 한 장 → 점수 누움 AUROC 0.78 → 0.95 (10-03 Q1 · `state_trackfix.py`)
 - ⚠ **`model.track(img, persist=k > 0)` 는 추적이 안 된다** (ultralytics 8.4.102) — 첫 호출의 `persist=False` 가 콜백에 고정돼 **매 프레임 추적기를 새로 만든다** → ID = 확신도 순번 (10-07 발견 · 10-01~10-07 상태 연구의 이력 · 무동작 · 추적 단위 지표가 오염) · 추적은 **처음부터 `persist=True`** 로 부르거나 `BOTSORT` 를 직접 이어 쓴다 (`deploy/vision_worker/app/vision_core/state.py`)
 - 출처 하나 빼기로 고를 땐 **클래스마다 진짜 출처가 2개 이상인지** 먼저 본다 — 비스듬 앉음은 SARD 뿐이라 합성 C2A 가 구조적으로 뽑혔다
 - Okutama 자세 크롭 `crops.csv` 의 w1080 · h1080 은 **720p px 그대로** → 1080p 로 쓰려면 ×1.5 (`posture_v2.load_set` 이 보정) · `eval_posture.auc` 는 동점 미처리 → `posture_v2.auc`

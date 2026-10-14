@@ -8,7 +8,7 @@ Vision worker — 비전 파트 (동료 샌드박스 app/vision_worker.py 교체
               기존 키 (worker · updated_unix · cuda_available · model_loaded · flight_enabled · state) 유지 + 비전 항목 추가
   임무 지정   $STORAGE_ROOT/vision-control.json  {"mission_id": "m001", "source": "rtsp://… 또는 파일 (없으면 RTSP 기본)"}
               파일을 지우거나 mission_id 를 null 로 하면 멈춘다
-  모델        $VISION_MODEL_DIR/best.pt (기본 /data/models/soup_v7r2) · 엔진은 처음 한 번 만들어 같은 폴더에 둔다
+  모델        $VISION_MODEL_DIR/best.pt (기본 /data/models/v12_f91_swa · 10-14 교체) · 엔진은 처음 한 번 만들어 같은 폴더에 둔다
   출력        missions/<id>/results/detections.jsonl · candidates.jsonl · crops/<후보>.jpg · logs/vision.log
 """
 import json
@@ -18,11 +18,11 @@ import traceback
 from pathlib import Path
 
 ROOT = Path(os.environ.get("STORAGE_ROOT", "/data"))
-MODEL_DIR = Path(os.environ.get("VISION_MODEL_DIR", str(ROOT / "models" / "soup_v7r2")))
+MODEL_DIR = Path(os.environ.get("VISION_MODEL_DIR", str(ROOT / "models" / "v12_f91_swa")))
 CONTROL = Path(os.environ.get("VISION_CONTROL", str(ROOT / "vision-control.json")))
 RTSP_BASE = os.environ.get("VISION_RTSP_BASE", "rtsp://127.0.0.1:18554")
 FPS = float(os.environ.get("VISION_FPS", "10"))
-CONF = float(os.environ.get("VISION_CONF", "0.15"))
+CONF = float(os.environ.get("VISION_CONF", "0.20"))                 # 10-14 운용 임계 확정 (0.15 → 0.20)
 EDGE_MERGE = os.environ.get("VISION_EDGE_MERGE", "1") == "1"   # 타일 경계 잘린 박스 지우기 (10-12 기본 켜짐 · 끄기 = 0)
 BUILD_ENGINE = os.environ.get("VISION_BUILD_ENGINE", "1") == "1"
 COLOR_EVERY_S = float(os.environ.get("VISION_COLOR_EVERY_S", "0.5"))

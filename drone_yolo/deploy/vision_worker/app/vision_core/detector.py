@@ -45,7 +45,7 @@ def edge_merge(b, s, t, e=3.0, thr=0.6):
 
 
 class PersonDetector:
-    def __init__(self, weights, engine=None, conf=0.15, nms_iou=0.6, imgsz=1280, edge_merge=True):
+    def __init__(self, weights, engine=None, conf=0.20, nms_iou=0.6, imgsz=1280, edge_merge=True):
         from ultralytics import YOLO
         self.conf, self.nms_iou, self.imgsz, self.edge_merge = conf, nms_iou, imgsz, edge_merge
         self.weights = Path(weights)
