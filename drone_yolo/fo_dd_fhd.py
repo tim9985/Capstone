@@ -7,7 +7,7 @@ fo_dd_fhd.py — 디지털관 사진을 운용 입력 (1920×1080 한 장) 으�
        = worker PersonDetector 의 1920×1080 경로 그대로 (타일 4장 1280×720 · conf 0.15 · NMS 0.6 · FP16 · v7r2 는 TensorRT)
   ⚠ 휴대폰 1배 화각 (iPhone 13 Pro ~69° · S24 ~74°) 이 운용 카메라 (80.2°) 보다 좁다 → 같은 거리면 사람이 1.1~1.2배 크게 찍힌다 (아직 약간 유리)
   필드  fhd_v7r2 · fhd_v9x2 (원본 좌표로 되돌려 겹쳐 봄 · 박스마다 fhd_h = 1920 기준 사람 키 px) · fhd_area (잘라 쓴 구역)
-실행: /home/se/miniconda3/envs/drone/bin/python fo_dd_fhd.py
+실행: /home/se/miniconda3/envs/drone/bin/python fo_dd_fhd.py [필드=모델 …]  (10-14 v12: fhd_v12f91=v12_f91_swa fhd_v12f92=v12_f92_swa)
 """
 import json
 import sys
@@ -21,6 +21,9 @@ sys.path.insert(0, str(BASE / "deploy" / "vision_worker"))
 from app.vision_core.detector import PersonDetector   # noqa: E402
 
 MODELS = {"fhd_v7r2": ("soup_v7r2", True), "fhd_v9x2": ("soup_v9x2", False)}
+# 10-14: 인자로 필드=모델 을 주면 그것만 (예: fhd_v12f91=v12_f91_swa) · worker 는 경계 합치기 기본 켜짐 (파이프라인 1.1)
+if len(sys.argv) > 1:
+    MODELS = {a.split("=")[0]: (a.split("=")[1], False) for a in sys.argv[1:]}
 
 
 def fhd(img):
