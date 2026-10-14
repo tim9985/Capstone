@@ -3,6 +3,14 @@
 통합 담당이 배포한 v1.1 (`app.vision_ingest` · SIM leased · REAL JSONL) 을 **바탕으로** 비전 1.2 기능만 얹은 파일입니다.
 v1.1 규칙 (해시 선검사 · CUDA 필수 · 빠진 자세를 채우지 않음 · 좌표 기본 PENDING · 64 KiB · 재전송) 은 그대로입니다.
 
+## 0. 준비물 (이 폴더 말고)
+
+| 무엇 | 어디 | 비고 |
+|---|---|---|
+| 모델 꾸러미 (가중치 · 엔진 · posture.json) | 서버 `/home/se/JupyterLAB/Capstone/drone_yolo/runs_person/_pack_v12_real/` · `_pack_v12_sim/` | git 밖 (가중치 비공개) · `/home/se` 는 se 계정만 읽기 → sudo 로 복사 |
+| 파이썬 패키지 `lap` (0.5.12 이상) | vision 이미지 | BoT-SORT 추적에 필요 · 이미지 안에 없으면 상태 (추적 · 누움 등급) 만 꺼지고 나머지는 동작 — 상태 파일 `state_disabled` 로 보임 · `network_mode: none` 이라 실행 중 설치 안 됨 → 이미지에 넣어야 함 |
+| 나머지 모듈 (`color.py` · `coord_transform.py` · `common.py` …) | 지금 배포된 것 그대로 | 이 폴더 파일은 배포 판 위에 덮어쓰는 것만 |
+
 ## 1. 무엇이 바뀌나
 
 | 기능 | v1.1 (지금) | 1.2 (이 파일) | 끄는 법 |

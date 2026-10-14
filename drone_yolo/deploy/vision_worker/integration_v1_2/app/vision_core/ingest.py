@@ -185,10 +185,14 @@ class IngestWorker:
                 kept.append((i, (x1, y1, x2, y2)))
         states = [(None, None)] * len(kept)
         if self.posture:                                  # 추적 · 상태 (프레임마다 · 시각 순서)
-            if mid not in self.trk:
-                from .state import StateTracker
-                self.trk[mid] = StateTracker(self.posture)
-            states = self.trk[mid].update(t, img, [b for _, b in kept], [float(confs[i]) for i, _ in kept])
+            try:
+                if mid not in self.trk:
+                    from .state import StateTracker          # BoT-SORT 는 `lap` 패키지가 필요 — 없으면 상태만 끄고 탐지 · 후보 · 색은 계속
+                    self.trk[mid] = StateTracker(self.posture)
+                states = self.trk[mid].update(t, img, [b for _, b in kept], [float(confs[i]) for i, _ in kept])
+            except Exception as e:
+                self.posture, self.stats["state_disabled"] = None, f"{type(e).__name__}: {e}"[:200]
+                states = [(None, None)] * len(kept)
         frame_reasons = self.pgeo.check(pose)
         obs = []
         for (i, (x1, y1, x2, y2)), (tkey, st) in zip(kept, states):
