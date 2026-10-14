@@ -1,0 +1,5 @@
+# v13o_f92 (10-14 O) — v12_f92 와 같은 95 % 목록 · 양성 창 30 % 잎 가림 합성 · val = val_v12
+train: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/train_v13o_f92.txt
+val: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/val_v12.txt
+nc: 1
+names: ['person']

@@ -1,0 +1,11 @@
+{
+ "windows": 18601,
+ "occluded_windows": 3871,
+ "occluded_boxes": 5246,
+ "bank": 3001,
+ "cover_p10_p50_p90": [
+  0.24,
+  0.39,
+  0.56
+ ]
+}
