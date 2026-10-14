@@ -6,16 +6,16 @@
  "detection": {
   "gt_boxes": 733,
   "min_px": 40,
-  "AP50": 0.6127,
-  "recall@0.15": 0.6166,
-  "precision@0.15": 0.7793,
+  "AP50": 0.6141,
+  "recall@0.15": 0.618,
+  "precision@0.15": 0.7837,
   "recall_by_height_px": {
    "0-20": [
     0.103,
     29
    ],
    "20-40": [
-    0.411,
+    0.416,
     197
    ],
    "40-80": [
@@ -28,25 +28,25 @@
    ]
   },
   "empty_frames": 75,
-  "fp_per_empty_frame": 0.453
+  "fp_per_empty_frame": 0.467
  },
  "latency_ms": {
-  "detect_p50": 90.5,
-  "detect_p95": 140.7,
+  "detect_p50": 22.48,
+  "detect_p95": 23.5,
   "color_p50": 0.0,
-  "state_p50": 19.08,
-  "frame_p50": 118.16,
-  "frame_p95": 226.42,
-  "fps_at_p50": 8.5,
-  "backend": "pytorch_fp16"
+  "state_p50": 17.9,
+  "frame_p50": 45.09,
+  "frame_p95": 115.99,
+  "fps_at_p50": 22.2,
+  "backend": "tensorrt"
  },
  "geo": {
-  "det_valid": 443,
-  "det_err_p50": 1.53,
-  "det_err_p95": 4.92,
-  "det_stable_n": 443,
-  "det_stable_p50": 1.53,
-  "det_stable_p95": 4.92,
+  "det_valid": 444,
+  "det_err_p50": 1.54,
+  "det_err_p95": 4.93,
+  "det_stable_n": 444,
+  "det_stable_p50": 1.54,
+  "det_stable_p95": 4.93,
   "gtbox_err_p50": 1.53,
   "gtbox_stable_p50": 1.53,
   "pending_reasons": {
@@ -55,8 +55,8 @@
  },
  "candidates": {
   "total": 26,
-  "confirmed": 23,
-  "confirmed_without_actor": 14,
+  "confirmed": 22,
+  "confirmed_without_actor": 13,
   "actors_found": 6,
   "actors_confirmed": 6,
   "actors_with_duplicates": 2,
@@ -65,7 +65,10 @@
  "tracking": {
   "IDF1": 0.3529,
   "id_switches": 22,
-  "tracks_per_actor": 4.67
+  "tracks_per_actor": 4.67,
+  "gaps": 11,
+  "gap_same_candidate": 0.455,
+  "gap_same_track": 0.0
  },
  "color": {
   "actors_with_truth": 6,
@@ -94,10 +97,22 @@
    "frames_visible": 85,
    "tracks": 5,
    "id_switches": 4,
+   "gaps": [
+    {
+     "gap_s": 2.7,
+     "same_candidate": true,
+     "same_track": false
+    },
+    {
+     "gap_s": 19.7,
+     "same_candidate": true,
+     "same_track": false
+    }
+   ],
    "truth_color": "white",
    "color_top2": [
-    "gray",
-    "purple"
+    "purple",
+    "gray"
    ],
    "color_top1_ok": false,
    "color_top2_ok": false,
@@ -111,7 +126,7 @@
    "candidate_pos_err_m": 0.02,
    "grade": "CHECK",
    "posture": "lying",
-   "lying_score": 0.36
+   "lying_score": 0.359
   },
   {
    "actor": "Person_Lying_02",
@@ -119,6 +134,18 @@
    "frames_visible": 138,
    "tracks": 6,
    "id_switches": 5,
+   "gaps": [
+    {
+     "gap_s": 7.6,
+     "same_candidate": true,
+     "same_track": false
+    },
+    {
+     "gap_s": 4.4,
+     "same_candidate": true,
+     "same_track": false
+    }
+   ],
    "truth_color": "black",
    "color_top2": [
     "black",
@@ -133,7 +160,7 @@
    "candidates": 1,
    "merged_into_other": false,
    "confirmed": 1,
-   "candidate_pos_err_m": 0.55,
+   "candidate_pos_err_m": 0.59,
    "grade": "NORMAL",
    "posture": "lying",
    "lying_score": 0.565
@@ -144,6 +171,18 @@
    "frames_visible": 125,
    "tracks": 4,
    "id_switches": 3,
+   "gaps": [
+    {
+     "gap_s": 10.7,
+     "same_candidate": false,
+     "same_track": false
+    },
+    {
+     "gap_s": 2.6,
+     "same_candidate": true,
+     "same_track": false
+    }
+   ],
    "truth_color": "green",
    "color_top2": [
     "black",
@@ -151,17 +190,17 @@
    ],
    "color_top1_ok": false,
    "color_top2_ok": false,
-   "frames_detected": 72,
+   "frames_detected": 73,
    "first_visible_s": 4.5,
-   "first_detect_s": 9.7,
-   "first_confirm_s": 9.7,
+   "first_detect_s": 9.1,
+   "first_confirm_s": 9.1,
    "candidates": 1,
    "merged_into_other": false,
    "confirmed": 1,
-   "candidate_pos_err_m": 0.39,
+   "candidate_pos_err_m": 0.33,
    "grade": "CHECK",
    "posture": "lying",
-   "lying_score": 0.47
+   "lying_score": 0.471
   },
   {
    "actor": "Person_Standing_01",
@@ -169,6 +208,18 @@
    "frames_visible": 121,
    "tracks": 4,
    "id_switches": 3,
+   "gaps": [
+    {
+     "gap_s": 3.9,
+     "same_candidate": false,
+     "same_track": false
+    },
+    {
+     "gap_s": 14.0,
+     "same_candidate": false,
+     "same_track": false
+    }
+   ],
    "truth_color": "red",
    "color_top2": [
     "black",
@@ -194,6 +245,18 @@
    "frames_visible": 111,
    "tracks": 5,
    "id_switches": 4,
+   "gaps": [
+    {
+     "gap_s": 3.4,
+     "same_candidate": false,
+     "same_track": false
+    },
+    {
+     "gap_s": 12.6,
+     "same_candidate": false,
+     "same_track": false
+    }
+   ],
    "truth_color": "blue",
    "color_top2": [
     "blue",
@@ -219,6 +282,13 @@
    "frames_visible": 153,
    "tracks": 4,
    "id_switches": 3,
+   "gaps": [
+    {
+     "gap_s": 10.6,
+     "same_candidate": false,
+     "same_track": false
+    }
+   ],
    "truth_color": "yellow",
    "color_top2": [
     "black",
@@ -229,11 +299,11 @@
    "frames_detected": 112,
    "first_visible_s": 4.5,
    "first_detect_s": 8.3,
-   "first_confirm_s": 8.3,
+   "first_confirm_s": 8.4,
    "candidates": 3,
    "merged_into_other": false,
    "confirmed": 3,
-   "candidate_pos_err_m": 20.37,
+   "candidate_pos_err_m": 20.3,
    "grade": "NORMAL",
    "posture": "lying",
    "lying_score": 0.316

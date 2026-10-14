@@ -42,6 +42,7 @@ from app.vision_core.ingest import IngestWorker, telemetry_from_pose  # noqa: E4
 R_EARTH = 6378137.0
 STABLE_DEG = 6.0
 H_BINS = [(0, 20), (20, 40), (40, 80), (80, 1e9)]
+GAP_S = 1.0                     # 이 이상 못 잡혔다가 다시 잡히면 「다시 잇기」 채점 (S2 가림 2~6 s)
 
 
 def iou(a, b):
@@ -134,6 +135,7 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.
     cand_act = defaultdict(Counter); cand_conf = set(); reobs = Counter(); reobs_act = Counter(); verdicts = Counter()
     total_ms, samples = [], []
     trk_seq = defaultdict(list); trk_pair = Counter(); n_pred_trk = 0      # 10-14 추적 지표 (정답 id ↔ worker track_id)
+    hist = defaultdict(list)                                                # 배우별 (t · 후보 · 추적) — 가림 뒤 다시 잇기
     for r in rows:
         stem = r["frame"]; img = cv2.imread(str(run / "frames" / f"{stem}.jpg"))
         if img is None:
@@ -182,7 +184,7 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.
             if tid:
                 trk_seq[n].append(tid); trk_pair[(n, tid)] += 1
         for k, n in matched.items():
-            o = obs[k]; a = act[n]; a["n_det"] += 1
+            o = obs[k]; a = act[n]; a["n_det"] += 1; hist[n].append((t, o["candidate_id"], o.get("track_id")))
             a["first_det"] = a["first_det"] if a["first_det"] is not None else t
             if o["auto_confirmed"] and a["first_conf"] is None:
                 a["first_conf"] = t
@@ -237,10 +239,12 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.
             dn, de = ne_offset(c.lat, c.lon, float(r0["lat"]), float(r0["lon"]))
             perr = round(math.hypot(float(r0["ned_x"]) + dn - truth[0], float(r0["ned_y"]) + de - truth[1]), 2)
         seq = trk_seq.get(n, [])
+        gaps = [{"gap_s": round(t1 - t0, 2), "same_candidate": c0 == c1, "same_track": bool(k0) and k0 == k1}
+                for (t0, c0, k0), (t1, c1, k1) in zip(hist[n], hist[n][1:]) if t1 - t0 >= GAP_S]
         sw = sum(1 for i in range(1, len(seq)) if seq[i] != seq[i - 1])
         tc = actors[n].get("upper_color"); top = [c["color"] for c in (a.get("last_color") or [])]
         per_actor.append({"actor": n, "truth_posture": truth_posture(n, actors[n].get("pose_raw")), "frames_visible": a["n_vis"],
-                          "tracks": len(set(seq)), "id_switches": sw, "truth_color": tc, "color_top2": top,
+                          "tracks": len(set(seq)), "id_switches": sw, "gaps": gaps, "truth_color": tc, "color_top2": top,
                           "color_top1_ok": (top[0] == tc) if (tc and top) else None, "color_top2_ok": (tc in top) if (tc and top) else None,
                           "frames_detected": a["n_det"], "first_visible_s": a["first_vis"], "first_detect_s": a["first_det"],
                           "first_confirm_s": a["first_conf"], "candidates": len(own), "merged_into_other": a["n_det"] > 0 and not own, "confirmed": sum(c in cand_conf for c in own),
@@ -265,7 +269,7 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.
                           "actors_found": sum(p["frames_detected"] > 0 for p in per_actor), "actors_confirmed": sum(p["confirmed"] > 0 for p in per_actor),
                           "actors_with_duplicates": sum(p["candidates"] > 1 for p in per_actor),
                           "actors_merged_into_other": sum(p["merged_into_other"] for p in per_actor)},
-           "tracking": tracking_metrics(trk_pair, trk_seq, n_gt, n_pred_trk),
+           "tracking": {**tracking_metrics(trk_pair, trk_seq, n_gt, n_pred_trk), **reassoc(per_actor)},
            "color": {"actors_with_truth": sum(p["color_top1_ok"] is not None for p in per_actor),
                      "top1_acc": _rate([p["color_top1_ok"] for p in per_actor]), "top2_acc": _rate([p["color_top2_ok"] for p in per_actor])},
            "reobservation": {"by_reason": dict(reobs), "target": dict(reobs_act)}, "appearance": {"query": query, "verdicts": dict(verdicts)},
@@ -278,6 +282,13 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.
 def _rate(v):
     v = [x for x in v if x is not None]
     return round(sum(v) / len(v), 3) if v else None
+
+
+def reassoc(per_actor):
+    """놓친 뒤 (GAP_S 이상) 다시 잡혔을 때 같은 후보 · 같은 추적으로 이어졌나 — S2 가림 · 판정 기준 U"""
+    g = [x for a in per_actor for x in a["gaps"]]
+    return {"gaps": len(g), "gap_same_candidate": round(np.mean([x["same_candidate"] for x in g]), 3) if g else None,
+            "gap_same_track": round(np.mean([x["same_track"] for x in g]), 3) if g else None}
 
 
 def tracking_metrics(pair, seq, n_gt, n_pred):
@@ -361,6 +372,7 @@ def report_md(res):
              f"| 배우 찾음 · 확정 · 중복 후보 · 남의 후보에 합쳐짐 | {c['actors_found']} · {c['actors_confirmed']} · {c['actors_with_duplicates']} · {c['actors_merged_into_other']} / {res['actors_visible']} | 중복 · 합쳐짐 0 이 정답 |",
              f"| 후보 전체 · 확정 · 배우 없는 확정 | {c['total']} · {c['confirmed']} · {c['confirmed_without_actor']} | |",
              f"| 추적 IDF1 · ID 바뀜 · 배우당 추적 수 | {res['tracking']['IDF1']} · {res['tracking']['id_switches']} · {res['tracking']['tracks_per_actor']} | 1 · 0 · 1 이 정답 |",
+             f"| 가림 뒤 다시 잇기 (≥ {GAP_S:.0f} s · 같은 후보 · 같은 추적) | {res['tracking']['gaps']} 번 · {res['tracking']['gap_same_candidate']} · {res['tracking']['gap_same_track']} | 1 이 정답 |",
              f"| 상의색 1순위 · 1·2순위 맞음 ({res['color']['actors_with_truth']} 명) | {res['color']['top1_acc']} · {res['color']['top2_acc']} | |",
              f"| 재관측 | {res['reobservation']['by_reason']} | |", f"| 인상착의 ({res['appearance']['query']}) | {res['appearance']['verdicts']} | |", "",
              f"- 사람 키 px 별 재현율 (재현율, 정답 수): {d['recall_by_height_px']}", f"- 좌표 보류 사유: {g['pending_reasons']}", "",
