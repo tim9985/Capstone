@@ -117,9 +117,9 @@ def pose_of(r, meta):
             "gimbal_stabilized": bool(meta.get("gimbal_stabilized", False))}
 
 
-def evaluate(run, weights, engine, posture, query, min_px, fo_name=None):
+def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.20):
     rows, gtb, actors, meta = load_run(run)
-    det = TimedDet(PersonDetector(weights, engine=engine, conf=0.15))
+    det = TimedDet(PersonDetector(weights, engine=engine, conf=conf))
     scratch = Path(tempfile.mkdtemp(prefix="uevis_"))
     w = IngestWorker(None, None, det, "ue-eval", scratch=scratch, upload_crops=False, posture=posture)
     mid, geo = "ue-" + run.name, GeoResolver()
@@ -133,6 +133,7 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None):
     act = defaultdict(lambda: {"first_vis": None, "first_det": None, "first_conf": None, "cands": Counter(), "last_state": None, "n_vis": 0, "n_det": 0})
     cand_act = defaultdict(Counter); cand_conf = set(); reobs = Counter(); reobs_act = Counter(); verdicts = Counter()
     total_ms, samples = [], []
+    trk_seq = defaultdict(list); trk_pair = Counter(); n_pred_trk = 0      # 10-14 추적 지표 (정답 id ↔ worker track_id)
     for r in rows:
         stem = r["frame"]; img = cv2.imread(str(run / "frames" / f"{stem}.jpg"))
         if img is None:
@@ -175,6 +176,11 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None):
         if not gts:
             empty_n += 1; empty_fp.append(len(obs))
         veh = (float(r["ned_x"]), float(r["ned_y"]))
+        n_pred_trk += sum(1 for o in obs if o.get("track_id"))
+        for k, n in matched.items():
+            tid = obs[k].get("track_id")
+            if tid:
+                trk_seq[n].append(tid); trk_pair[(n, tid)] += 1
         for k, n in matched.items():
             o = obs[k]; a = act[n]; a["n_det"] += 1
             a["first_det"] = a["first_det"] if a["first_det"] is not None else t
@@ -185,7 +191,7 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None):
                 h = valid[n]["bb"][3] - valid[n]["bb"][1]
                 if b[0] <= h < b[1]:
                     hb[b][0] += 1
-            truth = actors[n]["ned"]
+            truth = valid[n].get("ned") or actors[n]["ned"]        # 10-14 움직이는 배우는 boxes.jsonl 의 프레임별 위치
             g = o["geo"]
             if g["status"] == "VALID":
                 dn, de = ne_offset(g["lat"], g["lon"], pose["lat"], pose["lon"])
@@ -193,6 +199,7 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None):
                 geo_err.append(e); (geo_err_stable.append(e) if stable else None)
             else:
                 pend.update(g.get("reasons") or ["?"])
+            a["last_color"] = ((o.get("appearance") or {}).get("upper") or {}).get("top")
             gr = geo.to_world(tuple(valid[n]["bb"]), tel) if tel else None
             if gr is not None and gr.status == "OK":
                 e2 = math.hypot(veh[0] + gr.north - truth[0], veh[1] + gr.east - truth[1])
@@ -229,12 +236,17 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None):
             c, _ = max(cpos[n], key=lambda x: len(x[0].hits))
             dn, de = ne_offset(c.lat, c.lon, float(r0["lat"]), float(r0["lon"]))
             perr = round(math.hypot(float(r0["ned_x"]) + dn - truth[0], float(r0["ned_y"]) + de - truth[1]), 2)
+        seq = trk_seq.get(n, [])
+        sw = sum(1 for i in range(1, len(seq)) if seq[i] != seq[i - 1])
+        tc = actors[n].get("upper_color"); top = [c["color"] for c in (a.get("last_color") or [])]
         per_actor.append({"actor": n, "truth_posture": truth_posture(n, actors[n].get("pose_raw")), "frames_visible": a["n_vis"],
+                          "tracks": len(set(seq)), "id_switches": sw, "truth_color": tc, "color_top2": top,
+                          "color_top1_ok": (top[0] == tc) if (tc and top) else None, "color_top2_ok": (tc in top) if (tc and top) else None,
                           "frames_detected": a["n_det"], "first_visible_s": a["first_vis"], "first_detect_s": a["first_det"],
                           "first_confirm_s": a["first_conf"], "candidates": len(own), "merged_into_other": a["n_det"] > 0 and not own, "confirmed": sum(c in cand_conf for c in own),
                           "candidate_pos_err_m": perr, "grade": st.get("grade"), "posture": (st.get("posture") or {}).get("label"),
                           "lying_score": (st.get("score_terms") or {}).get("lying")})
-    tp_at = [s for s in scored if s[0] >= 0.15]
+    tp_at = [s for s in scored if s[0] >= conf]
     warm = slice(1, None) if len(total_ms) > 1 else slice(None)        # 첫 장 = 엔진 · 추적기 예열 → 시간에서 뺀다
     det_ms, total_ms = det.ms[warm], total_ms[warm]
     res = {"run": run.name, "frames": len(total_ms), "actors": len(actors), "actors_visible": len(per_actor),
@@ -253,11 +265,32 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None):
                           "actors_found": sum(p["frames_detected"] > 0 for p in per_actor), "actors_confirmed": sum(p["confirmed"] > 0 for p in per_actor),
                           "actors_with_duplicates": sum(p["candidates"] > 1 for p in per_actor),
                           "actors_merged_into_other": sum(p["merged_into_other"] for p in per_actor)},
+           "tracking": tracking_metrics(trk_pair, trk_seq, n_gt, n_pred_trk),
+           "color": {"actors_with_truth": sum(p["color_top1_ok"] is not None for p in per_actor),
+                     "top1_acc": _rate([p["color_top1_ok"] for p in per_actor]), "top2_acc": _rate([p["color_top2_ok"] for p in per_actor])},
            "reobservation": {"by_reason": dict(reobs), "target": dict(reobs_act)}, "appearance": {"query": query, "verdicts": dict(verdicts)},
            "per_actor": per_actor}
     if fo_name:
         to_fiftyone(fo_name, samples, res)
     return res
+
+
+def _rate(v):
+    v = [x for x in v if x is not None]
+    return round(sum(v) / len(v), 3) if v else None
+
+
+def tracking_metrics(pair, seq, n_gt, n_pred):
+    """IDF1 (정답 id ↔ track id 를 겹친 장 수로 1:1 짝 · 탐욕) · ID 바뀜 · 배우당 추적 수"""
+    used_g, used_t, idtp = set(), set(), 0
+    for (g, t), c in sorted(pair.items(), key=lambda x: -x[1]):
+        if g in used_g or t in used_t:
+            continue
+        used_g.add(g); used_t.add(t); idtp += c
+    idfp, idfn = max(n_pred - idtp, 0), max(n_gt - idtp, 0)
+    sw = sum(sum(1 for i in range(1, len(s)) if s[i] != s[i - 1]) for s in seq.values())
+    return {"IDF1": round(2 * idtp / max(2 * idtp + idfp + idfn, 1), 4), "id_switches": sw,
+            "tracks_per_actor": round(float(np.mean([len(set(s)) for s in seq.values()])), 2) if seq else None}
 
 
 def to_fiftyone(name, samples, res):
@@ -318,7 +351,7 @@ def report_md(res):
     d, l, g, c = res["detection"], res["latency_ms"], res["geo"], res["candidates"]
     lines = [f"# UE 비전 평가 — {res['run']}", "", f"- 프레임 {res['frames']} · 배우 {res['actors']} (화면에 보인 {res['actors_visible']})", "",
              "| 항목 | 값 | 기준 |", "|---|---|---|",
-             f"| AP50 · 재현율@0.15 · 정밀도@0.15 | {d['AP50']} · {d['recall@0.15']} · {d['precision@0.15']} | NFR-V03 AP50 ≥ 0.80 (공식은 실사진) |",
+             f"| AP50 · 재현율@운용 · 정밀도@운용 | {d['AP50']} · {d['recall@0.15']} · {d['precision@0.15']} | NFR-V03 AP50 ≥ 0.80 (공식은 실사진) |",
              f"| 사람 없는 장 오탐/장 | {d['fp_per_empty_frame']} ({d['empty_frames']} 장) | NFR-V06 ≤ 1 |",
              f"| 탐지 ms p50 · p95 | {l['detect_p50']} · {l['detect_p95']} ({l['backend']}) | NFR-V01 ≤ 30 |",
              f"| 한 장 전체 ms p50 · p95 | {l['frame_p50']} · {l['frame_p95']} (≈ {l['fps_at_p50']} FPS) — 색 {l['color_p50']} · 추적·상태 {l['state_p50']} | NFR-V02 ≥ 5 FPS |",
@@ -327,6 +360,8 @@ def report_md(res):
              f"| 정답 박스로 좌표 (중앙 · 안정) | {g['gtbox_err_p50']} · {g['gtbox_stable_p50']} m | 탐지 박스 탓 분리 |",
              f"| 배우 찾음 · 확정 · 중복 후보 · 남의 후보에 합쳐짐 | {c['actors_found']} · {c['actors_confirmed']} · {c['actors_with_duplicates']} · {c['actors_merged_into_other']} / {res['actors_visible']} | 중복 · 합쳐짐 0 이 정답 |",
              f"| 후보 전체 · 확정 · 배우 없는 확정 | {c['total']} · {c['confirmed']} · {c['confirmed_without_actor']} | |",
+             f"| 추적 IDF1 · ID 바뀜 · 배우당 추적 수 | {res['tracking']['IDF1']} · {res['tracking']['id_switches']} · {res['tracking']['tracks_per_actor']} | 1 · 0 · 1 이 정답 |",
+             f"| 상의색 1순위 · 1·2순위 맞음 ({res['color']['actors_with_truth']} 명) | {res['color']['top1_acc']} · {res['color']['top2_acc']} | |",
              f"| 재관측 | {res['reobservation']['by_reason']} | |", f"| 인상착의 ({res['appearance']['query']}) | {res['appearance']['verdicts']} | |", "",
              f"- 사람 키 px 별 재현율 (재현율, 정답 수): {d['recall_by_height_px']}", f"- 좌표 보류 사유: {g['pending_reasons']}", "",
              "| 배우 | 정답 자세 | 보임 · 잡힘 | 처음 보임 · 잡힘 · 확정 (s) | 후보 · 확정 | 후보 위치 오차 m | 등급 · 자세 · 누움 |", "|---|---|---|---|---|---|---|"]
@@ -345,6 +380,7 @@ def main():
     ap.add_argument("--posture", default=str(BASE / "runs_state" / "posture.json"), help="없으면 상태 없이")
     ap.add_argument("--query", default=None, help="찾는 사람 상의 색 (예: red · 남색)")
     ap.add_argument("--min-px", type=int, default=40, help="정답으로 칠 최소 마스크 화소")
+    ap.add_argument("--conf", type=float, default=0.20, help="운용 임계값 (10-13 스윕 제안 0.20)")
     ap.add_argument("--fo", action="store_true", help="FiftyOne ue/<run> 으로 올림")
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args()
@@ -352,7 +388,7 @@ def main():
     run = selftest(tmp) if a.selftest else Path(a.run)
     posture = a.posture if Path(a.posture).exists() else None
     q = {"upper": [a.query]} if a.query else None
-    res = evaluate(run, a.weights, a.engine or None, posture, q, a.min_px, fo_name=(f"ue/{run.name}" if a.fo else None))
+    res = evaluate(run, a.weights, a.engine or None, posture, q, a.min_px, fo_name=(f"ue/{run.name}" if a.fo else None), conf=a.conf)
     res["posture_model"] = bool(posture)
     md = report_md(res)
     if not a.selftest:
