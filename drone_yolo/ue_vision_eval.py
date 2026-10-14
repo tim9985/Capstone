@@ -71,7 +71,7 @@ def pct(v, q):
 
 def truth_posture(name, raw):
     s = (raw or name).lower()
-    return "lying" if "ly" in s else "sitting" if any(k in s for k in ("sit", "kneel", "crouch")) else "standing"   # 걷기 → 서기
+    return "lying" if ("ly" in s or "crawl" in s) else "sitting" if any(k in s for k in ("sit", "kneel", "crouch")) else "standing"   # 걷기 → 서기
 
 
 class Timed:
