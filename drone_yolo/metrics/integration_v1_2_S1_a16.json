@@ -1,0 +1,46 @@
+{
+ "REAL_claims0": {
+  "frames_validated": 150,
+  "cand_per_actor": 2.17,
+  "obs_with_state": 231,
+  "geo_valid": 0,
+  "geo_err_p50_m": null,
+  "geo_err_p95_m": null,
+  "query_green_match": 0.0,
+  "query_other_match": 0.0,
+  "backend": "pytorch_fp16"
+ },
+ "REAL_claims1": {
+  "frames_validated": 150,
+  "cand_per_actor": 2.17,
+  "obs_with_state": 231,
+  "geo_valid": 0,
+  "geo_err_p50_m": null,
+  "geo_err_p95_m": null,
+  "query_green_match": 0.0,
+  "query_other_match": 0.0,
+  "backend": "pytorch_fp16"
+ },
+ "SIM_claims0": {
+  "frames_validated": 150,
+  "cand_per_actor": 2.17,
+  "obs_with_state": 0,
+  "geo_valid": 0,
+  "geo_err_p50_m": null,
+  "geo_err_p95_m": null,
+  "query_green_match": null,
+  "query_other_match": null,
+  "backend": "pytorch_fp16"
+ },
+ "SIM_claims1": {
+  "frames_validated": 150,
+  "cand_per_actor": 2.33,
+  "obs_with_state": 0,
+  "geo_valid": 231,
+  "geo_err_p50_m": 0.8,
+  "geo_err_p95_m": 4.14,
+  "query_green_match": null,
+  "query_other_match": null,
+  "backend": "pytorch_fp16"
+ }
+}

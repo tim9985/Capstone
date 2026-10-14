@@ -1,0 +1,301 @@
+{
+ "run": "S2_a20",
+ "frames": 34,
+ "actors": 3,
+ "actors_visible": 3,
+ "detection": {
+  "gt_boxes": 30,
+  "min_px": 40,
+  "AP50": 0.9266,
+  "recall@0.15": 0.9333,
+  "precision@0.15": 0.8485,
+  "recall_by_height_px": {
+   "0-20": [
+    null,
+    0
+   ],
+   "20-40": [
+    null,
+    0
+   ],
+   "40-80": [
+    0.931,
+    29
+   ],
+   "80-∞": [
+    1.0,
+    1
+   ]
+  },
+  "empty_frames": 16,
+  "fp_per_empty_frame": 0.0
+ },
+ "latency_ms": {
+  "detect_p50": 21.96,
+  "detect_p95": 23.54,
+  "color_p50": 0.92,
+  "state_p50": 32.08,
+  "frame_p50": 58.98,
+  "frame_p95": 74.15,
+  "fps_at_p50": 17.0,
+  "backend": "tensorrt"
+ },
+ "geo": {
+  "det_valid": 28,
+  "det_err_p50": 0.71,
+  "det_err_p95": 2.86,
+  "det_stable_n": 28,
+  "det_stable_p50": 0.71,
+  "det_stable_p95": 2.86,
+  "gtbox_err_p50": 0.63,
+  "gtbox_stable_p50": 0.63,
+  "pending_reasons": {}
+ },
+ "candidates": {
+  "total": 9,
+  "confirmed": 7,
+  "confirmed_without_actor": 1,
+  "actors_found": 3,
+  "actors_confirmed": 3,
+  "actors_with_duplicates": 3,
+  "actors_merged_into_other": 0
+ },
+ "rescue": {
+  "auroc_lying_term": null,
+  "auroc_score": null,
+  "per_actor": {
+   "Person_Walking_01": {
+    "lying": false,
+    "max_grade": "CHECK",
+    "frac": {
+     "CHECK": 1.0
+    },
+    "max_still_s": 0,
+    "lying_term_p50": 0.144
+   },
+   "Person_Walking_02": {
+    "lying": false,
+    "max_grade": "CHECK",
+    "frac": {
+     "CHECK": 1.0
+    },
+    "max_still_s": 0,
+    "lying_term_p50": 0.223
+   },
+   "Person_Walking_03": {
+    "lying": false,
+    "max_grade": "CHECK",
+    "frac": {
+     "CHECK": 1.0
+    },
+    "max_still_s": 0,
+    "lying_term_p50": 0.079
+   }
+  },
+  "lying_reached_urgent_or_high": null,
+  "others_reached_urgent": "0/3"
+ },
+ "tracking": {
+  "IDF1": 0.0645,
+  "id_switches": 0,
+  "tracks_per_actor": 1.0,
+  "gaps": 3,
+  "gap_same_candidate": 0.333,
+  "gap_same_track": 0.0
+ },
+ "color": {
+  "actors_with_truth": 3,
+  "top1_acc": 0.333,
+  "top2_acc": 0.667
+ },
+ "reobservation": {
+  "by_reason": {
+   "LOW_EVIDENCE": 2
+  },
+  "target": {
+   "배우 있음": 1,
+   "배우 없음": 1
+  }
+ },
+ "appearance": {
+  "query": null,
+  "verdicts": {}
+ },
+ "per_actor": [
+  {
+   "actor": "Person_Walking_01",
+   "truth_posture": "standing",
+   "frames_visible": 5,
+   "tracks": 0,
+   "id_switches": 0,
+   "gaps": [
+    {
+     "gap_s": 6.0,
+     "same_candidate": false,
+     "same_track": false
+    }
+   ],
+   "track_runs": [
+    [
+     12.0,
+     16.0,
+     3,
+     null,
+     "bdd23394"
+    ],
+    [
+     22.0,
+     22.0,
+     1,
+     null,
+     "4ed2933f"
+    ]
+   ],
+   "truth_color": "orange",
+   "color_top2": [
+    "yellow",
+    "orange"
+   ],
+   "color_top1_ok": false,
+   "color_top2_ok": true,
+   "frames_detected": 4,
+   "first_visible_s": 12.0,
+   "first_detect_s": 12.0,
+   "first_confirm_s": 14.0,
+   "candidates": 2,
+   "merged_into_other": false,
+   "confirmed": 1,
+   "candidate_pos_err_m": 23.2,
+   "grade": "CHECK",
+   "posture": "sitting",
+   "lying_score": 0.298
+  },
+  {
+   "actor": "Person_Walking_02",
+   "truth_posture": "standing",
+   "frames_visible": 13,
+   "tracks": 1,
+   "id_switches": 0,
+   "gaps": [
+    {
+     "gap_s": 24.0,
+     "same_candidate": true,
+     "same_track": false
+    }
+   ],
+   "track_runs": [
+    [
+     0.0,
+     0.0,
+     1,
+     "45173600:1.0",
+     "0b14dc71"
+    ],
+    [
+     2.0,
+     10.0,
+     5,
+     null,
+     "0b14dc71"
+    ],
+    [
+     12.0,
+     14.0,
+     2,
+     null,
+     "4c412491"
+    ],
+    [
+     16.0,
+     44.0,
+     4,
+     null,
+     "60cba33b"
+    ]
+   ],
+   "truth_color": "blue",
+   "color_top2": [
+    "blue",
+    "navy"
+   ],
+   "color_top1_ok": true,
+   "color_top2_ok": true,
+   "frames_detected": 12,
+   "first_visible_s": 0.0,
+   "first_detect_s": 0.0,
+   "first_confirm_s": 2.0,
+   "candidates": 3,
+   "merged_into_other": false,
+   "confirmed": 3,
+   "candidate_pos_err_m": 10.23,
+   "grade": "CHECK",
+   "posture": "sitting",
+   "lying_score": 0.389
+  },
+  {
+   "actor": "Person_Walking_03",
+   "truth_posture": "standing",
+   "frames_visible": 12,
+   "tracks": 0,
+   "id_switches": 0,
+   "gaps": [
+    {
+     "gap_s": 30.0,
+     "same_candidate": false,
+     "same_track": false
+    }
+   ],
+   "track_runs": [
+    [
+     4.0,
+     14.0,
+     6,
+     null,
+     "4f0e6e3c"
+    ],
+    [
+     16.0,
+     16.0,
+     1,
+     null,
+     "0b14dc71"
+    ],
+    [
+     46.0,
+     50.0,
+     3,
+     null,
+     "6e1af587"
+    ],
+    [
+     52.0,
+     54.0,
+     2,
+     null,
+     "4f0e6e3c"
+    ]
+   ],
+   "truth_color": "white",
+   "color_top2": [
+    "gray",
+    "black"
+   ],
+   "color_top1_ok": false,
+   "color_top2_ok": false,
+   "frames_detected": 12,
+   "first_visible_s": 4.0,
+   "first_detect_s": 4.0,
+   "first_confirm_s": 6.0,
+   "candidates": 2,
+   "merged_into_other": false,
+   "confirmed": 2,
+   "candidate_pos_err_m": 16.77,
+   "grade": "CHECK",
+   "posture": "sitting",
+   "lying_score": 0.311
+  }
+ ],
+ "frame_step": 20,
+ "color_profile": "base",
+ "posture_model": true
+}

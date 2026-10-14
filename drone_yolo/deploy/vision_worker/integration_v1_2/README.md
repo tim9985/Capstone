@@ -1,0 +1,56 @@
+# 비전 worker 1.2 교체 파일 — 통합 v1.1 판 위에 (2026-10-14)
+
+통합 담당이 배포한 v1.1 (`app.vision_ingest` · SIM leased · REAL JSONL) 을 **바탕으로** 비전 1.2 기능만 얹은 파일입니다.
+v1.1 규칙 (해시 선검사 · CUDA 필수 · 빠진 자세를 채우지 않음 · 좌표 기본 PENDING · 64 KiB · 재전송) 은 그대로입니다.
+
+## 1. 무엇이 바뀌나
+
+| 기능 | v1.1 (지금) | 1.2 (이 파일) | 끄는 법 |
+|---|---|---|---|
+| 모델 | soup_v7r2 · conf 0.15 · PyTorch | **v12_f91_swa · conf 0.20 · TensorRT** (model.json 의 엔진 해시가 맞을 때만 · 아니면 PyTorch) | `VISION_TRT=0` |
+| 후보 (REAL) | 화면 겹침만 → **사람당 후보 10~19** | 추적 키 + pose 로 계산한 위치 (내부용) → **4~5** | `VISION_GEO_GROUPING=0` |
+| 후보 (SIM) | 프레임마다 새 id | 임무 안에서 같은 사람 = 같은 id (REAL 과 같은 코드) | — |
+| 추적 · 상태 (요구조자) | `state: null` | BoT-SORT · 누움 점수 · 무동작 · 등급 (`/models/posture.json`) | posture.json 빼기 |
+| 인상착의 비교 | 없음 | `appearance.match` (프레임 `appearance_query` 또는 `/scratch/appearance_query.json`) | 조건 없으면 안 함 |
+| 좌표 보고 | 항상 PENDING | 기본 **그대로 PENDING** · `VISION_GEO_CLAIMS=1` 이면 pose 로 계산한 **worker 주장 VALID** (오차 타원 · method `FOOT_RAY_POSE…`) | 기본 꺼짐 |
+
+- 좌표 계산 = `frame-pose/1.0` 의 `camera_attitude` (CAMERA_FRD_TO_NED) + `camera_position_ned` 로 발끝 광선 · 짐벌 · 마운트 가정 없음
+- 카메라 자세가 없으면 `body_attitude × mount` · 둘 다 없으면 보류 (`CAMERA_ATTITUDE_MISSING`)
+- 지면: 지형 함수가 없으면 보류 (`GROUND_UNKNOWN`)
+  - `VISION_GEO_AGL_FLAT=1` 이고 `altitude_datum = AGL` 이면 「기체 아래와 같은 높이」 가정으로 계산
+  - 이때 가정은 method 에 `+LOCAL_FLAT_AGL` 로 표시
+- REAL 은 `clock_domain` UTC · DEVICE_MONOTONIC 만 · `sync_error_ms` > 50 ms 보류 · `missing_reasons` 는 사유로 (카메라 자세를 직접 받았으면 마운트 · 짐벌 항목은 막지 않음)
+
+## 2. 파일
+
+| 파일 | 내용 |
+|---|---|
+| `app/vision_ingest.py` | v1.1 + 엔진 (해시 확인) · `posture.json` · SIM 에 같은 worker 넘김 |
+| `app/vision_core/ingest.py` | v1.1 + `observe()` (추적 · 상태 · 후보 · 색 · 질의 · pose 좌표) |
+| `app/vision_sim.py` | v1.1 + `rich_observations` (임무 기억) · `SIM_RICH_FIELDS=1` 이면 appearance · state · track_id (**백엔드 계약 바뀐 뒤에만**) |
+| `app/vision_core/detector.py` | v1.1 그대로 (비 1080p 되돌림 수정 포함) |
+| `app/vision_core/` `pose.py` · `state.py` · `appearance.py` · `registry.py` · `geo.py` | 새 파일 · 비전 판 (registry = 추적 attach · geo = 방위) |
+| `base/` | 비교용 v1.1 원본 (diff 용 · 배포하지 않음) |
+| `tests_v1_2.py` | UE 촬영 → 이 파일들 → **백엔드 pydantic 계약** (`real_contracts.VisionResult` · `contracts.Observation`) 검사 |
+
+## 3. 검증 (서버 · 10-14 · v12_f91_swa · TensorRT)
+
+| | S4 16 m (746장) | S3 20 m (882장) |
+|---|---|---|
+| 백엔드 계약 통과 (REAL · SIM) | 746 / 746 | 882 / 882 |
+| 사람당 후보 — v1.1 방식 → 1.2 | 10.1 → **4.1** | 19.3 → **4.9** |
+| 상태가 붙은 관측 (REAL) | 1,202 | 3,306 |
+| worker 주장 좌표 오차 중앙 · P95 (`VISION_GEO_CLAIMS=1`) | 1.0 · 2.6 m | 1.1 · 3.3 m |
+| 찾는 색 green — 대상 MATCH · 다른 사람 MATCH | 0.50 · 0.00 | 1.00 · 0.01 |
+
+- 모델 로더: REAL · SIM 꾸러미 둘 다 해시 검사 → **tensorrt** · 한 클래스 확인 통과
+- 프레임 간격 영향 (UE 8회): 2 s 간격이면 추적 IDF1 0.43 → 0.07 · 누운 사람 URGENT/HIGH 3/10 → 0/10 — **상태 판단은 0.1~0.2 s 간격이 필요**
+
+## 4. 모델 꾸러미 (서버 · git 밖)
+
+- `drone_yolo/runs_person/_pack_v12_real/` · `_pack_v12_sim/`
+  - `active.json` (name v12_f91_swa · conf 0.20 · model_config_id = 등록 후 채움)
+  - `posture.json`
+  - `v12_f91_swa/best.pt` · `model.json` (environment · sha256 · engine {file, sha256}) · `best_trt11.3.0.99_RTX3090.engine`
+- best.pt SHA-256 `d2a4edc92931401e68e029e7ac193041eb9c45f852b596ab8c698611fd323772`
+- 인수 검증: `verify_detector` test_v2 1,407장 AP50 0.6426 (.pt) · 0.6417 (엔진) ± 0.003

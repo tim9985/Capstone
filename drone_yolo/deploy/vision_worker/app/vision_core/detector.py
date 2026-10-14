@@ -71,7 +71,9 @@ class PersonDetector:
             offs = OFFS
             imgs = [frame[y:y + TH, x:x + TW] for x, y in offs]
         elif self.backend == "tensorrt":            # 엔진은 타일 4장 고정 → 1920×1080 으로 맞춘다
-            return self.detect(cv2.resize(frame, FULL), conf)
+            boxes, scores, ms = self.detect(cv2.resize(frame, FULL), conf)      # 10-14 통합 판 수정 반영 — 원래 크기로 되돌림
+            boxes *= np.array([w / FULL[0], h / FULL[1], w / FULL[0], h / FULL[1]], np.float32)
+            return boxes, scores, ms
         else:
             offs, imgs = [(0, 0)], [frame]
         res = self._predict(imgs, self.imgsz, conf)

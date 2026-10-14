@@ -121,8 +121,10 @@ def pose_of(r, meta):
 COLOR_PROFILES = {"base": {}, "v14": {"wb": None, "exp_clip": (1.0, 2.0)}}   # v14 = 밝히기만 · 화이트밸런스 끔 (10-14 UE 16 m 로 고름 · eval_color V14)
 
 
-def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.20, color="base"):
+def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.20, color="base", step=1):
     rows, gtb, actors, meta = load_run(run)
+    rows = rows[::step]                                                     # 10-14 SIM 프레임 간격 시험 (10 fps 기록을 솎음 · 10 = 1 s · 20 = 2 s)
+    gap_s = max(GAP_S, 1.5 * step / float(meta.get("fps", 10)))              # 솎으면 장 사이가 곧 1 s 이상 → 「놓침」 은 간격의 1.5 배부터
     det = TimedDet(PersonDetector(weights, engine=engine, conf=conf))
     scratch = Path(tempfile.mkdtemp(prefix="uevis_"))
     w = IngestWorker(None, None, det, "ue-eval", scratch=scratch, upload_crops=False, posture=posture)
@@ -249,7 +251,7 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.
             perr = round(math.hypot(float(r0["ned_x"]) + dn - truth[0], float(r0["ned_y"]) + de - truth[1]), 2)
         seq = trk_seq.get(n, [])
         gaps = [{"gap_s": round(t1 - t0, 2), "same_candidate": c0 == c1, "same_track": bool(k0) and k0 == k1}
-                for (t0, c0, k0), (t1, c1, k1) in zip(hist[n], hist[n][1:]) if t1 - t0 >= GAP_S]
+                for (t0, c0, k0), (t1, c1, k1) in zip(hist[n], hist[n][1:]) if t1 - t0 >= gap_s]
         sw = sum(1 for i in range(1, len(seq)) if seq[i] != seq[i - 1])
         tc = actors[n].get("upper_color"); top = [c["color"] for c in (a.get("last_color") or [])]
         per_actor.append({"actor": n, "truth_posture": truth_posture(n, actors[n].get("pose_raw")), "frames_visible": a["n_vis"],
@@ -473,6 +475,7 @@ def main():
     ap.add_argument("--min-px", type=int, default=40, help="정답으로 칠 최소 마스크 화소")
     ap.add_argument("--conf", type=float, default=0.20, help="운용 임계값 (10-13 스윕 제안 0.20)")
     ap.add_argument("--fo", action="store_true", help="FiftyOne ue/<run> 으로 올림")
+    ap.add_argument("--step", type=int, default=1, help="N 장마다 한 장 (SIM 간격 시험 · 20 = 2 s)")
     ap.add_argument("--color", default="base", choices=list(COLOR_PROFILES), help="상의색 설정 (base = worker 그대로)")
     ap.add_argument("--tag", default="", help="결과 파일 이름 뒤에 붙임 (같은 기록을 질의 색만 바꿔 여러 번)")
     ap.add_argument("--selftest", action="store_true")
@@ -481,7 +484,8 @@ def main():
     run = selftest(tmp) if a.selftest else Path(a.run)
     posture = a.posture if Path(a.posture).exists() else None
     q = {"upper": [a.query]} if a.query else None
-    res = evaluate(run, a.weights, a.engine or None, posture, q, a.min_px, fo_name=(f"ue/{run.name}{a.tag}" if a.fo else None), conf=a.conf, color=a.color)
+    res = evaluate(run, a.weights, a.engine or None, posture, q, a.min_px, fo_name=(f"ue/{run.name}{a.tag}" if a.fo else None), conf=a.conf, color=a.color, step=a.step)
+    res["frame_step"] = a.step
     res["color_profile"] = a.color
     res["posture_model"] = bool(posture)
     md = report_md(res)

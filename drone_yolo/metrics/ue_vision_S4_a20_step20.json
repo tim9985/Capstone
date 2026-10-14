@@ -1,0 +1,879 @@
+{
+ "run": "S4_a20",
+ "frames": 37,
+ "actors": 8,
+ "actors_visible": 8,
+ "detection": {
+  "gt_boxes": 107,
+  "min_px": 40,
+  "AP50": 0.8311,
+  "recall@0.15": 0.8318,
+  "precision@0.15": 0.7946,
+  "recall_by_height_px": {
+   "0-20": [
+    0.0,
+    1
+   ],
+   "20-40": [
+    0.75,
+    4
+   ],
+   "40-80": [
+    0.843,
+    102
+   ],
+   "80-∞": [
+    null,
+    0
+   ]
+  },
+  "empty_frames": 18,
+  "fp_per_empty_frame": 0.5
+ },
+ "latency_ms": {
+  "detect_p50": 22.06,
+  "detect_p95": 23.19,
+  "color_p50": 2.61,
+  "state_p50": 35.28,
+  "frame_p50": 66.84,
+  "frame_p95": 107.02,
+  "fps_at_p50": 15.0,
+  "backend": "tensorrt"
+ },
+ "geo": {
+  "det_valid": 88,
+  "det_err_p50": 0.88,
+  "det_err_p95": 2.23,
+  "det_stable_n": 88,
+  "det_stable_p50": 0.88,
+  "det_stable_p95": 2.23,
+  "gtbox_err_p50": 0.88,
+  "gtbox_stable_p50": 0.88,
+  "pending_reasons": {
+   "FOOT_AT_EDGE": 1
+  }
+ },
+ "candidates": {
+  "total": 22,
+  "confirmed": 12,
+  "confirmed_without_actor": 3,
+  "actors_found": 8,
+  "actors_confirmed": 8,
+  "actors_with_duplicates": 2,
+  "actors_merged_into_other": 0
+ },
+ "rescue": {
+  "auroc_lying_term": null,
+  "auroc_score": null,
+  "per_actor": {
+   "Person_Standing_01": {
+    "lying": false,
+    "max_grade": "CHECK",
+    "frac": {
+     "CHECK": 1.0
+    },
+    "max_still_s": 0,
+    "lying_term_p50": 0.208
+   },
+   "Person_Standing_02": {
+    "lying": false,
+    "max_grade": "CHECK",
+    "frac": {
+     "CHECK": 1.0
+    },
+    "max_still_s": 0,
+    "lying_term_p50": 0.259
+   },
+   "Person_Standing_03": {
+    "lying": false,
+    "max_grade": "CHECK",
+    "frac": {
+     "CHECK": 1.0
+    },
+    "max_still_s": 0,
+    "lying_term_p50": 0.224
+   },
+   "Person_Standing_04": {
+    "lying": false,
+    "max_grade": "CHECK",
+    "frac": {
+     "CHECK": 0.917,
+     "NORMAL": 0.083
+    },
+    "max_still_s": 0,
+    "lying_term_p50": 0.169
+   },
+   "Person_Standing_05": {
+    "lying": false,
+    "max_grade": "CHECK",
+    "frac": {
+     "CHECK": 1.0
+    },
+    "max_still_s": 0,
+    "lying_term_p50": 0.157
+   },
+   "Person_Standing_06": {
+    "lying": false,
+    "max_grade": "CHECK",
+    "frac": {
+     "CHECK": 1.0
+    },
+    "max_still_s": 0,
+    "lying_term_p50": 0.219
+   },
+   "Person_Standing_07": {
+    "lying": false,
+    "max_grade": "CHECK",
+    "frac": {
+     "CHECK": 1.0
+    },
+    "max_still_s": 0,
+    "lying_term_p50": 0.314
+   },
+   "Person_Standing_08": {
+    "lying": false,
+    "max_grade": "CHECK",
+    "frac": {
+     "CHECK": 1.0
+    },
+    "max_still_s": 0,
+    "lying_term_p50": 0.227
+   }
+  },
+  "lying_reached_urgent_or_high": null,
+  "others_reached_urgent": "0/8"
+ },
+ "tracking": {
+  "IDF1": 0.1504,
+  "id_switches": 16,
+  "tracks_per_actor": 3.29,
+  "gaps": 17,
+  "gap_same_candidate": 0.941,
+  "gap_same_track": 0.0
+ },
+ "color": {
+  "actors_with_truth": 8,
+  "top1_acc": 0.5,
+  "top2_acc": 0.625
+ },
+ "reobservation": {
+  "by_reason": {
+   "LOW_EVIDENCE": 5
+  },
+  "target": {
+   "배우 없음": 5
+  }
+ },
+ "appearance": {
+  "query": {
+   "upper": [
+    "green"
+   ]
+  },
+  "verdicts": {
+   "MISMATCH": 95,
+   "MATCH": 17
+  },
+  "by_actor": {
+   "Person_Standing_06": {
+    "MISMATCH": 12,
+    "MATCH": 1
+   },
+   "Person_Standing_05": {
+    "MISMATCH": 13
+   },
+   "Person_Standing_08": {
+    "MISMATCH": 13
+   },
+   "Person_Standing_04": {
+    "MATCH": 10,
+    "MISMATCH": 2
+   },
+   "Person_Standing_07": {
+    "MISMATCH": 12
+   },
+   "Person_Standing_02": {
+    "MATCH": 2,
+    "MISMATCH": 7
+   },
+   "Person_Standing_03": {
+    "MATCH": 1,
+    "MISMATCH": 9
+   },
+   "Person_Standing_01": {
+    "MISMATCH": 7
+   }
+  },
+  "targets": [
+   "Person_Standing_04"
+  ],
+  "target_match": 0.833,
+  "others_match": 0.052,
+  "others_match_max": 0.222
+ },
+ "per_actor": [
+  {
+   "actor": "Person_Standing_01",
+   "truth_posture": "standing",
+   "frames_visible": 12,
+   "tracks": 0,
+   "id_switches": 0,
+   "gaps": [
+    {
+     "gap_s": 18.0,
+     "same_candidate": true,
+     "same_track": false
+    },
+    {
+     "gap_s": 24.0,
+     "same_candidate": true,
+     "same_track": false
+    }
+   ],
+   "track_runs": [
+    [
+     10.0,
+     60.0,
+     7,
+     null,
+     "590b283f"
+    ]
+   ],
+   "truth_color": "red",
+   "color_top2": [
+    "black",
+    "red"
+   ],
+   "color_top1_ok": false,
+   "color_top2_ok": true,
+   "frames_detected": 7,
+   "first_visible_s": 0.0,
+   "first_detect_s": 10.0,
+   "first_confirm_s": 10.0,
+   "candidates": 1,
+   "merged_into_other": false,
+   "confirmed": 1,
+   "candidate_pos_err_m": 1.86,
+   "grade": "CHECK",
+   "posture": "lying",
+   "lying_score": 0.356
+  },
+  {
+   "actor": "Person_Standing_02",
+   "truth_posture": "standing",
+   "frames_visible": 13,
+   "tracks": 3,
+   "id_switches": 2,
+   "gaps": [
+    {
+     "gap_s": 16.0,
+     "same_candidate": true,
+     "same_track": false
+    },
+    {
+     "gap_s": 26.0,
+     "same_candidate": true,
+     "same_track": false
+    }
+   ],
+   "track_runs": [
+    [
+     8.0,
+     56.0,
+     6,
+     null,
+     "d99c2657"
+    ],
+    [
+     58.0,
+     58.0,
+     1,
+     "83817b1d:55.0",
+     "d99c2657"
+    ],
+    [
+     60.0,
+     60.0,
+     1,
+     "83817b1d:63.0",
+     "d984d5f8"
+    ],
+    [
+     62.0,
+     62.0,
+     1,
+     "83817b1d:66.0",
+     "d99c2657"
+    ]
+   ],
+   "truth_color": "orange",
+   "color_top2": [
+    "yellow",
+    "black"
+   ],
+   "color_top1_ok": false,
+   "color_top2_ok": false,
+   "frames_detected": 9,
+   "first_visible_s": 0.0,
+   "first_detect_s": 8.0,
+   "first_confirm_s": 8.0,
+   "candidates": 1,
+   "merged_into_other": false,
+   "confirmed": 1,
+   "candidate_pos_err_m": 1.03,
+   "grade": "CHECK",
+   "posture": "lying",
+   "lying_score": 0.388
+  },
+  {
+   "actor": "Person_Standing_03",
+   "truth_posture": "standing",
+   "frames_visible": 13,
+   "tracks": 5,
+   "id_switches": 4,
+   "gaps": [
+    {
+     "gap_s": 14.0,
+     "same_candidate": true,
+     "same_track": false
+    },
+    {
+     "gap_s": 28.0,
+     "same_candidate": true,
+     "same_track": false
+    }
+   ],
+   "track_runs": [
+    [
+     8.0,
+     8.0,
+     1,
+     null,
+     "d984d5f8"
+    ],
+    [
+     10.0,
+     12.0,
+     2,
+     "83817b1d:13.0",
+     "d984d5f8"
+    ],
+    [
+     14.0,
+     56.0,
+     3,
+     null,
+     "d984d5f8"
+    ],
+    [
+     58.0,
+     58.0,
+     1,
+     "83817b1d:59.0",
+     "d984d5f8"
+    ],
+    [
+     60.0,
+     60.0,
+     1,
+     "83817b1d:55.0",
+     "d99c2657"
+    ],
+    [
+     62.0,
+     62.0,
+     1,
+     "83817b1d:63.0",
+     "d984d5f8"
+    ],
+    [
+     64.0,
+     64.0,
+     1,
+     "83817b1d:66.0",
+     "d99c2657"
+    ]
+   ],
+   "truth_color": "yellow",
+   "color_top2": [
+    "yellow",
+    "black"
+   ],
+   "color_top1_ok": true,
+   "color_top2_ok": true,
+   "frames_detected": 10,
+   "first_visible_s": 2.0,
+   "first_detect_s": 8.0,
+   "first_confirm_s": 8.0,
+   "candidates": 1,
+   "merged_into_other": false,
+   "confirmed": 1,
+   "candidate_pos_err_m": 0.17,
+   "grade": "CHECK",
+   "posture": "lying",
+   "lying_score": 0.381
+  },
+  {
+   "actor": "Person_Standing_04",
+   "truth_posture": "standing",
+   "frames_visible": 13,
+   "tracks": 4,
+   "id_switches": 3,
+   "gaps": [
+    {
+     "gap_s": 40.0,
+     "same_candidate": true,
+     "same_track": false
+    }
+   ],
+   "track_runs": [
+    [
+     6.0,
+     6.0,
+     1,
+     null,
+     "d984d5f8"
+    ],
+    [
+     8.0,
+     8.0,
+     1,
+     null,
+     "c4f64ae1"
+    ],
+    [
+     10.0,
+     12.0,
+     2,
+     "83817b1d:14.0",
+     "7db438a4"
+    ],
+    [
+     14.0,
+     56.0,
+     3,
+     null,
+     "7db438a4"
+    ],
+    [
+     58.0,
+     58.0,
+     1,
+     "83817b1d:58.0",
+     "7db438a4"
+    ],
+    [
+     60.0,
+     60.0,
+     1,
+     "83817b1d:59.0",
+     "7db438a4"
+    ],
+    [
+     62.0,
+     62.0,
+     1,
+     null,
+     "7db438a4"
+    ],
+    [
+     64.0,
+     64.0,
+     1,
+     "83817b1d:63.0",
+     "d984d5f8"
+    ],
+    [
+     66.0,
+     66.0,
+     1,
+     null,
+     "7db438a4"
+    ]
+   ],
+   "truth_color": "green",
+   "color_top2": [
+    "green",
+    "black"
+   ],
+   "color_top1_ok": true,
+   "color_top2_ok": true,
+   "frames_detected": 12,
+   "first_visible_s": 4.0,
+   "first_detect_s": 6.0,
+   "first_confirm_s": 8.0,
+   "candidates": 1,
+   "merged_into_other": false,
+   "confirmed": 1,
+   "candidate_pos_err_m": 1.0,
+   "grade": "CHECK",
+   "posture": "lying",
+   "lying_score": 0.36
+  },
+  {
+   "actor": "Person_Standing_05",
+   "truth_posture": "standing",
+   "frames_visible": 13,
+   "tracks": 1,
+   "id_switches": 0,
+   "gaps": [
+    {
+     "gap_s": 20.0,
+     "same_candidate": false,
+     "same_track": false
+    },
+    {
+     "gap_s": 24.0,
+     "same_candidate": true,
+     "same_track": false
+    }
+   ],
+   "track_runs": [
+    [
+     0.0,
+     0.0,
+     1,
+     "83817b1d:2.0",
+     "590b283f"
+    ],
+    [
+     2.0,
+     8.0,
+     4,
+     null,
+     "590b283f"
+    ],
+    [
+     28.0,
+     58.0,
+     5,
+     null,
+     "eca0580b"
+    ],
+    [
+     60.0,
+     64.0,
+     3,
+     null,
+     "9c9b1a35"
+    ]
+   ],
+   "truth_color": "blue",
+   "color_top2": [
+    "blue",
+    "black"
+   ],
+   "color_top1_ok": true,
+   "color_top2_ok": true,
+   "frames_detected": 13,
+   "first_visible_s": 0.0,
+   "first_detect_s": 0.0,
+   "first_confirm_s": 2.0,
+   "candidates": 2,
+   "merged_into_other": false,
+   "confirmed": 2,
+   "candidate_pos_err_m": 1.58,
+   "grade": "CHECK",
+   "posture": "lying",
+   "lying_score": 0.463
+  },
+  {
+   "actor": "Person_Standing_06",
+   "truth_posture": "standing",
+   "frames_visible": 14,
+   "tracks": 3,
+   "id_switches": 2,
+   "gaps": [
+    {
+     "gap_s": 4.0,
+     "same_candidate": true,
+     "same_track": false
+    },
+    {
+     "gap_s": 18.0,
+     "same_candidate": true,
+     "same_track": false
+    },
+    {
+     "gap_s": 26.0,
+     "same_candidate": true,
+     "same_track": false
+    }
+   ],
+   "track_runs": [
+    [
+     0.0,
+     0.0,
+     1,
+     "83817b1d:1.0",
+     "c4f64ae1"
+    ],
+    [
+     4.0,
+     4.0,
+     1,
+     null,
+     "c4f64ae1"
+    ],
+    [
+     6.0,
+     6.0,
+     1,
+     null,
+     "d99c2657"
+    ],
+    [
+     8.0,
+     56.0,
+     5,
+     null,
+     "de204418"
+    ],
+    [
+     58.0,
+     58.0,
+     1,
+     "83817b1d:60.0",
+     "de204418"
+    ],
+    [
+     60.0,
+     60.0,
+     1,
+     "83817b1d:64.0",
+     "eca0580b"
+    ],
+    [
+     62.0,
+     64.0,
+     2,
+     null,
+     "de204418"
+    ],
+    [
+     66.0,
+     66.0,
+     1,
+     null,
+     "455b4287"
+    ]
+   ],
+   "truth_color": "purple",
+   "color_top2": [
+    "purple",
+    "black"
+   ],
+   "color_top1_ok": true,
+   "color_top2_ok": true,
+   "frames_detected": 13,
+   "first_visible_s": 0.0,
+   "first_detect_s": 0.0,
+   "first_confirm_s": 10.0,
+   "candidates": 2,
+   "merged_into_other": false,
+   "confirmed": 1,
+   "candidate_pos_err_m": 0.38,
+   "grade": "CHECK",
+   "posture": "lying",
+   "lying_score": 0.508
+  },
+  {
+   "actor": "Person_Standing_07",
+   "truth_posture": "standing",
+   "frames_visible": 14,
+   "tracks": 4,
+   "id_switches": 3,
+   "gaps": [
+    {
+     "gap_s": 12.0,
+     "same_candidate": true,
+     "same_track": false
+    },
+    {
+     "gap_s": 4.0,
+     "same_candidate": true,
+     "same_track": false
+    },
+    {
+     "gap_s": 28.0,
+     "same_candidate": true,
+     "same_track": false
+    }
+   ],
+   "track_runs": [
+    [
+     6.0,
+     8.0,
+     2,
+     null,
+     "b1251cbc"
+    ],
+    [
+     10.0,
+     12.0,
+     2,
+     "83817b1d:12.0",
+     "b1251cbc"
+    ],
+    [
+     24.0,
+     56.0,
+     3,
+     null,
+     "b1251cbc"
+    ],
+    [
+     58.0,
+     58.0,
+     1,
+     "83817b1d:56.0",
+     "b1251cbc"
+    ],
+    [
+     60.0,
+     60.0,
+     1,
+     "83817b1d:60.0",
+     "de204418"
+    ],
+    [
+     62.0,
+     62.0,
+     1,
+     null,
+     "b1251cbc"
+    ],
+    [
+     64.0,
+     64.0,
+     1,
+     "83817b1d:68.0",
+     "b1251cbc"
+    ],
+    [
+     66.0,
+     66.0,
+     1,
+     null,
+     "b1251cbc"
+    ]
+   ],
+   "truth_color": "white",
+   "color_top2": [
+    "gray",
+    "navy"
+   ],
+   "color_top1_ok": false,
+   "color_top2_ok": false,
+   "frames_detected": 12,
+   "first_visible_s": 2.0,
+   "first_detect_s": 6.0,
+   "first_confirm_s": 8.0,
+   "candidates": 1,
+   "merged_into_other": false,
+   "confirmed": 1,
+   "candidate_pos_err_m": 0.31,
+   "grade": "CHECK",
+   "posture": "lying",
+   "lying_score": 0.418
+  },
+  {
+   "actor": "Person_Standing_08",
+   "truth_posture": "standing",
+   "frames_visible": 15,
+   "tracks": 3,
+   "id_switches": 2,
+   "gaps": [
+    {
+     "gap_s": 10.0,
+     "same_candidate": true,
+     "same_track": false
+    },
+    {
+     "gap_s": 32.0,
+     "same_candidate": true,
+     "same_track": false
+    }
+   ],
+   "track_runs": [
+    [
+     6.0,
+     6.0,
+     1,
+     null,
+     "c4f64ae1"
+    ],
+    [
+     8.0,
+     8.0,
+     1,
+     null,
+     "7db438a4"
+    ],
+    [
+     10.0,
+     56.0,
+     5,
+     null,
+     "c4f64ae1"
+    ],
+    [
+     58.0,
+     58.0,
+     1,
+     "83817b1d:54.0",
+     "c4f64ae1"
+    ],
+    [
+     60.0,
+     60.0,
+     1,
+     "83817b1d:56.0",
+     "b1251cbc"
+    ],
+    [
+     62.0,
+     62.0,
+     1,
+     null,
+     "c4f64ae1"
+    ],
+    [
+     64.0,
+     64.0,
+     1,
+     "83817b1d:69.0",
+     "c4f64ae1"
+    ],
+    [
+     66.0,
+     68.0,
+     2,
+     null,
+     "c4f64ae1"
+    ]
+   ],
+   "truth_color": "black",
+   "color_top2": [
+    "gray",
+    "green"
+   ],
+   "color_top1_ok": false,
+   "color_top2_ok": false,
+   "frames_detected": 13,
+   "first_visible_s": 2.0,
+   "first_detect_s": 6.0,
+   "first_confirm_s": 6.0,
+   "candidates": 1,
+   "merged_into_other": false,
+   "confirmed": 1,
+   "candidate_pos_err_m": 1.81,
+   "grade": "CHECK",
+   "posture": "lying",
+   "lying_score": 0.49
+  }
+ ],
+ "frame_step": 20,
+ "color_profile": "base",
+ "posture_model": true
+}

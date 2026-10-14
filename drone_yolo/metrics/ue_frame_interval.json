@@ -1,0 +1,52 @@
+[
+ {
+  "interval": "0.1 s (10장/초)",
+  "cand_per_actor": 7.6,
+  "idf1": 0.43,
+  "color_top1": 0.39,
+  "lying_urgent": "3/10",
+  "query_target": 0.64,
+  "query_others": 0.033,
+  "confirm_s": 0.5
+ },
+ {
+  "interval": "0.2 s (5장/초)",
+  "cand_per_actor": 6.1,
+  "idf1": 0.34,
+  "color_top1": 0.41,
+  "lying_urgent": "1/10",
+  "query_target": 0.74,
+  "query_others": 0.011,
+  "confirm_s": 0.8
+ },
+ {
+  "interval": "0.5 s (2장/초)",
+  "cand_per_actor": 5.3,
+  "idf1": 0.24,
+  "color_top1": 0.46,
+  "lying_urgent": "0/10",
+  "query_target": 0.58,
+  "query_others": 0.002,
+  "confirm_s": 1.5
+ },
+ {
+  "interval": "1 s",
+  "cand_per_actor": 3.9,
+  "idf1": 0.08,
+  "color_top1": 0.44,
+  "lying_urgent": "0/10",
+  "query_target": 0.74,
+  "query_others": 0.014,
+  "confirm_s": 2.0
+ },
+ {
+  "interval": "2 s",
+  "cand_per_actor": 3.0,
+  "idf1": 0.07,
+  "color_top1": 0.4,
+  "lying_urgent": "0/10",
+  "query_target": 0.67,
+  "query_others": 0.045,
+  "confirm_s": 4.0
+ }
+]

@@ -1,0 +1,10 @@
+[
+ {
+  "run": "S1_a16",
+  "boxes": 1087,
+  "claim": 1086,
+  "err_p50_m": 1.09,
+  "err_p95_m": 3.77,
+  "old_path_diff_max_m": 0.0069
+ }
+]

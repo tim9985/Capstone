@@ -44,11 +44,11 @@ def telemetry_from_pose(pose):
         return None
     g = lambda *ks: next((pose[k] for k in ks if pose.get(k) is not None), None)
     lat, lon, alt = g("lat"), g("lon"), g("alt_agl_m", "alt_agl", "relative_alt_m")
-    if lat is None or lon is None or alt is None:
-        return None
+    if lat is None or lon is None or alt is None or g("gimbal_pitch_deg") is None:   # 10-14 통합 v1.1 — 빠진 짐벌각을 −45° 로 채우지 않는다
+        return None                                                                       # (frame-pose/1.0 은 pose.py · integration_v1_2)
     rad = lambda v: math.radians(float(v or 0.0))
     return Telemetry(float(lat), float(lon), float(alt), roll=rad(g("roll_deg")), pitch=rad(g("pitch_deg")), yaw=rad(g("yaw_deg")),
-                     gimbal_pitch_deg=float(g("gimbal_pitch_deg") if g("gimbal_pitch_deg") is not None else -45.0),
+                     gimbal_pitch_deg=float(g("gimbal_pitch_deg")),
                      gimbal_yaw_deg=float(g("gimbal_yaw_deg") or 0.0),
                      stabilized=bool(pose.get("gimbal_stabilized", True)),
                      attitude_rate_deg=float(g("attitude_rate_deg") or 0.0))
