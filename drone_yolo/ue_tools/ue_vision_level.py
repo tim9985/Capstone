@@ -22,7 +22,9 @@ EAL, MEL = unreal.EditorAssetLibrary, unreal.MaterialEditingLibrary
 ALIB = unreal.AnimationLibrary
 tools = unreal.AssetToolsHelpers.get_asset_tools()
 HERE = os.path.dirname(os.path.abspath(__file__))
-SPEC = os.environ.get("VE_SPEC", os.path.join(HERE, "..", "configs", "vision_eval", "S1.json"))
+SPEC = os.environ.get("VE_SPEC", "S1")                       # 시나리오 이름(S2) 또는 json 경로
+if not SPEC.endswith(".json"):
+    SPEC = os.path.join(HERE, "..", "configs", "vision_eval", SPEC + ".json")
 MAT_DIR = "/Game/VisionEval/Materials"
 ANIM_DIR = "/Game/VisionEval/Anims"
 PARENT = f"{MAT_DIR}/M_VE_Shirt"
@@ -31,7 +33,9 @@ spec = json.load(open(SPEC, encoding="utf-8"))
 
 
 def shirt_material():
-    if EAL.does_asset_exist(PARENT):                # 매번 새로 만든다 (실패한 실행이 남긴 반쪽 재질 방지)
+    if EAL.does_asset_exist(PARENT) and os.environ.get("VE_REBUILD_SHIRT") != "1":
+        return EAL.load_asset(PARENT)                # 다른 UE(촬영 중)가 쓰고 있으면 지울 수 없다 → 있으면 재사용
+    if EAL.does_asset_exist(PARENT):                 # VE_REBUILD_SHIRT=1 일 때만 새로 (재질 식을 바꿨을 때)
         EAL.delete_asset(PARENT)
     m = tools.create_asset("M_VE_Shirt", MAT_DIR, unreal.Material, unreal.MaterialFactoryNew())
     E = lambda cls, x, y: MEL.create_material_expression(m, cls, x, y)
@@ -92,36 +96,38 @@ def shirt_material():
     return m
 
 
-def body_slot(mesh):
-    mats = mesh.get_editor_property("materials")
-    for i, sm in enumerate(mats):
-        n = str(sm.get_editor_property("material_slot_name")).lower()
-        if "hair" not in n and "joint" not in n:
-            return i, sm
-    return 0, mats[0]
+SKIP = ("hair", "eye", "brow", "lash", "mouth", "joint", "shoe", "bottom")
 
 
-def shirt_mi(ch, mesh, color, tint, parent):
-    path = f"{MAT_DIR}/MI_{ch}_{color}"
+def shirt_slots(mesh):
+    """상의 색을 입힐 칸 [(칸 번호, 칸, 전체칠?)] — 'top' 칸이 있으면 그 칸 전체 (Remy) · 없으면 몸 칸들에 바인드 포즈 상의 영역"""
+    mats = list(mesh.get_editor_property("materials"))
+    names = [str(m.get_editor_property("material_slot_name")).lower() for m in mats]
+    tops = [i for i, n in enumerate(names) if "top" in n]
+    if tops:
+        return [(i, mats[i], True) for i in tops]
+    return [(i, mats[i], False) for i, n in enumerate(names) if not any(k in n for k in SKIP)] or [(0, mats[0], False)]
+
+
+def shirt_mi(ch, mesh, idx, sm, full, color, tint, parent):
+    path = f"{MAT_DIR}/MI_{ch}_{idx}_{color}"
     mi = EAL.load_asset(path) if EAL.does_asset_exist(path) else tools.create_asset(
-        f"MI_{ch}_{color}", MAT_DIR, unreal.MaterialInstanceConstant, unreal.MaterialInstanceConstantFactoryNew())
+        f"MI_{ch}_{idx}_{color}", MAT_DIR, unreal.MaterialInstanceConstant, unreal.MaterialInstanceConstantFactoryNew())
     MEL.set_material_instance_parent(mi, parent)
-    _, sm = body_slot(mesh)
-    src = sm.get_editor_property("material_interface")
     try:
-        t = MEL.get_material_instance_texture_parameter_value(src, "Diffuse")
+        t = MEL.get_material_instance_texture_parameter_value(sm.get_editor_property("material_interface"), "Diffuse")
         if t:
             MEL.set_material_instance_texture_parameter_value(mi, "Diffuse", t)
     except Exception:
         pass                                     # X_Bot 등 텍스처 없는 원 재질 → 흰 텍스처 그대로
     b = mesh.get_bounds()
     hgt, bot = 2 * b.box_extent.z, b.origin.z - b.box_extent.z
-    MEL.set_material_instance_scalar_parameter_value(mi, "ZLo", bot + 0.53 * hgt)
-    MEL.set_material_instance_scalar_parameter_value(mi, "ZHi", bot + 0.82 * hgt)
-    MEL.set_material_instance_scalar_parameter_value(mi, "XHalf", 0.24 * hgt)
+    zlo, zhi, half = (-1e5, 1e5, 1e5) if full else (bot + 0.53 * hgt, bot + 0.82 * hgt, 0.24 * hgt)
+    MEL.set_material_instance_scalar_parameter_value(mi, "ZLo", zlo)
+    MEL.set_material_instance_scalar_parameter_value(mi, "ZHi", zhi)
+    MEL.set_material_instance_scalar_parameter_value(mi, "XHalf", half)
     MEL.set_material_instance_vector_parameter_value(mi, "Tint", unreal.LinearColor(*tint, 1))
     EAL.save_asset(path)
-    print(f"[ve] {path} · 키 {hgt:.0f} cm · 바닥 {bot:.0f}")
     return mi
 
 
@@ -199,7 +205,7 @@ def main():
         actor.set_actor_label(a["name"]); actor.rename(a["name"])
         comp = actor.skeletal_mesh_component
         speed = None
-        if a["pose_raw"] == "walking":
+        if a.get("path_neu"):                       # 움직이는 배우(걷기 · 기어가기) → 제자리 애니 + 캡처가 이동
             seq, speed = in_place(ch, seq, comp)
         freeze = "freeze_t" in a
         t_ref = a.get("freeze_t", seq.get_play_length() * 0.5)
@@ -211,12 +217,14 @@ def main():
         data.set_editor_property("saved_position", t_ref)
         data.set_editor_property("saved_play_rate", 0.0 if freeze else 1.0)
         comp.set_editor_property("animation_data", data)
-        idx, _ = body_slot(mesh)
-        comp.set_material(idx, shirt_mi(ch, mesh, a["upper_color"], a["tint"], parent))
+        slots = shirt_slots(mesh)
+        for idx, sm, full in slots:
+            comp.set_material(idx, shirt_mi(ch, mesh, idx, sm, full, a["upper_color"], a["tint"], parent))
         dz = FLESH_CM - lowest_bone_z(comp, seq, t_ref)
         actor.set_actor_location(unreal.Vector(n * 100, e * 100, gz * 100 + dz), False, False)
         report["actors"][a["name"]] = {"z_offset_cm": round(dz, 1), "anim": seq.get_path_name(),
-                                       "natural_speed_mps": speed, "body_slot": idx}
+                                       "natural_speed_mps": speed,
+                                       "shirt_slots": [[i, full] for i, _, full in slots]}
         print(f"[ve] {a['name']} {ch} {seq.get_name()} {a['upper_color']} z보정 {dz:+.0f} cm")
     world = unreal.EditorLevelLibrary.get_editor_world()
     ok = unreal.EditorLoadingAndSavingUtils.save_map(world, spec["map_dst"])

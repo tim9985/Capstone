@@ -1,4 +1,4 @@
-"""ue_import_mixamo.py — Mixamo FBX 를 /Game/Mixamo 로 일괄 임포트.
+"""ue_import_mixamo.py — Mixamo FBX 를 /Game/Mixamo 로 일괄 임포트 (이미 있는 캐릭터 · 애니는 건너뜀 · 10-14).
 캐릭터마다 자기 스켈레톤으로 넣고, 애니메이션은 캐릭터 스켈레톤마다 따로 넣는다(호환 문제 회피).
 """
 import os
@@ -65,25 +65,32 @@ chars = sorted(f for f in os.listdir(CHAR_DIR) if f.lower().endswith(".fbx"))
 anims = sorted(f for f in os.listdir(ANIM_DIR) if f.lower().endswith(".fbx"))
 print(f"[mixamo] 캐릭터 {len(chars)} · 애니메이션 {len(anims)}")
 
+EAL = unreal.EditorAssetLibrary
 for c in chars:
     cname = clean(c)
     cdest = f"{DEST}/{cname}"
-    paths = run(char_task(os.path.join(CHAR_DIR, c), cdest))
-    mesh = None
-    for p in paths:
-        a = unreal.EditorAssetLibrary.load_asset(p)
-        if isinstance(a, unreal.SkeletalMesh):
-            mesh = a
+    mesh_path = f"{cdest}/{cname}.{cname}"
+    if EAL.does_asset_exist(mesh_path):                      # 이미 있는 캐릭터는 다시 넣지 않는다 (고친 재질 보존)
+        mesh = EAL.load_asset(mesh_path)
+    else:
+        mesh = None
+        for p in run(char_task(os.path.join(CHAR_DIR, c), cdest)):
+            a = EAL.load_asset(p)
+            if isinstance(a, unreal.SkeletalMesh):
+                mesh = a
     if mesh is None:
-        print(f"[mixamo] 캐릭터 임포트 실패: {c} ({paths})")
+        print(f"[mixamo] 캐릭터 임포트 실패: {c}")
         continue
     skel = mesh.get_editor_property("skeleton")
     b = mesh.get_bounds()
-    print(f"[mixamo] 캐릭터 {cname}: 스켈레톤 {skel.get_name()} · 높이(cm)≈{b.box_extent.z * 2:.0f}")
+    slots = [str(m.get_editor_property("material_slot_name")) for m in mesh.get_editor_property("materials")]
+    print(f"[mixamo] 캐릭터 {cname}: 스켈레톤 {skel.get_name()} · 높이(cm)≈{b.box_extent.z * 2:.0f} · 재질칸 {slots}")
     for an in anims:
         aname = f"A_{clean(an)}"
+        if EAL.does_asset_exist(f"{cdest}/Anims/{aname}"):
+            continue
         got = run(anim_task(os.path.join(ANIM_DIR, an), f"{cdest}/Anims", skel, aname))
-        seqs = [p for p in got if isinstance(unreal.EditorAssetLibrary.load_asset(p), unreal.AnimSequence)]
-        print(f"[mixamo]   {aname}: {'OK' if seqs else 'FAIL'} {seqs[:1]}")
+        seqs = [p for p in got if isinstance(EAL.load_asset(p), unreal.AnimSequence)]
+        print(f"[mixamo]   {aname}: {'OK' if seqs else 'FAIL'}")
 
 print("[mixamo] 임포트 끝")

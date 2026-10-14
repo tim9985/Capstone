@@ -1,0 +1,39 @@
+{
+  "scenario": "S2",
+  "map": "/Game/VisionEval/Maps/Vision_S2",
+  "actors": {
+    "Person_Walking_01": {
+      "z_offset_cm": 4.9,
+      "anim": "/Game/VisionEval/Anims/Remy_A_Walking_InPlace.Remy_A_Walking_InPlace",
+      "natural_speed_mps": 1.6743559854090861,
+      "shirt_slots": [
+        [
+          1,
+          true
+        ]
+      ]
+    },
+    "Person_Walking_02": {
+      "z_offset_cm": 4.9,
+      "anim": "/Game/VisionEval/Anims/Ch17_nonPBR_A_Walking_InPlace.Ch17_nonPBR_A_Walking_InPlace",
+      "natural_speed_mps": 1.6743559854090861,
+      "shirt_slots": [
+        [
+          0,
+          false
+        ]
+      ]
+    },
+    "Person_Walking_03": {
+      "z_offset_cm": 4.9,
+      "anim": "/Game/VisionEval/Anims/Ch41_nonPBR_A_Walking_InPlace.Ch41_nonPBR_A_Walking_InPlace",
+      "natural_speed_mps": 1.6743559854090861,
+      "shirt_slots": [
+        [
+          0,
+          false
+        ]
+      ]
+    }
+  }
+}

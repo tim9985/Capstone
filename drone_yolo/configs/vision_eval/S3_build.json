@@ -1,0 +1,87 @@
+{
+  "scenario": "S3",
+  "map": "/Game/VisionEval/Maps/Vision_S3",
+  "actors": {
+    "Person_Lying_01": {
+      "z_offset_cm": -91.7,
+      "anim": "/Game/Mixamo/Ch31_nonPBR/Anims/A_Laying_Breathless.A_Laying_Breathless",
+      "natural_speed_mps": null,
+      "shirt_slots": [
+        [
+          0,
+          false
+        ]
+      ]
+    },
+    "Person_Lying_02": {
+      "z_offset_cm": 5.0,
+      "anim": "/Game/Mixamo/Ch02_nonPBR/Anims/A_Male_Laying_Pose.A_Male_Laying_Pose",
+      "natural_speed_mps": null,
+      "shirt_slots": [
+        [
+          0,
+          false
+        ]
+      ]
+    },
+    "Person_Sitting_01": {
+      "z_offset_cm": -0.1,
+      "anim": "/Game/Mixamo/Ch41_nonPBR/Anims/A_Sitting_Idle.A_Sitting_Idle",
+      "natural_speed_mps": null,
+      "shirt_slots": [
+        [
+          0,
+          false
+        ]
+      ]
+    },
+    "Person_Crouching_01": {
+      "z_offset_cm": 5.0,
+      "anim": "/Game/Mixamo/Ch49_nonPBR/Anims/A_Crouching_Idle.A_Crouching_Idle",
+      "natural_speed_mps": null,
+      "shirt_slots": [
+        [
+          0,
+          false
+        ],
+        [
+          1,
+          false
+        ]
+      ]
+    },
+    "Person_Walking_01": {
+      "z_offset_cm": 4.9,
+      "anim": "/Game/VisionEval/Anims/claire_A_Walking_InPlace.claire_A_Walking_InPlace",
+      "natural_speed_mps": 1.6743559854090861,
+      "shirt_slots": [
+        [
+          3,
+          false
+        ]
+      ]
+    },
+    "Person_Standing_01": {
+      "z_offset_cm": 4.9,
+      "anim": "/Game/Mixamo/Ch17_nonPBR/Anims/A_Waving.A_Waving",
+      "natural_speed_mps": null,
+      "shirt_slots": [
+        [
+          0,
+          false
+        ]
+      ]
+    },
+    "Person_Crawling_01": {
+      "z_offset_cm": 9.1,
+      "anim": "/Game/VisionEval/Anims/Remy_A_Crawling_InPlace.Remy_A_Crawling_InPlace",
+      "natural_speed_mps": 0.47604360499076753,
+      "shirt_slots": [
+        [
+          1,
+          true
+        ]
+      ]
+    }
+  }
+}

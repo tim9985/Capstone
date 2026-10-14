@@ -1,0 +1,98 @@
+{
+  "scenario": "S4",
+  "map": "/Game/VisionEval/Maps/Vision_S4",
+  "actors": {
+    "Person_Standing_01": {
+      "z_offset_cm": 5.0,
+      "anim": "/Game/Mixamo/Ch02_nonPBR/Anims/A_Idle.A_Idle",
+      "natural_speed_mps": null,
+      "shirt_slots": [
+        [
+          0,
+          false
+        ]
+      ]
+    },
+    "Person_Standing_02": {
+      "z_offset_cm": 5.0,
+      "anim": "/Game/Mixamo/Ch17_nonPBR/Anims/A_Idle.A_Idle",
+      "natural_speed_mps": null,
+      "shirt_slots": [
+        [
+          0,
+          false
+        ]
+      ]
+    },
+    "Person_Standing_03": {
+      "z_offset_cm": 5.0,
+      "anim": "/Game/Mixamo/Ch31_nonPBR/Anims/A_Idle.A_Idle",
+      "natural_speed_mps": null,
+      "shirt_slots": [
+        [
+          0,
+          false
+        ]
+      ]
+    },
+    "Person_Standing_04": {
+      "z_offset_cm": 5.0,
+      "anim": "/Game/Mixamo/Ch41_nonPBR/Anims/A_Idle.A_Idle",
+      "natural_speed_mps": null,
+      "shirt_slots": [
+        [
+          0,
+          false
+        ]
+      ]
+    },
+    "Person_Standing_05": {
+      "z_offset_cm": 5.0,
+      "anim": "/Game/Mixamo/Ch49_nonPBR/Anims/A_Idle.A_Idle",
+      "natural_speed_mps": null,
+      "shirt_slots": [
+        [
+          0,
+          false
+        ],
+        [
+          1,
+          false
+        ]
+      ]
+    },
+    "Person_Standing_06": {
+      "z_offset_cm": 5.0,
+      "anim": "/Game/Mixamo/claire/Anims/A_Idle.A_Idle",
+      "natural_speed_mps": null,
+      "shirt_slots": [
+        [
+          3,
+          false
+        ]
+      ]
+    },
+    "Person_Standing_07": {
+      "z_offset_cm": 5.0,
+      "anim": "/Game/Mixamo/Remy/Anims/A_Idle.A_Idle",
+      "natural_speed_mps": null,
+      "shirt_slots": [
+        [
+          1,
+          true
+        ]
+      ]
+    },
+    "Person_Standing_08": {
+      "z_offset_cm": 5.0,
+      "anim": "/Game/Mixamo/X_Bot/Anims/A_Idle.A_Idle",
+      "natural_speed_mps": null,
+      "shirt_slots": [
+        [
+          0,
+          false
+        ]
+      ]
+    }
+  }
+}

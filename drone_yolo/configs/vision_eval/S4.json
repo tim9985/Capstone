@@ -1,0 +1,210 @@
+{
+  "scenario": "S4",
+  "map_src": "/Game/KumohSimulation/W_990bee4527600963/Maps/KumohMinimal",
+  "map_dst": "/Game/VisionEval/Maps/Vision_S4",
+  "origin": [
+    128.3916,
+    36.14524,
+    77.2056
+  ],
+  "spawnNeu": [
+    60.0,
+    0.0,
+    -5.776652551269535
+  ],
+  "spawnGeographic": [
+    128.39159582279308,
+    36.145780912907234,
+    71.42894744873047
+  ],
+  "center_neu": [
+    60.0,
+    -14.0,
+    -6.029
+  ],
+  "ground_offset_m": 0.08,
+  "flight_neu": [
+    {
+      "line": [
+        [
+          5.0,
+          -32.0
+        ],
+        [
+          80.0,
+          -32.0
+        ],
+        [
+          80.0,
+          -14.0
+        ],
+        [
+          5.0,
+          -14.0
+        ],
+        [
+          5.0,
+          4.0
+        ],
+        [
+          80.0,
+          4.0
+        ]
+      ]
+    }
+  ],
+  "actors": [
+    {
+      "name": "Person_Standing_01",
+      "character": "Ch02_nonPBR",
+      "anim": "A_Idle",
+      "pose_raw": "standing",
+      "upper_color": "red",
+      "tint": [
+        0.8,
+        0.04,
+        0.04
+      ],
+      "neu": [
+        51.0,
+        -17.0,
+        -4.898
+      ],
+      "yaw_deg": 0,
+      "moving": false
+    },
+    {
+      "name": "Person_Standing_02",
+      "character": "Ch17_nonPBR",
+      "anim": "A_Idle",
+      "pose_raw": "standing",
+      "upper_color": "orange",
+      "tint": [
+        0.9,
+        0.3,
+        0.02
+      ],
+      "neu": [
+        57.0,
+        -17.0,
+        -5.459
+      ],
+      "yaw_deg": 45,
+      "moving": false
+    },
+    {
+      "name": "Person_Standing_03",
+      "character": "Ch31_nonPBR",
+      "anim": "A_Idle",
+      "pose_raw": "standing",
+      "upper_color": "yellow",
+      "tint": [
+        0.9,
+        0.78,
+        0.04
+      ],
+      "neu": [
+        63.0,
+        -17.0,
+        -6.02
+      ],
+      "yaw_deg": 90,
+      "moving": false
+    },
+    {
+      "name": "Person_Standing_04",
+      "character": "Ch41_nonPBR",
+      "anim": "A_Idle",
+      "pose_raw": "standing",
+      "upper_color": "green",
+      "tint": [
+        0.06,
+        0.45,
+        0.08
+      ],
+      "neu": [
+        69.0,
+        -17.0,
+        -6.582
+      ],
+      "yaw_deg": 135,
+      "moving": false
+    },
+    {
+      "name": "Person_Standing_05",
+      "character": "Ch49_nonPBR",
+      "anim": "A_Idle",
+      "pose_raw": "standing",
+      "upper_color": "blue",
+      "tint": [
+        0.04,
+        0.14,
+        0.75
+      ],
+      "neu": [
+        51.0,
+        -11.0,
+        -5.499
+      ],
+      "yaw_deg": 180,
+      "moving": false
+    },
+    {
+      "name": "Person_Standing_06",
+      "character": "claire",
+      "anim": "A_Idle",
+      "pose_raw": "standing",
+      "upper_color": "purple",
+      "tint": [
+        0.33,
+        0.07,
+        0.55
+      ],
+      "neu": [
+        57.0,
+        -11.0,
+        -6.045
+      ],
+      "yaw_deg": 225,
+      "moving": false
+    },
+    {
+      "name": "Person_Standing_07",
+      "character": "Remy",
+      "anim": "A_Idle",
+      "pose_raw": "standing",
+      "upper_color": "white",
+      "tint": [
+        0.85,
+        0.85,
+        0.85
+      ],
+      "neu": [
+        63.0,
+        -11.0,
+        -6.592
+      ],
+      "yaw_deg": 270,
+      "moving": false
+    },
+    {
+      "name": "Person_Standing_08",
+      "character": "X_Bot",
+      "anim": "A_Idle",
+      "pose_raw": "standing",
+      "upper_color": "black",
+      "tint": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "neu": [
+        69.0,
+        -11.0,
+        -7.139
+      ],
+      "yaw_deg": 315,
+      "moving": false
+    }
+  ]
+}

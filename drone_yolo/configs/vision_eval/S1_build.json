@@ -3,40 +3,74 @@
   "map": "/Game/VisionEval/Maps/Vision_S1",
   "actors": {
     "Person_Standing_01": {
-      "z_offset_cm": 4.9,
-      "anim": "/Game/Mixamo/Ch02_nonPBR/Anims/A_Walking.A_Walking",
+      "z_offset_cm": 5.0,
+      "anim": "/Game/Mixamo/Ch17_nonPBR/Anims/A_Idle.A_Idle",
       "natural_speed_mps": null,
-      "body_slot": 0
+      "shirt_slots": [
+        [
+          0,
+          false
+        ]
+      ]
     },
     "Person_Standing_02": {
-      "z_offset_cm": 4.9,
-      "anim": "/Game/Mixamo/X_Bot/Anims/A_Walking.A_Walking",
+      "z_offset_cm": 5.0,
+      "anim": "/Game/Mixamo/Remy/Anims/A_Breathing_Idle.A_Breathing_Idle",
       "natural_speed_mps": null,
-      "body_slot": 0
+      "shirt_slots": [
+        [
+          1,
+          true
+        ]
+      ]
     },
     "Person_Walking_01": {
       "z_offset_cm": 4.9,
       "anim": "/Game/VisionEval/Anims/Ch31_nonPBR_A_Walking_InPlace.Ch31_nonPBR_A_Walking_InPlace",
       "natural_speed_mps": 1.6743559854090861,
-      "body_slot": 0
+      "shirt_slots": [
+        [
+          0,
+          false
+        ]
+      ]
     },
     "Person_Sitting_01": {
       "z_offset_cm": -0.1,
       "anim": "/Game/Mixamo/Ch41_nonPBR/Anims/A_Sitting_Idle.A_Sitting_Idle",
       "natural_speed_mps": null,
-      "body_slot": 0
+      "shirt_slots": [
+        [
+          0,
+          false
+        ]
+      ]
     },
     "Person_Lying_01": {
       "z_offset_cm": -91.7,
       "anim": "/Game/Mixamo/Ch02_nonPBR/Anims/A_Laying_Breathless.A_Laying_Breathless",
       "natural_speed_mps": null,
-      "body_slot": 0
+      "shirt_slots": [
+        [
+          0,
+          false
+        ]
+      ]
     },
     "Person_Lying_02": {
       "z_offset_cm": 5.0,
-      "anim": "/Game/Mixamo/Ch31_nonPBR/Anims/A_Male_Laying_Pose.A_Male_Laying_Pose",
+      "anim": "/Game/Mixamo/Ch49_nonPBR/Anims/A_Male_Laying_Pose.A_Male_Laying_Pose",
       "natural_speed_mps": null,
-      "body_slot": 0
+      "shirt_slots": [
+        [
+          0,
+          false
+        ],
+        [
+          1,
+          false
+        ]
+      ]
     }
   }
 }

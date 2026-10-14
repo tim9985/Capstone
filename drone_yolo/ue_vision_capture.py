@@ -63,30 +63,63 @@ def pingpong(pts, s):
     return p, math.atan2(q[1] - p[1], q[0] - p[0])
 
 
-def zigzag(spec, args):
-    """시나리오 묶음 중심 둘레 북쪽 방향 줄 3개 (NED · 줄 간격 --spacing)"""
+DS = 0.05                  # 궤적 표본 간격 m
+YAW_RATE = math.radians(60)  # 기수 회전 한계 (모서리 · 선회 진입에서 화면이 한 번에 돌지 않게)
+
+
+def trajectory(spec, alt, speed):
+    """시나리오 비행(NEU 꼭짓점 줄 · 배우 둘레 선회) → NED 표본 [(n, e, yaw)] · 구간 사이는 직선으로 잇는다
+    줄: 기수 = 진행 방향 · 선회: 반지름 = alt (카메라 −45° 광축이 중심 사람을 본다) · 기수 = 중심 쪽"""
     sn = spec["spawnNeu"]
-    cn = sum(a["neu"][0] for a in spec["actors"]) / len(spec["actors"]) - sn[0]
-    ce = sum(a["neu"][1] for a in spec["actors"]) / len(spec["actors"]) - sn[1]
-    n0, n1 = cn - args.before, cn + args.after
-    pts = []
-    for i, de in enumerate((-args.spacing, 0.0, args.spacing)):
-        a, b = (n0, n1) if i % 2 == 0 else (n1, n0)
-        pts += [(a, ce + de), (b, ce + de)]
-    return pts
+    to_ned = lambda p: (p[0] - sn[0], p[1] - sn[1])
+    actors = {a["name"]: a for a in spec["actors"]}
+    pts, cur = [], None
+
+    def go(a, b):
+        L = math.dist(a, b)
+        yaw = math.atan2(b[1] - a[1], b[0] - a[0])
+        for i in range(int(L / DS)):
+            f = i * DS / L
+            pts.append((a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, yaw))
+        return b
+
+    for leg in spec["flight_neu"]:
+        if "line" in leg:
+            for p in map(to_ned, leg["line"]):
+                cur = go(cur, p) if cur else p
+        else:
+            o = leg["orbit"]
+            c = to_ned(actors[o["center_actor"]]["neu"])
+            if cur is None or math.dist(cur, c) < 1e-6:
+                ang = math.pi                                        # 남쪽에서 진입
+            else:
+                ang = math.atan2(cur[1] - c[1], cur[0] - c[0])
+            entry = (c[0] + alt * math.cos(ang), c[1] + alt * math.sin(ang))
+            cur = go(cur, entry) if cur else entry
+            n_st = int(math.radians(o.get("sweep_deg", 360)) * alt / DS)
+            for i in range(n_st):
+                a = ang + i * DS / alt
+                p = (c[0] + alt * math.cos(a), c[1] + alt * math.sin(a))
+                pts.append((p[0], p[1], math.atan2(c[1] - p[1], c[0] - p[0])))
+            cur = (c[0] + alt * math.cos(ang + n_st * DS / alt), c[1] + alt * math.sin(ang + n_st * DS / alt))
+    # 기수 회전 한계
+    lim, out, yaw = YAW_RATE * DS / speed, [], pts[0][2]
+    for n, e, y in pts:
+        dy = (y - yaw + math.pi) % (2 * math.pi) - math.pi
+        yaw += max(-lim, min(lim, dy))
+        out.append((n, e, yaw))
+    return out
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--spec", required=True)
     ap.add_argument("--out", required=True)
-    ap.add_argument("--alt", type=float, default=16.0, help="이륙점 지면 기준 m")
+    ap.add_argument("--alt", type=float, default=16.0, help="시나리오 중심 지면 기준 m (일정 고도로 난다)")
     ap.add_argument("--speed", type=float, default=3.5)
     ap.add_argument("--fps", type=float, default=10.0)
     ap.add_argument("--seconds", type=float, default=0, help="0 이면 경로 끝까지")
-    ap.add_argument("--spacing", type=float, default=18.0)
-    ap.add_argument("--before", type=float, default=55.0, help="묶음 중심 남쪽 시작 거리 m")
-    ap.add_argument("--after", type=float, default=20.0)
+    ap.add_argument("--start", type=float, default=0, help="가상 시작 시각 s (점검용 · 본 촬영은 0)")
     args = ap.parse_args()
 
     spec_p = Path(args.spec)
@@ -94,7 +127,8 @@ def main():
     build = json.loads(spec_p.with_name(spec_p.stem + "_build.json").read_text(encoding="utf-8"))
     sn = spec["spawnNeu"]
     hlon, hlat = spec["spawnGeographic"][:2]
-    d_alt = sn[2] - (spec["home_ground_neu_z"] + args.alt)          # NED d (AirSim 원점 = PlayerStart)
+    ground_d = sn[2] - spec["center_neu"][2]                       # 고도 기준 지면의 NED z (AirSim 원점 = PlayerStart)
+    d_alt = ground_d - args.alt
     out = Path(args.out)
     (out / "frames").mkdir(parents=True, exist_ok=True)
 
@@ -104,12 +138,12 @@ def main():
     missing = names - set(acts)
     if missing:
         raise SystemExit(f"분할 객체에 배우가 없음 {sorted(missing)} — 레벨 · 설정(InitialInstanceSegmentation) 확인")
-    print(f"배우 {len(names)} 명 분할 색 확인")
+    print(f"배우 {len(names)} 명 분할 색 확인" if names else "배우 없음 (빈 장면)")
     c.simSetCameraPose("0", airsim.Pose(airsim.Vector3r(0, 0, 0), euler_to_quaternion(0, -math.radians(MOUNT), 0)))
     c.simSetCameraFov("0", HFOV)
 
-    path = zigzag(spec, args)
-    total = sum(math.dist(a, b) for a, b in zip(path, path[1:]))
+    traj = trajectory(spec, args.alt, args.speed)
+    total = len(traj) * DS
     dur = total / args.speed if not args.seconds else min(args.seconds, total / args.speed)
     walkers = {a["name"]: a for a in spec["actors"] if a.get("path_neu")}
 
@@ -122,12 +156,12 @@ def main():
     c.simPause(True)
     rows, boxes_f = [], open(out / "boxes.jsonl", "w", encoding="utf-8")
     n_frames, t0 = int(dur * args.fps) + 1, time.time()
+    if args.start:
+        n_frames = min(n_frames, int((total / args.speed - args.start) * args.fps) + 1)
     for k in range(n_frames):
-        t = k / args.fps
-        s = t * args.speed
-        p = polyline_at(path, s) or path[-1]
-        pa, pb = polyline_at(path, max(s - 2, 0)) or path[0], polyline_at(path, s + 2) or path[-1]
-        yaw = math.atan2(pb[1] - pa[1], pb[0] - pa[0])
+        t = args.start + k / args.fps
+        p = traj[min(int(t * args.speed / DS), len(traj) - 1)]
+        yaw = p[2]
         c.simSetVehiclePose(airsim.Pose(airsim.Vector3r(p[0], p[1], d_alt), euler_to_quaternion(0, 0, yaw)), True)
         wpos = {}
         for name, a in walkers.items():
@@ -166,12 +200,15 @@ def main():
     (out / "actors.json").write_text(json.dumps({
         n: {"ned": [round(v, 3) for v in (walker_pose(first[n], 0.0)[0] if n in walkers else acts[n]["pos"])],
             "pose_raw": first[n]["pose_raw"], "upper_color": first[n]["upper_color"], "moving": first[n]["moving"],
-            "character": first[n]["character"], "anim": build["actors"][n]["anim"]} for n in sorted(names)},
+            "character": first[n]["character"], "anim": build["actors"][n]["anim"],
+            **({"action": first[n]["action"]} if first[n].get("action") else {})} for n in sorted(names)},
         indent=2, ensure_ascii=False), encoding="utf-8")
     (out / "run.json").write_text(json.dumps({
-        "home": [hlat, hlon], "start_ned": [path[0][0], path[0][1], round(d_alt, 3)], "mount_deg": MOUNT,
-        "gimbal_stabilized": True, "hfov_deg": HFOV, "fps": args.fps, "alt_m": args.alt, "speed_mps": args.speed,
-        "w": W, "h": H, "scenario": spec["scenario"], "map": spec["map_dst"], "path_ned": path,
+        "home": [hlat, hlon], "start_ned": [round(traj[0][0], 3), round(traj[0][1], 3), round(ground_d, 3)],
+        "ground_ned_z": round(ground_d, 3), "alt_ref": "시나리오 중심 지면 (center_neu) · 고도 = ground_ned_z − ned_z",
+        "mount_deg": MOUNT, "gimbal_stabilized": True, "hfov_deg": HFOV, "fps": args.fps, "alt_m": args.alt,
+        "speed_mps": args.speed, "w": W, "h": H, "scenario": spec["scenario"], "map": spec["map_dst"],
+        "center_neu": spec["center_neu"], "flight_neu": spec["flight_neu"],
         "time": "가상 시각 (정지 → 1/fps 진행 → 캡처)", "ned_origin": "PlayerStart = 팀 spawnNeu",
         "latlon": "home + NED 소규모 근사 (coord_transform.ned_to_gps)",
         "actor_ned": "배우 원점 (발 · 누움은 회전 축) · 걷는 배우는 프레임마다 boxes.jsonl ned"},

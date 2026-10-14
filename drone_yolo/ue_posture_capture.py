@@ -54,7 +54,7 @@ from make_posture_crops import crop
 W, H, HFOV = 1920, 1080, 80.2
 F = (W / 2) / math.tan(math.radians(HFOV / 2))
 VFOV = math.degrees(2 * math.atan((H / 2) / F))
-ACTOR = re.compile(r"Person_(Lying|Sitting|Kneeling|Crouching|Standing|Walking)_\d+", re.I)
+ACTOR = re.compile(r"Person_(Lying|Sitting|Kneeling|Crouching|Standing|Walking|Crawling)_\d+", re.I)
 POSE3 = {"lying": "lying", "sitting": "sitting", "kneeling": "sitting", "crouching": "sitting", "standing": "standing", "walking": "standing"}
 
 

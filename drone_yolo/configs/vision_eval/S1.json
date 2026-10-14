@@ -17,13 +17,47 @@
     36.145780912907234,
     71.42894744873047
   ],
-  "home_ground_neu_z": -7.379,
+  "center_neu": [
+    60.0,
+    -14.0,
+    -6.029
+  ],
   "ground_offset_m": 0.08,
+  "flight_neu": [
+    {
+      "line": [
+        [
+          5.0,
+          -32.0
+        ],
+        [
+          80.0,
+          -32.0
+        ],
+        [
+          80.0,
+          -14.0
+        ],
+        [
+          5.0,
+          -14.0
+        ],
+        [
+          5.0,
+          4.0
+        ],
+        [
+          80.0,
+          4.0
+        ]
+      ]
+    }
+  ],
   "actors": [
     {
       "name": "Person_Standing_01",
-      "character": "Ch02_nonPBR",
-      "anim": "A_Walking",
+      "character": "Ch17_nonPBR",
+      "anim": "A_Idle",
       "pose_raw": "standing",
       "upper_color": "red",
       "tint": [
@@ -37,13 +71,12 @@
         -5.455
       ],
       "yaw_deg": 30,
-      "moving": false,
-      "freeze_t": 0.0
+      "moving": false
     },
     {
       "name": "Person_Standing_02",
-      "character": "X_Bot",
-      "anim": "A_Walking",
+      "character": "Remy",
+      "anim": "A_Breathing_Idle",
       "pose_raw": "standing",
       "upper_color": "blue",
       "tint": [
@@ -57,8 +90,7 @@
         -7.7
       ],
       "yaw_deg": 200,
-      "moving": false,
-      "freeze_t": 0.0
+      "moving": false
     },
     {
       "name": "Person_Walking_01",
@@ -132,7 +164,7 @@
     },
     {
       "name": "Person_Lying_02",
-      "character": "Ch31_nonPBR",
+      "character": "Ch49_nonPBR",
       "anim": "A_Male_Laying_Pose",
       "pose_raw": "lying",
       "upper_color": "black",

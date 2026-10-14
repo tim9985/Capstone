@@ -1,0 +1,146 @@
+{
+  "scenario": "S2",
+  "map_src": "/Game/KumohSimulation/W_990bee4527600963/Maps/KumohMinimal",
+  "map_dst": "/Game/VisionEval/Maps/Vision_S2",
+  "origin": [
+    128.3916,
+    36.14524,
+    77.2056
+  ],
+  "spawnNeu": [
+    60.0,
+    0.0,
+    -5.776652551269535
+  ],
+  "spawnGeographic": [
+    128.39159582279308,
+    36.145780912907234,
+    71.42894744873047
+  ],
+  "center_neu": [
+    145.0,
+    -278.0,
+    -24.986
+  ],
+  "ground_offset_m": 0.08,
+  "flight_neu": [
+    {
+      "line": [
+        [
+          70.0,
+          -277.0
+        ],
+        [
+          195.0,
+          -277.0
+        ],
+        [
+          195.0,
+          -255.0
+        ],
+        [
+          100.0,
+          -255.0
+        ]
+      ]
+    }
+  ],
+  "actors": [
+    {
+      "name": "Person_Walking_01",
+      "character": "Remy",
+      "anim": "A_Walking",
+      "pose_raw": "walking",
+      "upper_color": "orange",
+      "tint": [
+        0.9,
+        0.3,
+        0.02
+      ],
+      "neu": [
+        158.0,
+        -315.0,
+        -25.024
+      ],
+      "yaw_deg": 0,
+      "moving": true,
+      "path_neu": [
+        [
+          158.0,
+          -315.0,
+          -25.024
+        ],
+        [
+          158.0,
+          -265.0,
+          -24.085
+        ]
+      ],
+      "speed_mps": 1.2
+    },
+    {
+      "name": "Person_Walking_02",
+      "character": "Ch17_nonPBR",
+      "anim": "A_Walking",
+      "pose_raw": "walking",
+      "upper_color": "blue",
+      "tint": [
+        0.04,
+        0.14,
+        0.75
+      ],
+      "neu": [
+        120.0,
+        -290.0,
+        -26.052
+      ],
+      "yaw_deg": 0,
+      "moving": true,
+      "path_neu": [
+        [
+          120.0,
+          -290.0,
+          -26.052
+        ],
+        [
+          170.0,
+          -290.0,
+          -23.701
+        ]
+      ],
+      "speed_mps": 1.2
+    },
+    {
+      "name": "Person_Walking_03",
+      "character": "Ch41_nonPBR",
+      "anim": "A_Walking",
+      "pose_raw": "walking",
+      "upper_color": "white",
+      "tint": [
+        0.85,
+        0.85,
+        0.85
+      ],
+      "neu": [
+        134.0,
+        -260.0,
+        -24.545
+      ],
+      "yaw_deg": 0,
+      "moving": true,
+      "path_neu": [
+        [
+          134.0,
+          -260.0,
+          -24.545
+        ],
+        [
+          134.0,
+          -297.0,
+          -26.584
+        ]
+      ],
+      "speed_mps": 1.2
+    }
+  ]
+}
