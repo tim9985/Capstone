@@ -1,0 +1,98 @@
+{
+ "run": "S5_a20",
+ "frames": 745,
+ "actors": 0,
+ "actors_visible": 0,
+ "detection": {
+  "gt_boxes": 0,
+  "min_px": 40,
+  "AP50": null,
+  "recall@0.15": null,
+  "precision@0.15": 0.0,
+  "recall_by_height_px": {
+   "0-20": [
+    null,
+    0
+   ],
+   "20-40": [
+    null,
+    0
+   ],
+   "40-80": [
+    null,
+    0
+   ],
+   "80-∞": [
+    null,
+    0
+   ]
+  },
+  "empty_frames": 746,
+  "fp_per_empty_frame": 0.488
+ },
+ "latency_ms": {
+  "detect_p50": 21.7,
+  "detect_p95": 22.93,
+  "color_p50": 0.0,
+  "state_p50": 16.0,
+  "frame_p50": 39.25,
+  "frame_p95": 113.37,
+  "fps_at_p50": 25.5,
+  "backend": "tensorrt"
+ },
+ "geo": {
+  "det_valid": 0,
+  "det_err_p50": null,
+  "det_err_p95": null,
+  "det_stable_n": 0,
+  "det_stable_p50": null,
+  "det_stable_p95": null,
+  "gtbox_err_p50": null,
+  "gtbox_stable_p50": null,
+  "pending_reasons": {}
+ },
+ "candidates": {
+  "total": 36,
+  "confirmed": 29,
+  "confirmed_without_actor": 29,
+  "actors_found": 0,
+  "actors_confirmed": 0,
+  "actors_with_duplicates": 0,
+  "actors_merged_into_other": 0
+ },
+ "rescue": {
+  "auroc_lying_term": null,
+  "auroc_score": null,
+  "per_actor": {},
+  "lying_reached_urgent_or_high": null,
+  "others_reached_urgent": null
+ },
+ "tracking": {
+  "IDF1": 0.0,
+  "id_switches": 0,
+  "tracks_per_actor": null,
+  "gaps": 0,
+  "gap_same_candidate": null,
+  "gap_same_track": null
+ },
+ "color": {
+  "actors_with_truth": 0,
+  "top1_acc": null,
+  "top2_acc": null
+ },
+ "reobservation": {
+  "by_reason": {
+   "LOW_EVIDENCE": 8
+  },
+  "target": {
+   "배우 없음": 8
+  }
+ },
+ "appearance": {
+  "query": null,
+  "verdicts": {}
+ },
+ "per_actor": [],
+ "color_profile": "base",
+ "posture_model": true
+}

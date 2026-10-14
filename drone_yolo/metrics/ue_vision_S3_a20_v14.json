@@ -1,0 +1,2032 @@
+{
+ "run": "S3_a20",
+ "frames": 881,
+ "actors": 7,
+ "actors_visible": 7,
+ "detection": {
+  "gt_boxes": 3468,
+  "min_px": 40,
+  "AP50": 0.9759,
+  "recall@0.15": 0.9818,
+  "precision@0.15": 0.7611,
+  "recall_by_height_px": {
+   "0-20": [
+    0.853,
+    68
+   ],
+   "20-40": [
+    0.994,
+    885
+   ],
+   "40-80": [
+    0.981,
+    2257
+   ],
+   "80-∞": [
+    0.981,
+    258
+   ]
+  },
+  "empty_frames": 221,
+  "fp_per_empty_frame": 0.457
+ },
+ "latency_ms": {
+  "detect_p50": 20.96,
+  "detect_p95": 22.79,
+  "color_p50": 1.24,
+  "state_p50": 15.03,
+  "frame_p50": 43.64,
+  "frame_p95": 101.92,
+  "fps_at_p50": 22.9,
+  "backend": "tensorrt"
+ },
+ "geo": {
+  "det_valid": 3345,
+  "det_err_p50": 1.17,
+  "det_err_p95": 3.44,
+  "det_stable_n": 3345,
+  "det_stable_p50": 1.17,
+  "det_stable_p95": 3.44,
+  "gtbox_err_p50": 1.16,
+  "gtbox_stable_p50": 1.16,
+  "pending_reasons": {
+   "FOOT_AT_EDGE": 60
+  }
+ },
+ "candidates": {
+  "total": 74,
+  "confirmed": 48,
+  "confirmed_without_actor": 23,
+  "actors_found": 7,
+  "actors_confirmed": 7,
+  "actors_with_duplicates": 7,
+  "actors_merged_into_other": 0
+ },
+ "rescue": {
+  "auroc_lying_term": 0.5693,
+  "auroc_score": 0.6331,
+  "per_actor": {
+   "Person_Crawling_01": {
+    "lying": true,
+    "max_grade": "CHECK",
+    "frac": {
+     "CHECK": 0.539,
+     "NORMAL": 0.461
+    },
+    "max_still_s": 9,
+    "lying_term_p50": 0.251
+   },
+   "Person_Crouching_01": {
+    "lying": false,
+    "max_grade": "CHECK",
+    "frac": {
+     "CHECK": 0.864,
+     "NORMAL": 0.136
+    },
+    "max_still_s": 9,
+    "lying_term_p50": 0.474
+   },
+   "Person_Lying_01": {
+    "lying": true,
+    "max_grade": "CHECK",
+    "frac": {
+     "CHECK": 0.663,
+     "NORMAL": 0.337
+    },
+    "max_still_s": 7,
+    "lying_term_p50": 0.436
+   },
+   "Person_Lying_02": {
+    "lying": true,
+    "max_grade": "HIGH",
+    "frac": {
+     "HIGH": 0.455,
+     "CHECK": 0.394,
+     "NORMAL": 0.152
+    },
+    "max_still_s": 31,
+    "lying_term_p50": 0.54
+   },
+   "Person_Sitting_01": {
+    "lying": false,
+    "max_grade": "CHECK",
+    "frac": {
+     "CHECK": 0.784,
+     "NORMAL": 0.216
+    },
+    "max_still_s": 7,
+    "lying_term_p50": 0.588
+   },
+   "Person_Standing_01": {
+    "lying": false,
+    "max_grade": "HIGH",
+    "frac": {
+     "HIGH": 0.014,
+     "CHECK": 0.494,
+     "NORMAL": 0.492
+    },
+    "max_still_s": 10,
+    "lying_term_p50": 0.082
+   },
+   "Person_Walking_01": {
+    "lying": false,
+    "max_grade": "CHECK",
+    "frac": {
+     "CHECK": 0.262,
+     "NORMAL": 0.738
+    },
+    "max_still_s": 0,
+    "lying_term_p50": 0.256
+   }
+  },
+  "lying_reached_urgent_or_high": "1/3",
+  "others_reached_urgent": "0/4"
+ },
+ "tracking": {
+  "IDF1": 0.4115,
+  "id_switches": 82,
+  "tracks_per_actor": 11.43,
+  "gaps": 16,
+  "gap_same_candidate": 0.125,
+  "gap_same_track": 0.0
+ },
+ "color": {
+  "actors_with_truth": 6,
+  "top1_acc": 0.333,
+  "top2_acc": 0.5
+ },
+ "reobservation": {
+  "by_reason": {
+   "STATE_UNCERTAIN": 2,
+   "LOW_EVIDENCE": 9,
+   "GEO_PENDING": 1
+  },
+  "target": {
+   "배우 있음": 6,
+   "배우 없음": 6
+  }
+ },
+ "appearance": {
+  "query": null,
+  "verdicts": {}
+ },
+ "per_actor": [
+  {
+   "actor": "Person_Crawling_01",
+   "truth_posture": "lying",
+   "frames_visible": 446,
+   "tracks": 15,
+   "id_switches": 16,
+   "gaps": [
+    {
+     "gap_s": 12.5,
+     "same_candidate": false,
+     "same_track": false
+    },
+    {
+     "gap_s": 6.2,
+     "same_candidate": false,
+     "same_track": false
+    },
+    {
+     "gap_s": 18.3,
+     "same_candidate": false,
+     "same_track": false
+    }
+   ],
+   "track_runs": [
+    [
+     0.0,
+     0.0,
+     1,
+     "cb327abd:6.0",
+     "d040b500"
+    ],
+    [
+     0.1,
+     0.2,
+     2,
+     null,
+     "d040b500"
+    ],
+    [
+     0.3,
+     0.3,
+     1,
+     "cb327abd:19.0",
+     "53763dee"
+    ],
+    [
+     0.4,
+     0.6,
+     3,
+     null,
+     "53763dee"
+    ],
+    [
+     0.7,
+     3.8,
+     32,
+     "cb327abd:43.0",
+     "53763dee"
+    ],
+    [
+     3.9,
+     3.9,
+     1,
+     null,
+     "53763dee"
+    ],
+    [
+     4.0,
+     6.1,
+     22,
+     "cb327abd:43.0",
+     "53763dee"
+    ],
+    [
+     18.6,
+     18.6,
+     1,
+     null,
+     "55161d30"
+    ],
+    [
+     18.7,
+     18.8,
+     2,
+     null,
+     "53763dee"
+    ],
+    [
+     18.9,
+     19.0,
+     2,
+     null,
+     "2b3fd432"
+    ],
+    [
+     19.1,
+     20.0,
+     10,
+     "cb327abd:282.0",
+     "2b3fd432"
+    ],
+    [
+     20.1,
+     20.1,
+     1,
+     null,
+     "53763dee"
+    ],
+    [
+     20.2,
+     20.3,
+     2,
+     null,
+     "2b3fd432"
+    ],
+    [
+     20.4,
+     21.5,
+     12,
+     "cb327abd:323.0",
+     "2b3fd432"
+    ],
+    [
+     21.9,
+     21.9,
+     1,
+     null,
+     "53763dee"
+    ],
+    [
+     22.0,
+     22.2,
+     2,
+     null,
+     "d040b500"
+    ],
+    [
+     22.3,
+     22.3,
+     1,
+     null,
+     "9ceaa9e6"
+    ],
+    [
+     22.4,
+     22.4,
+     1,
+     "cb327abd:359.0",
+     "8375f41d"
+    ],
+    [
+     22.5,
+     22.5,
+     1,
+     null,
+     "9ceaa9e6"
+    ],
+    [
+     22.6,
+     22.6,
+     1,
+     null,
+     "53763dee"
+    ],
+    [
+     22.8,
+     22.9,
+     2,
+     null,
+     "9ceaa9e6"
+    ],
+    [
+     23.0,
+     23.2,
+     3,
+     "cb327abd:379.0",
+     "9ceaa9e6"
+    ],
+    [
+     23.3,
+     23.3,
+     1,
+     "cb327abd:379.0",
+     "2b3fd432"
+    ],
+    [
+     23.4,
+     23.4,
+     1,
+     null,
+     "9ceaa9e6"
+    ],
+    [
+     23.5,
+     23.5,
+     1,
+     "cb327abd:379.0",
+     "2b3fd432"
+    ],
+    [
+     23.6,
+     23.6,
+     1,
+     null,
+     "d040b500"
+    ],
+    [
+     23.7,
+     23.7,
+     1,
+     null,
+     "2b3fd432"
+    ],
+    [
+     24.0,
+     24.3,
+     4,
+     "cb327abd:379.0",
+     "2b3fd432"
+    ],
+    [
+     24.5,
+     24.5,
+     1,
+     null,
+     "8375f41d"
+    ],
+    [
+     24.7,
+     25.7,
+     6,
+     "cb327abd:379.0",
+     "2b3fd432"
+    ],
+    [
+     25.8,
+     26.0,
+     3,
+     "cb327abd:428.0",
+     "9ceaa9e6"
+    ],
+    [
+     26.2,
+     26.2,
+     1,
+     null,
+     "8375f41d"
+    ],
+    [
+     26.5,
+     26.5,
+     1,
+     "cb327abd:428.0",
+     "9ceaa9e6"
+    ],
+    [
+     26.6,
+     26.9,
+     4,
+     "cb327abd:379.0",
+     "2b3fd432"
+    ],
+    [
+     27.0,
+     27.0,
+     1,
+     "cb327abd:442.0",
+     "9ceaa9e6"
+    ],
+    [
+     27.5,
+     27.5,
+     1,
+     null,
+     "9ceaa9e6"
+    ],
+    [
+     27.6,
+     27.7,
+     2,
+     "cb327abd:442.0",
+     "8375f41d"
+    ],
+    [
+     28.0,
+     28.0,
+     1,
+     null,
+     "9ceaa9e6"
+    ],
+    [
+     28.3,
+     28.3,
+     1,
+     "cb327abd:442.0",
+     "8375f41d"
+    ],
+    [
+     28.4,
+     28.4,
+     1,
+     null,
+     "9ceaa9e6"
+    ],
+    [
+     28.5,
+     28.8,
+     3,
+     "cb327abd:442.0",
+     "8375f41d"
+    ],
+    [
+     28.9,
+     28.9,
+     1,
+     null,
+     "9ceaa9e6"
+    ],
+    [
+     29.1,
+     29.3,
+     3,
+     "cb327abd:442.0",
+     "8375f41d"
+    ],
+    [
+     29.4,
+     29.9,
+     2,
+     null,
+     "9ceaa9e6"
+    ],
+    [
+     30.1,
+     30.1,
+     1,
+     "cb327abd:488.0",
+     "9ceaa9e6"
+    ],
+    [
+     30.2,
+     30.5,
+     4,
+     "cb327abd:488.0",
+     "8375f41d"
+    ],
+    [
+     30.6,
+     30.7,
+     2,
+     "cb327abd:508.0",
+     "9ceaa9e6"
+    ],
+    [
+     30.9,
+     31.0,
+     2,
+     "cb327abd:488.0",
+     "9ceaa9e6"
+    ],
+    [
+     31.1,
+     31.1,
+     1,
+     null,
+     "9ceaa9e6"
+    ],
+    [
+     31.2,
+     31.2,
+     1,
+     "cb327abd:488.0",
+     "9ceaa9e6"
+    ],
+    [
+     31.3,
+     32.2,
+     7,
+     null,
+     "9ceaa9e6"
+    ],
+    [
+     32.3,
+     32.3,
+     1,
+     "cb327abd:597.0",
+     "9ceaa9e6"
+    ],
+    [
+     32.5,
+     32.5,
+     1,
+     null,
+     "9ceaa9e6"
+    ],
+    [
+     32.7,
+     32.7,
+     1,
+     "cb327abd:633.0",
+     "9ceaa9e6"
+    ],
+    [
+     32.8,
+     32.8,
+     1,
+     null,
+     "9ceaa9e6"
+    ],
+    [
+     32.9,
+     33.0,
+     2,
+     null,
+     "8375f41d"
+    ],
+    [
+     33.1,
+     33.3,
+     2,
+     null,
+     "9ceaa9e6"
+    ],
+    [
+     33.4,
+     44.0,
+     107,
+     "cb327abd:686.0",
+     "9ceaa9e6"
+    ],
+    [
+     44.1,
+     47.2,
+     32,
+     "cb327abd:686.0",
+     "8375f41d"
+    ],
+    [
+     53.4,
+     53.4,
+     1,
+     null,
+     "b8a2d7d2"
+    ],
+    [
+     53.5,
+     53.7,
+     2,
+     null,
+     "bdfaf751"
+    ],
+    [
+     53.8,
+     53.8,
+     1,
+     null,
+     "d2eda748"
+    ],
+    [
+     72.1,
+     72.2,
+     2,
+     null,
+     "9ceaa9e6"
+    ],
+    [
+     72.3,
+     80.5,
+     83,
+     "cb327abd:1045.0",
+     "9ceaa9e6"
+    ]
+   ],
+   "truth_color": "orange",
+   "color_top2": [
+    "yellow",
+    "orange"
+   ],
+   "color_top1_ok": false,
+   "color_top2_ok": true,
+   "frames_detected": 399,
+   "first_visible_s": 0.0,
+   "first_detect_s": 0.0,
+   "first_confirm_s": 0.1,
+   "candidates": 9,
+   "merged_into_other": false,
+   "confirmed": 7,
+   "candidate_pos_err_m": 4.13,
+   "grade": "NORMAL",
+   "posture": "standing",
+   "lying_score": 0.251
+  },
+  {
+   "actor": "Person_Crouching_01",
+   "truth_posture": "sitting",
+   "frames_visible": 514,
+   "tracks": 15,
+   "id_switches": 14,
+   "gaps": [
+    {
+     "gap_s": 10.6,
+     "same_candidate": false,
+     "same_track": false
+    },
+    {
+     "gap_s": 16.2,
+     "same_candidate": false,
+     "same_track": false
+    }
+   ],
+   "track_runs": [
+    [
+     0.0,
+     0.0,
+     1,
+     "cb327abd:3.0",
+     "6adcbba2"
+    ],
+    [
+     0.1,
+     0.6,
+     6,
+     null,
+     "6adcbba2"
+    ],
+    [
+     0.7,
+     1.0,
+     4,
+     "cb327abd:40.0",
+     "6adcbba2"
+    ],
+    [
+     1.1,
+     1.1,
+     1,
+     null,
+     "6adcbba2"
+    ],
+    [
+     1.2,
+     3.8,
+     27,
+     "cb327abd:58.0",
+     "6adcbba2"
+    ],
+    [
+     3.9,
+     4.3,
+     5,
+     null,
+     "6adcbba2"
+    ],
+    [
+     4.4,
+     4.4,
+     1,
+     "cb327abd:140.0",
+     "6adcbba2"
+    ],
+    [
+     4.5,
+     4.5,
+     1,
+     null,
+     "6adcbba2"
+    ],
+    [
+     4.6,
+     6.9,
+     24,
+     "cb327abd:146.0",
+     "6adcbba2"
+    ],
+    [
+     7.0,
+     8.3,
+     14,
+     "cb327abd:146.1",
+     "6adcbba2"
+    ],
+    [
+     8.4,
+     8.4,
+     1,
+     null,
+     "0817618e"
+    ],
+    [
+     19.0,
+     19.5,
+     6,
+     null,
+     "6adcbba2"
+    ],
+    [
+     19.6,
+     31.5,
+     120,
+     "cb327abd:294.0",
+     "6adcbba2"
+    ],
+    [
+     31.6,
+     32.2,
+     7,
+     null,
+     "6adcbba2"
+    ],
+    [
+     32.3,
+     32.3,
+     1,
+     "cb327abd:595.0",
+     "6adcbba2"
+    ],
+    [
+     32.4,
+     33.5,
+     12,
+     null,
+     "6adcbba2"
+    ],
+    [
+     33.6,
+     33.6,
+     1,
+     "cb327abd:696.0",
+     "6adcbba2"
+    ],
+    [
+     33.7,
+     33.7,
+     1,
+     null,
+     "6adcbba2"
+    ],
+    [
+     33.8,
+     33.9,
+     2,
+     "cb327abd:701.0",
+     "6adcbba2"
+    ],
+    [
+     34.0,
+     34.0,
+     1,
+     null,
+     "6adcbba2"
+    ],
+    [
+     34.1,
+     52.9,
+     189,
+     "cb327abd:710.0",
+     "6adcbba2"
+    ],
+    [
+     53.0,
+     53.9,
+     10,
+     "cb327abd:710.1",
+     "6adcbba2"
+    ],
+    [
+     54.0,
+     55.7,
+     18,
+     "cb327abd:710.2",
+     "6adcbba2"
+    ],
+    [
+     55.8,
+     55.8,
+     1,
+     null,
+     "4b6ed929"
+    ],
+    [
+     72.0,
+     72.0,
+     1,
+     null,
+     "6adcbba2"
+    ],
+    [
+     72.1,
+     76.9,
+     49,
+     "cb327abd:1043.0",
+     "6adcbba2"
+    ],
+    [
+     77.0,
+     77.8,
+     9,
+     "cb327abd:1043.1",
+     "6adcbba2"
+    ]
+   ],
+   "truth_color": "green",
+   "color_top2": [
+    "green",
+    "black"
+   ],
+   "color_top1_ok": true,
+   "color_top2_ok": true,
+   "frames_detected": 513,
+   "first_visible_s": 0.0,
+   "first_detect_s": 0.0,
+   "first_confirm_s": 0.1,
+   "candidates": 3,
+   "merged_into_other": false,
+   "confirmed": 1,
+   "candidate_pos_err_m": 0.13,
+   "grade": "CHECK",
+   "posture": "lying",
+   "lying_score": 0.493
+  },
+  {
+   "actor": "Person_Lying_01",
+   "truth_posture": "lying",
+   "frames_visible": 523,
+   "tracks": 7,
+   "id_switches": 11,
+   "gaps": [
+    {
+     "gap_s": 9.3,
+     "same_candidate": true,
+     "same_track": false
+    },
+    {
+     "gap_s": 15.0,
+     "same_candidate": false,
+     "same_track": false
+    }
+   ],
+   "track_runs": [
+    [
+     0.0,
+     10.0,
+     101,
+     "cb327abd:1.0",
+     "5d573b6c"
+    ],
+    [
+     10.1,
+     19.7,
+     5,
+     null,
+     "5d573b6c"
+    ],
+    [
+     19.8,
+     31.6,
+     119,
+     "cb327abd:299.0",
+     "5d573b6c"
+    ],
+    [
+     31.7,
+     32.1,
+     5,
+     null,
+     "fbc25c70"
+    ],
+    [
+     32.2,
+     32.2,
+     1,
+     null,
+     "dde8c8e8"
+    ],
+    [
+     32.3,
+     32.4,
+     2,
+     "cb327abd:596.0",
+     "56a8a3e7"
+    ],
+    [
+     32.5,
+     32.5,
+     1,
+     null,
+     "dde8c8e8"
+    ],
+    [
+     32.6,
+     32.6,
+     1,
+     null,
+     "56a8a3e7"
+    ],
+    [
+     32.7,
+     32.7,
+     1,
+     null,
+     "dde8c8e8"
+    ],
+    [
+     32.8,
+     32.8,
+     1,
+     "cb327abd:637.0",
+     "56a8a3e7"
+    ],
+    [
+     32.9,
+     33.0,
+     2,
+     null,
+     "dde8c8e8"
+    ],
+    [
+     33.1,
+     33.2,
+     2,
+     null,
+     "fbc25c70"
+    ],
+    [
+     33.3,
+     33.3,
+     1,
+     null,
+     "dde8c8e8"
+    ],
+    [
+     33.4,
+     33.4,
+     1,
+     null,
+     "fbc25c70"
+    ],
+    [
+     33.5,
+     33.5,
+     1,
+     null,
+     "dde8c8e8"
+    ],
+    [
+     33.6,
+     33.9,
+     4,
+     "cb327abd:697.0",
+     "fbc25c70"
+    ],
+    [
+     34.0,
+     38.7,
+     48,
+     "cb327abd:697.0",
+     "dde8c8e8"
+    ],
+    [
+     38.8,
+     38.8,
+     1,
+     null,
+     "56a8a3e7"
+    ],
+    [
+     38.9,
+     57.4,
+     186,
+     "cb327abd:697.0",
+     "dde8c8e8"
+    ],
+    [
+     72.4,
+     72.4,
+     1,
+     null,
+     "56a8a3e7"
+    ],
+    [
+     72.5,
+     72.5,
+     1,
+     "cb327abd:1048.0",
+     "56a8a3e7"
+    ],
+    [
+     72.6,
+     72.6,
+     1,
+     null,
+     "56a8a3e7"
+    ],
+    [
+     72.7,
+     72.9,
+     3,
+     "cb327abd:1048.0",
+     "fbc25c70"
+    ],
+    [
+     73.0,
+     73.0,
+     1,
+     "cb327abd:1050.0",
+     "56a8a3e7"
+    ],
+    [
+     73.1,
+     73.1,
+     1,
+     "cb327abd:1048.0",
+     "fbc25c70"
+    ],
+    [
+     73.2,
+     73.2,
+     1,
+     "cb327abd:1050.0",
+     "56a8a3e7"
+    ],
+    [
+     73.3,
+     73.3,
+     1,
+     "cb327abd:1048.0",
+     "fbc25c70"
+    ],
+    [
+     73.4,
+     73.5,
+     2,
+     "cb327abd:1050.0",
+     "56a8a3e7"
+    ],
+    [
+     73.6,
+     75.9,
+     24,
+     "cb327abd:1048.0",
+     "fbc25c70"
+    ]
+   ],
+   "truth_color": "red",
+   "color_top2": [
+    "green",
+    "black"
+   ],
+   "color_top1_ok": false,
+   "color_top2_ok": false,
+   "frames_detected": 519,
+   "first_visible_s": 0.0,
+   "first_detect_s": 0.0,
+   "first_confirm_s": 0.1,
+   "candidates": 4,
+   "merged_into_other": false,
+   "confirmed": 4,
+   "candidate_pos_err_m": 0.19,
+   "grade": "CHECK",
+   "posture": "lying",
+   "lying_score": 0.423
+  },
+  {
+   "actor": "Person_Lying_02",
+   "truth_posture": "lying",
+   "frames_visible": 465,
+   "tracks": 7,
+   "id_switches": 6,
+   "gaps": [
+    {
+     "gap_s": 5.4,
+     "same_candidate": false,
+     "same_track": false
+    },
+    {
+     "gap_s": 5.7,
+     "same_candidate": false,
+     "same_track": false
+    },
+    {
+     "gap_s": 17.4,
+     "same_candidate": false,
+     "same_track": false
+    }
+   ],
+   "track_runs": [
+    [
+     0.0,
+     6.9,
+     70,
+     "cb327abd:5.0",
+     "1bb47a54"
+    ],
+    [
+     7.0,
+     7.8,
+     9,
+     "cb327abd:5.1",
+     "1bb47a54"
+    ],
+    [
+     13.2,
+     13.2,
+     1,
+     null,
+     "bd81173f"
+    ],
+    [
+     13.3,
+     13.6,
+     4,
+     null,
+     "1bb47a54"
+    ],
+    [
+     13.7,
+     13.7,
+     1,
+     "cb327abd:248.0",
+     "1bb47a54"
+    ],
+    [
+     13.8,
+     14.0,
+     3,
+     null,
+     "1bb47a54"
+    ],
+    [
+     14.1,
+     14.1,
+     1,
+     null,
+     "ee10dbca"
+    ],
+    [
+     14.2,
+     14.2,
+     1,
+     null,
+     "e97f2744"
+    ],
+    [
+     19.9,
+     19.9,
+     1,
+     null,
+     "7554c1f1"
+    ],
+    [
+     20.0,
+     20.0,
+     1,
+     null,
+     "1bb47a54"
+    ],
+    [
+     20.1,
+     52.9,
+     329,
+     "cb327abd:308.0",
+     "1bb47a54"
+    ],
+    [
+     53.0,
+     53.9,
+     10,
+     "cb327abd:308.1",
+     "1bb47a54"
+    ],
+    [
+     54.0,
+     55.1,
+     12,
+     "cb327abd:308.2",
+     "1bb47a54"
+    ],
+    [
+     72.5,
+     72.5,
+     1,
+     null,
+     "3c497949"
+    ],
+    [
+     72.6,
+     74.3,
+     18,
+     "cb327abd:1049.0",
+     "3c497949"
+    ]
+   ],
+   "truth_color": "blue",
+   "color_top2": [
+    "green",
+    "black"
+   ],
+   "color_top1_ok": false,
+   "color_top2_ok": false,
+   "frames_detected": 462,
+   "first_visible_s": 0.0,
+   "first_detect_s": 0.0,
+   "first_confirm_s": 0.1,
+   "candidates": 6,
+   "merged_into_other": false,
+   "confirmed": 2,
+   "candidate_pos_err_m": 0.78,
+   "grade": "CHECK",
+   "posture": "lying",
+   "lying_score": 0.584
+  },
+  {
+   "actor": "Person_Sitting_01",
+   "truth_posture": "sitting",
+   "frames_visible": 539,
+   "tracks": 14,
+   "id_switches": 13,
+   "gaps": [
+    {
+     "gap_s": 7.9,
+     "same_candidate": true,
+     "same_track": false
+    },
+    {
+     "gap_s": 13.1,
+     "same_candidate": false,
+     "same_track": false
+    }
+   ],
+   "track_runs": [
+    [
+     0.0,
+     0.0,
+     1,
+     "cb327abd:2.0",
+     "43b9d9da"
+    ],
+    [
+     0.1,
+     0.8,
+     8,
+     null,
+     "43b9d9da"
+    ],
+    [
+     0.9,
+     0.9,
+     1,
+     "cb327abd:52.0",
+     "43b9d9da"
+    ],
+    [
+     1.0,
+     2.2,
+     13,
+     null,
+     "43b9d9da"
+    ],
+    [
+     2.3,
+     2.8,
+     6,
+     "cb327abd:93.0",
+     "43b9d9da"
+    ],
+    [
+     2.9,
+     2.9,
+     1,
+     null,
+     "43b9d9da"
+    ],
+    [
+     3.0,
+     3.6,
+     7,
+     "cb327abd:93.0",
+     "43b9d9da"
+    ],
+    [
+     3.7,
+     4.3,
+     7,
+     null,
+     "43b9d9da"
+    ],
+    [
+     4.4,
+     4.4,
+     1,
+     "cb327abd:141.0",
+     "43b9d9da"
+    ],
+    [
+     4.5,
+     4.5,
+     1,
+     null,
+     "43b9d9da"
+    ],
+    [
+     4.6,
+     5.9,
+     14,
+     "cb327abd:147.0",
+     "43b9d9da"
+    ],
+    [
+     6.0,
+     6.9,
+     10,
+     "cb327abd:147.1",
+     "43b9d9da"
+    ],
+    [
+     7.0,
+     11.4,
+     45,
+     "cb327abd:147.2",
+     "42bc4506"
+    ],
+    [
+     11.5,
+     19.6,
+     4,
+     null,
+     "42bc4506"
+    ],
+    [
+     19.7,
+     20.0,
+     4,
+     "cb327abd:296.0",
+     "42bc4506"
+    ],
+    [
+     20.1,
+     20.3,
+     3,
+     null,
+     "42bc4506"
+    ],
+    [
+     20.4,
+     31.5,
+     112,
+     "cb327abd:322.0",
+     "42bc4506"
+    ],
+    [
+     31.6,
+     32.2,
+     7,
+     null,
+     "42bc4506"
+    ],
+    [
+     32.3,
+     32.3,
+     1,
+     "cb327abd:593.0",
+     "42bc4506"
+    ],
+    [
+     32.4,
+     33.5,
+     12,
+     null,
+     "42bc4506"
+    ],
+    [
+     33.6,
+     53.9,
+     204,
+     "cb327abd:694.0",
+     "42bc4506"
+    ],
+    [
+     54.0,
+     54.9,
+     10,
+     "cb327abd:694.1",
+     "43b9d9da"
+    ],
+    [
+     55.0,
+     58.8,
+     39,
+     "cb327abd:694.2",
+     "43b9d9da"
+    ],
+    [
+     71.9,
+     71.9,
+     1,
+     null,
+     "36144d99"
+    ],
+    [
+     72.0,
+     72.0,
+     1,
+     null,
+     "42bc4506"
+    ],
+    [
+     72.1,
+     74.3,
+     23,
+     "cb327abd:1042.0",
+     "42bc4506"
+    ],
+    [
+     74.4,
+     74.4,
+     1,
+     null,
+     "7f522b58"
+    ]
+   ],
+   "truth_color": "yellow",
+   "color_top2": [],
+   "color_top1_ok": null,
+   "color_top2_ok": null,
+   "frames_detected": 537,
+   "first_visible_s": 0.0,
+   "first_detect_s": 0.0,
+   "first_confirm_s": 0.1,
+   "candidates": 4,
+   "merged_into_other": false,
+   "confirmed": 2,
+   "candidate_pos_err_m": 0.43,
+   "grade": "CHECK",
+   "posture": "lying",
+   "lying_score": 0.706
+  },
+  {
+   "actor": "Person_Standing_01",
+   "truth_posture": "standing",
+   "frames_visible": 494,
+   "tracks": 14,
+   "id_switches": 13,
+   "gaps": [
+    {
+     "gap_s": 6.9,
+     "same_candidate": false,
+     "same_track": false
+    },
+    {
+     "gap_s": 5.5,
+     "same_candidate": false,
+     "same_track": false
+    }
+   ],
+   "track_runs": [
+    [
+     0.0,
+     0.0,
+     1,
+     "cb327abd:7.0",
+     "75674cd8"
+    ],
+    [
+     0.1,
+     0.6,
+     6,
+     null,
+     "75674cd8"
+    ],
+    [
+     0.7,
+     1.0,
+     4,
+     "cb327abd:41.0",
+     "75674cd8"
+    ],
+    [
+     1.1,
+     1.1,
+     1,
+     null,
+     "75674cd8"
+    ],
+    [
+     1.2,
+     1.6,
+     5,
+     "cb327abd:60.0",
+     "75674cd8"
+    ],
+    [
+     1.7,
+     1.7,
+     1,
+     null,
+     "75674cd8"
+    ],
+    [
+     1.8,
+     2.4,
+     7,
+     "cb327abd:60.0",
+     "75674cd8"
+    ],
+    [
+     2.5,
+     2.6,
+     2,
+     null,
+     "75674cd8"
+    ],
+    [
+     2.7,
+     2.7,
+     1,
+     "cb327abd:107.0",
+     "75674cd8"
+    ],
+    [
+     2.8,
+     2.9,
+     2,
+     null,
+     "75674cd8"
+    ],
+    [
+     3.0,
+     3.2,
+     3,
+     "cb327abd:113.0",
+     "75674cd8"
+    ],
+    [
+     3.3,
+     3.4,
+     2,
+     null,
+     "75674cd8"
+    ],
+    [
+     3.5,
+     3.5,
+     1,
+     "cb327abd:119.0",
+     "75674cd8"
+    ],
+    [
+     3.6,
+     4.5,
+     10,
+     null,
+     "75674cd8"
+    ],
+    [
+     4.6,
+     12.0,
+     75,
+     "cb327abd:148.0",
+     "75674cd8"
+    ],
+    [
+     12.1,
+     12.5,
+     5,
+     null,
+     "0cf36144"
+    ],
+    [
+     12.6,
+     12.6,
+     1,
+     null,
+     "75674cd8"
+    ],
+    [
+     12.7,
+     12.7,
+     1,
+     null,
+     "0cf36144"
+    ],
+    [
+     19.6,
+     20.3,
+     8,
+     null,
+     "75674cd8"
+    ],
+    [
+     20.4,
+     31.6,
+     113,
+     "cb327abd:324.0",
+     "75674cd8"
+    ],
+    [
+     31.7,
+     32.2,
+     6,
+     null,
+     "0cf36144"
+    ],
+    [
+     32.3,
+     32.3,
+     1,
+     "cb327abd:594.0",
+     "0cf36144"
+    ],
+    [
+     32.4,
+     33.2,
+     9,
+     null,
+     "0cf36144"
+    ],
+    [
+     33.3,
+     33.3,
+     1,
+     "cb327abd:675.0",
+     "0cf36144"
+    ],
+    [
+     33.4,
+     33.5,
+     2,
+     null,
+     "0cf36144"
+    ],
+    [
+     33.6,
+     33.9,
+     4,
+     "cb327abd:695.0",
+     "0cf36144"
+    ],
+    [
+     34.0,
+     34.0,
+     1,
+     null,
+     "0cf36144"
+    ],
+    [
+     34.1,
+     34.4,
+     4,
+     "cb327abd:711.0",
+     "0cf36144"
+    ],
+    [
+     39.9,
+     39.9,
+     1,
+     null,
+     "9cd44e18"
+    ],
+    [
+     40.1,
+     40.1,
+     1,
+     null,
+     "ec315418"
+    ],
+    [
+     40.3,
+     40.3,
+     1,
+     null,
+     "c36e483b"
+    ],
+    [
+     40.4,
+     43.2,
+     29,
+     "cb327abd:790.0",
+     "c36e483b"
+    ],
+    [
+     43.3,
+     49.6,
+     64,
+     "cb327abd:790.0",
+     "0cf36144"
+    ],
+    [
+     49.7,
+     49.7,
+     1,
+     null,
+     "0cf36144"
+    ],
+    [
+     49.8,
+     55.9,
+     62,
+     "cb327abd:894.0",
+     "0cf36144"
+    ],
+    [
+     56.0,
+     56.0,
+     1,
+     null,
+     "75674cd8"
+    ],
+    [
+     56.1,
+     61.3,
+     53,
+     "cb327abd:894.0",
+     "0cf36144"
+    ]
+   ],
+   "truth_color": "purple",
+   "color_top2": [
+    "purple",
+    "green"
+   ],
+   "color_top1_ok": true,
+   "color_top2_ok": true,
+   "frames_detected": 490,
+   "first_visible_s": 0.0,
+   "first_detect_s": 0.0,
+   "first_confirm_s": 0.1,
+   "candidates": 5,
+   "merged_into_other": false,
+   "confirmed": 4,
+   "candidate_pos_err_m": 1.83,
+   "grade": "NORMAL",
+   "posture": "standing",
+   "lying_score": 0.06
+  },
+  {
+   "actor": "Person_Walking_01",
+   "truth_posture": "standing",
+   "frames_visible": 487,
+   "tracks": 8,
+   "id_switches": 9,
+   "gaps": [
+    {
+     "gap_s": 4.3,
+     "same_candidate": false,
+     "same_track": false
+    },
+    {
+     "gap_s": 5.3,
+     "same_candidate": false,
+     "same_track": false
+    }
+   ],
+   "track_runs": [
+    [
+     0.0,
+     0.1,
+     2,
+     "cb327abd:4.0",
+     "6f667b3b"
+    ],
+    [
+     0.2,
+     1.5,
+     14,
+     "cb327abd:14.0",
+     "6f667b3b"
+    ],
+    [
+     1.6,
+     2.1,
+     6,
+     "cb327abd:14.0",
+     "eed8d36b"
+    ],
+    [
+     2.2,
+     2.2,
+     1,
+     null,
+     "eed8d36b"
+    ],
+    [
+     2.3,
+     2.5,
+     3,
+     "cb327abd:14.0",
+     "eed8d36b"
+    ],
+    [
+     2.6,
+     2.6,
+     1,
+     null,
+     "6f667b3b"
+    ],
+    [
+     2.7,
+     3.6,
+     10,
+     "cb327abd:14.0",
+     "eed8d36b"
+    ],
+    [
+     3.7,
+     3.7,
+     1,
+     null,
+     "eed8d36b"
+    ],
+    [
+     3.8,
+     8.7,
+     50,
+     "cb327abd:122.0",
+     "eed8d36b"
+    ],
+    [
+     8.8,
+     8.8,
+     1,
+     null,
+     "df06dacd"
+    ],
+    [
+     13.1,
+     13.1,
+     1,
+     null,
+     "22c4fc31"
+    ],
+    [
+     13.2,
+     13.2,
+     1,
+     null,
+     "3c497949"
+    ],
+    [
+     13.3,
+     13.3,
+     1,
+     null,
+     "ef6732fe"
+    ],
+    [
+     13.4,
+     14.0,
+     7,
+     null,
+     "3c497949"
+    ],
+    [
+     14.1,
+     14.4,
+     4,
+     "cb327abd:258.0",
+     "3c497949"
+    ],
+    [
+     14.5,
+     14.5,
+     1,
+     null,
+     "3e10991a"
+    ],
+    [
+     19.8,
+     20.0,
+     3,
+     null,
+     "eed8d36b"
+    ],
+    [
+     20.1,
+     27.5,
+     75,
+     "cb327abd:309.0",
+     "eed8d36b"
+    ],
+    [
+     27.6,
+     27.6,
+     1,
+     "cb327abd:444.0",
+     "6f667b3b"
+    ],
+    [
+     27.7,
+     32.0,
+     44,
+     "cb327abd:309.0",
+     "eed8d36b"
+    ],
+    [
+     32.1,
+     32.1,
+     1,
+     "cb327abd:579.0",
+     "964b2c5b"
+    ],
+    [
+     32.2,
+     37.7,
+     55,
+     "cb327abd:309.0",
+     "eed8d36b"
+    ],
+    [
+     37.8,
+     37.8,
+     1,
+     null,
+     "ef6732fe"
+    ],
+    [
+     37.9,
+     39.7,
+     19,
+     "cb327abd:309.0",
+     "eed8d36b"
+    ],
+    [
+     39.8,
+     57.8,
+     181,
+     "cb327abd:771.0",
+     "abd0804b"
+    ],
+    [
+     57.9,
+     57.9,
+     1,
+     null,
+     "91584797"
+    ]
+   ],
+   "truth_color": "white",
+   "color_top2": [
+    "black",
+    "gray"
+   ],
+   "color_top1_ok": false,
+   "color_top2_ok": false,
+   "frames_detected": 485,
+   "first_visible_s": 0.0,
+   "first_detect_s": 0.0,
+   "first_confirm_s": 0.1,
+   "candidates": 9,
+   "merged_into_other": false,
+   "confirmed": 5,
+   "candidate_pos_err_m": 7.78,
+   "grade": "CHECK",
+   "posture": "lying",
+   "lying_score": 0.628
+  }
+ ],
+ "color_profile": "v14",
+ "posture_model": true
+}
