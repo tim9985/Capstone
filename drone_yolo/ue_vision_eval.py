@@ -180,11 +180,11 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.
         veh = (float(r["ned_x"]), float(r["ned_y"]))
         n_pred_trk += sum(1 for o in obs if o.get("track_id"))
         for k, n in matched.items():
-            tid = obs[k].get("track_id")
+            tid = norm_tid(obs[k].get("track_id"))
             if tid:
                 trk_seq[n].append(tid); trk_pair[(n, tid)] += 1
         for k, n in matched.items():
-            o = obs[k]; a = act[n]; a["n_det"] += 1; hist[n].append((t, o["candidate_id"], o.get("track_id")))
+            o = obs[k]; a = act[n]; a["n_det"] += 1; hist[n].append((t, o["candidate_id"], norm_tid(o.get("track_id"))))
             a["first_det"] = a["first_det"] if a["first_det"] is not None else t
             if o["auto_confirmed"] and a["first_conf"] is None:
                 a["first_conf"] = t
@@ -244,7 +244,7 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.
         sw = sum(1 for i in range(1, len(seq)) if seq[i] != seq[i - 1])
         tc = actors[n].get("upper_color"); top = [c["color"] for c in (a.get("last_color") or [])]
         per_actor.append({"actor": n, "truth_posture": truth_posture(n, actors[n].get("pose_raw")), "frames_visible": a["n_vis"],
-                          "tracks": len(set(seq)), "id_switches": sw, "gaps": gaps, "truth_color": tc, "color_top2": top,
+                          "tracks": len(set(seq)), "id_switches": sw, "gaps": gaps, "track_runs": runs(hist[n]), "truth_color": tc, "color_top2": top,
                           "color_top1_ok": (top[0] == tc) if (tc and top) else None, "color_top2_ok": (tc in top) if (tc and top) else None,
                           "frames_detected": a["n_det"], "first_visible_s": a["first_vis"], "first_detect_s": a["first_det"],
                           "first_confirm_s": a["first_conf"], "candidates": len(own), "merged_into_other": a["n_det"] > 0 and not own, "confirmed": sum(c in cand_conf for c in own),
@@ -282,6 +282,24 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.
 def _rate(v):
     v = [x for x in v if x is not None]
     return round(sum(v) / len(v), 3) if v else None
+
+
+def norm_tid(k):
+    """worker 추적 id 는 이력이 생기기 전 '임무:14' · 뒤 '임무:14.0' (점 뒤 = ID 바뀜 횟수) → 같은 추적으로 맞춘다"""
+    if not k:
+        return k
+    return k if "." in k.rsplit(":", 1)[-1] else k + ".0"
+
+
+def runs(h):
+    """(시작 s · 끝 s · 장 수 · 추적 · 후보 앞 8자) — 추적이 어디서 끊기는지 보기용"""
+    out = []
+    for t, c, k in h:
+        if out and out[-1][3] == k and out[-1][4] == c[:8]:
+            out[-1][1] = round(t, 1); out[-1][2] += 1
+        else:
+            out.append([round(t, 1), round(t, 1), 1, k, c[:8]])
+    return out
 
 
 def reassoc(per_actor):
