@@ -132,7 +132,7 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.
     empty_fp, empty_n = [], 0
     geo_err, geo_err_stable, gt_err, gt_err_stable, pend = [], [], [], [], Counter()
     act = defaultdict(lambda: {"first_vis": None, "first_det": None, "first_conf": None, "cands": Counter(), "last_state": None, "n_vis": 0, "n_det": 0})
-    cand_act = defaultdict(Counter); cand_conf = set(); reobs = Counter(); reobs_act = Counter(); verdicts = Counter()
+    cand_act = defaultdict(Counter); cand_conf = set(); reobs = Counter(); reobs_act = Counter(); verdicts = Counter(); act_verd = defaultdict(Counter)
     total_ms, samples = [], []
     trk_seq = defaultdict(list); trk_pair = Counter(); n_pred_trk = 0      # 10-14 추적 지표 (정답 id ↔ worker track_id)
     hist = defaultdict(list)                                                # 배우별 (t · 후보 · 추적) — 가림 뒤 다시 잇기
@@ -175,6 +175,8 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.
             m = (o.get("appearance") or {}).get("match")
             if m:
                 verdicts[m["verdict"]] += 1
+                if bn is not None and bn in valid:
+                    act_verd[bn][m["verdict"]] += 1
         if not gts:
             empty_n += 1; empty_fp.append(len(obs))
         veh = (float(r["ned_x"]), float(r["ned_y"]))
@@ -272,7 +274,7 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.
            "tracking": {**tracking_metrics(trk_pair, trk_seq, n_gt, n_pred_trk), **reassoc(per_actor)},
            "color": {"actors_with_truth": sum(p["color_top1_ok"] is not None for p in per_actor),
                      "top1_acc": _rate([p["color_top1_ok"] for p in per_actor]), "top2_acc": _rate([p["color_top2_ok"] for p in per_actor])},
-           "reobservation": {"by_reason": dict(reobs), "target": dict(reobs_act)}, "appearance": {"query": query, "verdicts": dict(verdicts)},
+           "reobservation": {"by_reason": dict(reobs), "target": dict(reobs_act)}, "appearance": {"query": query, "verdicts": dict(verdicts), **appearance_by_actor(act_verd, query, actors)},
            "per_actor": per_actor}
     if fo_name:
         to_fiftyone(fo_name, samples, res)
@@ -282,6 +284,19 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.
 def _rate(v):
     v = [x for x in v if x is not None]
     return round(sum(v) / len(v), 3) if v else None
+
+
+def appearance_by_actor(av, query, actors):
+    """찾는 색과 상의색이 같은 배우 = 대상 · 대상 MATCH 율 vs 다른 사람 MATCH 율 (판정 기준 U · 장 단위)"""
+    if not query:
+        return {}
+    want = set(query["upper"])
+    rate = lambda c: round(c["MATCH"] / sum(c.values()), 3) if sum(c.values()) else None
+    tgt = [n for n in av if actors[n].get("upper_color") in want]
+    oth = [n for n in av if n not in tgt]
+    return {"by_actor": {n: dict(av[n]) for n in av}, "targets": tgt,
+            "target_match": rate(sum((av[n] for n in tgt), Counter())), "others_match": rate(sum((av[n] for n in oth), Counter())),
+            "others_match_max": max((rate(av[n]) or 0 for n in oth), default=None)}
 
 
 def norm_tid(k):
@@ -392,7 +407,7 @@ def report_md(res):
              f"| 추적 IDF1 · ID 바뀜 · 배우당 추적 수 | {res['tracking']['IDF1']} · {res['tracking']['id_switches']} · {res['tracking']['tracks_per_actor']} | 1 · 0 · 1 이 정답 |",
              f"| 가림 뒤 다시 잇기 (≥ {GAP_S:.0f} s · 같은 후보 · 같은 추적) | {res['tracking']['gaps']} 번 · {res['tracking']['gap_same_candidate']} · {res['tracking']['gap_same_track']} | 1 이 정답 |",
              f"| 상의색 1순위 · 1·2순위 맞음 ({res['color']['actors_with_truth']} 명) | {res['color']['top1_acc']} · {res['color']['top2_acc']} | |",
-             f"| 재관측 | {res['reobservation']['by_reason']} | |", f"| 인상착의 ({res['appearance']['query']}) | {res['appearance']['verdicts']} | |", "",
+             f"| 재관측 | {res['reobservation']['by_reason']} | |", f"| 인상착의 ({res['appearance']['query']}) | {res['appearance']['verdicts']} · 대상 MATCH {res['appearance'].get('target_match')} · 다른 사람 MATCH {res['appearance'].get('others_match')} (최대 {res['appearance'].get('others_match_max')}) | 대상 MATCH · 다른 사람 ≤ 0.20 |", "",
              f"- 사람 키 px 별 재현율 (재현율, 정답 수): {d['recall_by_height_px']}", f"- 좌표 보류 사유: {g['pending_reasons']}", "",
              "| 배우 | 정답 자세 | 보임 · 잡힘 | 처음 보임 · 잡힘 · 확정 (s) | 후보 · 확정 | 후보 위치 오차 m | 등급 · 자세 · 누움 |", "|---|---|---|---|---|---|---|"]
     for p in res["per_actor"]:
@@ -412,6 +427,7 @@ def main():
     ap.add_argument("--min-px", type=int, default=40, help="정답으로 칠 최소 마스크 화소")
     ap.add_argument("--conf", type=float, default=0.20, help="운용 임계값 (10-13 스윕 제안 0.20)")
     ap.add_argument("--fo", action="store_true", help="FiftyOne ue/<run> 으로 올림")
+    ap.add_argument("--tag", default="", help="결과 파일 이름 뒤에 붙임 (같은 기록을 질의 색만 바꿔 여러 번)")
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args()
     tmp = tempfile.mkdtemp(prefix="uevis_self_") if a.selftest else None
@@ -422,8 +438,8 @@ def main():
     res["posture_model"] = bool(posture)
     md = report_md(res)
     if not a.selftest:
-        (BASE / "metrics" / f"ue_vision_{run.name}.json").write_text(json.dumps(res, ensure_ascii=False, indent=1))
-        (BASE / "metrics" / f"ue_vision_{run.name}.md").write_text(md)
+        (BASE / "metrics" / f"ue_vision_{run.name}{a.tag}.json").write_text(json.dumps(res, ensure_ascii=False, indent=1))
+        (BASE / "metrics" / f"ue_vision_{run.name}{a.tag}.md").write_text(md)
     print(md)
 
 
