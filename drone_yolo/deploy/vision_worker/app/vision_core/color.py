@@ -90,9 +90,10 @@ def _person_mask(crop, rect):
 class ColorProfiler:
     # 기본값 = NOMAD 42명 비교에서 고른 V10 (무채색 기준 화이트밸런스 + 노출 맞춤 + 검정 표 0.3 · 회색 표 0.7 · eval_color.py · 10-05)
     #   회색 가정 (V0) 은 풀밭 장면에서 회색 · 흰 옷을 보라로 만든다 (1순위 0.28 → 0.39)
-    def __init__(self, min_pixels=MIN_PIXELS, margin=1.3, wb="achromatic", v_target=110, v_black=0.30, s_achro=0.18, w_black=0.3, w_gray=0.7):
-        """wb: 화이트밸런스 'gray_world' | 'achromatic' | None · v_target: 프레임 밝기 중앙값을 이 값 (0~255) 으로 맞춤 (None 이면 안 함)"""
-        self.min_pixels, self.margin = min_pixels, margin
+    def __init__(self, min_pixels=MIN_PIXELS, margin=1.3, wb="achromatic", v_target=110, v_black=0.30, s_achro=0.18, w_black=0.3, w_gray=0.7, exp_clip=(0.7, 2.0)):
+        """exp_clip: 노출 맞춤 배율 범위 (10-14 UE — 밝은 풀밭에서 0.7 배로 어둡히면 상의가 검정이 된다 · 하한 1.0 = 밝히기만)
+        wb: 화이트밸런스 'gray_world' | 'achromatic' | None · v_target: 프레임 밝기 중앙값을 이 값 (0~255) 으로 맞춤 (None 이면 안 함)"""
+        self.min_pixels, self.margin, self.exp_clip = min_pixels, margin, exp_clip
         self.wb, self.v_target, self.v_black, self.s_achro = wb, v_target, v_black, s_achro
         self.vote_w = np.ones(len(COLORS)); self.vote_w[COLORS.index("black")] = w_black; self.vote_w[COLORS.index("gray")] = w_gray
 
@@ -123,7 +124,7 @@ class ColorProfiler:
             region[a:b, rect[0]:rect[0] + rect[2]] = 1
         hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV)
         if self.v_target and stats is not None and stats.get("v_median"):
-            g = float(np.clip(self.v_target / max(stats["v_median"], 1.0), 0.7, 2.0))   # 노출 맞춤 (밝기만)
+            g = float(np.clip(self.v_target / max(stats["v_median"], 1.0), *self.exp_clip))   # 노출 맞춤 (밝기만)
             hsv[..., 2] = np.clip(hsv[..., 2].astype(np.float32) * g, 0, 255).astype(np.uint8)
         ycc = cv2.cvtColor(crop, cv2.COLOR_BGR2YCrCb)
         skin = (ycc[..., 1] >= 135) & (ycc[..., 1] <= 180) & (ycc[..., 2] >= 85) & (ycc[..., 2] <= 135) & (hsv[..., 2] > 60)

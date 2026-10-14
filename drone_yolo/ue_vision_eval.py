@@ -118,11 +118,17 @@ def pose_of(r, meta):
             "gimbal_stabilized": bool(meta.get("gimbal_stabilized", False))}
 
 
-def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.20):
+COLOR_PROFILES = {"base": {}, "v14": {"wb": None, "exp_clip": (1.0, 2.0)}}   # v14 = 밝히기만 · 화이트밸런스 끔 (10-14 UE 16 m 로 고름 · eval_color V14)
+
+
+def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.20, color="base"):
     rows, gtb, actors, meta = load_run(run)
     det = TimedDet(PersonDetector(weights, engine=engine, conf=conf))
     scratch = Path(tempfile.mkdtemp(prefix="uevis_"))
     w = IngestWorker(None, None, det, "ue-eval", scratch=scratch, upload_crops=False, posture=posture)
+    if color != "base":
+        from app.vision_core.color import ColorProfiler
+        w.colorer = ColorProfiler(**COLOR_PROFILES[color])
     mid, geo = "ue-" + run.name, GeoResolver()
     from app.vision_core import state as state_mod
     t_color = Timed(w.colorer.profile); w.colorer.profile = t_color
@@ -133,6 +139,7 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.
     geo_err, geo_err_stable, gt_err, gt_err_stable, pend = [], [], [], [], Counter()
     act = defaultdict(lambda: {"first_vis": None, "first_det": None, "first_conf": None, "cands": Counter(), "last_state": None, "n_vis": 0, "n_det": 0})
     cand_act = defaultdict(Counter); cand_conf = set(); reobs = Counter(); reobs_act = Counter(); verdicts = Counter(); act_verd = defaultdict(Counter)
+    st_log = []                                                             # (배우 · t · 누움 항 · 종합 점수 · 등급 · 무동작 s) — 요구조자 판단 채점
     total_ms, samples = [], []
     trk_seq = defaultdict(list); trk_pair = Counter(); n_pred_trk = 0      # 10-14 추적 지표 (정답 id ↔ worker track_id)
     hist = defaultdict(list)                                                # 배우별 (t · 후보 · 추적) — 가림 뒤 다시 잇기
@@ -190,7 +197,7 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.
             a["first_det"] = a["first_det"] if a["first_det"] is not None else t
             if o["auto_confirmed"] and a["first_conf"] is None:
                 a["first_conf"] = t
-            a["cands"][o["candidate_id"]] += 1; a["last_state"] = o.get("state"); cand_act[o["candidate_id"]][n] += 1
+            a["cands"][o["candidate_id"]] += 1; a["last_state"] = o.get("state"); st_log.append(state_row(n, t, o.get("state"))); cand_act[o["candidate_id"]][n] += 1
             for b in H_BINS:
                 h = valid[n]["bb"][3] - valid[n]["bb"][1]
                 if b[0] <= h < b[1]:
@@ -271,6 +278,7 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.
                           "actors_found": sum(p["frames_detected"] > 0 for p in per_actor), "actors_confirmed": sum(p["confirmed"] > 0 for p in per_actor),
                           "actors_with_duplicates": sum(p["candidates"] > 1 for p in per_actor),
                           "actors_merged_into_other": sum(p["merged_into_other"] for p in per_actor)},
+           "rescue": rescue_metrics(st_log, actors),
            "tracking": {**tracking_metrics(trk_pair, trk_seq, n_gt, n_pred_trk), **reassoc(per_actor)},
            "color": {"actors_with_truth": sum(p["color_top1_ok"] is not None for p in per_actor),
                      "top1_acc": _rate([p["color_top1_ok"] for p in per_actor]), "top2_acc": _rate([p["color_top2_ok"] for p in per_actor])},
@@ -284,6 +292,43 @@ def evaluate(run, weights, engine, posture, query, min_px, fo_name=None, conf=0.
 def _rate(v):
     v = [x for x in v if x is not None]
     return round(sum(v) / len(v), 3) if v else None
+
+
+def state_row(n, t, st):
+    st = st or {}
+    return (n, t, (st.get("score_terms") or {}).get("lying"), st.get("score"), st.get("grade"), (st.get("motion") or {}).get("still_s"))
+
+
+def auc_ties(pos, neg):
+    """Mann-Whitney AUROC (동점 0.5)"""
+    if not pos or not neg:
+        return None
+    a = np.array(pos)[:, None]; b = np.array(neg)[None, :]
+    return round(float(((a > b).sum() + 0.5 * (a == b).sum()) / (a.size * b.size)), 4)
+
+
+def rescue_metrics(rows, actors):
+    """요구조자 판단 (판정 기준 U) — 장 단위 누움 항 · 종합 점수 AUROC (누움 · 기어감 vs 그 밖) · 배우별 등급 시간 비율 · 최고 등급"""
+    lab = {n: truth_posture(n, actors[n].get("pose_raw")) == "lying" for n in actors}
+    out = {}
+    for k, key in ((2, "lying_term"), (3, "score")):
+        v = [(lab[r[0]], r[k]) for r in rows if r[k] is not None]
+        out[f"auroc_{key}"] = auc_ties([x for l, x in v if l], [x for l, x in v if not l])
+    order = ["URGENT", "HIGH", "CHECK", "NORMAL"]
+    per = {}
+    for n in actors:
+        g = Counter(r[4] for r in rows if r[0] == n and r[4])
+        if not g:
+            continue
+        tot = sum(g.values())
+        per[n] = {"lying": lab[n], "max_grade": next(x for x in order if g.get(x)), "frac": {x: round(g[x] / tot, 3) for x in order if g.get(x)},
+                  "max_still_s": max((r[5] or 0) for r in rows if r[0] == n), "lying_term_p50": round(float(np.median([r[2] for r in rows if r[0] == n and r[2] is not None] or [np.nan])), 3)}
+    out["per_actor"] = per
+    ly = [p for p in per.values() if p["lying"]]
+    out["lying_reached_urgent_or_high"] = f"{sum(p['max_grade'] in ('URGENT', 'HIGH') for p in ly)}/{len(ly)}" if ly else None
+    oth = [p for p in per.values() if not p["lying"]]
+    out["others_reached_urgent"] = f"{sum(p['max_grade'] == 'URGENT' for p in oth)}/{len(oth)}" if oth else None
+    return out
 
 
 def appearance_by_actor(av, query, actors):
@@ -407,6 +452,7 @@ def report_md(res):
              f"| 추적 IDF1 · ID 바뀜 · 배우당 추적 수 | {res['tracking']['IDF1']} · {res['tracking']['id_switches']} · {res['tracking']['tracks_per_actor']} | 1 · 0 · 1 이 정답 |",
              f"| 가림 뒤 다시 잇기 (≥ {GAP_S:.0f} s · 같은 후보 · 같은 추적) | {res['tracking']['gaps']} 번 · {res['tracking']['gap_same_candidate']} · {res['tracking']['gap_same_track']} | 1 이 정답 |",
              f"| 상의색 1순위 · 1·2순위 맞음 ({res['color']['actors_with_truth']} 명) | {res['color']['top1_acc']} · {res['color']['top2_acc']} | |",
+             f"| 요구조자 — 누움 AUROC (누움 항 · 종합) · 누운 사람 URGENT/HIGH 도달 · 다른 사람 URGENT | {res['rescue']['auroc_lying_term']} · {res['rescue']['auroc_score']} · {res['rescue']['lying_reached_urgent_or_high']} · {res['rescue']['others_reached_urgent']} | AUROC ≥ 0.85 · 누운 사람 전부 |",
              f"| 재관측 | {res['reobservation']['by_reason']} | |", f"| 인상착의 ({res['appearance']['query']}) | {res['appearance']['verdicts']} · 대상 MATCH {res['appearance'].get('target_match')} · 다른 사람 MATCH {res['appearance'].get('others_match')} (최대 {res['appearance'].get('others_match_max')}) | 대상 MATCH · 다른 사람 ≤ 0.20 |", "",
              f"- 사람 키 px 별 재현율 (재현율, 정답 수): {d['recall_by_height_px']}", f"- 좌표 보류 사유: {g['pending_reasons']}", "",
              "| 배우 | 정답 자세 | 보임 · 잡힘 | 처음 보임 · 잡힘 · 확정 (s) | 후보 · 확정 | 후보 위치 오차 m | 등급 · 자세 · 누움 |", "|---|---|---|---|---|---|---|"]
@@ -427,6 +473,7 @@ def main():
     ap.add_argument("--min-px", type=int, default=40, help="정답으로 칠 최소 마스크 화소")
     ap.add_argument("--conf", type=float, default=0.20, help="운용 임계값 (10-13 스윕 제안 0.20)")
     ap.add_argument("--fo", action="store_true", help="FiftyOne ue/<run> 으로 올림")
+    ap.add_argument("--color", default="base", choices=list(COLOR_PROFILES), help="상의색 설정 (base = worker 그대로)")
     ap.add_argument("--tag", default="", help="결과 파일 이름 뒤에 붙임 (같은 기록을 질의 색만 바꿔 여러 번)")
     ap.add_argument("--selftest", action="store_true")
     a = ap.parse_args()
@@ -434,7 +481,8 @@ def main():
     run = selftest(tmp) if a.selftest else Path(a.run)
     posture = a.posture if Path(a.posture).exists() else None
     q = {"upper": [a.query]} if a.query else None
-    res = evaluate(run, a.weights, a.engine or None, posture, q, a.min_px, fo_name=(f"ue/{run.name}" if a.fo else None), conf=a.conf)
+    res = evaluate(run, a.weights, a.engine or None, posture, q, a.min_px, fo_name=(f"ue/{run.name}{a.tag}" if a.fo else None), conf=a.conf, color=a.color)
+    res["color_profile"] = a.color
     res["posture_model"] = bool(posture)
     md = report_md(res)
     if not a.selftest:

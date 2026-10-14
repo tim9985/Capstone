@@ -45,6 +45,10 @@ VARIANTS = {   # 이름: ColorProfiler 인자
     "V8 V4+검정표0.5": dict(wb="achromatic", v_target=110, w_black=0.5),
     "V9 V4+검정표0.3": dict(wb="achromatic", v_target=110, w_black=0.3),
     "V10 V4+검정표0.3+회색표0.7": dict(wb="achromatic", v_target=110, w_black=0.3, w_gray=0.7),
+    "V11 V10+밝히기만": dict(wb="achromatic", v_target=110, w_black=0.3, w_gray=0.7, exp_clip=(1.0, 2.0)),   # 10-14 UE (밝은 풀밭 → 어둡힘이 검정을 만듦)
+    "V12 V10-노출": dict(wb="achromatic", v_target=None, w_black=0.3, w_gray=0.7),
+    "V13 V10-노출-화이트밸런스": dict(wb=None, v_target=None, w_black=0.3, w_gray=0.7),
+    "V14 V10+밝히기만-화이트밸런스": dict(wb=None, v_target=110, w_black=0.3, w_gray=0.7, exp_clip=(1.0, 2.0)),   # UE 16 m 에서 고른 판
 }
 
 

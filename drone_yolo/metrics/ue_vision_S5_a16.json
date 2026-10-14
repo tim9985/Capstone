@@ -1,0 +1,90 @@
+{
+ "run": "S5_a16",
+ "frames": 745,
+ "actors": 0,
+ "actors_visible": 0,
+ "detection": {
+  "gt_boxes": 0,
+  "min_px": 40,
+  "AP50": null,
+  "recall@0.15": null,
+  "precision@0.15": 0.0,
+  "recall_by_height_px": {
+   "0-20": [
+    null,
+    0
+   ],
+   "20-40": [
+    null,
+    0
+   ],
+   "40-80": [
+    null,
+    0
+   ],
+   "80-∞": [
+    null,
+    0
+   ]
+  },
+  "empty_frames": 746,
+  "fp_per_empty_frame": 0.296
+ },
+ "latency_ms": {
+  "detect_p50": 21.64,
+  "detect_p95": 22.85,
+  "color_p50": 0.0,
+  "state_p50": 17.12,
+  "frame_p50": 39.75,
+  "frame_p95": 112.99,
+  "fps_at_p50": 25.2,
+  "backend": "tensorrt"
+ },
+ "geo": {
+  "det_valid": 0,
+  "det_err_p50": null,
+  "det_err_p95": null,
+  "det_stable_n": 0,
+  "det_stable_p50": null,
+  "det_stable_p95": null,
+  "gtbox_err_p50": null,
+  "gtbox_stable_p50": null,
+  "pending_reasons": {}
+ },
+ "candidates": {
+  "total": 32,
+  "confirmed": 22,
+  "confirmed_without_actor": 22,
+  "actors_found": 0,
+  "actors_confirmed": 0,
+  "actors_with_duplicates": 0,
+  "actors_merged_into_other": 0
+ },
+ "tracking": {
+  "IDF1": 0.0,
+  "id_switches": 0,
+  "tracks_per_actor": null,
+  "gaps": 0,
+  "gap_same_candidate": null,
+  "gap_same_track": null
+ },
+ "color": {
+  "actors_with_truth": 0,
+  "top1_acc": null,
+  "top2_acc": null
+ },
+ "reobservation": {
+  "by_reason": {
+   "LOW_EVIDENCE": 9
+  },
+  "target": {
+   "배우 없음": 9
+  }
+ },
+ "appearance": {
+  "query": null,
+  "verdicts": {}
+ },
+ "per_actor": [],
+ "posture_model": true
+}
