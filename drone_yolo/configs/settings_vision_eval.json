@@ -1,0 +1,14 @@
+{
+  "SettingsVersion": 2.0,
+  "SimMode": "ComputerVision",
+  "ViewMode": "NoDisplay",
+  "ClockSpeed": 1.0,
+  "InitialInstanceSegmentation": true,
+  "OriginGeopoint": { "Latitude": 36.14524, "Longitude": 128.3916, "Altitude": 77.2056 },
+  "CameraDefaults": {
+    "CaptureSettings": [
+      { "ImageType": 0, "Width": 1920, "Height": 1080, "FOV_Degrees": 80.2, "MotionBlurAmount": 0 },
+      { "ImageType": 5, "Width": 1920, "Height": 1080, "FOV_Degrees": 80.2 }
+    ]
+  }
+}

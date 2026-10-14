@@ -1,0 +1,153 @@
+{
+  "scenario": "S1",
+  "map_src": "/Game/KumohSimulation/W_990bee4527600963/Maps/KumohMinimal",
+  "map_dst": "/Game/VisionEval/Maps/Vision_S1",
+  "origin": [
+    128.3916,
+    36.14524,
+    77.2056
+  ],
+  "spawnNeu": [
+    60.0,
+    0.0,
+    -5.776652551269535
+  ],
+  "spawnGeographic": [
+    128.39159582279308,
+    36.145780912907234,
+    71.42894744873047
+  ],
+  "home_ground_neu_z": -7.379,
+  "ground_offset_m": 0.08,
+  "actors": [
+    {
+      "name": "Person_Standing_01",
+      "character": "Ch02_nonPBR",
+      "anim": "A_Walking",
+      "pose_raw": "standing",
+      "upper_color": "red",
+      "tint": [
+        0.8,
+        0.04,
+        0.04
+      ],
+      "neu": [
+        58.0,
+        -18.0,
+        -5.455
+      ],
+      "yaw_deg": 30,
+      "moving": false,
+      "freeze_t": 0.0
+    },
+    {
+      "name": "Person_Standing_02",
+      "character": "X_Bot",
+      "anim": "A_Walking",
+      "pose_raw": "standing",
+      "upper_color": "blue",
+      "tint": [
+        0.04,
+        0.14,
+        0.75
+      ],
+      "neu": [
+        68.0,
+        -4.0,
+        -7.7
+      ],
+      "yaw_deg": 200,
+      "moving": false,
+      "freeze_t": 0.0
+    },
+    {
+      "name": "Person_Walking_01",
+      "character": "Ch31_nonPBR",
+      "anim": "A_Walking",
+      "pose_raw": "walking",
+      "upper_color": "yellow",
+      "tint": [
+        0.9,
+        0.78,
+        0.04
+      ],
+      "neu": [
+        50.0,
+        -24.0,
+        -4.1
+      ],
+      "yaw_deg": 90,
+      "moving": true,
+      "path_neu": [
+        [
+          50.0,
+          -24.0,
+          -4.1
+        ],
+        [
+          72.0,
+          -24.0,
+          -6.222
+        ]
+      ],
+      "speed_mps": 1.2
+    },
+    {
+      "name": "Person_Sitting_01",
+      "character": "Ch41_nonPBR",
+      "anim": "A_Sitting_Idle",
+      "pose_raw": "sitting",
+      "upper_color": "green",
+      "tint": [
+        0.06,
+        0.45,
+        0.08
+      ],
+      "neu": [
+        63.0,
+        -11.0,
+        -6.592
+      ],
+      "yaw_deg": 140,
+      "moving": false
+    },
+    {
+      "name": "Person_Lying_01",
+      "character": "Ch02_nonPBR",
+      "anim": "A_Laying_Breathless",
+      "pose_raw": "lying",
+      "upper_color": "white",
+      "tint": [
+        0.85,
+        0.85,
+        0.85
+      ],
+      "neu": [
+        54.0,
+        -8.0,
+        -6.068
+      ],
+      "yaw_deg": 70,
+      "moving": false
+    },
+    {
+      "name": "Person_Lying_02",
+      "character": "Ch31_nonPBR",
+      "anim": "A_Male_Laying_Pose",
+      "pose_raw": "lying",
+      "upper_color": "black",
+      "tint": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "neu": [
+        66.0,
+        -16.0,
+        -6.396
+      ],
+      "yaw_deg": 250,
+      "moving": false
+    }
+  ]
+}
