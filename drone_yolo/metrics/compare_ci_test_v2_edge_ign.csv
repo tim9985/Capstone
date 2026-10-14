@@ -6,3 +6,4 @@ test_v2_edge_ign,soup_v7r2,v11s_f72,0.0038,-0.0213,0.0279,72,구분 안 됨
 test_v2_edge_ign,v12_f91,v12_f92,-0.014,-0.0421,0.0061,72,구분 안 됨
 test_v2_edge_ign,soup_v7r2,v12_f92_swa,0.0291,-0.014,0.0669,72,구분 안 됨
 test_v2_edge_ign,soup_v7r2,v12_f91_swa,0.0479,0.0142,0.0872,72,차이 있음
+test_v2_edge_ign,v12_f91_swa,v12_f91e60_swa,-0.0187,-0.0405,-0.0054,72,차이 있음
