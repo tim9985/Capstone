@@ -1,0 +1,39 @@
+{
+ "후보 창": 5162,
+ "하드 (0.25~0.5)": {
+  "visdrone_obl": 130,
+  "visdrone_nadir": 179,
+  "unicamp": 41,
+  "niicu": 17,
+  "ladd": 25,
+  "aihub": 10,
+  "wisard": 22
+ },
+ "버림 ≥ 0.5": {
+  "visdrone_obl": 53,
+  "visdrone_nadir": 57,
+  "unicamp": 41,
+  "niicu": 1,
+  "ladd": 29,
+  "aihub": 8,
+  "wisard": 8
+ },
+ "검출 없음": {
+  "visdrone_obl": 703,
+  "visdrone_nadir": 578,
+  "unicamp": 811,
+  "niicu": 550,
+  "ladd": 445,
+  "aihub": 1053,
+  "wisard": 401
+ },
+ "쓴 하드 네거티브": {
+  "aihub": 10,
+  "ladd": 25,
+  "niicu": 17,
+  "unicamp": 40,
+  "visdrone": 220,
+  "wisard": 22
+ },
+ "합계": 334
+}
