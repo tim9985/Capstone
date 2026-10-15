@@ -8,6 +8,7 @@ ue_group_eval.py — 후보 묶기 규칙 비교 (10-15 G · 덤프 = ue_group_d
     veto_k     추적기가 붙이려는 후보가 좌표상 문 × veto_k 보다 멀면 붙이지 않음 (None = 끔)
     motion     후보 속도 (최근 두 위치) 로 지금 위치 예측 · 놓친 시간만큼 문을 걷는 속도 1.5 m/s × dt 만큼 넓힘
     merge_late 좌표 없던 후보가 처음 좌표를 얻을 때 문 안의 다른 후보가 있으면 그쪽으로 합침
+    pend_k     좌표 「보류」 탐지 (기울기 · 자세 변화 · 발끝 끝) 도 계산된 위치가 있으면 **같은 사람 판단에만** 씀 · 오차 σ × pend_k (보고 · 후보 위치 평균엔 안 씀) · None = 끔
   지표 (UE 정답 배우 기준)
     사람당 후보 · 섞인 후보 (두 배우가 각각 5장 이상) · 후보 IDF1 (배우 ↔ 후보 1:1 · 겹친 장 수)
 실행  python ue_group_eval.py --runs S1_a16,S2_a16,S3_a16,S4_a16 [--grid]
@@ -102,6 +103,17 @@ class Registry:
                         c.root = o; o.last_t, o.last_box = t, box; return o
         return c
 
+    def mg(self, d):
+        """같은 사람 판단에 쓸 위치 — OK 는 그대로 · 보류는 pend_k 가 있으면 σ 를 키워서"""
+        g = d["geo"]
+        if g is None:
+            return None
+        if g[0] == "OK":
+            return g
+        if self.c.get("pend_k") and g[1] is not None and g[3]:
+            return ("PEND", g[1], g[2], (g[3][0] * self.c["pend_k"], g[3][1] * self.c["pend_k"], g[3][2]))
+        return None
+
     def frame(self, t, dets, tcand):
         """한 프레임 탐지 목록 → 후보 (root) 목록"""
         out = [None] * len(dets)
@@ -111,37 +123,40 @@ class Registry:
             g = d["geo"] if d["geo"] and d["geo"][0] == "OK" else None
             k = tcand.get(d["tkey"]) if d["tkey"] else None
             k = self.root(k) if k is not None else None
+            gm = self.mg(d)
             if k is not None and k.last_t != t and id(k) not in used:
-                if self.c["veto_k"] and g is not None and k.lat is not None and self.dist(k, g, t) > self.c["veto_k"] * self.gate(k, max(g[3]), t):
+                if self.c["veto_k"] and gm is not None and k.lat is not None and self.dist(k, gm, t) > self.c["veto_k"] * self.gate(k, max(gm[3]), t):
                     free.append(i); continue
                 out[i] = self.attach(k, t, d["box"], g); used.add(id(out[i]))
             else:
                 free.append(i)
-        geo_i = [i for i in free if dets[i]["geo"] and dets[i]["geo"][0] == "OK"]
+        geo_i = [i for i in free if self.mg(dets[i]) is not None]
         cands = [c for c in self.items if c.root is None and c.lat is not None and c.last_t != t and id(c) not in used]
         if self.c["joint"] and geo_i and cands:                       # ② 좌표 짝을 한꺼번에
             M = np.full((len(geo_i), len(cands)), 1e6)
             for a, i in enumerate(geo_i):
-                g = dets[i]["geo"]
+                g = self.mg(dets[i])
                 for b, c in enumerate(cands):
                     dd = self.dist(c, g, t)
                     if dd <= self.gate(c, max(g[3]), t):
                         M[a, b] = dd
             for a, b in zip(*linear_sum_assignment(M)):
                 if M[a, b] < 1e6:
-                    i = geo_i[a]; out[i] = self.attach(cands[b], t, dets[i]["box"], dets[i]["geo"]); used.add(id(out[i]))
+                    i = geo_i[a]; gi = dets[i]["geo"] if dets[i]["geo"] and dets[i]["geo"][0] == "OK" else None
+                    out[i] = self.attach(cands[b], t, dets[i]["box"], gi); used.add(id(out[i]))
         for i in free:                                                # ③ 남은 것 — 지금 worker 와 같은 순서 (좌표 → 화면 IoU → 새 후보)
             if out[i] is not None:
                 continue
             d = dets[i]; g = d["geo"] if d["geo"] and d["geo"][0] == "OK" else None
+            gm = self.mg(d)
             m = None
-            if g is not None:
+            if gm is not None:
                 best = None
                 for c in self.items:
                     if c.root is not None or c.lat is None or c.last_t == t or id(c) in used:
                         continue
-                    dd = self.dist(c, g, t)
-                    if dd <= self.gate(c, max(g[3]), t) and (best is None or dd < best[0]):
+                    dd = self.dist(c, gm, t)
+                    if dd <= self.gate(c, max(gm[3]), t) and (best is None or dd < best[0]):
                         best = (dd, c)
                 m = best[1] if best else None
             if m is None:
@@ -186,7 +201,7 @@ def evaluate(dump, cfg):
             "cands": len(per_c), "fp_cands": sum(1 for c, cn in per_c.items() if set(cn) == {None})}
 
 
-BASECFG = dict(min_gate=3.0, gate_k=3.0, gate_mode="sum", joint=False, veto_k=None, motion=False, merge_late=False)
+BASECFG = dict(min_gate=3.0, gate_k=3.0, gate_mode="sum", joint=False, veto_k=None, motion=False, merge_late=False, pend_k=None)
 
 
 def run_all(runs, cfg):
@@ -212,9 +227,9 @@ def main():
         return
     base, _ = run_all(runs, BASECFG); print("기준 (지금 worker)", base)
     rows = []
-    grid = itertools.product((2.0, 3.0, 4.0), (1.0, 2.0, 3.0), ("sum", "rss"), (False, True), (None, 2.0), (False, True), (False, True)) if a.grid else []
-    for mg, gk, gm, jo, ve, mo, ml in grid:
-        cfg = dict(min_gate=mg, gate_k=gk, gate_mode=gm, joint=jo, veto_k=ve, motion=mo, merge_late=ml)
+    grid = itertools.product((2.0, 3.0, 4.0), (2.0, 3.0), ("sum", "rss"), (False, True), (None, 2.0), (False, True), (False, True), (None, 1.5, 3.0)) if a.grid else []
+    for mg, gk, gm, jo, ve, mo, ml, pk in grid:
+        cfg = dict(min_gate=mg, gate_k=gk, gate_mode=gm, joint=jo, veto_k=ve, motion=mo, merge_late=ml, pend_k=pk)
         agg, _ = run_all(runs, cfg); rows.append((cfg, agg))
     ok = [r for r in rows if r[1]["mixed"] <= base["mixed"]]
     ok.sort(key=lambda r: (-r[1]["idf1"], r[1]["cand_per_actor"]))

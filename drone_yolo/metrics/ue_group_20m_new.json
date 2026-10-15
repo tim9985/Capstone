@@ -1,0 +1,47 @@
+{
+ "cfg": {
+  "min_gate": 2.0,
+  "gate_k": 3.0,
+  "gate_mode": "rss",
+  "joint": true,
+  "veto_k": null,
+  "motion": false,
+  "merge_late": false,
+  "pend_k": 1.5
+ },
+ "agg": {
+  "cand_per_actor": 3.55,
+  "mixed": 10,
+  "idf1": 0.612
+ },
+ "runs": {
+  "S1_a20": {
+   "cand_per_actor": 3.33,
+   "mixed": 4,
+   "idf1": 0.604,
+   "cands": 36,
+   "fp_cands": 27
+  },
+  "S2_a20": {
+   "cand_per_actor": 3.0,
+   "mixed": 0,
+   "idf1": 0.598,
+   "cands": 12,
+   "fp_cands": 4
+  },
+  "S3_a20": {
+   "cand_per_actor": 4.14,
+   "mixed": 0,
+   "idf1": 0.651,
+   "cands": 48,
+   "fp_cands": 29
+  },
+  "S4_a20": {
+   "cand_per_actor": 3.75,
+   "mixed": 6,
+   "idf1": 0.594,
+   "cands": 33,
+   "fp_cands": 21
+  }
+ }
+}

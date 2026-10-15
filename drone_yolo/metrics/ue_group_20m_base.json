@@ -1,0 +1,47 @@
+{
+ "cfg": {
+  "min_gate": 3.0,
+  "gate_k": 3.0,
+  "gate_mode": "sum",
+  "joint": false,
+  "veto_k": null,
+  "motion": false,
+  "merge_late": false,
+  "pend_k": null
+ },
+ "agg": {
+  "cand_per_actor": 4.77,
+  "mixed": 10,
+  "idf1": 0.613
+ },
+ "runs": {
+  "S1_a20": {
+   "cand_per_actor": 5.0,
+   "mixed": 2,
+   "idf1": 0.583,
+   "cands": 44,
+   "fp_cands": 25
+  },
+  "S2_a20": {
+   "cand_per_actor": 3.0,
+   "mixed": 0,
+   "idf1": 0.598,
+   "cands": 13,
+   "fp_cands": 5
+  },
+  "S3_a20": {
+   "cand_per_actor": 5.57,
+   "mixed": 0,
+   "idf1": 0.703,
+   "cands": 64,
+   "fp_cands": 28
+  },
+  "S4_a20": {
+   "cand_per_actor": 5.5,
+   "mixed": 8,
+   "idf1": 0.567,
+   "cands": 45,
+   "fp_cands": 21
+  }
+ }
+}
