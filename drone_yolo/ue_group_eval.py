@@ -8,6 +8,10 @@ ue_group_eval.py — 후보 묶기 규칙 비교 (10-15 G · 덤프 = ue_group_d
     veto_k     추적기가 붙이려는 후보가 좌표상 문 × veto_k 보다 멀면 붙이지 않음 (None = 끔)
     motion     후보 속도 (최근 두 위치) 로 지금 위치 예측 · 놓친 시간만큼 문을 걷는 속도 1.5 m/s × dt 만큼 넓힘
     merge_late 좌표 없던 후보가 처음 좌표를 얻을 때 문 안의 다른 후보가 있으면 그쪽으로 합침
+    app        외형 특징 (10-15 R · ue_reid_feats.py) — None · "hist" (색) · "dino" (DINOv2) · "both"
+    app_veto   외형 거리가 이보다 크면 그 후보에 붙이지 않음 (추적 키 · 좌표 짝 모두)
+    app_w      좌표 짝 비용에 외형 거리 가중 (거리/문 + app_w × 외형)
+    regain     외형 거리가 이보다 작으면 문을 regain_k 배로 넓힘 (오래 놓친 뒤 다시 잇기)
     pend_k     좌표 「보류」 탐지 (기울기 · 자세 변화 · 발끝 끝) 도 계산된 위치가 있으면 **같은 사람 판단에만** 씀 · 오차 σ × pend_k (보고 · 후보 위치 평균엔 안 씀) · None = 끔
   지표 (UE 정답 배우 기준)
     사람당 후보 · 섞인 후보 (두 배우가 각각 5장 이상) · 후보 IDF1 (배우 ↔ 후보 1:1 · 겹친 장 수)
@@ -29,10 +33,11 @@ def metres(a, b, c, d):
 
 
 class Cand:
-    __slots__ = ("cid", "lat", "lon", "sig", "last_t", "last_box", "hist", "root")
+    __slots__ = ("cid", "lat", "lon", "sig", "last_t", "last_box", "hist", "root", "ah", "ad")
 
     def __init__(self, cid, t):
         self.cid, self.lat, self.lon, self.sig, self.last_t, self.last_box, self.hist, self.root = cid, None, None, None, t, None, [], None
+        self.ah, self.ad = None, None                                     # 외형 이동 평균 (색 히스토그램 · DINOv2)
 
 
 def iou(a, b):
@@ -67,7 +72,27 @@ class Registry:
                 return c.lat + dn * dt / K, c.lon + de * dt / (K * math.cos(math.radians(c.lat)))
         return c.lat, c.lon
 
-    def gate(self, c, sig, t):
+    def adist(self, c, d):
+        """외형 거리 0~1 (없으면 None)"""
+        mode, a = self.c.get("app"), d.get("app")
+        if not mode or a is None or c.ah is None:
+            return None
+        h = float(np.sqrt(max(0.0, 1.0 - float(np.sum(np.sqrt(c.ah * a[0]))))))       # 바타차리야
+        e = float(1.0 - np.dot(c.ad, a[1]) / max(np.linalg.norm(c.ad), 1e-6)) / 2   # (1 − cos)/2
+        return {"hist": h, "dino": e, "both": (h + e) / 2}[mode]
+
+    def app_ok(self, c, d):
+        x = self.adist(c, d)
+        return x is None or not self.c.get("app_veto") or x <= self.c["app_veto"]
+
+    def gate(self, c, sig, t, d=None):
+        if d is not None and self.c.get("regain"):
+            x = self.adist(c, d)
+            if x is not None and x <= self.c["regain"]:
+                return self._gate(c, sig, t) * self.c.get("regain_k", 2.0)
+        return self._gate(c, sig, t)
+
+    def _gate(self, c, sig, t):
         s1, s2 = (c.sig or sig), sig
         g = self.c["gate_k"] * ((s1 + s2) if self.c["gate_mode"] == "sum" else math.hypot(s1, s2))
         g = max(self.c["min_gate"], g)
@@ -79,8 +104,13 @@ class Registry:
         la, lo = self.pred(c, t)
         return metres(la, lo, geo[1], geo[2])
 
-    def attach(self, c, t, box, geo):
+    def attach(self, c, t, box, geo, app=None):
         c = self.root(c)
+        if app is not None and self.c.get("app"):
+            if c.ah is None:
+                c.ah, c.ad = app[0].copy(), app[1].copy()
+            else:
+                c.ah, c.ad = 0.8 * c.ah + 0.2 * app[0], 0.8 * c.ad + 0.2 * app[1]
         first_geo = c.lat is None and geo is not None
         c.last_t, c.last_box = t, box
         if geo is not None:
@@ -124,10 +154,12 @@ class Registry:
             k = tcand.get(d["tkey"]) if d["tkey"] else None
             k = self.root(k) if k is not None else None
             gm = self.mg(d)
+            if k is not None and k.last_t != t and id(k) not in used and not self.app_ok(k, d):
+                free.append(i); continue
             if k is not None and k.last_t != t and id(k) not in used:
                 if self.c["veto_k"] and gm is not None and k.lat is not None and self.dist(k, gm, t) > self.c["veto_k"] * self.gate(k, max(gm[3]), t):
                     free.append(i); continue
-                out[i] = self.attach(k, t, d["box"], g); used.add(id(out[i]))
+                out[i] = self.attach(k, t, d["box"], g, d.get("app")); used.add(id(out[i]))
             else:
                 free.append(i)
         geo_i = [i for i in free if self.mg(dets[i]) is not None]
@@ -137,13 +169,14 @@ class Registry:
             for a, i in enumerate(geo_i):
                 g = self.mg(dets[i])
                 for b, c in enumerate(cands):
-                    dd = self.dist(c, g, t)
-                    if dd <= self.gate(c, max(g[3]), t):
-                        M[a, b] = dd
+                    dd = self.dist(c, g, t); gt = self.gate(c, max(g[3]), t, dets[i])
+                    if dd <= gt and self.app_ok(c, dets[i]):
+                        x = self.adist(c, dets[i])
+                        M[a, b] = dd / gt + (self.c.get("app_w", 0.0) * x if x is not None else 0.0)
             for a, b in zip(*linear_sum_assignment(M)):
                 if M[a, b] < 1e6:
                     i = geo_i[a]; gi = dets[i]["geo"] if dets[i]["geo"] and dets[i]["geo"][0] == "OK" else None
-                    out[i] = self.attach(cands[b], t, dets[i]["box"], gi); used.add(id(out[i]))
+                    out[i] = self.attach(cands[b], t, dets[i]["box"], gi, dets[i].get("app")); used.add(id(out[i]))
         for i in free:                                                # ③ 남은 것 — 지금 worker 와 같은 순서 (좌표 → 화면 IoU → 새 후보)
             if out[i] is not None:
                 continue
@@ -156,25 +189,29 @@ class Registry:
                     if c.root is not None or c.lat is None or c.last_t == t or id(c) in used:
                         continue
                     dd = self.dist(c, gm, t)
-                    if dd <= self.gate(c, max(gm[3]), t) and (best is None or dd < best[0]):
+                    if dd <= self.gate(c, max(gm[3]), t, d) and self.app_ok(c, d) and (best is None or dd < best[0]):
                         best = (dd, c)
                 m = best[1] if best else None
             if m is None:
                 best = None
                 for c in self.items:
-                    if c.root is None and c.last_box is not None and 0 < t - c.last_t <= 1.0 and id(c) not in used:
+                    if c.root is None and c.last_box is not None and 0 < t - c.last_t <= 1.0 and id(c) not in used and self.app_ok(c, d):
                         o = iou(d["box"], c.last_box)
                         if o >= 0.3 and (best is None or o > best[0]):
                             best = (o, c)
                 m = best[1] if best else None
-            out[i] = self.attach(m if m is not None else self.new(t), t, d["box"], g); used.add(id(out[i]))
+            out[i] = self.attach(m if m is not None else self.new(t), t, d["box"], g, d.get("app")); used.add(id(out[i]))
         for i, d in enumerate(dets):
             if d["tkey"]:
                 tcand[d["tkey"]] = out[i]
         return out
 
 
-def evaluate(dump, cfg):
+def evaluate(dump, cfg, feats=None):
+    if feats is not None:
+        for f, ff in zip(dump["frames"], feats):
+            for d, a in zip(f["dets"], ff):
+                d["app"] = a
     reg, tcand = Registry(cfg), {}
     obs = []                                                          # (배우, 후보 객체)
     n_vis = 0
@@ -204,8 +241,19 @@ def evaluate(dump, cfg):
 BASECFG = dict(min_gate=3.0, gate_k=3.0, gate_mode="sum", joint=False, veto_k=None, motion=False, merge_late=False, pend_k=None)
 
 
+_CACHE = {}
+
+
+def load(r):
+    if r not in _CACHE:
+        d = pickle.loads((BASE / "runs_state" / f"group_{r}.pkl").read_bytes())
+        fp = BASE / "runs_state" / f"reid_{r}.pkl"
+        _CACHE[r] = (d, pickle.loads(fp.read_bytes())["feats"] if fp.exists() else None)
+    return _CACHE[r]
+
+
 def run_all(runs, cfg):
-    res = {r: evaluate(pickle.loads((BASE / "runs_state" / f"group_{r}.pkl").read_bytes()), cfg) for r in runs}
+    res = {r: evaluate(load(r)[0], cfg, load(r)[1]) for r in runs}
     agg = {"cand_per_actor": round(float(np.mean([v["cand_per_actor"] for v in res.values()])), 2),
            "mixed": sum(v["mixed"] for v in res.values()), "idf1": round(float(np.mean([v["idf1"] for v in res.values()])), 3)}
     return agg, res

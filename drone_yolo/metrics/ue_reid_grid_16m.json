@@ -1,0 +1,669 @@
+{
+ "base": {
+  "cand_per_actor": 4.41,
+  "mixed": 14,
+  "idf1": 0.592
+ },
+ "top": [
+  {
+   "agg": {
+    "cand_per_actor": 3.17,
+    "mixed": 10,
+    "idf1": 0.651
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "hist",
+    "app_veto": null,
+    "app_w": 0.0,
+    "regain": 0.2,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.17,
+    "mixed": 10,
+    "idf1": 0.651
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "hist",
+    "app_veto": null,
+    "app_w": 0.0,
+    "regain": 0.2,
+    "regain_k": 4.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.21,
+    "mixed": 10,
+    "idf1": 0.651
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "hist",
+    "app_veto": null,
+    "app_w": 0.0,
+    "regain": null,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.21,
+    "mixed": 10,
+    "idf1": 0.651
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "dino",
+    "app_veto": null,
+    "app_w": 0.0,
+    "regain": null,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.21,
+    "mixed": 10,
+    "idf1": 0.651
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "dino",
+    "app_veto": 0.5,
+    "app_w": 0.0,
+    "regain": null,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.21,
+    "mixed": 10,
+    "idf1": 0.651
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "dino",
+    "app_veto": 0.6,
+    "app_w": 0.0,
+    "regain": null,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.21,
+    "mixed": 10,
+    "idf1": 0.651
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "both",
+    "app_veto": null,
+    "app_w": 0.0,
+    "regain": null,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 2.8,
+    "mixed": 9,
+    "idf1": 0.649
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "both",
+    "app_veto": null,
+    "app_w": 0.5,
+    "regain": 0.2,
+    "regain_k": 4.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.21,
+    "mixed": 9,
+    "idf1": 0.647
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "hist",
+    "app_veto": null,
+    "app_w": 0.0,
+    "regain": 0.3,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.63,
+    "mixed": 12,
+    "idf1": 0.647
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "dino",
+    "app_veto": null,
+    "app_w": 0.5,
+    "regain": 0.3,
+    "regain_k": 4.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.63,
+    "mixed": 12,
+    "idf1": 0.647
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "dino",
+    "app_veto": 0.5,
+    "app_w": 0.5,
+    "regain": 0.3,
+    "regain_k": 4.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.63,
+    "mixed": 12,
+    "idf1": 0.647
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "dino",
+    "app_veto": 0.6,
+    "app_w": 0.5,
+    "regain": 0.3,
+    "regain_k": 4.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 2.8,
+    "mixed": 9,
+    "idf1": 0.644
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "both",
+    "app_veto": null,
+    "app_w": 0.5,
+    "regain": null,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 2.8,
+    "mixed": 9,
+    "idf1": 0.644
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "both",
+    "app_veto": null,
+    "app_w": 0.5,
+    "regain": 0.2,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.17,
+    "mixed": 9,
+    "idf1": 0.644
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "both",
+    "app_veto": null,
+    "app_w": 0.0,
+    "regain": 0.2,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.39,
+    "mixed": 9,
+    "idf1": 0.644
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "both",
+    "app_veto": 0.6,
+    "app_w": 1.0,
+    "regain": null,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.36,
+    "mixed": 10,
+    "idf1": 0.642
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "both",
+    "app_veto": 0.6,
+    "app_w": 1.0,
+    "regain": 0.2,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.36,
+    "mixed": 10,
+    "idf1": 0.642
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "both",
+    "app_veto": 0.6,
+    "app_w": 1.0,
+    "regain": 0.2,
+    "regain_k": 4.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.43,
+    "mixed": 9,
+    "idf1": 0.639
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "dino",
+    "app_veto": 0.4,
+    "app_w": 0.5,
+    "regain": 0.2,
+    "regain_k": 4.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.12,
+    "mixed": 11,
+    "idf1": 0.638
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "dino",
+    "app_veto": 0.4,
+    "app_w": 0.0,
+    "regain": null,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.4,
+    "mixed": 11,
+    "idf1": 0.636
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "dino",
+    "app_veto": null,
+    "app_w": 0.5,
+    "regain": 0.3,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.4,
+    "mixed": 11,
+    "idf1": 0.636
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "dino",
+    "app_veto": 0.5,
+    "app_w": 0.5,
+    "regain": 0.3,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.4,
+    "mixed": 11,
+    "idf1": 0.636
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "dino",
+    "app_veto": 0.6,
+    "app_w": 0.5,
+    "regain": 0.3,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 4.41,
+    "mixed": 14,
+    "idf1": 0.636
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "dino",
+    "app_veto": 0.3,
+    "app_w": 0.0,
+    "regain": 0.3,
+    "regain_k": 4.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.38,
+    "mixed": 7,
+    "idf1": 0.632
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "both",
+    "app_veto": 0.6,
+    "app_w": 0.0,
+    "regain": 0.3,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 2.83,
+    "mixed": 11,
+    "idf1": 0.629
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "both",
+    "app_veto": null,
+    "app_w": 0.5,
+    "regain": 0.3,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.38,
+    "mixed": 9,
+    "idf1": 0.629
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "both",
+    "app_veto": 0.6,
+    "app_w": 0.0,
+    "regain": null,
+    "regain_k": 2.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.24,
+    "mixed": 8,
+    "idf1": 0.626
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "both",
+    "app_veto": 0.6,
+    "app_w": 0.0,
+    "regain": 0.2,
+    "regain_k": 4.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.14,
+    "mixed": 11,
+    "idf1": 0.625
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "both",
+    "app_veto": null,
+    "app_w": 0.0,
+    "regain": 0.3,
+    "regain_k": 4.0
+   }
+  },
+  {
+   "agg": {
+    "cand_per_actor": 3.58,
+    "mixed": 14,
+    "idf1": 0.625
+   },
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "app": "dino",
+    "app_veto": 0.4,
+    "app_w": 0.5,
+    "regain": 0.3,
+    "regain_k": 2.0
+   }
+  }
+ ]
+}
