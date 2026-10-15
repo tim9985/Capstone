@@ -4,3 +4,4 @@ test_kr_edge,"v7,v7_r2,v7_r3,v7_r4","v12_f91,v12_f92",0.013,0.0058,0.0183,61,차
 test_kr_edge,"v7,v7_r2,v7_r3,v7_r4","v12_f91_swa,v12_f92_swa",0.013,0.0058,0.0183,61,차이 있음
 test_kr_edge,"v12_f91,v12_f92","v12_f91_swa,v12_f92_swa",-0.0,-0.0,0.0,61,구분 안 됨
 test_kr_edge,"v7,v7_r2,v7_r3,v7_r4","v12_f91_swa,v12_f92_swa,v12_f93_swa",0.013,0.0058,0.0183,61,차이 있음
+test_kr_edge,"v12_f91_swa,v12_f92_swa,v12_f93_swa","v13o_f91_swa,v13o_f92_swa",-0.0053,-0.006,-0.0,61,차이 있음
