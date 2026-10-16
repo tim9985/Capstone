@@ -1,0 +1,5 @@
+# v15pl_f91 (10-15 C) — v12_f91 와 같은 95 % 목록 · 선생 3개 의사 라벨 추가 · val = val_v12
+train: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/train_v15pl_f91.txt
+val: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/val_v12.txt
+nc: 1
+names: ['person']
