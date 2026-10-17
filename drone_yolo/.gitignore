@@ -75,3 +75,4 @@ ue_posture/
 runs_live/
 ue_flight/
 ue_geo/
+yolo26s-reid.onnx
