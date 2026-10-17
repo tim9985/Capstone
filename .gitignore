@@ -34,3 +34,6 @@ drone_yolo/data/raw/VisDrone/
 
 # 자세 미세조정 모델 · 확률 (10-03)
 drone_yolo/runs_posture/
+
+# 발표 자료 모음 (디관 사진 · 사람이 찍힌 결과 이미지) — 공개 저장소에 올리지 않음
+/발표자료/
