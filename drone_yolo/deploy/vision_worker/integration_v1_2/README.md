@@ -21,6 +21,7 @@ v1.1 규칙 (해시 선검사 · CUDA 필수 · 빠진 자세를 채우지 않�
 | 추적 · 상태 (요구조자) | `state: null` | BoT-SORT · 누움 점수 · 무동작 · 등급 (`/models/posture.json`) | posture.json 빼기 |
 | 인상착의 비교 | 없음 | `appearance.match` (프레임 `appearance_query` 또는 `/scratch/appearance_query.json`) | 조건 없으면 안 함 |
 | 좌표 보고 | 항상 PENDING | 기본 **그대로 PENDING** · `VISION_GEO_CLAIMS=1` 이면 pose 로 계산한 **worker 주장 VALID** (오차 타원 · method `FOOT_RAY_POSE…`) | 기본 꺼짐 |
+| 이착륙 프레임 (10-17) | 후보 생김 (기체 그림자 오탐) | 지면 위 **`VISION_MIN_AGL_M` (기본 10 m)** 아래 프레임은 탐지만 · 후보 · 관측 없음 (REAL `SKIPPED` 사유 `LOW_ALTITUDE …` · SIM stats `low_altitude_frames`) · 지면 위 높이 = MSL 고도 − DEM 또는 AGL 고도 · **근거 없으면 막지 않음** · SIM · REAL 둘 다 | `VISION_MIN_AGL_M=0` |
 
 - 좌표 계산 = `frame-pose/1.0` 의 `camera_attitude` (CAMERA_FRD_TO_NED) + `camera_position_ned` 로 발끝 광선 · 짐벌 · 마운트 가정 없음
 - 카메라 자세가 없으면 `body_attitude × mount` · 둘 다 없으면 보류 (`CAMERA_ATTITUDE_MISSING`)
@@ -31,6 +32,7 @@ v1.1 규칙 (해시 선검사 · CUDA 필수 · 빠진 자세를 채우지 않�
   - UE AirSim 고도 = PlayerStart MSL 71.429 − NED z (로컬 실측) = MSL 이 맞음 → **연결기 · settings 고칠 것 없음** · 팀 DEM = UE 지형 (사람 13명 발밑 차 −0.08 ~ −0.10 m)
   - UE 8회 정답 박스: 수평 오차 중앙 **0.34~0.61 m · P95 0.6~2.3 m** (장면 상수 평지 0.65~1.43 · 2.1~4.2 m)
   - SIM 시연에서 좌표를 보이려면 `VISION_DEM_DIR` + `VISION_GEO_CLAIMS=1` (SIM 만 · worker 주장 · 공식 승격은 백엔드 규칙대로)
+- **이착륙 후보 막기 (10-17)**: 노트북 Kumoh 경로 녹화 298장 재생 (`tests_low_agl.py`) — 낮은 구간 관측 28 → **0** · 높은 구간 34 → 34 (그대로) · 후보 23 → 20 · DEM 없으면 298장 모두 「근거 없음」 → 막지 않음 (지금과 같음) · REAL `SKIPPED` 본문 계약 통과 · 남은 오탐 = 화면 위 가장자리 잘린 나무 줄기
 - REAL 은 `clock_domain` UTC · DEVICE_MONOTONIC 만 · `sync_error_ms` > 50 ms 보류 · `missing_reasons` 는 사유로 (카메라 자세를 직접 받았으면 마운트 · 짐벌 항목은 막지 않음)
 
 ## 2. 파일

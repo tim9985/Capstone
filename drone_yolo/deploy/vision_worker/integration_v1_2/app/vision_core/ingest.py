@@ -120,6 +120,9 @@ class IngestWorker:
         self.pgeo = PoseGeo(CameraModel(hfov_deg=float(os.environ.get("VISION_HFOV_DEG", "80.2"))), environment=env,
                             allow_agl_flat=os.environ.get("VISION_GEO_AGL_FLAT", "0") == "1",
                             dem=DemTiles(dem_dir) if dem_dir and Path(dem_dir).exists() else None)
+        # 10-17 · 이착륙 (지면 위 VISION_MIN_AGL_M 아래) 프레임은 탐지만 하고 후보 · 관측을 만들지 않는다 (기체 그림자 오탐 · UE 녹화 29/29) · 0 = 끔
+        self.min_agl = float(os.environ.get("VISION_MIN_AGL_M", "10"))
+        self.last_skip = None
 
     def query_for(self, fr):
         """찾는 사람 외형 조건 — 프레임 기록의 appearance_query · 없으면 파일 {임무 id 또는 "*": 조건}"""
@@ -169,13 +172,39 @@ class IngestWorker:
         t = datetime.fromisoformat(fr["capture_at"].replace("Z", "+00:00")).timestamp() if fr.get("capture_at") else time.time()
         obs = self.observe(mid, img, t, fr.get("pose"), query=self.query_for(fr))
         self.stats["frames"] += 1; self.stats["observations"] += len(obs)
+        if self.last_skip:
+            return self.result_body(fr, "SKIPPED", reason=self.last_skip)
         return self.result_body(fr, "DONE", obs)
 
+    def frame_agl(self, pose):
+        """지면 위 높이 · (m, 근거) — ① 고도 기준 MSL + DEM → 고도 − DEM(기체 위경도) ② 고도 기준 AGL → 그 값 ③ 그 밖 → (None, "UNKNOWN")
+        동기 오차는 보지 않는다 (높이 판단만 · UE 녹화 333 ms 에 수직 차 ≤ 0.4 m)"""
+        g = (pose or {}).get("geographic") or {}
+        if g.get("altitude_m") is None:
+            return None, "UNKNOWN"
+        if g.get("altitude_datum") == "MSL" and self.pgeo.dem and g.get("latitude") is not None:
+            z = self.pgeo.dem(float(g["latitude"]), float(g["longitude"]))
+            return (float(g["altitude_m"]) - z, "MSL-DEM") if z is not None else (None, "UNKNOWN")
+        if g.get("altitude_datum") == "AGL":
+            return float(g["altitude_m"]), "AGL"
+        return None, "UNKNOWN"
+
     def observe(self, mid, img, t, pose, query=None, upload_crops=None):
-        """디코드된 한 장 → 관측 목록 (vision-ingest/1.0) · SIM worker 도 이걸 쓴다 (프레임은 시각 순서로)"""
+        """디코드된 한 장 → 관측 목록 (vision-ingest/1.0) · SIM worker 도 이걸 쓴다 (프레임은 시각 순서로)
+        이착륙 프레임 (지면 위 min_agl 아래) 은 [] · self.last_skip = "LOW_ALTITUDE …" (REAL 은 SKIPPED 사유 · SIM 은 stats)"""
         H, W = img.shape[:2]
         upload_crops = self.upload_crops if upload_crops is None else upload_crops
         boxes, confs, ms = self.det.detect(img)
+        self.last_skip = None
+        if self.min_agl > 0:
+            agl, basis = self.frame_agl(pose)
+            if agl is None:                               # 근거 없음 → 막지 않는다 (미탐이 오탐보다 나쁨)
+                self.stats["agl_unknown_frames"] = self.stats.get("agl_unknown_frames", 0) + 1
+            elif agl < self.min_agl:
+                self.stats["low_altitude_frames"] = self.stats.get("low_altitude_frames", 0) + 1
+                self.stats["low_altitude_dets"] = self.stats.get("low_altitude_dets", 0) + len(boxes)
+                self.last_skip = f"LOW_ALTITUDE agl={agl:.1f}m<{self.min_agl:g} basis={basis}"
+                return []
         order = np.argsort(-confs)[:128]
         reg = self.reg.setdefault(mid, CandidateRegistry(mid))
         stats = frame_stats(img) if len(order) else None
