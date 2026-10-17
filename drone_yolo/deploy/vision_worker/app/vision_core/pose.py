@@ -150,9 +150,11 @@ class PoseGeo:
         r += [f"SOURCE:{m}" for m in pose.get("missing_reasons") or []]
         return r
 
-    @staticmethod
-    def _unused(reason, source):
-        """카메라 자세를 직접 받았으면 마운트 · 짐벌 · 기체 자세가 빠진 것은 계산에 안 쓰므로 막지 않는다 (사유는 남김)"""
+    def _unused(self, reason, source):
+        """카메라 자세를 직접 받았으면 마운트 · 짐벌 · 기체 자세가 빠진 것은 계산에 안 쓰므로 막지 않는다 (사유는 남김)
+        SIM 의 UTC_SIM_MAPPING_UNVERIFIED (SIM 시계 → UTC 대응 미검증) 는 기하 계산에 안 쓰므로 막지 않는다 (10-17 노트북 녹화)"""
+        if self.env == "SIM" and reason == "SOURCE:UTC_SIM_MAPPING_UNVERIFIED":
+            return True
         return source == "camera_attitude" and reason.startswith("SOURCE:") and any(k in reason.upper() for k in ("MOUNT", "GIMBAL", "BODY_ATTITUDE"))
 
     def locate(self, bbox, pose):

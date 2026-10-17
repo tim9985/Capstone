@@ -49,6 +49,9 @@ def unit():
     check("POSE_CLOCK" in PoseGeo(cam, terrain=lambda n, e: 0.0, environment="REAL").locate(box, base)["reasons"], "REAL 은 SIM 시계 거부")
     check(any(r.startswith("SYNC_ERROR") for r in PoseGeo(cam, terrain=lambda n, e: 0.0).locate(box, dict(base, sync_error_ms=80.0))["reasons"]), "동기 오차 보류")
     check(PoseGeo(cam).locate(box, None)["reasons"] == ["POSE_MISSING"], "pose 없음")
+    ub = dict(base, missing_reasons=["MOUNT_CALIBRATION_UNVERIFIED", "UTC_SIM_MAPPING_UNVERIFIED"])
+    check(PoseGeo(cam, terrain=lambda n, e: 0.0).locate(box, ub)["status"] == "CLAIM", "SIM 시계 → UTC 미검증은 SIM 에서 막지 않음")
+    check(PoseGeo(cam, terrain=lambda n, e: 0.0, environment="REAL").locate(box, dict(ub, clock_domain="UTC"))["status"] == "PENDING", "REAL 은 그대로 막음")
 
 
 def ue(run):

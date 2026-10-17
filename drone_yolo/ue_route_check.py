@@ -32,7 +32,7 @@ def q(v, p):
 def get_pose(rec):
     for k in ("pose", "frame_pose", "frame-pose"):
         if isinstance(rec.get(k), dict):
-            return rec[k]
+            return {"schema_version": "frame-pose/1.0", **rec[k]}     # 백엔드 FramePose 기본값과 같게 (연결기 원본엔 없음)
     return rec if rec.get("schema_version") else None
 
 

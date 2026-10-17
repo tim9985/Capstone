@@ -1,46 +1,46 @@
 {
  "REAL_claims0": {
-  "frames_validated": 746,
-  "cand_per_actor": 4.12,
-  "obs_with_state": 1202,
+  "frames_validated": 60,
+  "cand_per_actor": 2.0,
+  "obs_with_state": 16,
   "geo_valid": 0,
   "geo_err_p50_m": null,
   "geo_err_p95_m": null,
-  "query_green_match": 0.5,
-  "query_other_match": 0.001,
-  "backend": "tensorrt"
+  "query_green_match": null,
+  "query_other_match": 0.0,
+  "backend": "pytorch_fp16"
  },
  "REAL_claims1": {
-  "frames_validated": 746,
-  "cand_per_actor": 4.12,
-  "obs_with_state": 1202,
-  "geo_valid": 1179,
-  "geo_err_p50_m": 1.0,
-  "geo_err_p95_m": 2.59,
-  "query_green_match": 0.5,
-  "query_other_match": 0.001,
-  "backend": "tensorrt"
+  "frames_validated": 60,
+  "cand_per_actor": 2.0,
+  "obs_with_state": 16,
+  "geo_valid": 16,
+  "geo_err_p50_m": 1.33,
+  "geo_err_p95_m": 2.85,
+  "query_green_match": null,
+  "query_other_match": 0.0,
+  "backend": "pytorch_fp16"
  },
  "SIM_claims0": {
-  "frames_validated": 746,
-  "cand_per_actor": 4.12,
+  "frames_validated": 60,
+  "cand_per_actor": 2.0,
   "obs_with_state": 0,
   "geo_valid": 0,
   "geo_err_p50_m": null,
   "geo_err_p95_m": null,
   "query_green_match": null,
   "query_other_match": null,
-  "backend": "tensorrt"
+  "backend": "pytorch_fp16"
  },
  "SIM_claims1": {
-  "frames_validated": 746,
-  "cand_per_actor": 4.12,
+  "frames_validated": 60,
+  "cand_per_actor": 2.0,
   "obs_with_state": 0,
-  "geo_valid": 1179,
-  "geo_err_p50_m": 1.0,
-  "geo_err_p95_m": 2.59,
+  "geo_valid": 16,
+  "geo_err_p50_m": 1.33,
+  "geo_err_p95_m": 2.85,
   "query_green_match": null,
   "query_other_match": null,
-  "backend": "tensorrt"
+  "backend": "pytorch_fp16"
  }
 }
