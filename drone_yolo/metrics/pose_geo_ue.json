@@ -1,10 +1,118 @@
-[
- {
-  "run": "S1_a16",
-  "boxes": 1087,
-  "claim": 1086,
-  "err_p50_m": 1.09,
-  "err_p95_m": 3.77,
-  "old_path_diff_max_m": 0.0069
- }
-]
+{
+ "flat_scene": [
+  {
+   "run": "S1_a16",
+   "boxes": 1087,
+   "claim": 1086,
+   "err_p50_m": 1.09,
+   "err_p95_m": 3.77,
+   "old_path_diff_max_m": 0.0069
+  },
+  {
+   "run": "S3_a16",
+   "boxes": 2612,
+   "claim": 2605,
+   "err_p50_m": 1.43,
+   "err_p95_m": 4.13,
+   "old_path_diff_max_m": 0.007
+  },
+  {
+   "run": "S4_a16",
+   "boxes": 1381,
+   "claim": 1381,
+   "err_p50_m": 1.07,
+   "err_p95_m": 2.65,
+   "old_path_diff_max_m": 0.007
+  },
+  {
+   "run": "S1_a20",
+   "boxes": 1359,
+   "claim": 1358,
+   "err_p50_m": 1.11,
+   "err_p95_m": 4.19,
+   "old_path_diff_max_m": 0.0069
+  },
+  {
+   "run": "S3_a20",
+   "boxes": 3288,
+   "claim": 3280,
+   "err_p50_m": 1.15,
+   "err_p95_m": 3.29,
+   "old_path_diff_max_m": 0.007
+  },
+  {
+   "run": "S4_a20",
+   "boxes": 1853,
+   "claim": 1852,
+   "err_p50_m": 0.89,
+   "err_p95_m": 2.14,
+   "old_path_diff_max_m": 0.0071
+  },
+  {
+   "run": "S2_a16",
+   "boxes": 364,
+   "claim": 364,
+   "err_p50_m": 0.72,
+   "err_p95_m": 2.79,
+   "old_path_diff_max_m": 0.0067
+  },
+  {
+   "run": "S2_a20",
+   "boxes": 517,
+   "claim": 517,
+   "err_p50_m": 0.65,
+   "err_p95_m": 2.73,
+   "old_path_diff_max_m": 0.0068
+  }
+ ],
+ "dem_msl": [
+  {
+   "run": "S1_a16",
+   "claim": 362,
+   "err_p50_m": 0.39,
+   "err_p95_m": 0.99
+  },
+  {
+   "run": "S3_a16",
+   "claim": 870,
+   "err_p50_m": 0.35,
+   "err_p95_m": 2.3
+  },
+  {
+   "run": "S4_a16",
+   "claim": 457,
+   "err_p50_m": 0.37,
+   "err_p95_m": 0.73
+  },
+  {
+   "run": "S1_a20",
+   "claim": 454,
+   "err_p50_m": 0.36,
+   "err_p95_m": 1.0
+  },
+  {
+   "run": "S3_a20",
+   "claim": 1097,
+   "err_p50_m": 0.34,
+   "err_p95_m": 1.82
+  },
+  {
+   "run": "S4_a20",
+   "claim": 619,
+   "err_p50_m": 0.34,
+   "err_p95_m": 0.61
+  },
+  {
+   "run": "S2_a16",
+   "claim": 121,
+   "err_p50_m": 0.61,
+   "err_p95_m": 1.94
+  },
+  {
+   "run": "S2_a20",
+   "claim": 173,
+   "err_p50_m": 0.48,
+   "err_p95_m": 1.83
+  }
+ ]
+}

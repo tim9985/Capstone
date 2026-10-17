@@ -91,9 +91,39 @@ def ue(run):
     return res
 
 
+def ue_dem(run, tiles="/home/se/sandboxes/drone-dev/data/spatial/campus-04e1b46514574d45/terrain"):
+    """UE 기록 → frame-pose/1.0 (고도 MSL = PlayerStart 71.429 − NED z · AirSim gps 와 같은 식 · 10-17 로컬 실측) → DEM 좌표 vs 정답"""
+    from app.vision_core.pose import DemTiles
+    d = HERE.parents[1] / "ue_flight" / run
+    if not (d / "flight.csv").exists() or not Path(tiles).exists():
+        return None
+    meta = json.load(open(d / "run.json")); actors = json.load(open(d / "actors.json"))
+    gt = {json.loads(l)["frame"]: json.loads(l)["boxes"] for l in open(d / "boxes.jsonl")}
+    pg = PoseGeo(CameraModel(hfov_deg=float(meta["hfov_deg"])), dem=DemTiles(tiles))
+    err = []
+    for r in list(csv.DictReader(open(d / "flight.csv")))[::3]:
+        R = rotation_body_to_ned(0.0, D(float(r["cam_pitch_rel_body_deg"])), D(float(r["yaw_deg"])))
+        pose = {"schema_version": "frame-pose/1.0", "clock_domain": "SIM", "missing_reasons": [],
+                "geographic": {"latitude": float(r["lat"]), "longitude": float(r["lon"]), "altitude_m": 71.429 - float(r["ned_z"]), "altitude_datum": "MSL"},
+                "camera_attitude": {"reference": "CAMERA_FRD_TO_NED", "quaternion": matrix_to_quat(R)}}
+        for n, g in (gt.get(r["frame"]) or {}).items():
+            if g["cut"] or g["px"] < 300 or n not in actors:
+                continue
+            a = pg.locate(g["bb"], pose)
+            if a["status"] != "CLAIM":
+                continue
+            tr = g.get("ned") or actors[n]["ned"]
+            err.append(math.hypot(float(r["ned_x"]) + a["north_m"] - tr[0], float(r["ned_y"]) + a["east_m"] - tr[1]))
+    err.sort()
+    res = {"run": run, "claim": len(err), "err_p50_m": round(err[len(err) // 2], 2), "err_p95_m": round(err[int(.95 * len(err))], 2)}
+    print(f"  DEM {run}: 주장 {res['claim']} · 오차 중앙 {res['err_p50_m']} · P95 {res['err_p95_m']} m (method +DEM)")
+    return res
+
+
 if __name__ == "__main__":
     unit(); print(f"단위 {ok} 통과")
     runs = sys.argv[1:] or ["S1_a16", "S3_a16", "S4_a16", "S1_a20", "S3_a20", "S4_a20", "S2_a16", "S2_a20"]
     out = [x for x in (ue(r) for r in runs) if x]
+    out_dem = [x for x in (ue_dem(r) for r in runs) if x]
     if out:
-        p = HERE.parents[1] / "metrics" / "pose_geo_ue.json"; p.write_text(json.dumps(out, ensure_ascii=False, indent=1)); print("→", p)
+        p = HERE.parents[1] / "metrics" / "pose_geo_ue.json"; p.write_text(json.dumps({"flat_scene": out, "dem_msl": out_dem}, ensure_ascii=False, indent=1)); print("→", p)

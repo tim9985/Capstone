@@ -27,6 +27,10 @@ v1.1 규칙 (해시 선검사 · CUDA 필수 · 빠진 자세를 채우지 않�
 - 지면: 지형 함수가 없으면 보류 (`GROUND_UNKNOWN`)
   - `VISION_GEO_AGL_FLAT=1` 이고 `altitude_datum = AGL` 이면 「기체 아래와 같은 높이」 가정으로 계산
   - 이때 가정은 method 에 `+LOCAL_FLAT_AGL` 로 표시
+- **지면 = DEM (10-17 추가)**: `VISION_DEM_DIR` = Terrarium 타일 폴더 (z16 · 팀 캠퍼스 `drone-dev/data/spatial/campus-…/terrain` · 읽기 전용 마운트) · pose 고도 기준이 **MSL** 이면 광선 × DEM (method `FOOT_RAY_POSE+DEM`)
+  - UE AirSim 고도 = PlayerStart MSL 71.429 − NED z (로컬 실측) = MSL 이 맞음 → **연결기 · settings 고칠 것 없음** · 팀 DEM = UE 지형 (사람 13명 발밑 차 −0.08 ~ −0.10 m)
+  - UE 8회 정답 박스: 수평 오차 중앙 **0.34~0.61 m · P95 0.6~2.3 m** (장면 상수 평지 0.65~1.43 · 2.1~4.2 m)
+  - SIM 시연에서 좌표를 보이려면 `VISION_DEM_DIR` + `VISION_GEO_CLAIMS=1` (SIM 만 · worker 주장 · 공식 승격은 백엔드 규칙대로)
 - REAL 은 `clock_domain` UTC · DEVICE_MONOTONIC 만 · `sync_error_ms` > 50 ms 보류 · `missing_reasons` 는 사유로 (카메라 자세를 직접 받았으면 마운트 · 짐벌 항목은 막지 않음)
 
 ## 2. 파일

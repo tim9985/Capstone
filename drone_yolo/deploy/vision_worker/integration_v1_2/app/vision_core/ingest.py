@@ -7,7 +7,7 @@ ingest.py — 비전 worker v1.2 핵심 (vision-ingest/1.0 · 통합 v1.1 판 �
     · 인상착의 비교 — 프레임 기록의 appearance_query 또는 /scratch/appearance_query.json {임무 id | "*": 조건} → appearance.match
     · frame-pose/1.0 → 발끝 광선 좌표 (pose.py) — VISION_GEO_CLAIMS=1 일 때만 VALID 주장 (공식 승격은 백엔드) · 기본은 PENDING + 사유 (계산 사유 덧붙임)
       VISION_GEO_GROUPING=1 (기본) — 보고는 PENDING 이어도 후보 묶기에는 계산한 위치를 씀 (내부용)
-      지면: VISION_GEO_AGL_FLAT=1 이면 AGL 고도로 「기체 아래와 같은 높이」 가정 (method 에 LOCAL_FLAT_AGL) · 아니면 지형 함수가 있어야 함
+      지면: VISION_DEM_DIR (Terrarium 타일 · 고도 MSL) 이 있으면 DEM (평지 가정 없음 · method +DEM) · VISION_GEO_AGL_FLAT=1 이면 AGL 고도로 「기체 아래와 같은 높이」 가정 (method 에 LOCAL_FLAT_AGL) · 아니면 지형 함수가 있어야 함
 
   규격  schema/vision_backend_handoff_v1.0.md · openapi-vision.json (백엔드 drone_backend/real.py 로 동작 확인)
   흐름  GET /internal/v1/frames (미분석 · 최대 20) → GET …/{fid}/input (SHA-256 확인) → 디코드
@@ -33,7 +33,7 @@ import numpy as np
 from .appearance import AppearanceComparator
 from .color import ColorAccumulator, ColorProfiler, frame_stats
 from .geo import CameraModel
-from .pose import PoseGeo, as_registry_geo, geo_json
+from .pose import DemTiles, PoseGeo, as_registry_geo, geo_json
 from .registry import CandidateRegistry
 
 SCHEMA = "vision-ingest/1.0"
@@ -116,8 +116,10 @@ class IngestWorker:
         self.geo_claims = (os.environ.get("VISION_GEO_CLAIMS", "0") == "1") if geo_claims is None else bool(geo_claims)
         # 보고는 PENDING 이어도 후보 묶기 (같은 사람 판단) 에는 pose 로 계산한 위치를 쓴다 — 밖으로 내보내는 좌표가 아님 (UE: 사람당 후보 10~19 → 4~5)
         self.geo_grouping = os.environ.get("VISION_GEO_GROUPING", "1") == "1"
+        dem_dir = os.environ.get("VISION_DEM_DIR")                          # 10-17 · Terrarium 타일 (z16) · 읽기 전용 · 고도 기준 MSL 일 때 광선 × DEM
         self.pgeo = PoseGeo(CameraModel(hfov_deg=float(os.environ.get("VISION_HFOV_DEG", "80.2"))), environment=env,
-                            allow_agl_flat=os.environ.get("VISION_GEO_AGL_FLAT", "0") == "1")
+                            allow_agl_flat=os.environ.get("VISION_GEO_AGL_FLAT", "0") == "1",
+                            dem=DemTiles(dem_dir) if dem_dir and Path(dem_dir).exists() else None)
 
     def query_for(self, fr):
         """찾는 사람 외형 조건 — 프레임 기록의 appearance_query · 없으면 파일 {임무 id 또는 "*": 조건}"""

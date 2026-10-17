@@ -4,12 +4,14 @@ pose.py — 백엔드 프레임 pose (`frame-pose/1.0` · 통합 v1.1 · 10-14) 
   규칙 (통합 v1.1): 빠진 자세를 0° · 짐벌 −45° · 평지로 **채우지 않는다** — 없으면 PENDING + 사유
     · 카메라 방향: camera_attitude (CAMERA_FRD_TO_NED) 그대로 · 없으면 body_attitude × mount (CAMERA_FRD_TO_BODY_FRD) · 둘 다 없으면 보류
       카메라 FRD = x 광축 · y 오른쪽 · z 아래 = geo.CameraModel.ray 와 같은 축
-    · 지면 높이: terrain(north, east) (NED · 아래 +) 가 주어지면 그것 · 없으면 보류 (GROUND_UNKNOWN)
+    · 지면 높이: ① dem(위도, 경도) → MSL (DemTiles · Terrarium PNG 타일 · 10-17) 이고 고도 기준이 MSL 이면 광선 × DEM
+                 ② terrain(north, east) (NED · 아래 +) ③ 없으면 보류 (GROUND_UNKNOWN)
       AGL 고도만 있으면 「기체 바로 아래와 같은 높이」 를 **가정으로 명시**하고 계산 (assumptions 에 LOCAL_FLAT_AGL) — allow_agl_flat=True 일 때만
     · 동기 오차 sync_error_ms > MAX_SYNC_MS · 시계 (REAL 은 UTC · DEVICE_MONOTONIC 만) · missing_reasons 는 그대로 사유로
   결과는 공식 위치가 아니라 worker 주장 — status "CLAIM" (계산됨) | "PENDING" · 공식 승격은 백엔드 (물리 검증 뒤)
 """
 import math
+from pathlib import Path
 
 from .coord_transform import ned_to_gps
 from .geo import ErrorModel, GeoResolver
@@ -67,6 +69,39 @@ def camera_rotation(pose):
     return None, None, "CAMERA_ATTITUDE_MISSING"
 
 
+class DemTiles:
+    """Terrarium PNG 타일 (z/x/y.png · 높이 = R·256 + G + B/256 − 32768 m · MSL) → dem(위도, 경도) · 쌍선형
+    팀 캠퍼스 타일 (drone-dev spatial · z16) = UE KumohMinimal 지형 (사람 발밑 차 −0.08 ~ −0.10 m · 10-17)"""
+
+    def __init__(self, root, zoom=16):
+        self.root, self.z, self.cache = Path(root), zoom, {}
+
+    def _tile(self, tx, ty):
+        if (tx, ty) not in self.cache:
+            from PIL import Image
+            import numpy as np
+            p = self.root / str(self.z) / str(tx) / f"{ty}.png"
+            if not p.exists():
+                self.cache[(tx, ty)] = None
+            else:
+                im = np.asarray(Image.open(p).convert("RGB"), dtype=np.float64)
+                self.cache[(tx, ty)] = im[..., 0] * 256 + im[..., 1] + im[..., 2] / 256 - 32768
+        return self.cache[(tx, ty)]
+
+    def __call__(self, lat, lon):
+        n = 2 ** self.z
+        X = (lon + 180) / 360 * n * 256 - 0.5
+        Y = (1 - math.log(math.tan(math.radians(lat)) + 1 / math.cos(math.radians(lat))) / math.pi) / 2 * n * 256 - 0.5
+        x0, y0 = int(math.floor(X)), int(math.floor(Y)); fx, fy = X - x0, Y - y0
+        vals = []
+        for xx, yy in ((x0, y0), (x0 + 1, y0), (x0, y0 + 1), (x0 + 1, y0 + 1)):
+            t = self._tile(xx // 256, yy // 256)
+            if t is None:
+                return None                                            # 타일 밖 → 보류
+            vals.append(t[yy % 256, xx % 256])
+        return (vals[0] * (1 - fx) + vals[1] * fx) * (1 - fy) + (vals[2] * (1 - fx) + vals[3] * fx) * fy
+
+
 class _Claim:
     """registry.CandidateRegistry 가 읽는 꼴 (geo.Result 와 같은 이름) — 좌표 주장이 있을 때만"""
     def __init__(self, c):
@@ -94,8 +129,8 @@ def geo_json(c, claims=True):
 class PoseGeo:
     """frame-pose/1.0 → 발끝 광선 × 지면 (worker 주장)"""
 
-    def __init__(self, cam, terrain=None, allow_agl_flat=False, environment="SIM", err=None):
-        self.cam, self.terrain, self.allow_agl_flat, self.env = cam, terrain, allow_agl_flat, environment
+    def __init__(self, cam, terrain=None, allow_agl_flat=False, environment="SIM", err=None, dem=None):
+        self.cam, self.terrain, self.allow_agl_flat, self.env, self.dem = cam, terrain, allow_agl_flat, environment, dem
         self._ell = GeoResolver(cam, err or ErrorModel())                 # 오차 타원 식만 빌림 (geo.GeoResolver.ellipse)
 
     def check(self, pose):
@@ -138,7 +173,13 @@ class PoseGeo:
         if d[2] <= 1e-6:
             out["reasons"].append("RAY_ABOVE_HORIZON"); return out
         cp, geo = pose.get("camera_position_ned"), pose.get("geographic") or {}
-        if self.terrain and cp:                                        # 지형 함수 (NED down · 지면 높이 = −down)
+        if self.dem and geo.get("altitude_datum") == "MSL":                # 광선 × DEM (위경도 · MSL) — 평지 가정 없음
+            hit = self._dem_hit(d, float(geo["latitude"]), float(geo["longitude"]), float(geo["altitude_m"]))
+            if hit is None:
+                out["reasons"].append("NO_DEM_HIT"); return out
+            n, e, h = hit
+            out["assumptions"].append("DEM")
+        elif self.terrain and cp:                                        # 지형 함수 (NED down · 지면 높이 = −down)
             hit = self._terrain_hit(d, cp)
             if hit is None:
                 out["reasons"].append("NO_TERRAIN_HIT"); return out
@@ -164,6 +205,34 @@ class PoseGeo:
         if not out["reasons"] and out["lat"] is not None:
             out["status"] = "CLAIM"
         return out
+
+    def _dem_hit(self, d, lat, lon, alt, step_m=0.5):
+        """광선 (방향 d · 시작 = 기체 위경도 · MSL 고도) 을 수평 step_m 씩 → 처음 DEM 아래 → 이분법 · (north, east, 지면 위 높이)"""
+        hz = math.hypot(d[0], d[1])
+        if hz < 1e-9:
+            g = self.dem(lat, lon)
+            return (0.0, 0.0, alt - g) if g is not None and alt > g else None
+        k = d[2] / hz
+        mn = math.radians(1) * 6378137.0; me = mn * math.cos(math.radians(lat))
+        def above(s):
+            g = self.dem(lat + s * d[0] / hz / mn, lon + s * d[1] / hz / me)
+            return None if g is None else alt - k * s - g
+        a0 = above(0.0)
+        if a0 is None or a0 <= 0:
+            return None
+        s0, s = 0.0, step_m
+        while s <= MAX_RANGE_M * 1.5:
+            a = above(s)
+            if a is None:
+                return None
+            if a <= 0:
+                lo, hi = s0, s
+                for _ in range(25):
+                    mid = (lo + hi) / 2
+                    lo, hi = (mid, hi) if (above(mid) or 0) > 0 else (lo, mid)
+                return hi * d[0] / hz, hi * d[1] / hz, a0
+            s0, s = s, s + step_m
+        return None
 
     def _terrain_hit(self, d, cp, step_m=1.0):
         """카메라 위치에서 광선을 수평 step_m 씩 → 처음 지면 아래 → 이분법 · 반환 = 카메라 기준 (north, east) 오프셋"""
