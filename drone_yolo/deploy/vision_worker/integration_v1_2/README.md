@@ -33,6 +33,7 @@ v1.1 규칙 (해시 선검사 · CUDA 필수 · 빠진 자세를 채우지 않�
   - UE 8회 정답 박스: 수평 오차 중앙 **0.34~0.61 m · P95 0.6~2.3 m** (장면 상수 평지 0.65~1.43 · 2.1~4.2 m)
   - SIM 시연에서 좌표를 보이려면 `VISION_DEM_DIR` + `VISION_GEO_CLAIMS=1` (SIM 만 · worker 주장 · 공식 승격은 백엔드 규칙대로)
 - **이착륙 후보 막기 (10-17)**: 노트북 Kumoh 경로 녹화 298장 재생 (`tests_low_agl.py`) — 낮은 구간 관측 28 → **0** · 높은 구간 34 → 34 (그대로) · 후보 23 → 20 · DEM 없으면 298장 모두 「근거 없음」 → 막지 않음 (지금과 같음) · REAL `SKIPPED` 본문 계약 통과 · 남은 오탐 = 화면 위 가장자리 잘린 나무 줄기
+- **나무 줄기 오탐 (10-17 T · 기본 끔)**: `VISION_EDGE_MARGIN_PX=3` → 영상 경계에 닿은 박스는 탐지 · 추적만 · 후보 · 관측 없음 (stats `edge_dets`) · 재생: Kumoh 경로 (사람 없음) 관측 34 → 1 · UE 8장면 배우 48/48 그대로 · 첫 관측 +0.5 s · 박스 재현율 −4.8 %p · `VISION_EMIT_CONFIRMED_ONLY=1` (확정 후보만) 은 0.5 s 간격에서 사람 관측까지 막아 **기각** (`tests_edge_confirm.py`)
 - REAL 은 `clock_domain` UTC · DEVICE_MONOTONIC 만 · `sync_error_ms` > 50 ms 보류 · `missing_reasons` 는 사유로 (카메라 자세를 직접 받았으면 마운트 · 짐벌 항목은 막지 않음)
 
 ## 2. 파일

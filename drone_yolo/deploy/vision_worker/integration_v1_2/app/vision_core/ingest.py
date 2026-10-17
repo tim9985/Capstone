@@ -124,6 +124,9 @@ class IngestWorker:
         self.min_agl = float(os.environ.get("VISION_MIN_AGL_M", "10"))
         self.stats["dem_loaded"] = self.pgeo.dem is not None              # 상태 파일 worker-status.json 에 보임 (마운트 확인용)
         self.stats["min_agl_m"] = self.min_agl
+        # 10-17 T · 나무 줄기 오탐 (route_132434) — 기본 끔 · 판정 _학습 큐 「10-17 T」
+        self.edge_margin = float(os.environ.get("VISION_EDGE_MARGIN_PX", "0"))       # >0 → 경계에 닿은 박스는 후보 · 관측 안 만듦
+        self.emit_confirmed_only = os.environ.get("VISION_EMIT_CONFIRMED_ONLY", "0") == "1"   # 후보 확정 (3 s 안 2장) 뒤부터 관측
         self.last_skip = None
 
     def query_for(self, fr):
@@ -229,6 +232,10 @@ class IngestWorker:
         frame_reasons = self.pgeo.check(pose)
         obs = []
         for (i, (x1, y1, x2, y2)), (tkey, st) in zip(kept, states):
+            m = self.edge_margin
+            if m > 0 and (x1 <= m or y1 <= m or x2 >= W - m or y2 >= H - m):   # 가장자리에 잘린 박스 (추적은 위에서 이미 갱신)
+                self.stats["edge_dets"] = self.stats.get("edge_dets", 0) + 1
+                continue
             claim = self.pgeo.locate((x1, y1, x2, y2), pose) if pose else {"status": "PENDING", "reasons": frame_reasons, "source": None}
             g = as_registry_geo(claim) if (self.geo_claims or self.geo_grouping) else None
             known = self.tcand.get((mid, tkey)) if tkey else None
@@ -238,6 +245,9 @@ class IngestWorker:
                 cand, ev = reg.update(t, (x1, y1, x2, y2), float(confs[i]), g)
             if tkey:
                 self.tcand[(mid, tkey)] = cand
+            if self.emit_confirmed_only and not cand.confirmed:   # 한 장짜리 보류 — 후보 기억에는 남김
+                self.stats["unconfirmed_dets"] = self.stats.get("unconfirmed_dets", 0) + 1
+                continue
             key = (mid, cand.cid)
             cid = self.uid.setdefault(key, str(uuid.uuid4()))
             self.rev[cid] = self.rev.get(cid, 0) + 1
@@ -247,7 +257,7 @@ class IngestWorker:
                 cand.color.add(self.colorer.profile(img, (x1, y1, x2, y2), stats=stats))
             col = cand.color.result() if cand.color else {"status": "undetermined", "top": [], "n_obs": 0}
             snap = None
-            if upload_crops and ev in ("new", "best"):
+            if upload_crops and (ev in ("new", "best") or (self.emit_confirmed_only and ev == "confirmed")):   # 보류 뒤 첫 관측에도 사진
                 pad = max(8, int(0.3 * max(x2 - x1, y2 - y1)))
                 crop = img[max(0, int(y1) - pad):int(y2) + pad, max(0, int(x1) - pad):int(x2) + pad]
                 ok, enc = cv2.imencode(".jpg", crop, [cv2.IMWRITE_JPEG_QUALITY, 90]) if crop.size else (False, None)
