@@ -122,6 +122,8 @@ class IngestWorker:
                             dem=DemTiles(dem_dir) if dem_dir and Path(dem_dir).exists() else None)
         # 10-17 · 이착륙 (지면 위 VISION_MIN_AGL_M 아래) 프레임은 탐지만 하고 후보 · 관측을 만들지 않는다 (기체 그림자 오탐 · UE 녹화 29/29) · 0 = 끔
         self.min_agl = float(os.environ.get("VISION_MIN_AGL_M", "10"))
+        self.stats["dem_loaded"] = self.pgeo.dem is not None              # 상태 파일 worker-status.json 에 보임 (마운트 확인용)
+        self.stats["min_agl_m"] = self.min_agl
         self.last_skip = None
 
     def query_for(self, fr):

@@ -21,7 +21,7 @@ v1.1 규칙 (해시 선검사 · CUDA 필수 · 빠진 자세를 채우지 않�
 | 추적 · 상태 (요구조자) | `state: null` | BoT-SORT · 누움 점수 · 무동작 · 등급 (`/models/posture.json`) | posture.json 빼기 |
 | 인상착의 비교 | 없음 | `appearance.match` (프레임 `appearance_query` 또는 `/scratch/appearance_query.json`) | 조건 없으면 안 함 |
 | 좌표 보고 | 항상 PENDING | 기본 **그대로 PENDING** · `VISION_GEO_CLAIMS=1` 이면 pose 로 계산한 **worker 주장 VALID** (오차 타원 · method `FOOT_RAY_POSE…`) | 기본 꺼짐 |
-| 이착륙 프레임 (10-17) | 후보 생김 (기체 그림자 오탐) | 지면 위 **`VISION_MIN_AGL_M` (기본 10 m)** 아래 프레임은 탐지만 · 후보 · 관측 없음 (REAL `SKIPPED` 사유 `LOW_ALTITUDE …` · SIM stats `low_altitude_frames`) · 지면 위 높이 = MSL 고도 − DEM 또는 AGL 고도 · **근거 없으면 막지 않음** · SIM · REAL 둘 다 | `VISION_MIN_AGL_M=0` |
+| 이착륙 프레임 (10-17) | 후보 생김 (기체 그림자 오탐) | 지면 위 **`VISION_MIN_AGL_M` (기본 10 m)** 아래 프레임은 탐지만 · 후보 · 관측 없음 (REAL `SKIPPED` 사유 `LOW_ALTITUDE …` · SIM stats `low_altitude_frames` · 상태 파일 `dem_loaded` · `min_agl_m`) · 지면 위 높이 = MSL 고도 − DEM 또는 AGL 고도 · **근거 없으면 막지 않음** · SIM · REAL 둘 다 | `VISION_MIN_AGL_M=0` |
 
 - 좌표 계산 = `frame-pose/1.0` 의 `camera_attitude` (CAMERA_FRD_TO_NED) + `camera_position_ned` 로 발끝 광선 · 짐벌 · 마운트 가정 없음
 - 카메라 자세가 없으면 `body_attitude × mount` · 둘 다 없으면 보류 (`CAMERA_ATTITUDE_MISSING`)
