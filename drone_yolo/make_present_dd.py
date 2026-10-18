@@ -138,7 +138,13 @@ PICK = [  # (사진 번호, 파일 이름, 제목, 부제) — 10-17 고름 · �
 
 if __name__ == "__main__":
     out = Path(sys.argv[1]); out.mkdir(parents=True, exist_ok=True)
-    if len(sys.argv) > 2 and sys.argv[2] == "pick":          # 이미 돌린 results.json 으로 고른 장면만 그림
+    if len(sys.argv) > 2 and sys.argv[2] == "all":           # 21장 전부 (사용자가 직접 고름)
+        res = json.load(open(Path(sys.argv[3]) / "results.json"))["images"]
+        for r in res:
+            n = len(r["dets"]); hs = [d["h_px"] for d in r["dets"]]
+            composite(r, out, f"디관_{r['idx'] + 1:02d}.jpg", f"디지털관 {r['idx'] + 1:02d} · 탐지 박스 {n}개",
+                      f"키 {min(hs):.0f}~{max(hs):.0f} px · 확신도 ≥ 0.20 · 빨간 박스 = 아래 확대 칸 (확신도 상위 8) · 원본 {r['file']}" if n else None)
+    elif len(sys.argv) > 2 and sys.argv[2] == "pick":          # 이미 돌린 results.json 으로 고른 장면만 그림
         res = json.load(open(Path(sys.argv[3]) / "results.json"))["images"]
         for i, name, title, sub in PICK:
             composite(res[i], out, name, title, sub)

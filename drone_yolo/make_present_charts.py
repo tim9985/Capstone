@@ -89,6 +89,51 @@ def chart_interval(out):
     fig.savefig(out / "11_프레임간격_영향.png"); plt.close(fig)
 
 
+
+def chart_threshold(out):
+    """12 임계값 — 낮추면 덜 놓치고 (미탐 ↓) 헛것이 늘어난다 (오탐 ↑) · 운용 0.20 = 오탐 기준을 지키는 가장 낮은 값 근처"""
+    d = json.load(open(BASE / "metrics" / "thr_sweep.json"))["v12_f91_swa"]
+    th = [0.05, 0.075, 0.1, 0.125, 0.15, 0.175, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6]
+    S3, S4 = "#1baf7a", "#4a3aa7"
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(13, 6.4), dpi=150)
+    for ax in (a1, a2):
+        ax.axvline(0.20, color="#0b0b0b", lw=1.6, zorder=4)
+        ax.grid(color=GRID, lw=0.8, zorder=0); ax.set_axisbelow(True)
+        for s in ("top", "right"):
+            ax.spines[s].set_visible(False)
+        ax.set_xlim(0.04, 0.62); ax.set_xlabel("임계값 (확신도 문턱)", fontsize=13)
+    lines = (("test_v2", "숲", S1), ("test_obl", "비스듬 45°", S2), ("test_kr", "한국 수직", S3))
+    for key, name, col in lines:
+        miss = [1 - d[key][str(t)]["R"] for t in th]
+        a1.plot(th, miss, color=col, lw=2.2, marker="o", ms=6, zorder=3)
+        a1.text(0.605, miss[-1], name, color="#0b0b0b", fontsize=12, va="center")
+    a1.set_ylim(0, 0.5); a1.set_ylabel("놓친 사람 비율 (1 - 재현율)", fontsize=13)
+    a1.set_title("미탐 — 임계값을 높일수록 더 놓친다", fontsize=14, loc="left")
+    m20 = 1 - d["test_v2"]["0.2"]["R"]
+    a1.annotate(f"숲 0.20 에서 {m20:.2f}", (0.20, m20), (0.30, m20 - 0.12), fontsize=11.5,
+                arrowprops=dict(arrowstyle="-", color=INK2, lw=1))
+    for key, name, col, field in (("test_auair", "도로 장면 (사람 없음)", S4, "음성장_오탐"), ("test_v2", "숲 장면 (사람 없음)", S1, "음성장_오탐")):
+        fp = [d[key][str(t)][field] for t in th]
+        a2.plot(th, fp, color=col, lw=2.2, marker="o", ms=6, zorder=3, label=name)
+    a2.legend(loc="upper right", frameon=False, fontsize=12)
+    a2.axvspan(0.175, 0.62, color="#eeede7", zorder=0)
+    a2.text(0.40, 1.55, "오탐 기준 통과 구간", fontsize=11.5, color=INK2, ha="center")
+    a2.axhline(1.0, color=S2, lw=1.4, zorder=2)
+    a2.text(0.045, 1.03, "기준 ≤ 1 건/장", color=S2, fontsize=11.5, va="bottom")
+    a2.set_ylim(0, 3.2); a2.set_ylabel("사람 없는 장면 오탐 (건/장)", fontsize=13)
+    a2.set_title("오탐 — 임계값을 낮출수록 헛것이 는다", fontsize=14, loc="left")
+    for ax in (a1, a2):
+        ax.text(0.205, ax.get_ylim()[1] * 0.97, "운용 0.20", fontsize=12, fontweight="bold", va="top")
+    fig.suptitle("임계값 = 「이 확신도 이상이면 사람」 · 우리는 오탐 기준을 지키는 가장 낮은 값으로 → 놓치지 않는 쪽", x=0.02, ha="left",
+                 fontsize=16, fontweight="bold", y=0.985)
+    fig.text(0.02, 0.012, "← 낮추면: 덜 놓침 · 헛것 ↑      높이면: 헛것 ↓ · 더 놓침 →      ·  추적은 0.15 부터 시작 · 상태 · 상의 색은 후보를 지우지 않고 순위만 바꿈 (미탐 우선)\n"
+             "v12_f91_swa · 장소 분리 평가셋 (숲 WiSARD · 비스듬 Okutama · 한국 AI-Hub) · 도로 = AU-AIR 사람 없는 장 795장 · 숲 = 사람 없는 장 41장",
+             fontsize=10.5, color=INK2, va="bottom")
+    fig.subplots_adjust(left=0.06, right=0.93, top=0.84, bottom=0.17, wspace=0.28)
+    fig.savefig(out / "12_임계값_미탐_오탐.png"); plt.close(fig)
+
+
+
 if __name__ == "__main__":
     out = Path(sys.argv[1]); out.mkdir(parents=True, exist_ok=True)
-    chart_ap50(out); chart_interval(out)
+    chart_ap50(out); chart_interval(out); chart_threshold(out)
