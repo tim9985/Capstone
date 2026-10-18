@@ -130,10 +130,56 @@ def chart_threshold(out):
              "v12_f91_swa · 장소 분리 평가셋 (숲 WiSARD · 비스듬 Okutama · 한국 AI-Hub) · 도로 = AU-AIR 사람 없는 장 795장 · 숲 = 사람 없는 장 41장",
              fontsize=10.5, color=INK2, va="bottom")
     fig.subplots_adjust(left=0.06, right=0.93, top=0.84, bottom=0.17, wspace=0.28)
-    fig.savefig(out / "12_임계값_미탐_오탐.png"); plt.close(fig)
+    fig.savefig(out / "12b_임계값_미탐_오탐.png"); plt.close(fig)
+
+
+def chart_recall(out):
+    """12 재현율이 올라갔다 — ① 같은 오탐 기준 (도로 ≤ 1 건/장) 에서 이전 모델 vs 지금 ② 임계값을 낮춰 재현율을 올림"""
+    D = json.load(open(BASE / "metrics" / "thr_sweep.json"))
+    old, new = D["soup_v7r2"], D["v12_f91_swa"]
+    ot, nt = "0.4", "0.2"                                   # 도로 오탐 ≤ 1 을 지키는 운용값 (soup_v7r2 0.40 · v12 0.20)
+    cats = ["숲", "비스듬 45°", "한국 수직", "숲 · 작은 사람\n(키 24 px 미만)"]
+    o = [old["test_v2"][ot]["R"], old["test_obl"][ot]["R"], old["test_kr"][ot]["R"], old["test_v2"][ot]["크기별_R"]["0-24"]]
+    n = [new["test_v2"][nt]["R"], new["test_obl"][nt]["R"], new["test_kr"][nt]["R"], new["test_v2"][nt]["크기별_R"]["0-24"]]
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(14, 6.6), dpi=150, gridspec_kw={"width_ratios": [1.25, 1]})
+    w = 0.36
+    for i in range(4):
+        a1.bar(i - w / 2 - 0.01, o[i], w, color="#b9b8b2", zorder=3)
+        a1.bar(i + w / 2 + 0.01, n[i], w, color=S1, zorder=3)
+        a1.text(i - w / 2 - 0.01, o[i] + 0.015, f"{o[i]:.2f}", ha="center", fontsize=12, color=INK2)
+        a1.text(i + w / 2 + 0.01, n[i] + 0.015, f"{n[i]:.2f}", ha="center", fontsize=13, fontweight="bold")
+        a1.text(i, max(o[i], n[i]) + 0.09, f"+{(n[i] - o[i]) * 100:.1f} %p", ha="center", fontsize=13, color=S1, fontweight="bold")
+    a1.set_xticks(range(4)); a1.set_xticklabels(cats, fontsize=12.5); a1.set_ylim(0, 1.18); a1.set_ylabel("재현율 (찾은 사람 비율)", fontsize=13)
+    from matplotlib.patches import Patch
+    a1.legend(handles=[Patch(color="#b9b8b2", label="이전 모델 soup_v7r2 · 임계값 0.40"), Patch(color=S1, label="지금 v12_f91_swa · 임계값 0.20")],
+              loc="upper left", frameon=False, fontsize=12, ncol=1)
+    a1.set_title("같은 오탐 기준 (사람 없는 도로 ≤ 1 건/장) 에서 재현율", fontsize=14, loc="left")
+    th = [0.1, 0.125, 0.15, 0.175, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.6]
+    for key, name, col in (("test_v2", "숲", S1), ("test_obl", "비스듬 45°", S2)):
+        r = [new[key][str(t)]["R"] for t in th]
+        a2.plot(th, r, color=col, lw=2.4, marker="o", ms=6, zorder=3)
+        a2.text(0.605, r[-1], name, fontsize=12, va="center")
+        r5, r2 = new[key]["0.5"]["R"], new[key]["0.2"]["R"]
+        a2.plot([0.5], [r5], marker="o", ms=13, mfc="white", mec=col, mew=2.5, zorder=4)
+        a2.plot([0.2], [r2], marker="o", ms=13, color=col, zorder=4)
+        a2.text(0.33 if key == "test_v2" else 0.215, r2 + 0.018 if key == "test_v2" else r2 - 0.07, f"0.5 → 0.2 : +{(r2 - r5) * 100:.1f} %p", color=col, fontsize=12.5, fontweight="bold")
+    a2.axvline(0.20, color="#0b0b0b", lw=1.6); a2.text(0.205, 0.80, "운용 0.20", fontsize=12, fontweight="bold", va="top")
+    a2.axvspan(0.09, 0.175, color="#f3e3da", zorder=0); a2.text(0.132, 0.515, "오탐\n기준 초과", fontsize=11, color=S2, ha="center")
+    a2.set_xlim(0.09, 0.62); a2.set_ylim(0.50, 0.81); a2.set_xlabel("임계값 (확신도 문턱)", fontsize=13); a2.set_ylabel("재현율", fontsize=13)
+    a2.set_title("임계값을 낮춰 재현율을 올림 (v12)", fontsize=14, loc="left")
+    for ax in (a1, a2):
+        ax.grid(axis="y", color=GRID, lw=0.8, zorder=0); ax.set_axisbelow(True)
+        for sp in ("top", "right"):
+            ax.spines[sp].set_visible(False)
+    fig.suptitle("재현율이 올라갔다 — 데이터 재구성 + 임계값 0.20 (오탐 기준을 지키는 가장 낮은 값)", x=0.02, ha="left", fontsize=16, fontweight="bold", y=0.985)
+    fig.text(0.02, 0.012, "임계값 = 「이 확신도 이상이면 사람」 · 낮추면 덜 놓치지만 헛것이 는다 → 도로 오탐 ≤ 1 건/장을 지키는 가장 낮은 값을 고름 (이전 모델은 0.40 까지 올려야 했음)\n"
+             "장소 분리 평가셋 (숲 WiSARD · 비스듬 Okutama · 한국 AI-Hub) · IoU 0.5 · 타일 4장 · 경계 합치기",
+             fontsize=10.5, color=INK2, va="bottom")
+    fig.subplots_adjust(left=0.06, right=0.95, top=0.85, bottom=0.17, wspace=0.22)
+    fig.savefig(out / "12_재현율_향상.png"); plt.close(fig)
 
 
 
 if __name__ == "__main__":
     out = Path(sys.argv[1]); out.mkdir(parents=True, exist_ok=True)
-    chart_ap50(out); chart_interval(out); chart_threshold(out)
+    chart_ap50(out); chart_interval(out); chart_threshold(out); chart_recall(out)
