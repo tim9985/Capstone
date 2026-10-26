@@ -4,7 +4,7 @@ make_present_video.py — 발표 자료용 디지털관 영상 추론 결과 (10
   영상 프레임마다 배포 탐지 (v12_f91_swa · TensorRT · 0.20 · 타일 4장) + 추적 (worker state.StateTracker · BoT-SORT · 문턱 0.15)
   → 박스 · 추적 번호 · 확신도 · 위쪽 띠 (모델 · 탐지 ms · 사람 수) 를 그려 mp4 로 저장 (git 밖 · 발표자료 폴더)
   ⚠ 정답 라벨 없음 → 정성 예시 · 휴대폰으로 건물 높은 층에서 찍은 영상 (드론 아님)
-실행  /home/se/miniconda3/envs/drone/bin/python make_present_video.py <출력 폴더> <영상 …>
+실행  /home/se/miniconda3/envs/drone/bin/python make_present_video.py <출력 폴더> [--start N] <영상 …>   (--start = 출력 번호 시작 · 기존 영상 안 덮음)
 """
 import sys, time
 from pathlib import Path
@@ -24,10 +24,10 @@ FONT = str(BASE.parent / "발표자료" / "_도구" / "NanumGothicBold.ttf")
 PAL = [(214, 120, 42), (52, 104, 235), (122, 175, 27), (164, 58, 232), (32, 160, 237), (72, 72, 227), (180, 105, 0), (60, 170, 160)]   # BGR
 
 
-def main(out, videos):
+def main(out, videos, start=1):
     det = PersonDetector(PACK / "best.pt", PACK / "best_trt11.3.0.99_RTX3090.engine", conf=0.20)
     f_big, f_sm = ImageFont.truetype(FONT, 34), ImageFont.truetype(FONT, 22)
-    for k, v in enumerate(videos, 1):
+    for k, v in enumerate(videos, start):
         cap = cv2.VideoCapture(str(v)); fps = cap.get(cv2.CAP_PROP_FPS) or 30
         W, H = int(cap.get(3)), int(cap.get(4))
         dst = out / f"디관_영상_{k:02d}_탐지.mp4"
@@ -62,4 +62,7 @@ def main(out, videos):
 
 if __name__ == "__main__":
     o = Path(sys.argv[1]); o.mkdir(parents=True, exist_ok=True)
-    main(o, [Path(p) for p in sys.argv[2:]])
+    a = sys.argv[2:]; st = 1
+    if a and a[0] == "--start":
+        st, a = int(a[1]), a[2:]
+    main(o, [Path(p) for p in a], st)
