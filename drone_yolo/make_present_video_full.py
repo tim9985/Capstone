@@ -34,6 +34,51 @@ COLOR_EVERY = 3        # 같은 추적의 상의 색 관측 간격 (장)
 MIN_OBS_SHOW = 3       # 누적 관측이 이만큼 모이면 색 표시
 
 
+TOP = 92               # 위쪽 띠 높이 (라벨이 띠에 안 들어가게)
+LINE_H = 21
+
+
+def _ov(a, b):
+    return max(0, min(a[2], b[2]) - max(a[0], b[0])) * max(0, min(a[3], b[3]) - max(a[1], b[1]))
+
+
+def rect_gap(a, b):
+    dx = max(b[0] - a[2], a[0] - b[2], 0); dy = max(b[1] - a[3], a[1] - b[3], 0)
+    return (dx * dx + dy * dy) ** 0.5
+
+
+def place(items, W, H, top, prev):
+    """라벨 자리 고르기 — 박스 둘레 자리 후보 (가까운 것부터) 중 비용이 가장 낮은 곳
+    비용 = 다른 라벨과 겹침 ×4 + 모든 사람 박스 (여백 6 px) 와 겹침 ×6 + 박스에서 거리 ×2 · 같은 추적의 앞 프레임 자리는 −250 (깜빡임 줄임)
+    prev = {추적 번호: 박스 왼쪽 아래 기준 라벨 위치} — 갱신한다"""
+    boxes = [(b[0] - 6, b[1] - 6, b[2] + 6, b[3] + 6) for b, *_ in items]
+    order = sorted(range(len(items)), key=lambda j: (items[j][3] is None, items[j][0][1]))   # 추적된 사람 먼저 · 위쪽부터
+    placed, res = [], [None] * len(items)
+    for j in order:
+        (x1, y1, x2, y2), col, lines, key, w, h = items[j]
+        cands = []
+        for dd in (6, 34, 70, 115, 170):
+            cands += [(x1 - 3, y2 + dd), (x1 - 3, y1 - dd - h), (x2 + dd, y1), (x1 - dd - w, y1),
+                      (x2 + dd, y2 + dd - h / 2), (x1 - dd - w, y2 + dd - h / 2), (x2 + dd, y1 - dd - h / 2), (x1 - dd - w, y1 - dd - h / 2)]
+        if key in prev:
+            cands.insert(0, (x1 + prev[key][0], y2 + prev[key][1]))
+        best = None
+        for c, (cx, cy) in enumerate(cands):
+            cx = min(max(cx, 0), W - w); cy = min(max(cy, top + 2), H - h)
+            r = (cx, cy, cx + w, cy + h)
+            cost = 4 * sum(_ov(r, q) for q in placed) + 6 * sum(_ov(r, q) for q in boxes) + 2 * rect_gap(r, (x1, y1, x2, y2))
+            if c == 0 and key in prev:
+                cost -= 250
+            if best is None or cost < best[0]:
+                best = (cost, r)
+        r = best[1]
+        placed.append(r)
+        if key:
+            prev[key] = (r[0] - x1, r[1] - y2)
+        res[j] = ((x1, y1, x2, y2), col, lines, key, (r[0], r[1], w, h))
+    return res
+
+
 def main(out, videos, start=1):
     det = PersonDetector(PACK / "best.pt", PACK / "best_trt11.3.0.99_RTX3090.engine", conf=0.20)
     prof = ColorProfiler()
@@ -43,7 +88,7 @@ def main(out, videos, start=1):
         W, H = int(cap.get(3)), int(cap.get(4))
         dst = out / f"디관_영상_{k:02d}_전체임무.mp4"
         wr = cv2.VideoWriter(str(dst), cv2.VideoWriter_fourcc(*"mp4v"), fps, (W, H))
-        trk = StateTracker(str(POSTURE)); acc = {}; i = 0; grades = {}
+        trk = StateTracker(str(POSTURE)); acc = {}; i = 0; grades = {}; lab_prev = {}
         while True:
             ok, fr = cap.read()
             if not ok:
@@ -53,7 +98,7 @@ def main(out, videos, start=1):
             stats = frame_stats(fr) if len(boxes) and i % COLOR_EVERY == 0 else None
             img = Image.fromarray(cv2.cvtColor(fr, cv2.COLOR_BGR2RGB))
             ov = Image.new("RGBA", img.size, (0, 0, 0, 0)); do = ImageDraw.Draw(ov)
-            do.rectangle([0, 0, W, 92], fill=(0, 0, 0, 150))
+            do.rectangle([0, 0, W, TOP], fill=(0, 0, 0, 150))
             d = ImageDraw.Draw(img)
             labels = []
             for b, c, (tid, s) in zip(boxes, confs, st or [(None, None)] * len(boxes)):
@@ -73,25 +118,32 @@ def main(out, videos, start=1):
                     if m["measured"]:
                         l2 += " · 이동" if m["moving"] else (f" · 정지 {m['still_s']}s" if m["still_s"] else " · 느림")
                 cres = acc[tid].result() if tid in acc else None
-                labels.append((x1, y1, x2, y2, col, g, l1, l2, cres))
+                labels.append((x1, y1, x2, y2, col, g, l1, l2, cres, str(tid).split(".")[0] if tid else None))
             img = Image.alpha_composite(img.convert("RGBA"), ov).convert("RGB"); d = ImageDraw.Draw(img)
-            for x1, y1, x2, y2, col, g, l1, l2, cres in labels:      # 라벨: 박스 아래 (위는 머리 · 사람 위로 겹침 줄임)
+            items = []
+            for x1, y1, x2, y2, col, g, l1, l2, cres, key in labels:
                 lines = [(f"{l1}  {g}" if g != "관찰 중" else l1, None)]
                 if l2:
                     lines.append((l2, None))
                 if cres and cres["status"] == "ok" and cres["n_obs"] >= MIN_OBS_SHOW:
                     lines.append((f"상의 {KO[cres['top'][0][0]]} {cres['top'][0][1]:.2f}", cres["top"][0][0]))
-                elif l1.startswith("#"):                          # 추적 중 · 상의 화소가 충분한 관측이 아직 3번 미만
+                elif key:                                        # 추적 중 · 상의 화소가 충분한 관측이 아직 3번 미만
                     lines.append(("상의 판정 중", None))
-                tw = max(d.textlength(t, font=f_lab) + (22 if sw else 0) for t, sw in lines) + 10
-                yy = y2 + 5; bx = min(max(x1 - 3, 0), W - tw)
-                d.rectangle([bx, yy, bx + tw, yy + 21 * len(lines) + 4], fill=(20, 20, 20))
-                d.rectangle([bx, yy, bx + 4, yy + 21 * len(lines) + 4], fill=col)
+                tw = max(d.textlength(t, font=f_lab) + (22 if sw else 0) for t, sw in lines) + 14
+                items.append(((x1, y1, x2, y2), col, lines, key, tw, LINE_H * len(lines) + 6))
+            for (x1, y1, x2, y2), col, lines, key, (lx, ly, lw, lh) in place(items, W, H, TOP, lab_prev):
+                gap = rect_gap((lx, ly, lx + lw, ly + lh), (x1, y1, x2, y2))
+                if gap > 10:                                     # 떨어진 라벨 → 박스와 연결선
+                    bx, by = min(max((lx + lw / 2), x1), x2), min(max((ly + lh / 2), y1), y2)
+                    qx, qy = min(max(bx, lx), lx + lw), min(max(by, ly), ly + lh)
+                    d.line([(bx, by), (qx, qy)], fill=col, width=2)
+                d.rectangle([lx, ly, lx + lw, ly + lh], fill=(20, 20, 20))
+                d.rectangle([lx, ly, lx + 4, ly + lh], fill=col)
                 for j, (t, sw) in enumerate(lines):
-                    tx = bx + 9
+                    tx = lx + 10
                     if sw:
-                        d.rectangle([tx, yy + 5 + 21 * j, tx + 15, yy + 20 + 21 * j], fill=SWATCH[sw], outline=(255, 255, 255)); tx += 22
-                    d.text((tx, yy + 3 + 21 * j), t, font=f_lab, fill=(255, 255, 255))
+                        d.rectangle([tx, ly + 6 + LINE_H * j, tx + 15, ly + 21 + LINE_H * j], fill=SWATCH[sw], outline=(255, 255, 255)); tx += 22
+                    d.text((tx, ly + 3 + LINE_H * j), t, font=f_lab, fill=(255, 255, 255))
             d.text((20, 8), f"사람 후보 {len(boxes)}", font=f_big, fill=(255, 255, 255))
             d.text((210, 15), f"탐지 v12_f91_swa · 임계값 0.20 · {ms:.0f} ms/장  |  추적 BoT-SORT  |  자세 = 박스 모양  |  움직임 = 카메라 움직임 뺀 속도  |  상의 색 12색 누적",
                    font=f_sm, fill=(235, 235, 235))
