@@ -1,0 +1,52 @@
+{
+ "cfg": {
+  "min_gate": 2.0,
+  "gate_k": 3.0,
+  "gate_mode": "rss",
+  "joint": true,
+  "veto_k": null,
+  "motion": false,
+  "merge_late": false,
+  "pend_k": 1.5,
+  "feat": "siglip_person",
+  "app": "dino",
+  "app_w": 0.25,
+  "regain": 0.15,
+  "regain_k": 2.0
+ },
+ "agg": {
+  "cand_per_actor": 3.83,
+  "mixed": 13,
+  "idf1": 0.645
+ },
+ "runs": {
+  "S1_a20": {
+   "cand_per_actor": 5.17,
+   "mixed": 6,
+   "idf1": 0.572,
+   "cands": 20,
+   "fp_cands": 10
+  },
+  "S2_a20": {
+   "cand_per_actor": 2.33,
+   "mixed": 0,
+   "idf1": 0.603,
+   "cands": 7,
+   "fp_cands": 1
+  },
+  "S3_a20": {
+   "cand_per_actor": 3.57,
+   "mixed": 2,
+   "idf1": 0.775,
+   "cands": 27,
+   "fp_cands": 14
+  },
+  "S4_a20": {
+   "cand_per_actor": 4.25,
+   "mixed": 5,
+   "idf1": 0.63,
+   "cands": 20,
+   "fp_cands": 8
+  }
+ }
+}

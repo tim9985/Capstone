@@ -9,7 +9,7 @@ state_worker_check.py — V4 판정: worker 상태 모듈 (app/vision_core/state
   --trackbox   원인 분리용 — 정답 맞추기에 추적기 (칼만) 박스 (연구 채점과 같음)
   --native     원인 분리용 — 추적 · 움직임 보정도 720p 원본 영상으로 (연구와 완전히 같은 조건)
   --fullframe  원인 분리용 — 탐지만 연구 방식 (720p 전체 화면 · imgsz 1280 · conf 0.15 · NMS 0.6 · FP16) · 박스 ×1.5 로 1080p 에 맞춰 같은 상태 모듈에 넣음
-실행: /home/se/miniconda3/envs/drone/bin/python state_worker_check.py --weights=runs_person/soup_v9x2/weights/best.pt --tag=v9x2 --posture=<posture.json> [--limit=1] [--fullframe]
+실행: /home/se/miniconda3/envs/drone/bin/python state_worker_check.py --weights=runs_person/soup_v9x2/weights/best.pt --tag=v9x2 --posture=<posture.json> [--conf=0.20] [--limit=1] [--fullframe]
 """
 import collections
 import glob
@@ -113,7 +113,7 @@ def main():
         from ultralytics import YOLO
         det = YOLO(wpath)
     else:
-        det = PersonDetector(wpath, conf=0.15)
+        det = PersonDetector(wpath, conf=float(arg("conf", 0.15)))   # --conf (10-30 · 배포 0.20)
     allS, stats, ms = [], collections.Counter(), []
     for v in B:
         S, stt, m = run(v, frame_dir[v], det, posture)

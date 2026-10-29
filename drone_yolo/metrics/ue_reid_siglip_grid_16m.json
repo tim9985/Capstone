@@ -1,0 +1,455 @@
+{
+ "base": {
+  "cand_per_actor": 4.41,
+  "mixed": 14,
+  "idf1": 0.592
+ },
+ "R": {
+  "cand_per_actor": 2.8,
+  "mixed": 9,
+  "idf1": 0.649
+ },
+ "top": [
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_person",
+    "app": "dino",
+    "app_w": 0.25,
+    "regain": 0.15,
+    "regain_k": 2.0
+   },
+   "agg": {
+    "cand_per_actor": 3.39,
+    "mixed": 12,
+    "idf1": 0.689
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_person",
+    "app": "dino",
+    "app_w": 0.25,
+    "regain": 0.2,
+    "regain_k": 2.0
+   },
+   "agg": {
+    "cand_per_actor": 3.39,
+    "mixed": 12,
+    "idf1": 0.689
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_person",
+    "app": "dino",
+    "app_w": 0.25,
+    "regain": 0.3,
+    "regain_k": 2.0
+   },
+   "agg": {
+    "cand_per_actor": 3.39,
+    "mixed": 12,
+    "idf1": 0.689
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_upper",
+    "app": "dino",
+    "app_w": 0.25,
+    "regain": 0.1,
+    "regain_k": 2.0
+   },
+   "agg": {
+    "cand_per_actor": 3.41,
+    "mixed": 12,
+    "idf1": 0.679
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_upper",
+    "app": "dino",
+    "app_w": 0.25,
+    "regain": 0.15,
+    "regain_k": 2.0
+   },
+   "agg": {
+    "cand_per_actor": 3.41,
+    "mixed": 12,
+    "idf1": 0.679
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_upper",
+    "app": "dino",
+    "app_w": 0.25,
+    "regain": 0.2,
+    "regain_k": 2.0
+   },
+   "agg": {
+    "cand_per_actor": 3.41,
+    "mixed": 12,
+    "idf1": 0.679
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_upper",
+    "app": "dino",
+    "app_w": 0.25,
+    "regain": 0.3,
+    "regain_k": 2.0
+   },
+   "agg": {
+    "cand_per_actor": 3.41,
+    "mixed": 12,
+    "idf1": 0.679
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_upper",
+    "app": "dino",
+    "app_w": 1.0,
+    "regain": 0.15,
+    "regain_k": 2.0
+   },
+   "agg": {
+    "cand_per_actor": 3.75,
+    "mixed": 14,
+    "idf1": 0.674
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_person",
+    "app": "dino",
+    "app_w": 0.5,
+    "regain": 0.15,
+    "regain_k": 2.0
+   },
+   "agg": {
+    "cand_per_actor": 3.44,
+    "mixed": 13,
+    "idf1": 0.67
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_person",
+    "app": "dino",
+    "app_w": 0.5,
+    "regain": 0.2,
+    "regain_k": 2.0
+   },
+   "agg": {
+    "cand_per_actor": 3.44,
+    "mixed": 13,
+    "idf1": 0.67
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_person",
+    "app": "dino",
+    "app_w": 0.5,
+    "regain": 0.3,
+    "regain_k": 2.0
+   },
+   "agg": {
+    "cand_per_actor": 3.44,
+    "mixed": 13,
+    "idf1": 0.67
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_person",
+    "app": "dino",
+    "app_w": 0.5,
+    "regain": 0.1,
+    "regain_k": 2.0
+   },
+   "agg": {
+    "cand_per_actor": 3.53,
+    "mixed": 14,
+    "idf1": 0.664
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_person",
+    "app": "dino",
+    "app_w": 0.25,
+    "regain": 0.1,
+    "regain_k": 2.0
+   },
+   "agg": {
+    "cand_per_actor": 3.64,
+    "mixed": 14,
+    "idf1": 0.66
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_person",
+    "app": "both",
+    "app_w": 0.25,
+    "regain": 0.2,
+    "regain_k": 4.0
+   },
+   "agg": {
+    "cand_per_actor": 2.9,
+    "mixed": 9,
+    "idf1": 0.653
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_upper",
+    "app": "both",
+    "app_w": 0.25,
+    "regain": 0.2,
+    "regain_k": 4.0
+   },
+   "agg": {
+    "cand_per_actor": 2.93,
+    "mixed": 9,
+    "idf1": 0.649
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_upper",
+    "app": "both",
+    "app_w": 0.5,
+    "regain": 0.1,
+    "regain_k": 2.0
+   },
+   "agg": {
+    "cand_per_actor": 3.04,
+    "mixed": 10,
+    "idf1": 0.648
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_upper",
+    "app": "both",
+    "app_w": 0.5,
+    "regain": 0.1,
+    "regain_k": 4.0
+   },
+   "agg": {
+    "cand_per_actor": 3.04,
+    "mixed": 10,
+    "idf1": 0.648
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_upper",
+    "app": "both",
+    "app_w": 0.5,
+    "regain": 0.15,
+    "regain_k": 2.0
+   },
+   "agg": {
+    "cand_per_actor": 3.07,
+    "mixed": 10,
+    "idf1": 0.647
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_person",
+    "app": "dino",
+    "app_w": 1.0,
+    "regain": 0.1,
+    "regain_k": 2.0
+   },
+   "agg": {
+    "cand_per_actor": 3.73,
+    "mixed": 14,
+    "idf1": 0.646
+   }
+  },
+  {
+   "cfg": {
+    "min_gate": 2.0,
+    "gate_k": 3.0,
+    "gate_mode": "rss",
+    "joint": true,
+    "veto_k": null,
+    "motion": false,
+    "merge_late": false,
+    "pend_k": 1.5,
+    "feat": "siglip_upper",
+    "app": "both",
+    "app_w": 0.25,
+    "regain": 0.1,
+    "regain_k": 4.0
+   },
+   "agg": {
+    "cand_per_actor": 3.02,
+    "mixed": 9,
+    "idf1": 0.638
+   }
+  }
+ ],
+ "n": 96
+}

@@ -8,7 +8,8 @@ ue_group_eval.py — 후보 묶기 규칙 비교 (10-15 G · 덤프 = ue_group_d
     veto_k     추적기가 붙이려는 후보가 좌표상 문 × veto_k 보다 멀면 붙이지 않음 (None = 끔)
     motion     후보 속도 (최근 두 위치) 로 지금 위치 예측 · 놓친 시간만큼 문을 걷는 속도 1.5 m/s × dt 만큼 넓힘
     merge_late 좌표 없던 후보가 처음 좌표를 얻을 때 문 안의 다른 후보가 있으면 그쪽으로 합침
-    app        외형 특징 (10-15 R · ue_reid_feats.py) — None · "hist" (색) · "dino" (DINOv2) · "both"
+    app        외형 특징 (10-15 R · ue_reid_feats.py) — None · "hist" (색) · "dino" (DINOv2 · feat 가 있으면 SigLIP 2) · "both"
+    feat       (10-30 R2) 외형 임베딩 파일 — None (DINOv2) · "siglip_upper" · "siglip_person" (ue_reid_siglip.py)
     app_veto   외형 거리가 이보다 크면 그 후보에 붙이지 않음 (추적 키 · 좌표 짝 모두)
     app_w      좌표 짝 비용에 외형 거리 가중 (거리/문 + app_w × 외형)
     regain     외형 거리가 이보다 작으면 문을 regain_k 배로 넓힘 (오래 놓친 뒤 다시 잇기)
@@ -244,16 +245,18 @@ BASECFG = dict(min_gate=3.0, gate_k=3.0, gate_mode="sum", joint=False, veto_k=No
 _CACHE = {}
 
 
-def load(r):
-    if r not in _CACHE:
+def load(r, feat=None):
+    """feat (10-30 R2): None = R 의 DINOv2 (reid_<run>.pkl) · "siglip_upper" · "siglip_person" (reid_siglip_<part>_<run>.pkl · 외형 칸 「dino」 자리에 SigLIP 2)"""
+    key = (r, feat)
+    if key not in _CACHE:
         d = pickle.loads((BASE / "runs_state" / f"group_{r}.pkl").read_bytes())
-        fp = BASE / "runs_state" / f"reid_{r}.pkl"
-        _CACHE[r] = (d, pickle.loads(fp.read_bytes())["feats"] if fp.exists() else None)
-    return _CACHE[r]
+        fp = BASE / "runs_state" / (f"reid_{r}.pkl" if not feat else f"reid_{feat}_{r}.pkl")
+        _CACHE[key] = (d, pickle.loads(fp.read_bytes())["feats"] if fp.exists() else None)
+    return _CACHE[key]
 
 
 def run_all(runs, cfg):
-    res = {r: evaluate(load(r)[0], cfg, load(r)[1]) for r in runs}
+    res = {r: evaluate(load(r, cfg.get("feat"))[0], cfg, load(r, cfg.get("feat"))[1]) for r in runs}
     agg = {"cand_per_actor": round(float(np.mean([v["cand_per_actor"] for v in res.values()])), 2),
            "mixed": sum(v["mixed"] for v in res.values()), "idf1": round(float(np.mean([v["idf1"] for v in res.values()])), 3)}
     return agg, res
