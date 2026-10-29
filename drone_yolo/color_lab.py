@@ -291,82 +291,167 @@ def rule(it, wb="frame", exp=(0.7, 2.0), mask="grabcut", pix="hsv", pre=None, gl
 
 # ───────────────────────── SigLIP 2 ─────────────────────────
 SIGLIP = "google/siglip2-base-patch16-224"
-_SL = None
+_SL = {}
 PROMPT = {"red": "red", "orange": "orange", "yellow": "yellow", "green": "green", "blue": "blue", "navy": "navy blue", "purple": "purple",
           "pink": "pink", "white": "white", "gray": "gray", "black": "black", "brown": "brown"}
+SYN = {"red": ["red", "maroon", "burgundy", "dark red"], "orange": ["orange"], "yellow": ["yellow", "mustard"],                # C2 동의어
+       "green": ["green", "olive green", "mint green", "khaki green"], "blue": ["blue", "light blue", "sky blue", "denim blue"],
+       "navy": ["navy blue", "dark blue"], "purple": ["purple", "violet", "lavender"], "pink": ["pink", "light pink", "hot pink"],
+       "white": ["white", "off-white"], "gray": ["gray", "light gray", "charcoal gray"], "black": ["black"], "brown": ["brown", "beige", "tan", "camel"]}
+TMPL1 = ["a photo of a person wearing a {} shirt."]
+TMPLS = ["a photo of a person wearing a {} shirt.", "a photo of a person wearing a {} top.", "a photo of a person in a {} jacket.",     # C1 문장 묶음
+         "an aerial photo of a person wearing {} clothes.", "a low resolution photo of a person wearing a {} hoodie.", "a person dressed in {}."]
 
 
-def siglip():
-    global _SL
-    if _SL is None:
+def siglip(name=SIGLIP):
+    if name not in _SL:
         import torch
         from transformers import AutoModel, AutoProcessor
-        _SL = (AutoProcessor.from_pretrained(SIGLIP), AutoModel.from_pretrained(SIGLIP, torch_dtype=torch.float16).cuda().eval())
-    return _SL
+        _SL[name] = (AutoProcessor.from_pretrained(name), AutoModel.from_pretrained(name, dtype=torch.float16).cuda().eval())
+    return _SL[name]
 
 
 def person_rgb(it, part="person"):
+    """part: person (박스) · upper (위 10~62 %) · upper_mask (사람 마스크 밖 회색 · C5) · upper_wb (프레임 무채색 화이트밸런스 + 노출 맞춤 · C6)"""
     fr, (x1, y1, x2, y2) = it["frame"], it["box"]
     x1, y1, x2, y2 = int(max(0, x1)), int(max(0, y1)), int(min(fr.shape[1], x2)), int(min(fr.shape[0], y2))
-    if part == "upper" and it["pose"] != "lying":
+    if part == "upper_mask":
+        cv2.setRNGSeed(0)
+        crop, rect = _crop(it)
+        m = _person_mask(crop, rect)
+        crop = crop.copy(); crop[m == 0] = 128
+        x, y, w, h = rect
+        c = crop[y + int(0.10 * h):y + int(0.62 * h), x:x + w] if it["pose"] != "lying" else crop[y:y + h, x:x + w]
+        return cv2.cvtColor(c, cv2.COLOR_BGR2RGB) if c.size else np.zeros((8, 8, 3), np.uint8)
+    if part in ("upper", "upper_wb") and it["pose"] != "lying":
         h = y2 - y1; y1, y2 = y1 + int(0.10 * h), y1 + int(0.62 * h)
     c = fr[y1:y2, x1:x2]
+    if c.size and part == "upper_wb":
+        st = it.get("stats") or frame_stats(fr)
+        c = np.clip(c.astype(np.float32) * st["achromatic"], 0, 255)
+        c = np.clip(c * float(np.clip(110 / max(st["v_median"], 1.0), 0.7, 2.0)), 0, 255).astype(np.uint8)
     return cv2.cvtColor(c, cv2.COLOR_BGR2RGB) if c.size else np.zeros((8, 8, 3), np.uint8)
 
 
-def siglip_feats(items, part="person", bs=64):
+_FEAT = {}
+
+
+def siglip_feats(items, part="person", bs=64, model=SIGLIP):
     import torch
-    proc, model = siglip()
+    key = (id(items), len(items), part, model)
+    if key in _FEAT:
+        return _FEAT[key]
+    proc, m = siglip(model)
     out = []
     for i in range(0, len(items), bs):
         ims = [person_rgb(it, part) for it in items[i:i + bs]]
         inp = proc(images=ims, return_tensors="pt")
         with torch.no_grad():
-            f = model.get_image_features(pixel_values=inp["pixel_values"].cuda().half())
+            f = m.get_image_features(pixel_values=inp["pixel_values"].cuda().half())
         f = getattr(f, "pooler_output", f)
         out.append(torch.nn.functional.normalize(f.float(), dim=-1).cpu().numpy())
-    return np.concatenate(out)
+    _FEAT[key] = np.concatenate(out)
+    return _FEAT[key]
 
 
-def siglip_text(tmpl):
+def siglip_text(tmpls, syn=False, model=SIGLIP):
+    """색마다 (문장 × 이름) 임베딩 → 문장끼리 평균 · 이름끼리는 따로 (점수 때 max) → [색][이름] 행렬 목록"""
     import torch
-    proc, model = siglip()
-    inp = proc(text=[tmpl.format(PROMPT[c]) for c in COLORS], padding="max_length", max_length=64, return_tensors="pt")
-    with torch.no_grad():
-        t = model.get_text_features(input_ids=inp["input_ids"].cuda())
-    t = getattr(t, "pooler_output", t)
-    return torch.nn.functional.normalize(t.float(), dim=-1).cpu().numpy(), float(model.logit_scale.exp()), float(model.logit_bias)
+    proc, m = siglip(model)
+    names = {c: (SYN[c] if syn else [PROMPT[c]]) for c in COLORS}
+    T = {}
+    for c in COLORS:
+        rows = []
+        for nm in names[c]:
+            inp = proc(text=[t.format(nm) for t in tmpls], padding="max_length", max_length=64, return_tensors="pt")
+            with torch.no_grad():
+                t = m.get_text_features(input_ids=inp["input_ids"].cuda())
+            t = torch.nn.functional.normalize(getattr(t, "pooler_output", t).float(), dim=-1).mean(0)
+            rows.append(torch.nn.functional.normalize(t, dim=0).cpu().numpy())
+        T[c] = np.stack(rows)
+    return T, float(m.logit_scale.exp()), float(m.logit_bias)
 
 
-def zero_shot(items, part="person", tmpl="a photo of a person wearing a {} shirt."):
-    f = siglip_feats(items, part)
-    t, sc, b = siglip_text(tmpl)
-    lg = f @ t.T * sc + b
+def zs_logits(feats, tmpls=TMPL1, syn=False, model=SIGLIP):
+    T, sc, b = siglip_text(tmpls, syn, model)
+    return np.stack([(feats @ T[c].T).max(1) for c in COLORS], 1) * sc + b
+
+
+def _softmax(lg):
     e = np.exp(lg - lg.max(1, keepdims=True))
-    return list(e / e.sum(1, keepdims=True))
+    return e / e.sum(1, keepdims=True)
+
+
+def zero_shot(items, part="person", tmpl=None, tmpls=None, syn=False, model=SIGLIP, bias=False):
+    tm = tmpls or ([tmpl] if tmpl else TMPL1)
+    lg = zs_logits(siglip_feats(items, part, model=model), tm, syn, model)
+    if bias:
+        lg = lg + zs_bias(part, tuple(tm), syn, model)
+    return list(_softmax(lg))
+
+
+_BIAS = {}
+
+
+def zs_bias(part, tmpls, syn, model):
+    """C4 — 제로샷 로짓에 색마다 편향 12개만 더함 · UAV-Human 학습셋 (89명) 으로 맞춤 (색 균형 교차 엔트로피 · 학습셋에 없는 주황 · 남색 = 0)"""
+    key = (part, tmpls, syn, model)
+    if key in _BIAS:
+        return _BIAS[key]
+    import torch
+    X, y, g = train_feats(part, model)
+    lg = torch.tensor(zs_logits(X, list(tmpls), syn, model), dtype=torch.float32)
+    yt = torch.tensor(y)
+    w = torch.zeros(len(COLORS)); cnt = torch.bincount(yt, minlength=len(COLORS)).float()
+    w[cnt > 0] = 1 / cnt[cnt > 0]
+    b = torch.zeros(len(COLORS), requires_grad=True)
+    opt = torch.optim.LBFGS([b], max_iter=200)
+    mask = (cnt > 0).float()
+
+    def closure():
+        opt.zero_grad()
+        loss = torch.nn.functional.cross_entropy(lg + b * mask, yt, weight=w) + 1e-3 * (b ** 2).sum()
+        loss.backward(); return loss
+    opt.step(closure)
+    _BIAS[key] = (b * mask).detach().numpy()
+    print("  편향", {c: round(float(v), 2) for c, v in zip(COLORS, _BIAS[key]) if v}, flush=True)
+    return _BIAS[key]
 
 
 # ───────────────────────── B2 — SigLIP 2 특징 + 선형 (UAV-Human 학습셋만) ─────────────────────────
 _PROBE = {}
 
 
-def probe_train(part, per_class=600, seed=0):
+def train_feats(part, model=SIGLIP, per_class=600, seed=0, aug=False):
     """학습셋 89명 · 색마다 ≤ per_class 장 (사람마다 고르게) · 사람 키 40~140 px 무작위로 줄임 (운용 크기)
-    C 는 학습셋 안 사람 5겹 교차검증 (색 균형 정확도) 으로 고름 — 시험셋 U 는 안 봄"""
-    if part in _PROBE:
-        return _PROBE[part]
+    aug (C9): 장마다 2벌 더 — 채널별 이득 0.85~1.15 · 밝기 0.7~1.3 (카메라 · 조명 흔들기)"""
+    tag = "" if model == SIGLIP else "_" + model.split("/")[-1]
+    fp = LAB / f"train_{part}{tag}{'_aug' if aug else ''}.npz"
+    if fp.exists():
+        z = np.load(fp, allow_pickle=True)
+        return z["X"], z["y"], z["g"]
+    rng = random.Random(seed); nrng = np.random.default_rng(seed); items = []
+    for f, c, pid in uavh_list("train", per_class, seed):
+        img = cv2.imread(str(f))
+        for k in range(3 if aug else 1):
+            im = img
+            if k:
+                im = np.clip(img.astype(np.float32) * nrng.uniform(0.85, 1.15, 3) * nrng.uniform(0.7, 1.3), 0, 255).astype(np.uint8)
+            fr, box = _frame_from_crop(im, rng.randint(40, 140))
+            items.append({"frame": fr, "box": box, "pose": None, "primary": c, "person": pid, "stats": frame_stats(fr)})
+    X = siglip_feats(items, part, model=model); y = np.array([CI[it["primary"]] for it in items]); g = np.array([it["person"] for it in items])
+    np.savez(fp, X=X, y=y, g=g)
+    return X, y, g
+
+
+def probe_train(part, model=SIGLIP, aug=False):
+    """C 는 학습셋 안 사람 5겹 교차검증 (색 균형 정확도) 으로 고름 — 시험셋 U 는 안 봄"""
+    key = (part, model, aug)
+    if key in _PROBE:
+        return _PROBE[key]
     from sklearn.linear_model import LogisticRegression
     from sklearn.model_selection import GroupKFold
-    fp = LAB / f"train_{part}.npz"
-    if fp.exists():
-        z = np.load(fp, allow_pickle=True); X, y, g = z["X"], z["y"], z["g"]
-    else:
-        rng = random.Random(seed); items = []
-        for f, c, pid in uavh_list("train", per_class, seed):
-            fr, box = _frame_from_crop(cv2.imread(str(f)), rng.randint(40, 140))
-            items.append({"frame": fr, "box": box, "pose": None, "primary": c, "person": pid})
-        X = siglip_feats(items, part); y = np.array([CI[it["primary"]] for it in items]); g = np.array([it["person"] for it in items])
-        np.savez(fp, X=X, y=y, g=g)
+    X, y, g = train_feats(part, model, aug=aug)
     best = None
     for C in (0.1, 0.3, 1, 3, 10, 30):
         accs = []
@@ -374,21 +459,75 @@ def probe_train(part, per_class=600, seed=0):
             m = LogisticRegression(C=C, max_iter=3000, class_weight="balanced").fit(X[tr], y[tr])
             pr = m.predict(X[va]); accs.append(np.mean([np.mean(pr[y[va] == k] == k) for k in np.unique(y[va])]))
         a = float(np.mean(accs))
-        print(f"  probe {part} C={C} 교차검증 색 균형 {a:.3f}", flush=True)
         if best is None or a > best[0]:
             best = (a, C)
     m = LogisticRegression(C=best[1], max_iter=3000, class_weight="balanced").fit(X, y)
-    _PROBE[part] = (m, best)
-    print(f"  probe {part} 고른 C={best[1]} (교차검증 {best[0]:.3f} · 학습 {len(y)}장 · {len(set(g))}명)", flush=True)
-    return _PROBE[part]
+    _PROBE[key] = (m, best)
+    print(f"  probe {key} 고른 C={best[1]} (교차검증 {best[0]:.3f} · 학습 {len(y)}장 · {len(set(g))}명)", flush=True)
+    return _PROBE[key]
 
 
-def probe(items, part="person"):
-    m, _ = probe_train(part)
-    P = m.predict_proba(siglip_feats(items, part))
+def probe(items, part="person", model=SIGLIP, aug=False):
+    m, _ = probe_train(part, model, aug)
+    P = m.predict_proba(siglip_feats(items, part, model=model))
     out = np.zeros((len(items), len(COLORS)))
     out[:, m.classes_] = P
     return list(out)
+
+
+# ───────────────────────── 확인 셋 (10-29 2차 · 고르는 데 안 씀) ─────────────────────────
+PETA = RAW / "color" / "PETA" / "PETA dataset"
+PETA_C = {"Black": "black", "Blue": "blue", "Brown": "brown", "Green": "green", "Grey": "gray", "Orange": "orange", "Pink": "pink",
+          "Purple": "purple", "Red": "red", "White": "white", "Yellow": "yellow"}
+
+
+def build_confirm(per_class=150, seed=0):
+    """P = PETA 상의 색이 하나인 사람 · 색마다 ≤ per_class (사람마다 고르게) · 키 72 px / D = 디관 사진 배포 탐지 박스 + 잠정 라벨"""
+    by = defaultdict(lambda: defaultdict(list))
+    for sub in sorted(PETA.iterdir()):
+        lab = {}
+        for line in open(sub / "archive" / "Label.txt"):
+            t = line.split()
+            ups = [PETA_C[a[9:]] for a in t[1:] if a.startswith("upperBody") and a[9:] in PETA_C]
+            if len(ups) == 1:
+                lab[t[0]] = ups[0]
+        for f in sorted((sub / "archive").iterdir()):
+            if f.name == "Label.txt":
+                continue
+            pid = f.name if f.name in lab else f.name.split("_")[0]
+            if pid in lab:
+                by[lab[pid]][f"{sub.name}:{pid}"].append(f)
+    rng = random.Random(seed); P = []
+    for c in sorted(by):
+        persons = {p: rng.sample(v, len(v)) for p, v in sorted(by[c].items())}
+        order = list(persons); rng.shuffle(order); n = 0
+        while n < per_class and any(persons.values()):
+            for p in order:
+                if persons[p] and n < per_class:
+                    img = cv2.imread(str(persons[p].pop()))
+                    if img is None:
+                        continue
+                    fr, box = _frame_from_crop(img, 72)
+                    P.append({"frame": fr, "box": box, "stats": frame_stats(fr), "pose": None, "truth": {c}, "primary": c, "person": p, "h": 72}); n += 1
+    pickle.dump(P, open(LAB / "P.pkl", "wb"))
+    print("P", len(P), Counter(x["primary"] for x in P), "사람", len({x["person"] for x in P}))
+    from make_present_dd import fhd, SRC
+    res = json.load(open(BASE.parent / "발표자료" / "_도구" / "dd_work" / "results.json"))["images"]
+    labs = json.load(open(LAB / "dgwan_labels.json"))["labels"]
+    D, frames = [], {}
+    for L in labs:
+        if not L["truth"]:
+            continue
+        r = res[L["img"]]
+        if L["img"] not in frames:
+            frames = {L["img"]: fhd(cv2.imread(str(SRC / r["file"])))}
+        fr = frames[L["img"]]; st = frame_stats(fr)
+        x1, y1, x2, y2 = r["dets"][L["det"]]["box"]; w, h = x2 - x1, y2 - y1; cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
+        X1, Y1 = int(max(0, cx - 0.75 * w)), int(max(0, cy - 0.75 * h)); X2, Y2 = int(min(1920, cx + 0.75 * w)), int(min(1080, cy + 0.75 * h))
+        D.append({"frame": fr[Y1:Y2, X1:X2].copy(), "box": (x1 - X1, y1 - Y1, x2 - X1, y2 - Y1), "stats": st, "pose": None,
+                  "truth": set(L["truth"]), "primary": L["truth"][0], "person": f"img{L['img']}", "h": round(h, 1)})
+    pickle.dump(D, open(LAB / "D.pkl", "wb"))
+    print("D", len(D), Counter(x["primary"] for x in D), "사진 묶음", len({x["person"] for x in D}))
 
 
 # ───────────────────────── 지표 ─────────────────────────
@@ -470,13 +609,43 @@ METHODS = {
     "L4 Lab규칙 표가중없음": dict(kind="rule", pix="lab", exp=None, w_black=1.0, w_gray=1.0),
     "B2 probe 사람": dict(kind="probe", part="person"),
     "B2 probe 상의": dict(kind="probe", part="upper"),
+    # ── C 계열 (10-29 2차 · U · N 으로만 고름) ──
+    "C1 문장묶음 상의": dict(kind="zs", part="upper", tmpls=TMPLS),
+    "C2 동의어 상의": dict(kind="zs", part="upper", syn=True),
+    "C1+C2 상의": dict(kind="zs", part="upper", tmpls=TMPLS, syn=True),
+    "C4 편향 상의": dict(kind="zs", part="upper", bias=True),
+    "C5 배경회색 상의": dict(kind="zs", part="upper_mask"),
+    "C6 색보정 상의": dict(kind="zs", part="upper_wb"),
+    "C7 large 상의": dict(kind="zs", part="upper", model="google/siglip2-large-patch16-256"),
+    "C7 so400m 상의": dict(kind="zs", part="upper", model="google/siglip2-so400m-patch16-256"),
+    "C3 B1×V10 0.7": dict(kind="fuse", a="B1 SigLIP 상의", b="V10", w=0.7),
+    "C3 B1×L2 0.7": dict(kind="fuse", a="B1 SigLIP 상의", b="L2 Lab규칙", w=0.7),
+    "C3 B1×L2 0.5": dict(kind="fuse", a="B1 SigLIP 상의", b="L2 Lab규칙", w=0.5),
+    "C8 B1+probe 0.5": dict(kind="fuse", a="B1 SigLIP 상의", b="B2 probe 상의", w=0.5, mode="lin"),
+    "C9 probe 증강 상의": dict(kind="probe", part="upper", aug=True),
+    "C4×V10 0.7": dict(kind="fuse", a="C4 편향 상의", b="V10", w=0.7),
+    "C8×V10 0.7": dict(kind="fuse", a="C8 B1+probe 0.5", b="V10", w=0.7),
+    "C4+probe 0.5": dict(kind="fuse", a="C4 편향 상의", b="B2 probe 상의", w=0.5, mode="lin"),
+    "C7 large 편향 상의": dict(kind="zs", part="upper", model="google/siglip2-large-patch16-256", bias=True),
+    "C7 so400m 편향 상의": dict(kind="zs", part="upper", model="google/siglip2-so400m-patch16-256", bias=True),
 }
 
 
-def predict(name, items):
+def get_preds(name, items, set_name):
+    pp = LAB / "preds" / f"{name.replace(' ', '_')}_{set_name}.pkl"
+    if pp.exists():
+        return pickle.load(open(pp, "rb"))
+    out = predict(name, items, set_name)
+    pickle.dump(out, open(pp, "wb"))
+    return out
+
+
+def predict(name, items, set_name):
     m = dict(METHODS[name]); kind = m.pop("kind")
     if kind == "probe":
-        probe_train(m["part"])                                          # 학습은 시간 재기 밖
+        probe_train(m["part"], m.get("model", SIGLIP), m.get("aug", False))   # 학습은 시간 재기 밖
+    if kind == "zs" and m.get("bias"):
+        zs_bias(m["part"], tuple(m.get("tmpls") or TMPL1), m.get("syn", False), m.get("model", SIGLIP))
     t0 = time.time()
     if kind == "rule":
         preds = [rule(it, **m) for it in items]
@@ -484,30 +653,35 @@ def predict(name, items):
         preds = zero_shot(items, **m)
     elif kind == "probe":
         preds = probe(items, **m)
+    elif kind == "fuse":                                                # C3 · C8 — 두 방식 확률 섞기 (geo = 가중 기하 평균 · lin = 가중 산술 평균)
+        pa, ma = get_preds(m["a"], items, set_name); pb, mb = get_preds(m["b"], items, set_name)
+        preds = []
+        for x, y in zip(pa, pb):
+            if y is None:
+                preds.append(x); continue
+            if m.get("mode", "geo") == "geo":
+                z = np.exp(m["w"] * np.log(np.asarray(x) + 1e-6) + (1 - m["w"]) * np.log(np.asarray(y) + 1e-6))
+            else:
+                z = m["w"] * np.asarray(x) + (1 - m["w"]) * np.asarray(y)
+            preds.append(z / z.sum())
+        return preds, round(ma + mb, 2)
     else:
         raise ValueError(kind)
     return preds, round((time.time() - t0) * 1000 / len(items), 2)
 
 
-def run(names):
-    sets = {s: pickle.load(open(LAB / f"{s}.pkl", "rb")) for s in ("U", "N")}
-    out_p = BASE / "metrics" / "color_lab.json"
+def run(names, set_names=("U", "N")):
+    sets = {s: pickle.load(open(LAB / f"{s}.pkl", "rb")) for s in set_names}
+    out_p = BASE / "metrics" / ("color_lab.json" if set_names == ("U", "N") else "color_lab_confirm.json")
     res = json.load(open(out_p)) if out_p.exists() else {}
-    pred_dir = LAB / "preds"; pred_dir.mkdir(exist_ok=True)
+    (LAB / "preds").mkdir(exist_ok=True)
     base_t = {}
     for s, items in sets.items():
-        bp = pred_dir / f"V10_{s}.pkl"
-        if not bp.exists():
-            pickle.dump(predict("V10", items), open(bp, "wb"))
-        base_t[s] = metrics(items, pickle.load(open(bp, "rb"))[0], s)[1]
+        base_t[s] = metrics(items, get_preds("V10", items, s)[0], "N" if s == "N" else "U")[1]
     for name in names:
         res[name] = {}
         for s, items in sets.items():
-            pp = pred_dir / f"{name.replace(' ', '_')}_{s}.pkl"
-            if pp.exists():
-                preds, ms = pickle.load(open(pp, "rb"))
-            else:
-                preds, ms = predict(name, items); pickle.dump((preds, ms), open(pp, "wb"))
+            preds, ms = get_preds(name, items, s)
             if s == "U":
                 for h in HEIGHTS:
                     sub = [i for i, it in enumerate(items) if it["h"] == h]
@@ -516,17 +690,24 @@ def run(names):
                     o["ms/장"] = ms
                     res[name][f"U{h}"] = o
             else:
-                o, t = metrics(items, preds, "N")
-                o["V10 대비 (짝 · 95 %)"] = boot(items, base_t["N"], t, "N"); o["ms/장"] = ms
-                res[name]["N"] = o
-        u, n = res[name]["U72"], res[name]["N"]
-        print(f"{name:24s} U72 균형 {u['색 균형 1순위']:.3f} {u['V10 대비 (짝 · 95 %)']} · 불가 {u['판정불가율']:.2f} | U48 {res[name]['U48']['색 균형 1순위']:.3f} · U120 {res[name]['U120']['색 균형 1순위']:.3f}"
-              f" | N 1순위 {n['1순위']:.3f} {n['V10 대비 (짝 · 95 %)']} · 누적 {n['누적 1순위']:.3f} · 순위 {n['찾는 사람 순위 중앙']} | {u['ms/장']} ms", flush=True)
+                o, t = metrics(items, preds, "N" if s == "N" else "U")
+                o["V10 대비 (짝 · 95 %)"] = boot(items, base_t[s], t, "N" if s == "N" else "U"); o["ms/장"] = ms
+                res[name][s] = o
+        if set_names == ("U", "N"):
+            u, n = res[name]["U72"], res[name]["N"]
+            print(f"{name:26s} U72 균형 {u['색 균형 1순위']:.3f} {u['V10 대비 (짝 · 95 %)']} | U48 {res[name]['U48']['색 균형 1순위']:.3f} · U120 {res[name]['U120']['색 균형 1순위']:.3f}"
+                  f" | N 1순위 {n['1순위']:.3f} {n['V10 대비 (짝 · 95 %)']} · 누적 {n['누적 1순위']:.3f} · 순위 {n['찾는 사람 순위 중앙']} | 평균 {(u['색 균형 1순위'] + n['1순위']) / 2:.3f} | {u['ms/장']} ms", flush=True)
+        else:
+            print(f"{name:26s} " + " | ".join(f"{s} 균형 {res[name][s]['색 균형 1순위']:.3f} {res[name][s]['V10 대비 (짝 · 95 %)']} · 1순위 {res[name][s]['1순위']:.3f}" for s in sets), flush=True)
         out_p.write_text(json.dumps(res, ensure_ascii=False, indent=1))
 
 
 if __name__ == "__main__":
     if sys.argv[1] == "build":
         build()
+    elif sys.argv[1] == "build_confirm":
+        build_confirm()
     elif sys.argv[1] == "run":
         run(list(METHODS) if sys.argv[2:] == ["all"] else sys.argv[2:])
+    elif sys.argv[1] == "confirm":                                      # 확인 셋 P · D (한 번만)
+        run(sys.argv[2:], ("P", "D"))

@@ -7809,5 +7809,6129 @@
    ],
    "ms/장": 1.32
   }
+ },
+ "C1 문장묶음 상의": {
+  "U48": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.421,
+   "1·2순위": 0.633,
+   "판정된 것 1순위": 0.421,
+   "색 균형 1순위": 0.473,
+   "색 균형 1·2순위": 0.666,
+   "색별 1순위": {
+    "black": 0.692,
+    "blue": 0.342,
+    "brown": 0.092,
+    "gray": 0.35,
+    "green": 0.075,
+    "pink": 0.45,
+    "purple": 1.0,
+    "red": 0.65,
+    "white": 0.408,
+    "yellow": 0.675
+   },
+   "혼동": {
+    "black": {
+     "black": 83,
+     "navy": 9,
+     "purple": 8,
+     "red": 8
+    },
+    "blue": {
+     "blue": 41,
+     "navy": 40,
+     "purple": 20,
+     "red": 7
+    },
+    "brown": {
+     "gray": 46,
+     "white": 23,
+     "yellow": 17,
+     "black": 11
+    },
+    "gray": {
+     "gray": 42,
+     "brown": 28,
+     "blue": 26,
+     "green": 10
+    },
+    "green": {
+     "gray": 91,
+     "green": 9,
+     "white": 6,
+     "orange": 6
+    },
+    "pink": {
+     "pink": 54,
+     "gray": 23,
+     "black": 10,
+     "red": 8
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 78,
+     "purple": 21,
+     "black": 13,
+     "pink": 6
+    },
+    "white": {
+     "white": 49,
+     "gray": 21,
+     "blue": 15,
+     "red": 11
+    },
+    "yellow": {
+     "yellow": 81,
+     "orange": 19,
+     "red": 7,
+     "white": 5
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.101,
+    0.27
+   ],
+   "ms/장": 7.7
+  },
+  "U72": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.439,
+   "1·2순위": 0.649,
+   "판정된 것 1순위": 0.439,
+   "색 균형 1순위": 0.489,
+   "색 균형 1·2순위": 0.681,
+   "색별 1순위": {
+    "black": 0.767,
+    "blue": 0.35,
+    "brown": 0.233,
+    "gray": 0.325,
+    "green": 0.108,
+    "pink": 0.458,
+    "purple": 1.0,
+    "red": 0.683,
+    "white": 0.35,
+    "yellow": 0.617
+   },
+   "혼동": {
+    "black": {
+     "black": 92,
+     "navy": 7,
+     "red": 7,
+     "purple": 5
+    },
+    "blue": {
+     "navy": 44,
+     "blue": 42,
+     "purple": 17,
+     "red": 7
+    },
+    "brown": {
+     "gray": 37,
+     "brown": 28,
+     "black": 18,
+     "yellow": 17
+    },
+    "gray": {
+     "gray": 39,
+     "blue": 29,
+     "brown": 26,
+     "green": 11
+    },
+    "green": {
+     "gray": 74,
+     "orange": 17,
+     "green": 13,
+     "red": 12
+    },
+    "pink": {
+     "pink": 55,
+     "black": 18,
+     "gray": 16,
+     "brown": 9
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 82,
+     "purple": 15,
+     "black": 14,
+     "pink": 4
+    },
+    "white": {
+     "white": 42,
+     "gray": 17,
+     "blue": 15,
+     "red": 13
+    },
+    "yellow": {
+     "yellow": 74,
+     "orange": 30,
+     "white": 4,
+     "blue": 4
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.103,
+    0.29
+   ],
+   "ms/장": 7.7
+  },
+  "U120": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.436,
+   "1·2순위": 0.63,
+   "판정된 것 1순위": 0.436,
+   "색 균형 1순위": 0.487,
+   "색 균형 1·2순위": 0.663,
+   "색별 1순위": {
+    "black": 0.767,
+    "blue": 0.317,
+    "brown": 0.283,
+    "gray": 0.35,
+    "green": 0.008,
+    "pink": 0.458,
+    "purple": 1.0,
+    "red": 0.7,
+    "white": 0.367,
+    "yellow": 0.617
+   },
+   "혼동": {
+    "black": {
+     "black": 92,
+     "navy": 10,
+     "red": 7,
+     "yellow": 3
+    },
+    "blue": {
+     "navy": 44,
+     "blue": 38,
+     "purple": 20,
+     "red": 9
+    },
+    "brown": {
+     "gray": 39,
+     "brown": 34,
+     "yellow": 19,
+     "black": 14
+    },
+    "gray": {
+     "gray": 42,
+     "blue": 29,
+     "brown": 23,
+     "green": 8
+    },
+    "green": {
+     "gray": 69,
+     "orange": 30,
+     "red": 18,
+     "white": 2
+    },
+    "pink": {
+     "pink": 55,
+     "black": 21,
+     "gray": 10,
+     "brown": 8
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 84,
+     "black": 14,
+     "purple": 10,
+     "navy": 6
+    },
+    "white": {
+     "white": 44,
+     "blue": 20,
+     "gray": 12,
+     "navy": 10
+    },
+    "yellow": {
+     "yellow": 74,
+     "orange": 32,
+     "green": 3,
+     "white": 3
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.09,
+    0.291
+   ],
+   "ms/장": 7.7
+  },
+  "N": {
+   "장": 3279,
+   "판정불가율": 0.0,
+   "1순위": 0.4,
+   "1·2순위": 0.576,
+   "판정된 것 1순위": 0.4,
+   "색 균형 1순위": 0.361,
+   "색 균형 1·2순위": 0.521,
+   "색별 1순위": {
+    "black": 0.439,
+    "blue": 0.485,
+    "gray": 0.373,
+    "green": 0.375,
+    "pink": 0.458,
+    "purple": 0.132,
+    "red": 0.012,
+    "white": 0.528,
+    "yellow": 0.45
+   },
+   "혼동": {
+    "black": {
+     "black": 192,
+     "navy": 54,
+     "gray": 52,
+     "green": 43
+    },
+    "blue": {
+     "blue": 392,
+     "green": 98,
+     "white": 79,
+     "gray": 77
+    },
+    "gray": {
+     "white": 184,
+     "gray": 157,
+     "blue": 121,
+     "black": 109
+    },
+    "green": {
+     "green": 117,
+     "black": 61,
+     "brown": 44,
+     "navy": 36
+    },
+    "pink": {
+     "pink": 33,
+     "brown": 15,
+     "white": 8,
+     "purple": 5
+    },
+    "purple": {
+     "navy": 136,
+     "purple": 40,
+     "brown": 40,
+     "black": 33
+    },
+    "red": {
+     "purple": 43,
+     "pink": 31,
+     "blue": 9,
+     "red": 1
+    },
+    "white": {
+     "white": 158,
+     "gray": 72,
+     "blue": 39,
+     "green": 7
+    },
+    "yellow": {
+     "yellow": 27,
+     "white": 15,
+     "brown": 13,
+     "black": 4
+    }
+   },
+   "누적 1순위": 0.465,
+   "찾는 사람 순위 중앙": 6.0,
+   "찾는 사람 3위 안": 0.357,
+   "V10 대비 (짝 · 95 %)": [
+    -0.006,
+    0.137
+   ],
+   "ms/장": 1.27
+  }
+ },
+ "C2 동의어 상의": {
+  "U48": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.426,
+   "1·2순위": 0.658,
+   "판정된 것 1순위": 0.426,
+   "색 균형 1순위": 0.478,
+   "색 균형 1·2순위": 0.688,
+   "색별 1순위": {
+    "black": 0.567,
+    "blue": 0.242,
+    "brown": 0.183,
+    "gray": 0.35,
+    "green": 0.233,
+    "pink": 0.442,
+    "purple": 1.0,
+    "red": 0.75,
+    "white": 0.392,
+    "yellow": 0.617
+   },
+   "혼동": {
+    "black": {
+     "black": 68,
+     "navy": 27,
+     "red": 12,
+     "brown": 4
+    },
+    "blue": {
+     "navy": 45,
+     "blue": 29,
+     "purple": 22,
+     "red": 13
+    },
+    "brown": {
+     "gray": 46,
+     "brown": 22,
+     "yellow": 16,
+     "white": 16
+    },
+    "gray": {
+     "gray": 42,
+     "blue": 28,
+     "brown": 25,
+     "red": 8
+    },
+    "green": {
+     "gray": 63,
+     "green": 28,
+     "blue": 16,
+     "red": 6
+    },
+    "pink": {
+     "pink": 53,
+     "gray": 33,
+     "white": 9,
+     "red": 8
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 90,
+     "pink": 10,
+     "black": 7,
+     "gray": 6
+    },
+    "white": {
+     "white": 47,
+     "gray": 20,
+     "blue": 17,
+     "red": 14
+    },
+    "yellow": {
+     "yellow": 74,
+     "orange": 17,
+     "brown": 15,
+     "red": 7
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.1,
+    0.272
+   ],
+   "ms/장": 0.04
+  },
+  "U72": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.446,
+   "1·2순위": 0.668,
+   "판정된 것 1순위": 0.446,
+   "색 균형 1순위": 0.496,
+   "색 균형 1·2순위": 0.698,
+   "색별 1순위": {
+    "black": 0.633,
+    "blue": 0.258,
+    "brown": 0.292,
+    "gray": 0.4,
+    "green": 0.2,
+    "pink": 0.433,
+    "purple": 1.0,
+    "red": 0.808,
+    "white": 0.325,
+    "yellow": 0.608
+   },
+   "혼동": {
+    "black": {
+     "black": 76,
+     "navy": 24,
+     "red": 11,
+     "yellow": 4
+    },
+    "blue": {
+     "navy": 43,
+     "blue": 31,
+     "purple": 20,
+     "red": 17
+    },
+    "brown": {
+     "gray": 39,
+     "brown": 35,
+     "yellow": 15,
+     "black": 11
+    },
+    "gray": {
+     "gray": 48,
+     "brown": 22,
+     "blue": 21,
+     "red": 10
+    },
+    "green": {
+     "gray": 52,
+     "green": 24,
+     "orange": 15,
+     "blue": 14
+    },
+    "pink": {
+     "pink": 52,
+     "gray": 30,
+     "brown": 10,
+     "red": 8
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 97,
+     "navy": 10,
+     "black": 6,
+     "pink": 4
+    },
+    "white": {
+     "white": 39,
+     "blue": 18,
+     "gray": 17,
+     "red": 16
+    },
+    "yellow": {
+     "yellow": 73,
+     "orange": 29,
+     "brown": 8,
+     "green": 4
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.099,
+    0.288
+   ],
+   "ms/장": 0.04
+  },
+  "U120": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.432,
+   "1·2순위": 0.637,
+   "판정된 것 1순위": 0.432,
+   "색 균형 1순위": 0.483,
+   "색 균형 1·2순위": 0.67,
+   "색별 1순위": {
+    "black": 0.617,
+    "blue": 0.292,
+    "brown": 0.283,
+    "gray": 0.408,
+    "green": 0.017,
+    "pink": 0.45,
+    "purple": 1.0,
+    "red": 0.783,
+    "white": 0.358,
+    "yellow": 0.625
+   },
+   "혼동": {
+    "black": {
+     "black": 74,
+     "navy": 26,
+     "red": 10,
+     "green": 3
+    },
+    "blue": {
+     "navy": 38,
+     "blue": 35,
+     "purple": 22,
+     "red": 19
+    },
+    "brown": {
+     "gray": 44,
+     "brown": 34,
+     "yellow": 19,
+     "black": 9
+    },
+    "gray": {
+     "gray": 49,
+     "blue": 24,
+     "brown": 17,
+     "red": 12
+    },
+    "green": {
+     "gray": 61,
+     "orange": 29,
+     "red": 20,
+     "blue": 6
+    },
+    "pink": {
+     "pink": 54,
+     "gray": 19,
+     "navy": 16,
+     "white": 8
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 94,
+     "navy": 13,
+     "black": 6,
+     "pink": 3
+    },
+    "white": {
+     "white": 43,
+     "navy": 22,
+     "gray": 15,
+     "blue": 14
+    },
+    "yellow": {
+     "yellow": 75,
+     "orange": 31,
+     "brown": 6,
+     "green": 3
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.088,
+    0.282
+   ],
+   "ms/장": 0.04
+  },
+  "N": {
+   "장": 3279,
+   "판정불가율": 0.0,
+   "1순위": 0.387,
+   "1·2순위": 0.572,
+   "판정된 것 1순위": 0.387,
+   "색 균형 1순위": 0.349,
+   "색 균형 1·2순위": 0.537,
+   "색별 1순위": {
+    "black": 0.314,
+    "blue": 0.501,
+    "gray": 0.368,
+    "green": 0.359,
+    "pink": 0.389,
+    "purple": 0.096,
+    "red": 0.118,
+    "white": 0.582,
+    "yellow": 0.417
+   },
+   "혼동": {
+    "black": {
+     "black": 137,
+     "gray": 70,
+     "navy": 68,
+     "brown": 46
+    },
+    "blue": {
+     "blue": 420,
+     "white": 90,
+     "gray": 89,
+     "green": 77
+    },
+    "gray": {
+     "white": 217,
+     "gray": 175,
+     "blue": 128,
+     "navy": 69
+    },
+    "green": {
+     "green": 112,
+     "brown": 54,
+     "navy": 50,
+     "gray": 40
+    },
+    "pink": {
+     "pink": 28,
+     "white": 16,
+     "brown": 12,
+     "gray": 8
+    },
+    "purple": {
+     "navy": 152,
+     "gray": 41,
+     "brown": 37,
+     "purple": 29
+    },
+    "red": {
+     "pink": 39,
+     "purple": 28,
+     "red": 10,
+     "blue": 7
+    },
+    "white": {
+     "white": 174,
+     "gray": 53,
+     "blue": 46,
+     "green": 7
+    },
+    "yellow": {
+     "yellow": 25,
+     "white": 19,
+     "brown": 12,
+     "black": 3
+    }
+   },
+   "누적 1순위": 0.462,
+   "찾는 사람 순위 중앙": 5.5,
+   "찾는 사람 3위 안": 0.333,
+   "V10 대비 (짝 · 95 %)": [
+    -0.032,
+    0.134
+   ],
+   "ms/장": 0.04
+  }
+ },
+ "C1+C2 상의": {
+  "U48": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.413,
+   "1·2순위": 0.644,
+   "판정된 것 1순위": 0.413,
+   "색 균형 1순위": 0.466,
+   "색 균형 1·2순위": 0.676,
+   "색별 1순위": {
+    "black": 0.558,
+    "blue": 0.283,
+    "brown": 0.2,
+    "gray": 0.292,
+    "green": 0.2,
+    "pink": 0.433,
+    "purple": 1.0,
+    "red": 0.758,
+    "white": 0.375,
+    "yellow": 0.558
+   },
+   "혼동": {
+    "black": {
+     "black": 67,
+     "navy": 29,
+     "red": 13,
+     "purple": 3
+    },
+    "blue": {
+     "navy": 49,
+     "blue": 34,
+     "purple": 20,
+     "red": 8
+    },
+    "brown": {
+     "gray": 42,
+     "brown": 24,
+     "white": 19,
+     "yellow": 13
+    },
+    "gray": {
+     "gray": 35,
+     "blue": 35,
+     "brown": 23,
+     "green": 10
+    },
+    "green": {
+     "gray": 54,
+     "blue": 30,
+     "green": 24,
+     "white": 4
+    },
+    "pink": {
+     "pink": 52,
+     "gray": 23,
+     "white": 10,
+     "brown": 9
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 91,
+     "pink": 10,
+     "purple": 8,
+     "navy": 8
+    },
+    "white": {
+     "white": 45,
+     "navy": 20,
+     "red": 16,
+     "blue": 15
+    },
+    "yellow": {
+     "yellow": 67,
+     "brown": 18,
+     "orange": 17,
+     "red": 7
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.095,
+    0.261
+   ],
+   "ms/장": 0.04
+  },
+  "U72": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.409,
+   "1·2순위": 0.655,
+   "판정된 것 1순위": 0.409,
+   "색 균형 1순위": 0.463,
+   "색 균형 1·2순위": 0.686,
+   "색별 1순위": {
+    "black": 0.558,
+    "blue": 0.308,
+    "brown": 0.267,
+    "gray": 0.258,
+    "green": 0.183,
+    "pink": 0.408,
+    "purple": 1.0,
+    "red": 0.775,
+    "white": 0.325,
+    "yellow": 0.542
+   },
+   "혼동": {
+    "black": {
+     "black": 67,
+     "navy": 32,
+     "red": 12,
+     "yellow": 3
+    },
+    "blue": {
+     "navy": 52,
+     "blue": 37,
+     "purple": 17,
+     "red": 8
+    },
+    "brown": {
+     "gray": 36,
+     "brown": 32,
+     "black": 15,
+     "yellow": 15
+    },
+    "gray": {
+     "blue": 37,
+     "gray": 31,
+     "brown": 18,
+     "green": 12
+    },
+    "green": {
+     "gray": 38,
+     "blue": 37,
+     "green": 22,
+     "orange": 12
+    },
+    "pink": {
+     "pink": 49,
+     "navy": 19,
+     "gray": 16,
+     "brown": 13
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 93,
+     "navy": 13,
+     "pink": 8,
+     "black": 3
+    },
+    "white": {
+     "white": 39,
+     "navy": 25,
+     "red": 16,
+     "blue": 13
+    },
+    "yellow": {
+     "yellow": 65,
+     "orange": 29,
+     "brown": 15,
+     "blue": 4
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.075,
+    0.252
+   ],
+   "ms/장": 0.04
+  },
+  "U120": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.411,
+   "1·2순위": 0.624,
+   "판정된 것 1순위": 0.411,
+   "색 균형 1순위": 0.464,
+   "색 균형 1·2순위": 0.657,
+   "색별 1순위": {
+    "black": 0.567,
+    "blue": 0.308,
+    "brown": 0.283,
+    "gray": 0.292,
+    "green": 0.067,
+    "pink": 0.433,
+    "purple": 1.0,
+    "red": 0.767,
+    "white": 0.342,
+    "yellow": 0.583
+   },
+   "혼동": {
+    "black": {
+     "black": 68,
+     "navy": 32,
+     "red": 11,
+     "yellow": 3
+    },
+    "blue": {
+     "navy": 49,
+     "blue": 37,
+     "purple": 19,
+     "red": 9
+    },
+    "brown": {
+     "gray": 39,
+     "brown": 34,
+     "yellow": 19,
+     "black": 11
+    },
+    "gray": {
+     "blue": 37,
+     "gray": 35,
+     "brown": 16,
+     "red": 12
+    },
+    "green": {
+     "gray": 42,
+     "orange": 27,
+     "blue": 24,
+     "red": 17
+    },
+    "pink": {
+     "pink": 52,
+     "navy": 24,
+     "brown": 10,
+     "white": 8
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 92,
+     "navy": 16,
+     "pink": 5,
+     "black": 3
+    },
+    "white": {
+     "white": 41,
+     "navy": 30,
+     "blue": 15,
+     "red": 11
+    },
+    "yellow": {
+     "yellow": 70,
+     "orange": 32,
+     "brown": 8,
+     "green": 3
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.073,
+    0.261
+   ],
+   "ms/장": 0.04
+  },
+  "N": {
+   "장": 3279,
+   "판정불가율": 0.0,
+   "1순위": 0.364,
+   "1·2순위": 0.556,
+   "판정된 것 1순위": 0.364,
+   "색 균형 1순위": 0.344,
+   "색 균형 1·2순위": 0.528,
+   "색별 1순위": {
+    "black": 0.336,
+    "blue": 0.464,
+    "gray": 0.329,
+    "green": 0.378,
+    "pink": 0.403,
+    "purple": 0.116,
+    "red": 0.165,
+    "white": 0.452,
+    "yellow": 0.45
+   },
+   "혼동": {
+    "black": {
+     "black": 147,
+     "navy": 102,
+     "gray": 52,
+     "green": 43
+    },
+    "blue": {
+     "blue": 380,
+     "navy": 123,
+     "green": 92,
+     "gray": 70
+    },
+    "gray": {
+     "white": 158,
+     "gray": 150,
+     "navy": 133,
+     "blue": 103
+    },
+    "green": {
+     "green": 118,
+     "navy": 66,
+     "brown": 56,
+     "black": 36
+    },
+    "pink": {
+     "pink": 29,
+     "red": 12,
+     "brown": 9,
+     "white": 8
+    },
+    "purple": {
+     "navy": 175,
+     "brown": 36,
+     "purple": 35,
+     "gray": 22
+    },
+    "red": {
+     "purple": 35,
+     "pink": 27,
+     "red": 14,
+     "blue": 8
+    },
+    "white": {
+     "white": 135,
+     "gray": 66,
+     "blue": 46,
+     "navy": 12
+    },
+    "yellow": {
+     "yellow": 27,
+     "brown": 16,
+     "white": 12,
+     "black": 4
+    }
+   },
+   "누적 1순위": 0.419,
+   "찾는 사람 순위 중앙": 6.0,
+   "찾는 사람 3위 안": 0.333,
+   "V10 대비 (짝 · 95 %)": [
+    -0.052,
+    0.104
+   ],
+   "ms/장": 0.04
+  }
+ },
+ "C4 편향 상의": {
+  "U48": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.482,
+   "1·2순위": 0.696,
+   "판정된 것 1순위": 0.482,
+   "색 균형 1순위": 0.528,
+   "색 균형 1·2순위": 0.723,
+   "색별 1순위": {
+    "black": 0.692,
+    "blue": 0.433,
+    "brown": 0.325,
+    "gray": 0.458,
+    "green": 0.492,
+    "pink": 0.367,
+    "purple": 1.0,
+    "red": 0.617,
+    "white": 0.35,
+    "yellow": 0.55
+   },
+   "혼동": {
+    "black": {
+     "black": 83,
+     "brown": 15,
+     "green": 7,
+     "purple": 6
+    },
+    "blue": {
+     "blue": 52,
+     "purple": 24,
+     "red": 10,
+     "green": 10
+    },
+    "brown": {
+     "gray": 40,
+     "brown": 39,
+     "black": 12,
+     "white": 12
+    },
+    "gray": {
+     "gray": 55,
+     "brown": 35,
+     "blue": 13,
+     "green": 8
+    },
+    "green": {
+     "green": 59,
+     "gray": 52,
+     "red": 4,
+     "orange": 3
+    },
+    "pink": {
+     "pink": 44,
+     "brown": 23,
+     "gray": 21,
+     "black": 11
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 74,
+     "purple": 20,
+     "black": 13,
+     "pink": 6
+    },
+    "white": {
+     "white": 42,
+     "gray": 23,
+     "blue": 13,
+     "brown": 9
+    },
+    "yellow": {
+     "yellow": 66,
+     "brown": 20,
+     "orange": 15,
+     "green": 11
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.099,
+    0.331
+   ],
+   "ms/장": 0.02
+  },
+  "U72": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.499,
+   "1·2순위": 0.703,
+   "판정된 것 1순위": 0.499,
+   "색 균형 1순위": 0.544,
+   "색 균형 1·2순위": 0.73,
+   "색별 1순위": {
+    "black": 0.775,
+    "blue": 0.417,
+    "brown": 0.425,
+    "gray": 0.467,
+    "green": 0.508,
+    "pink": 0.4,
+    "purple": 1.0,
+    "red": 0.65,
+    "white": 0.3,
+    "yellow": 0.5
+   },
+   "혼동": {
+    "black": {
+     "black": 93,
+     "brown": 8,
+     "green": 7,
+     "red": 6
+    },
+    "blue": {
+     "blue": 50,
+     "purple": 22,
+     "red": 18,
+     "navy": 10
+    },
+    "brown": {
+     "brown": 51,
+     "gray": 35,
+     "black": 14,
+     "yellow": 10
+    },
+    "gray": {
+     "gray": 56,
+     "brown": 31,
+     "blue": 14,
+     "green": 11
+    },
+    "green": {
+     "green": 61,
+     "gray": 45,
+     "red": 9,
+     "orange": 3
+    },
+    "pink": {
+     "pink": 48,
+     "black": 21,
+     "brown": 18,
+     "gray": 15
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 78,
+     "black": 17,
+     "purple": 14,
+     "brown": 5
+    },
+    "white": {
+     "white": 36,
+     "gray": 22,
+     "blue": 14,
+     "black": 11
+    },
+    "yellow": {
+     "yellow": 60,
+     "orange": 23,
+     "brown": 18,
+     "green": 12
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.093,
+    0.342
+   ],
+   "ms/장": 0.02
+  },
+  "U120": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.494,
+   "1·2순위": 0.69,
+   "판정된 것 1순위": 0.494,
+   "색 균형 1순위": 0.539,
+   "색 균형 1·2순위": 0.718,
+   "색별 1순위": {
+    "black": 0.808,
+    "blue": 0.5,
+    "brown": 0.417,
+    "gray": 0.475,
+    "green": 0.225,
+    "pink": 0.45,
+    "purple": 1.0,
+    "red": 0.658,
+    "white": 0.317,
+    "yellow": 0.542
+   },
+   "혼동": {
+    "black": {
+     "black": 97,
+     "red": 6,
+     "green": 6,
+     "brown": 5
+    },
+    "blue": {
+     "blue": 60,
+     "purple": 23,
+     "red": 15,
+     "navy": 7
+    },
+    "brown": {
+     "brown": 50,
+     "gray": 37,
+     "yellow": 15,
+     "black": 9
+    },
+    "gray": {
+     "gray": 57,
+     "brown": 30,
+     "green": 13,
+     "blue": 11
+    },
+    "green": {
+     "gray": 61,
+     "green": 27,
+     "red": 20,
+     "orange": 10
+    },
+    "pink": {
+     "pink": 54,
+     "black": 29,
+     "brown": 14,
+     "gray": 11
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 79,
+     "black": 20,
+     "purple": 10,
+     "brown": 5
+    },
+    "white": {
+     "white": 38,
+     "gray": 23,
+     "blue": 17,
+     "black": 12
+    },
+    "yellow": {
+     "yellow": 65,
+     "orange": 26,
+     "brown": 14,
+     "green": 9
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.092,
+    0.344
+   ],
+   "ms/장": 0.02
+  },
+  "N": {
+   "장": 3279,
+   "판정불가율": 0.0,
+   "1순위": 0.385,
+   "1·2순위": 0.566,
+   "판정된 것 1순위": 0.385,
+   "색 균형 1순위": 0.321,
+   "색 균형 1·2순위": 0.487,
+   "색별 1순위": {
+    "black": 0.474,
+    "blue": 0.479,
+    "gray": 0.322,
+    "green": 0.458,
+    "pink": 0.25,
+    "purple": 0.212,
+    "red": 0.0,
+    "white": 0.381,
+    "yellow": 0.317
+   },
+   "혼동": {
+    "black": {
+     "black": 207,
+     "brown": 112,
+     "green": 51,
+     "gray": 32
+    },
+    "blue": {
+     "blue": 351,
+     "green": 164,
+     "brown": 142,
+     "black": 72
+    },
+    "gray": {
+     "brown": 140,
+     "gray": 136,
+     "blue": 128,
+     "white": 123
+    },
+    "green": {
+     "green": 143,
+     "brown": 85,
+     "black": 64,
+     "gray": 9
+    },
+    "pink": {
+     "pink": 18,
+     "brown": 16,
+     "purple": 11,
+     "black": 9
+    },
+    "purple": {
+     "black": 81,
+     "purple": 64,
+     "blue": 52,
+     "brown": 46
+    },
+    "red": {
+     "purple": 65,
+     "pink": 12,
+     "blue": 7,
+     "black": 1
+    },
+    "white": {
+     "white": 114,
+     "gray": 65,
+     "brown": 53,
+     "blue": 36
+    },
+    "yellow": {
+     "brown": 31,
+     "yellow": 19,
+     "white": 6,
+     "black": 4
+    }
+   },
+   "누적 1순위": 0.444,
+   "찾는 사람 순위 중앙": 5.5,
+   "찾는 사람 3위 안": 0.31,
+   "V10 대비 (짝 · 95 %)": [
+    -0.016,
+    0.113
+   ],
+   "ms/장": 0.01
+  }
+ },
+ "C5 배경회색 상의": {
+  "U48": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.341,
+   "1·2순위": 0.541,
+   "판정된 것 1순위": 0.341,
+   "색 균형 1순위": 0.393,
+   "색 균형 1·2순위": 0.582,
+   "색별 1순위": {
+    "black": 0.617,
+    "blue": 0.275,
+    "brown": 0.05,
+    "gray": 0.475,
+    "green": 0.008,
+    "pink": 0.467,
+    "purple": 0.917,
+    "red": 0.483,
+    "white": 0.25,
+    "yellow": 0.383
+   },
+   "혼동": {
+    "black": {
+     "black": 74,
+     "navy": 20,
+     "brown": 13,
+     "blue": 5
+    },
+    "blue": {
+     "blue": 33,
+     "navy": 32,
+     "purple": 21,
+     "green": 14
+    },
+    "brown": {
+     "gray": 53,
+     "pink": 24,
+     "white": 16,
+     "brown": 6
+    },
+    "gray": {
+     "gray": 57,
+     "brown": 34,
+     "blue": 12,
+     "red": 5
+    },
+    "green": {
+     "gray": 102,
+     "white": 11,
+     "red": 3,
+     "blue": 2
+    },
+    "pink": {
+     "pink": 56,
+     "gray": 28,
+     "white": 8,
+     "navy": 8
+    },
+    "purple": {
+     "purple": 11,
+     "white": 1
+    },
+    "red": {
+     "red": 58,
+     "pink": 24,
+     "black": 16,
+     "purple": 16
+    },
+    "white": {
+     "blue": 42,
+     "white": 30,
+     "gray": 24,
+     "navy": 7
+    },
+    "yellow": {
+     "yellow": 46,
+     "orange": 30,
+     "white": 13,
+     "brown": 10
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.017,
+    0.2
+   ],
+   "ms/장": 11.46
+  },
+  "U72": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.361,
+   "1·2순위": 0.571,
+   "판정된 것 1순위": 0.361,
+   "색 균형 1순위": 0.418,
+   "색 균형 1·2순위": 0.609,
+   "색별 1순위": {
+    "black": 0.625,
+    "blue": 0.292,
+    "brown": 0.067,
+    "gray": 0.475,
+    "green": 0.008,
+    "pink": 0.467,
+    "purple": 1.0,
+    "red": 0.525,
+    "white": 0.292,
+    "yellow": 0.433
+   },
+   "혼동": {
+    "black": {
+     "black": 75,
+     "navy": 18,
+     "brown": 14,
+     "red": 4
+    },
+    "blue": {
+     "navy": 38,
+     "blue": 35,
+     "purple": 20,
+     "green": 7
+    },
+    "brown": {
+     "gray": 62,
+     "white": 17,
+     "yellow": 12,
+     "brown": 8
+    },
+    "gray": {
+     "gray": 57,
+     "brown": 29,
+     "blue": 12,
+     "green": 6
+    },
+    "green": {
+     "gray": 102,
+     "white": 8,
+     "red": 7,
+     "orange": 2
+    },
+    "pink": {
+     "pink": 56,
+     "gray": 26,
+     "brown": 10,
+     "white": 7
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 63,
+     "pink": 22,
+     "black": 17,
+     "purple": 15
+    },
+    "white": {
+     "blue": 39,
+     "white": 35,
+     "gray": 15,
+     "navy": 14
+    },
+    "yellow": {
+     "yellow": 52,
+     "orange": 34,
+     "blue": 11,
+     "white": 7
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.022,
+    0.213
+   ],
+   "ms/장": 11.46
+  },
+  "U120": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.393,
+   "1·2순위": 0.574,
+   "판정된 것 1순위": 0.393,
+   "색 균형 1순위": 0.44,
+   "색 균형 1·2순위": 0.613,
+   "색별 1순위": {
+    "black": 0.625,
+    "blue": 0.333,
+    "brown": 0.125,
+    "gray": 0.508,
+    "green": 0.008,
+    "pink": 0.458,
+    "purple": 0.917,
+    "red": 0.608,
+    "white": 0.333,
+    "yellow": 0.483
+   },
+   "혼동": {
+    "black": {
+     "black": 75,
+     "navy": 16,
+     "brown": 10,
+     "red": 6
+    },
+    "blue": {
+     "blue": 40,
+     "navy": 35,
+     "purple": 21,
+     "red": 8
+    },
+    "brown": {
+     "gray": 62,
+     "brown": 15,
+     "white": 13,
+     "yellow": 10
+    },
+    "gray": {
+     "gray": 61,
+     "brown": 23,
+     "green": 11,
+     "red": 7
+    },
+    "green": {
+     "gray": 84,
+     "red": 16,
+     "orange": 14,
+     "white": 5
+    },
+    "pink": {
+     "pink": 55,
+     "gray": 29,
+     "white": 9,
+     "black": 8
+    },
+    "purple": {
+     "purple": 11,
+     "white": 1
+    },
+    "red": {
+     "red": 73,
+     "black": 23,
+     "pink": 11,
+     "purple": 10
+    },
+    "white": {
+     "white": 40,
+     "blue": 30,
+     "gray": 21,
+     "navy": 11
+    },
+    "yellow": {
+     "yellow": 58,
+     "orange": 33,
+     "green": 10,
+     "blue": 6
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.035,
+    0.238
+   ],
+   "ms/장": 11.46
+  },
+  "N": {
+   "장": 3279,
+   "판정불가율": 0.0,
+   "1순위": 0.376,
+   "1·2순위": 0.556,
+   "판정된 것 1순위": 0.376,
+   "색 균형 1순위": 0.357,
+   "색 균형 1·2순위": 0.501,
+   "색별 1순위": {
+    "black": 0.286,
+    "blue": 0.47,
+    "gray": 0.351,
+    "green": 0.42,
+    "pink": 0.431,
+    "purple": 0.126,
+    "red": 0.0,
+    "white": 0.542,
+    "yellow": 0.583
+   },
+   "혼동": {
+    "black": {
+     "black": 125,
+     "navy": 74,
+     "green": 65,
+     "brown": 65
+    },
+    "blue": {
+     "blue": 388,
+     "white": 113,
+     "green": 101,
+     "gray": 75
+    },
+    "gray": {
+     "white": 192,
+     "gray": 172,
+     "blue": 149,
+     "green": 102
+    },
+    "green": {
+     "green": 131,
+     "brown": 46,
+     "black": 44,
+     "gray": 31
+    },
+    "pink": {
+     "pink": 31,
+     "white": 11,
+     "gray": 8,
+     "green": 8
+    },
+    "purple": {
+     "navy": 123,
+     "brown": 40,
+     "purple": 38,
+     "black": 36
+    },
+    "red": {
+     "pink": 48,
+     "purple": 30,
+     "blue": 6,
+     "black": 1
+    },
+    "white": {
+     "white": 162,
+     "blue": 59,
+     "gray": 30,
+     "pink": 16
+    },
+    "yellow": {
+     "yellow": 35,
+     "white": 13,
+     "brown": 7,
+     "gray": 4
+    }
+   },
+   "누적 1순위": 0.435,
+   "찾는 사람 순위 중앙": 6.0,
+   "찾는 사람 3위 안": 0.286,
+   "V10 대비 (짝 · 95 %)": [
+    -0.039,
+    0.12
+   ],
+   "ms/장": 5.94
+  }
+ },
+ "C6 색보정 상의": {
+  "U48": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.424,
+   "1·2순위": 0.643,
+   "판정된 것 1순위": 0.424,
+   "색 균형 1순위": 0.476,
+   "색 균형 1·2순위": 0.675,
+   "색별 1순위": {
+    "black": 0.425,
+    "blue": 0.333,
+    "brown": 0.117,
+    "gray": 0.433,
+    "green": 0.1,
+    "pink": 0.458,
+    "purple": 1.0,
+    "red": 0.717,
+    "white": 0.433,
+    "yellow": 0.742
+   },
+   "혼동": {
+    "black": {
+     "black": 51,
+     "brown": 16,
+     "navy": 12,
+     "red": 10
+    },
+    "blue": {
+     "blue": 40,
+     "navy": 38,
+     "red": 19,
+     "purple": 9
+    },
+    "brown": {
+     "gray": 49,
+     "white": 21,
+     "yellow": 17,
+     "brown": 14
+    },
+    "gray": {
+     "gray": 52,
+     "brown": 34,
+     "blue": 16,
+     "red": 6
+    },
+    "green": {
+     "gray": 92,
+     "green": 12,
+     "orange": 7,
+     "white": 4
+    },
+    "pink": {
+     "pink": 55,
+     "green": 15,
+     "gray": 12,
+     "white": 10
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 86,
+     "purple": 23,
+     "gray": 6,
+     "brown": 3
+    },
+    "white": {
+     "white": 52,
+     "blue": 16,
+     "red": 14,
+     "gray": 12
+    },
+    "yellow": {
+     "yellow": 89,
+     "orange": 11,
+     "red": 7,
+     "green": 6
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.108,
+    0.274
+   ],
+   "ms/장": 1.23
+  },
+  "U72": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.451,
+   "1·2순위": 0.668,
+   "판정된 것 1순위": 0.451,
+   "색 균형 1순위": 0.501,
+   "색 균형 1·2순위": 0.698,
+   "색별 1순위": {
+    "black": 0.592,
+    "blue": 0.342,
+    "brown": 0.267,
+    "gray": 0.433,
+    "green": 0.108,
+    "pink": 0.467,
+    "purple": 1.0,
+    "red": 0.725,
+    "white": 0.4,
+    "yellow": 0.675
+   },
+   "혼동": {
+    "black": {
+     "black": 71,
+     "brown": 12,
+     "navy": 10,
+     "red": 7
+    },
+    "blue": {
+     "blue": 41,
+     "navy": 41,
+     "red": 18,
+     "purple": 11
+    },
+    "brown": {
+     "gray": 42,
+     "brown": 32,
+     "yellow": 17,
+     "black": 10
+    },
+    "gray": {
+     "gray": 52,
+     "brown": 28,
+     "blue": 16,
+     "green": 9
+    },
+    "green": {
+     "gray": 77,
+     "orange": 18,
+     "green": 13,
+     "red": 10
+    },
+    "pink": {
+     "pink": 56,
+     "green": 17,
+     "gray": 16,
+     "purple": 8
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 87,
+     "purple": 19,
+     "gray": 6,
+     "brown": 5
+    },
+    "white": {
+     "white": 48,
+     "gray": 19,
+     "blue": 12,
+     "brown": 12
+    },
+    "yellow": {
+     "yellow": 81,
+     "orange": 20,
+     "green": 5,
+     "brown": 5
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.127,
+    0.294
+   ],
+   "ms/장": 1.23
+  },
+  "U120": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.446,
+   "1·2순위": 0.645,
+   "판정된 것 1순위": 0.446,
+   "색 균형 1순위": 0.496,
+   "색 균형 1·2순위": 0.677,
+   "색별 1순위": {
+    "black": 0.6,
+    "blue": 0.367,
+    "brown": 0.292,
+    "gray": 0.467,
+    "green": 0.025,
+    "pink": 0.458,
+    "purple": 1.0,
+    "red": 0.708,
+    "white": 0.375,
+    "yellow": 0.667
+   },
+   "혼동": {
+    "black": {
+     "black": 72,
+     "navy": 11,
+     "red": 9,
+     "brown": 9
+    },
+    "blue": {
+     "blue": 44,
+     "navy": 32,
+     "purple": 16,
+     "red": 15
+    },
+    "brown": {
+     "gray": 44,
+     "brown": 35,
+     "yellow": 19,
+     "red": 8
+    },
+    "gray": {
+     "gray": 56,
+     "brown": 24,
+     "blue": 16,
+     "green": 9
+    },
+    "green": {
+     "gray": 66,
+     "orange": 29,
+     "red": 20,
+     "green": 3
+    },
+    "pink": {
+     "pink": 55,
+     "gray": 23,
+     "green": 12,
+     "brown": 7
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 85,
+     "purple": 15,
+     "gray": 6,
+     "brown": 6
+    },
+    "white": {
+     "white": 45,
+     "gray": 22,
+     "blue": 14,
+     "red": 10
+    },
+    "yellow": {
+     "yellow": 80,
+     "orange": 23,
+     "red": 6,
+     "green": 5
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.113,
+    0.292
+   ],
+   "ms/장": 1.23
+  },
+  "N": {
+   "장": 3279,
+   "판정불가율": 0.0,
+   "1순위": 0.39,
+   "1·2순위": 0.58,
+   "판정된 것 1순위": 0.39,
+   "색 균형 1순위": 0.337,
+   "색 균형 1·2순위": 0.51,
+   "색별 1순위": {
+    "black": 0.336,
+    "blue": 0.498,
+    "gray": 0.419,
+    "green": 0.269,
+    "pink": 0.458,
+    "purple": 0.093,
+    "red": 0.0,
+    "white": 0.579,
+    "yellow": 0.383
+   },
+   "혼동": {
+    "black": {
+     "black": 147,
+     "gray": 75,
+     "purple": 53,
+     "brown": 46
+    },
+    "blue": {
+     "blue": 447,
+     "purple": 111,
+     "gray": 94,
+     "white": 90
+    },
+    "gray": {
+     "white": 215,
+     "gray": 202,
+     "blue": 147,
+     "black": 81
+    },
+    "green": {
+     "green": 84,
+     "black": 58,
+     "purple": 43,
+     "gray": 42
+    },
+    "pink": {
+     "pink": 33,
+     "white": 13,
+     "brown": 12,
+     "gray": 8
+    },
+    "purple": {
+     "navy": 100,
+     "black": 49,
+     "gray": 44,
+     "brown": 42
+    },
+    "red": {
+     "purple": 46,
+     "pink": 28,
+     "blue": 9,
+     "black": 1
+    },
+    "white": {
+     "white": 173,
+     "gray": 68,
+     "blue": 42,
+     "green": 7
+    },
+    "yellow": {
+     "yellow": 23,
+     "white": 21,
+     "brown": 10,
+     "black": 3
+    }
+   },
+   "누적 1순위": 0.465,
+   "찾는 사람 순위 중앙": 6.0,
+   "찾는 사람 3위 안": 0.31,
+   "V10 대비 (짝 · 95 %)": [
+    -0.021,
+    0.13
+   ],
+   "ms/장": 1.22
+  }
+ },
+ "C3 B1×V10 0.7": {
+  "U48": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.414,
+   "1·2순위": 0.629,
+   "판정된 것 1순위": 0.414,
+   "색 균형 1순위": 0.467,
+   "색 균형 1·2순위": 0.662,
+   "색별 1순위": {
+    "black": 0.833,
+    "blue": 0.475,
+    "brown": 0.042,
+    "gray": 0.542,
+    "green": 0.0,
+    "pink": 0.392,
+    "purple": 1.0,
+    "red": 0.558,
+    "white": 0.242,
+    "yellow": 0.583
+   },
+   "혼동": {
+    "black": {
+     "black": 100,
+     "navy": 7,
+     "green": 5,
+     "gray": 3
+    },
+    "blue": {
+     "blue": 57,
+     "navy": 42,
+     "purple": 5,
+     "black": 4
+    },
+    "brown": {
+     "gray": 75,
+     "yellow": 14,
+     "white": 8,
+     "black": 7
+    },
+    "gray": {
+     "gray": 65,
+     "blue": 21,
+     "black": 13,
+     "brown": 8
+    },
+    "green": {
+     "gray": 117,
+     "orange": 1,
+     "white": 1,
+     "red": 1
+    },
+    "pink": {
+     "gray": 50,
+     "pink": 47,
+     "red": 7,
+     "brown": 4
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 67,
+     "black": 26,
+     "pink": 18,
+     "purple": 6
+    },
+    "white": {
+     "gray": 39,
+     "blue": 32,
+     "white": 29,
+     "black": 5
+    },
+    "yellow": {
+     "yellow": 70,
+     "orange": 34,
+     "red": 7,
+     "blue": 4
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.104,
+    0.276
+   ],
+   "ms/장": 11.83
+  },
+  "U72": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.435,
+   "1·2순위": 0.62,
+   "판정된 것 1순위": 0.435,
+   "색 균형 1순위": 0.486,
+   "색 균형 1·2순위": 0.654,
+   "색별 1순위": {
+    "black": 0.892,
+    "blue": 0.5,
+    "brown": 0.058,
+    "gray": 0.575,
+    "green": 0.0,
+    "pink": 0.408,
+    "purple": 1.0,
+    "red": 0.633,
+    "white": 0.192,
+    "yellow": 0.6
+   },
+   "혼동": {
+    "black": {
+     "black": 107,
+     "navy": 4,
+     "green": 3,
+     "red": 1
+    },
+    "blue": {
+     "blue": 60,
+     "navy": 45,
+     "red": 4,
+     "black": 4
+    },
+    "brown": {
+     "gray": 75,
+     "yellow": 16,
+     "black": 13,
+     "brown": 7
+    },
+    "gray": {
+     "gray": 69,
+     "blue": 17,
+     "black": 15,
+     "brown": 6
+    },
+    "green": {
+     "gray": 116,
+     "red": 4
+    },
+    "pink": {
+     "gray": 52,
+     "pink": 49,
+     "red": 6,
+     "black": 4
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 76,
+     "black": 28,
+     "pink": 9,
+     "blue": 2
+    },
+    "white": {
+     "gray": 40,
+     "blue": 27,
+     "white": 23,
+     "black": 7
+    },
+    "yellow": {
+     "yellow": 72,
+     "orange": 33,
+     "red": 6,
+     "blue": 5
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.124,
+    0.289
+   ],
+   "ms/장": 11.83
+  },
+  "U120": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.442,
+   "1·2순위": 0.604,
+   "판정된 것 1순위": 0.442,
+   "색 균형 1순위": 0.493,
+   "색 균형 1·2순위": 0.64,
+   "색별 1순위": {
+    "black": 0.9,
+    "blue": 0.517,
+    "brown": 0.058,
+    "gray": 0.583,
+    "green": 0.0,
+    "pink": 0.408,
+    "purple": 1.0,
+    "red": 0.683,
+    "white": 0.158,
+    "yellow": 0.617
+   },
+   "혼동": {
+    "black": {
+     "black": 108,
+     "navy": 3,
+     "green": 3,
+     "blue": 2
+    },
+    "blue": {
+     "blue": 62,
+     "navy": 42,
+     "red": 4,
+     "black": 4
+    },
+    "brown": {
+     "gray": 78,
+     "yellow": 17,
+     "black": 12,
+     "brown": 7
+    },
+    "gray": {
+     "gray": 70,
+     "blue": 20,
+     "black": 11,
+     "yellow": 8
+    },
+    "green": {
+     "gray": 116,
+     "red": 4
+    },
+    "pink": {
+     "gray": 56,
+     "pink": 49,
+     "black": 5,
+     "red": 4
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 82,
+     "black": 28,
+     "pink": 5,
+     "blue": 3
+    },
+    "white": {
+     "gray": 43,
+     "blue": 30,
+     "white": 19,
+     "yellow": 5
+    },
+    "yellow": {
+     "yellow": 74,
+     "orange": 38,
+     "red": 3,
+     "brown": 2
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.124,
+    0.298
+   ],
+   "ms/장": 11.83
+  },
+  "N": {
+   "장": 3279,
+   "판정불가율": 0.0,
+   "1순위": 0.435,
+   "1·2순위": 0.614,
+   "판정된 것 1순위": 0.435,
+   "색 균형 1순위": 0.363,
+   "색 균형 1·2순위": 0.52,
+   "색별 1순위": {
+    "black": 0.579,
+    "blue": 0.513,
+    "gray": 0.455,
+    "green": 0.308,
+    "pink": 0.306,
+    "purple": 0.083,
+    "red": 0.0,
+    "white": 0.575,
+    "yellow": 0.45
+   },
+   "혼동": {
+    "black": {
+     "black": 253,
+     "gray": 71,
+     "green": 31,
+     "white": 23
+    },
+    "blue": {
+     "blue": 454,
+     "white": 114,
+     "black": 103,
+     "gray": 101
+    },
+    "gray": {
+     "gray": 217,
+     "white": 204,
+     "blue": 140,
+     "black": 103
+    },
+    "green": {
+     "black": 108,
+     "green": 96,
+     "gray": 39,
+     "brown": 35
+    },
+    "pink": {
+     "pink": 22,
+     "white": 20,
+     "brown": 8,
+     "gray": 8
+    },
+    "purple": {
+     "black": 99,
+     "navy": 87,
+     "gray": 45,
+     "brown": 33
+    },
+    "red": {
+     "pink": 51,
+     "purple": 23,
+     "blue": 10,
+     "black": 1
+    },
+    "white": {
+     "white": 172,
+     "gray": 69,
+     "blue": 45,
+     "green": 9
+    },
+    "yellow": {
+     "yellow": 27,
+     "white": 19,
+     "brown": 7,
+     "black": 4
+    }
+   },
+   "누적 1순위": 0.508,
+   "찾는 사람 순위 중앙": 5.0,
+   "찾는 사람 3위 안": 0.357,
+   "V10 대비 (짝 · 95 %)": [
+    0.042,
+    0.161
+   ],
+   "ms/장": 6.35
+  }
+ },
+ "C3 B1×L2 0.7": {
+  "U48": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.431,
+   "1·2순위": 0.623,
+   "판정된 것 1순위": 0.431,
+   "색 균형 1순위": 0.483,
+   "색 균형 1·2순위": 0.657,
+   "색별 1순위": {
+    "black": 0.842,
+    "blue": 0.508,
+    "brown": 0.033,
+    "gray": 0.458,
+    "green": 0.0,
+    "pink": 0.375,
+    "purple": 1.0,
+    "red": 0.717,
+    "white": 0.3,
+    "yellow": 0.592
+   },
+   "혼동": {
+    "black": {
+     "black": 101,
+     "navy": 9,
+     "green": 4,
+     "red": 3
+    },
+    "blue": {
+     "blue": 61,
+     "navy": 36,
+     "purple": 6,
+     "black": 5
+    },
+    "brown": {
+     "gray": 70,
+     "white": 17,
+     "yellow": 12,
+     "pink": 7
+    },
+    "gray": {
+     "gray": 55,
+     "blue": 26,
+     "brown": 15,
+     "green": 11
+    },
+    "green": {
+     "gray": 116,
+     "white": 2,
+     "orange": 1,
+     "red": 1
+    },
+    "pink": {
+     "pink": 45,
+     "gray": 22,
+     "black": 21,
+     "white": 15
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 86,
+     "black": 29,
+     "purple": 4,
+     "pink": 1
+    },
+    "white": {
+     "white": 36,
+     "gray": 31,
+     "blue": 24,
+     "black": 16
+    },
+    "yellow": {
+     "yellow": 71,
+     "orange": 31,
+     "red": 7,
+     "white": 4
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.116,
+    0.292
+   ],
+   "ms/장": 11.91
+  },
+  "U72": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.422,
+   "1·2순위": 0.63,
+   "판정된 것 1순위": 0.422,
+   "색 균형 1순위": 0.474,
+   "색 균형 1·2순위": 0.663,
+   "색별 1순위": {
+    "black": 0.858,
+    "blue": 0.5,
+    "brown": 0.042,
+    "gray": 0.392,
+    "green": 0.008,
+    "pink": 0.375,
+    "purple": 1.0,
+    "red": 0.717,
+    "white": 0.267,
+    "yellow": 0.583
+   },
+   "혼동": {
+    "black": {
+     "black": 103,
+     "navy": 8,
+     "red": 3,
+     "green": 3
+    },
+    "blue": {
+     "blue": 60,
+     "navy": 43,
+     "purple": 5,
+     "red": 4
+    },
+    "brown": {
+     "gray": 75,
+     "yellow": 15,
+     "black": 9,
+     "white": 5
+    },
+    "gray": {
+     "gray": 47,
+     "blue": 33,
+     "green": 15,
+     "brown": 12
+    },
+    "green": {
+     "gray": 114,
+     "red": 3,
+     "white": 2,
+     "green": 1
+    },
+    "pink": {
+     "pink": 45,
+     "black": 27,
+     "gray": 24,
+     "white": 8
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 86,
+     "black": 29,
+     "purple": 3,
+     "blue": 2
+    },
+    "white": {
+     "white": 32,
+     "gray": 29,
+     "blue": 24,
+     "black": 18
+    },
+    "yellow": {
+     "yellow": 70,
+     "orange": 30,
+     "red": 7,
+     "blue": 4
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.105,
+    0.277
+   ],
+   "ms/장": 11.91
+  },
+  "U120": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.419,
+   "1·2순위": 0.611,
+   "판정된 것 1순위": 0.419,
+   "색 균형 1순위": 0.472,
+   "색 균형 1·2순위": 0.646,
+   "색별 1순위": {
+    "black": 0.833,
+    "blue": 0.483,
+    "brown": 0.058,
+    "gray": 0.408,
+    "green": 0.008,
+    "pink": 0.35,
+    "purple": 1.0,
+    "red": 0.725,
+    "white": 0.25,
+    "yellow": 0.6
+   },
+   "혼동": {
+    "black": {
+     "black": 100,
+     "navy": 9,
+     "red": 6,
+     "green": 2
+    },
+    "blue": {
+     "blue": 58,
+     "navy": 40,
+     "purple": 8,
+     "red": 4
+    },
+    "brown": {
+     "gray": 79,
+     "yellow": 16,
+     "brown": 7,
+     "black": 6
+    },
+    "gray": {
+     "gray": 49,
+     "blue": 32,
+     "brown": 14,
+     "green": 11
+    },
+    "green": {
+     "gray": 112,
+     "red": 4,
+     "white": 3,
+     "green": 1
+    },
+    "pink": {
+     "pink": 42,
+     "black": 35,
+     "gray": 17,
+     "white": 9
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 87,
+     "black": 30,
+     "blue": 2,
+     "purple": 1
+    },
+    "white": {
+     "gray": 33,
+     "white": 30,
+     "blue": 18,
+     "black": 18
+    },
+    "yellow": {
+     "yellow": 72,
+     "orange": 36,
+     "green": 4,
+     "red": 4
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.092,
+    0.278
+   ],
+   "ms/장": 11.91
+  },
+  "N": {
+   "장": 3279,
+   "판정불가율": 0.0,
+   "1순위": 0.421,
+   "1·2순위": 0.613,
+   "판정된 것 1순위": 0.421,
+   "색 균형 1순위": 0.337,
+   "색 균형 1·2순위": 0.522,
+   "색별 1순위": {
+    "black": 0.449,
+    "blue": 0.55,
+    "gray": 0.429,
+    "green": 0.343,
+    "pink": 0.208,
+    "purple": 0.106,
+    "red": 0.0,
+    "white": 0.532,
+    "yellow": 0.417
+   },
+   "혼동": {
+    "black": {
+     "black": 196,
+     "gray": 76,
+     "green": 38,
+     "navy": 38
+    },
+    "blue": {
+     "blue": 481,
+     "gray": 101,
+     "white": 101,
+     "black": 81
+    },
+    "gray": {
+     "white": 217,
+     "gray": 211,
+     "blue": 149,
+     "black": 75
+    },
+    "green": {
+     "green": 107,
+     "black": 78,
+     "gray": 38,
+     "brown": 38
+    },
+    "pink": {
+     "white": 21,
+     "pink": 15,
+     "brown": 9,
+     "gray": 9
+    },
+    "purple": {
+     "navy": 115,
+     "black": 52,
+     "gray": 46,
+     "brown": 41
+    },
+    "red": {
+     "purple": 47,
+     "pink": 28,
+     "blue": 10
+    },
+    "white": {
+     "white": 159,
+     "gray": 70,
+     "blue": 54,
+     "green": 11
+    },
+    "yellow": {
+     "yellow": 25,
+     "white": 24,
+     "brown": 7,
+     "black": 3
+    }
+   },
+   "누적 1순위": 0.468,
+   "찾는 사람 순위 중앙": 5.5,
+   "찾는 사람 3위 안": 0.357,
+   "V10 대비 (짝 · 95 %)": [
+    0.021,
+    0.152
+   ],
+   "ms/장": 6.39
+  }
+ },
+ "C3 B1×L2 0.5": {
+  "U48": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.405,
+   "1·2순위": 0.581,
+   "판정된 것 1순위": 0.405,
+   "색 균형 1순위": 0.458,
+   "색 균형 1·2순위": 0.618,
+   "색별 1순위": {
+    "black": 0.867,
+    "blue": 0.517,
+    "brown": 0.025,
+    "gray": 0.5,
+    "green": 0.0,
+    "pink": 0.233,
+    "purple": 1.0,
+    "red": 0.683,
+    "white": 0.192,
+    "yellow": 0.567
+   },
+   "혼동": {
+    "black": {
+     "black": 104,
+     "navy": 10,
+     "red": 2,
+     "gray": 2
+    },
+    "blue": {
+     "blue": 62,
+     "navy": 34,
+     "green": 6,
+     "black": 5
+    },
+    "brown": {
+     "gray": 79,
+     "white": 11,
+     "black": 8,
+     "yellow": 8
+    },
+    "gray": {
+     "gray": 60,
+     "blue": 34,
+     "black": 12,
+     "green": 9
+    },
+    "green": {
+     "gray": 118,
+     "white": 2
+    },
+    "pink": {
+     "black": 36,
+     "pink": 28,
+     "blue": 17,
+     "white": 16
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 82,
+     "black": 33,
+     "pink": 3,
+     "purple": 2
+    },
+    "white": {
+     "gray": 35,
+     "blue": 32,
+     "white": 23,
+     "black": 18
+    },
+    "yellow": {
+     "yellow": 68,
+     "orange": 33,
+     "red": 6,
+     "green": 4
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.1,
+    0.256
+   ],
+   "ms/장": 11.91
+  },
+  "U72": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.397,
+   "1·2순위": 0.582,
+   "판정된 것 1순위": 0.397,
+   "색 균형 1순위": 0.451,
+   "색 균형 1·2순위": 0.62,
+   "색별 1순위": {
+    "black": 0.858,
+    "blue": 0.517,
+    "brown": 0.008,
+    "gray": 0.442,
+    "green": 0.0,
+    "pink": 0.225,
+    "purple": 1.0,
+    "red": 0.7,
+    "white": 0.192,
+    "yellow": 0.567
+   },
+   "혼동": {
+    "black": {
+     "black": 103,
+     "navy": 10,
+     "green": 2,
+     "pink": 1
+    },
+    "blue": {
+     "blue": 62,
+     "navy": 43,
+     "black": 6,
+     "red": 3
+    },
+    "brown": {
+     "gray": 81,
+     "black": 12,
+     "yellow": 10,
+     "white": 7
+    },
+    "gray": {
+     "gray": 53,
+     "blue": 37,
+     "black": 12,
+     "green": 11
+    },
+    "green": {
+     "gray": 117,
+     "white": 2,
+     "blue": 1
+    },
+    "pink": {
+     "black": 38,
+     "pink": 27,
+     "blue": 17,
+     "gray": 14
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 84,
+     "black": 32,
+     "blue": 2,
+     "purple": 2
+    },
+    "white": {
+     "gray": 35,
+     "blue": 28,
+     "white": 23,
+     "black": 18
+    },
+    "yellow": {
+     "yellow": 68,
+     "orange": 34,
+     "red": 5,
+     "blue": 5
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.078,
+    0.253
+   ],
+   "ms/장": 11.91
+  },
+  "U120": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.397,
+   "1·2순위": 0.562,
+   "판정된 것 1순위": 0.397,
+   "색 균형 1순위": 0.452,
+   "색 균형 1·2순위": 0.602,
+   "색별 1순위": {
+    "black": 0.867,
+    "blue": 0.533,
+    "brown": 0.008,
+    "gray": 0.475,
+    "green": 0.0,
+    "pink": 0.133,
+    "purple": 1.0,
+    "red": 0.692,
+    "white": 0.217,
+    "yellow": 0.592
+   },
+   "혼동": {
+    "black": {
+     "black": 104,
+     "navy": 10,
+     "green": 2,
+     "pink": 1
+    },
+    "blue": {
+     "blue": 64,
+     "navy": 44,
+     "black": 7,
+     "red": 2
+    },
+    "brown": {
+     "gray": 87,
+     "yellow": 13,
+     "black": 9,
+     "red": 3
+    },
+    "gray": {
+     "gray": 57,
+     "blue": 38,
+     "green": 10,
+     "black": 9
+    },
+    "green": {
+     "gray": 118,
+     "white": 2
+    },
+    "pink": {
+     "black": 35,
+     "gray": 24,
+     "blue": 20,
+     "pink": 16
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 83,
+     "black": 32,
+     "blue": 2,
+     "purple": 2
+    },
+    "white": {
+     "gray": 28,
+     "white": 26,
+     "black": 25,
+     "blue": 24
+    },
+    "yellow": {
+     "yellow": 71,
+     "orange": 35,
+     "green": 4,
+     "red": 4
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.076,
+    0.255
+   ],
+   "ms/장": 11.91
+  },
+  "N": {
+   "장": 3279,
+   "판정불가율": 0.0,
+   "1순위": 0.414,
+   "1·2순위": 0.603,
+   "판정된 것 1순위": 0.414,
+   "색 균형 1순위": 0.318,
+   "색 균형 1·2순위": 0.485,
+   "색별 1순위": {
+    "black": 0.483,
+    "blue": 0.567,
+    "gray": 0.419,
+    "green": 0.308,
+    "pink": 0.153,
+    "purple": 0.103,
+    "red": 0.0,
+    "white": 0.431,
+    "yellow": 0.4
+   },
+   "혼동": {
+    "black": {
+     "black": 211,
+     "gray": 81,
+     "navy": 39,
+     "green": 28
+    },
+    "blue": {
+     "blue": 497,
+     "gray": 106,
+     "black": 91,
+     "white": 91
+    },
+    "gray": {
+     "gray": 206,
+     "white": 200,
+     "blue": 163,
+     "green": 78
+    },
+    "green": {
+     "green": 96,
+     "black": 95,
+     "gray": 38,
+     "brown": 38
+    },
+    "pink": {
+     "white": 18,
+     "purple": 14,
+     "green": 11,
+     "pink": 11
+    },
+    "purple": {
+     "navy": 97,
+     "black": 76,
+     "gray": 45,
+     "brown": 41
+    },
+    "red": {
+     "purple": 56,
+     "pink": 17,
+     "blue": 12
+    },
+    "white": {
+     "white": 129,
+     "gray": 84,
+     "blue": 66,
+     "green": 14
+    },
+    "yellow": {
+     "yellow": 24,
+     "white": 23,
+     "brown": 7,
+     "black": 4
+    }
+   },
+   "누적 1순위": 0.459,
+   "찾는 사람 순위 중앙": 6.0,
+   "찾는 사람 3위 안": 0.333,
+   "V10 대비 (짝 · 95 %)": [
+    0.02,
+    0.137
+   ],
+   "ms/장": 6.39
+  }
+ },
+ "C8 B1+probe 0.5": {
+  "U48": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.503,
+   "1·2순위": 0.669,
+   "판정된 것 1순위": 0.503,
+   "색 균형 1순위": 0.547,
+   "색 균형 1·2순위": 0.699,
+   "색별 1순위": {
+    "black": 0.817,
+    "blue": 0.442,
+    "brown": 0.192,
+    "gray": 0.517,
+    "green": 0.208,
+    "pink": 0.358,
+    "purple": 1.0,
+    "red": 0.683,
+    "white": 0.492,
+    "yellow": 0.767
+   },
+   "혼동": {
+    "black": {
+     "black": 98,
+     "blue": 10,
+     "navy": 3,
+     "red": 3
+    },
+    "blue": {
+     "blue": 53,
+     "purple": 21,
+     "black": 21,
+     "green": 10
+    },
+    "brown": {
+     "gray": 45,
+     "brown": 23,
+     "white": 17,
+     "black": 13
+    },
+    "gray": {
+     "gray": 62,
+     "black": 24,
+     "blue": 15,
+     "brown": 10
+    },
+    "green": {
+     "gray": 91,
+     "green": 25,
+     "white": 4
+    },
+    "pink": {
+     "pink": 43,
+     "gray": 20,
+     "purple": 14,
+     "white": 11
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 82,
+     "black": 21,
+     "purple": 13,
+     "blue": 3
+    },
+    "white": {
+     "white": 59,
+     "blue": 19,
+     "purple": 14,
+     "gray": 10
+    },
+    "yellow": {
+     "yellow": 92,
+     "orange": 9,
+     "red": 7,
+     "green": 5
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.152,
+    0.359
+   ],
+   "ms/장": 2.84
+  },
+  "U72": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.487,
+   "1·2순위": 0.659,
+   "판정된 것 1순위": 0.487,
+   "색 균형 1순위": 0.533,
+   "색 균형 1·2순위": 0.69,
+   "색별 1순위": {
+    "black": 0.85,
+    "blue": 0.408,
+    "brown": 0.167,
+    "gray": 0.542,
+    "green": 0.192,
+    "pink": 0.383,
+    "purple": 1.0,
+    "red": 0.683,
+    "white": 0.425,
+    "yellow": 0.683
+   },
+   "혼동": {
+    "black": {
+     "black": 102,
+     "blue": 6,
+     "red": 5,
+     "purple": 2
+    },
+    "blue": {
+     "blue": 49,
+     "black": 24,
+     "purple": 23,
+     "red": 11
+    },
+    "brown": {
+     "gray": 52,
+     "black": 28,
+     "brown": 20,
+     "yellow": 10
+    },
+    "gray": {
+     "gray": 65,
+     "black": 23,
+     "blue": 14,
+     "brown": 10
+    },
+    "green": {
+     "gray": 94,
+     "green": 23,
+     "white": 2,
+     "orange": 1
+    },
+    "pink": {
+     "pink": 46,
+     "purple": 21,
+     "gray": 14,
+     "black": 11
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 82,
+     "black": 19,
+     "purple": 14,
+     "blue": 2
+    },
+    "white": {
+     "white": 51,
+     "blue": 22,
+     "purple": 18,
+     "gray": 12
+    },
+    "yellow": {
+     "yellow": 82,
+     "orange": 16,
+     "green": 7,
+     "red": 7
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.115,
+    0.338
+   ],
+   "ms/장": 2.84
+  },
+  "U120": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.471,
+   "1·2순위": 0.629,
+   "판정된 것 1순위": 0.471,
+   "색 균형 1순위": 0.511,
+   "색 균형 1·2순위": 0.662,
+   "색별 1순위": {
+    "black": 0.825,
+    "blue": 0.5,
+    "brown": 0.092,
+    "gray": 0.542,
+    "green": 0.058,
+    "pink": 0.425,
+    "purple": 0.917,
+    "red": 0.642,
+    "white": 0.433,
+    "yellow": 0.675
+   },
+   "혼동": {
+    "black": {
+     "black": 99,
+     "red": 8,
+     "blue": 6,
+     "purple": 5
+    },
+    "blue": {
+     "blue": 60,
+     "purple": 23,
+     "black": 15,
+     "navy": 8
+    },
+    "brown": {
+     "gray": 53,
+     "black": 30,
+     "yellow": 15,
+     "brown": 11
+    },
+    "gray": {
+     "gray": 65,
+     "black": 18,
+     "blue": 14,
+     "green": 8
+    },
+    "green": {
+     "gray": 110,
+     "green": 7,
+     "orange": 2,
+     "white": 1
+    },
+    "pink": {
+     "pink": 51,
+     "purple": 27,
+     "gray": 15,
+     "black": 10
+    },
+    "purple": {
+     "purple": 11,
+     "white": 1
+    },
+    "red": {
+     "red": 77,
+     "purple": 24,
+     "black": 16,
+     "gray": 1
+    },
+    "white": {
+     "white": 52,
+     "purple": 23,
+     "blue": 21,
+     "gray": 7
+    },
+    "yellow": {
+     "yellow": 81,
+     "orange": 19,
+     "red": 7,
+     "green": 4
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.084,
+    0.318
+   ],
+   "ms/장": 2.84
+  },
+  "N": {
+   "장": 3279,
+   "판정불가율": 0.0,
+   "1순위": 0.418,
+   "1·2순위": 0.595,
+   "판정된 것 1순위": 0.418,
+   "색 균형 1순위": 0.364,
+   "색 균형 1·2순위": 0.515,
+   "색별 1순위": {
+    "black": 0.508,
+    "blue": 0.502,
+    "gray": 0.338,
+    "green": 0.474,
+    "pink": 0.208,
+    "purple": 0.076,
+    "red": 0.129,
+    "white": 0.659,
+    "yellow": 0.383
+   },
+   "혼동": {
+    "black": {
+     "black": 222,
+     "blue": 56,
+     "gray": 54,
+     "green": 50
+    },
+    "blue": {
+     "blue": 381,
+     "green": 151,
+     "black": 128,
+     "white": 89
+    },
+    "gray": {
+     "white": 181,
+     "gray": 148,
+     "green": 144,
+     "blue": 144
+    },
+    "green": {
+     "green": 148,
+     "black": 73,
+     "blue": 31,
+     "brown": 27
+    },
+    "pink": {
+     "black": 21,
+     "brown": 16,
+     "pink": 15,
+     "white": 7
+    },
+    "purple": {
+     "black": 87,
+     "blue": 81,
+     "gray": 56,
+     "brown": 28
+    },
+    "red": {
+     "purple": 40,
+     "pink": 21,
+     "red": 11,
+     "blue": 9
+    },
+    "white": {
+     "white": 197,
+     "gray": 33,
+     "blue": 28,
+     "green": 15
+    },
+    "yellow": {
+     "white": 28,
+     "yellow": 23,
+     "black": 4,
+     "brown": 2
+    }
+   },
+   "누적 1순위": 0.495,
+   "찾는 사람 순위 중앙": 6.0,
+   "찾는 사람 3위 안": 0.381,
+   "V10 대비 (짝 · 95 %)": [
+    0.012,
+    0.154
+   ],
+   "ms/장": 2.8
+  }
+ },
+ "C9 probe 증강 상의": {
+  "U48": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.465,
+   "1·2순위": 0.634,
+   "판정된 것 1순위": 0.465,
+   "색 균형 1순위": 0.491,
+   "색 균형 1·2순위": 0.667,
+   "색별 1순위": {
+    "black": 0.825,
+    "blue": 0.35,
+    "brown": 0.242,
+    "gray": 0.617,
+    "green": 0.2,
+    "pink": 0.017,
+    "purple": 0.75,
+    "red": 0.65,
+    "white": 0.433,
+    "yellow": 0.825
+   },
+   "혼동": {
+    "black": {
+     "black": 99,
+     "blue": 9,
+     "purple": 8,
+     "gray": 3
+    },
+    "blue": {
+     "blue": 42,
+     "black": 30,
+     "purple": 21,
+     "green": 16
+    },
+    "brown": {
+     "gray": 48,
+     "brown": 29,
+     "black": 18,
+     "white": 9
+    },
+    "gray": {
+     "gray": 74,
+     "black": 28,
+     "purple": 9,
+     "blue": 5
+    },
+    "green": {
+     "gray": 91,
+     "green": 24,
+     "white": 3,
+     "blue": 2
+    },
+    "pink": {
+     "purple": 34,
+     "green": 21,
+     "gray": 15,
+     "blue": 13
+    },
+    "purple": {
+     "purple": 9,
+     "gray": 1,
+     "pink": 1,
+     "white": 1
+    },
+    "red": {
+     "red": 78,
+     "black": 20,
+     "purple": 16,
+     "blue": 3
+    },
+    "white": {
+     "white": 52,
+     "purple": 34,
+     "blue": 14,
+     "gray": 11
+    },
+    "yellow": {
+     "yellow": 99,
+     "white": 7,
+     "black": 4,
+     "red": 3
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.079,
+    0.35
+   ],
+   "ms/장": 0.0
+  },
+  "U72": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.425,
+   "1·2순위": 0.609,
+   "판정된 것 1순위": 0.425,
+   "색 균형 1순위": 0.447,
+   "색 균형 1·2순위": 0.637,
+   "색별 1순위": {
+    "black": 0.833,
+    "blue": 0.375,
+    "brown": 0.133,
+    "gray": 0.625,
+    "green": 0.158,
+    "pink": 0.008,
+    "purple": 0.667,
+    "red": 0.617,
+    "white": 0.433,
+    "yellow": 0.617
+   },
+   "혼동": {
+    "black": {
+     "black": 100,
+     "purple": 9,
+     "blue": 8,
+     "red": 2
+    },
+    "blue": {
+     "blue": 45,
+     "black": 27,
+     "purple": 25,
+     "green": 11
+    },
+    "brown": {
+     "gray": 62,
+     "black": 32,
+     "brown": 16,
+     "blue": 6
+    },
+    "gray": {
+     "gray": 75,
+     "black": 28,
+     "purple": 7,
+     "blue": 7
+    },
+    "green": {
+     "gray": 95,
+     "green": 19,
+     "white": 3,
+     "blue": 3
+    },
+    "pink": {
+     "purple": 36,
+     "red": 15,
+     "blue": 13,
+     "gray": 12
+    },
+    "purple": {
+     "purple": 8,
+     "pink": 2,
+     "gray": 1,
+     "white": 1
+    },
+    "red": {
+     "red": 74,
+     "purple": 23,
+     "black": 14,
+     "blue": 5
+    },
+    "white": {
+     "white": 52,
+     "purple": 34,
+     "blue": 12,
+     "gray": 11
+    },
+    "yellow": {
+     "yellow": 74,
+     "white": 14,
+     "blue": 9,
+     "red": 8
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.01,
+    0.303
+   ],
+   "ms/장": 0.0
+  },
+  "U120": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.377,
+   "1·2순위": 0.562,
+   "판정된 것 1순위": 0.377,
+   "색 균형 1순위": 0.411,
+   "색 균형 1·2순위": 0.587,
+   "색별 1순위": {
+    "black": 0.842,
+    "blue": 0.292,
+    "brown": 0.042,
+    "gray": 0.608,
+    "green": 0.067,
+    "pink": 0.0,
+    "purple": 0.75,
+    "red": 0.558,
+    "white": 0.458,
+    "yellow": 0.492
+   },
+   "혼동": {
+    "black": {
+     "black": 101,
+     "purple": 11,
+     "blue": 6,
+     "red": 2
+    },
+    "blue": {
+     "blue": 35,
+     "purple": 26,
+     "black": 21,
+     "green": 19
+    },
+    "brown": {
+     "gray": 67,
+     "black": 38,
+     "white": 6,
+     "brown": 5
+    },
+    "gray": {
+     "gray": 73,
+     "black": 24,
+     "blue": 13,
+     "purple": 6
+    },
+    "green": {
+     "gray": 108,
+     "green": 8,
+     "blue": 2,
+     "white": 2
+    },
+    "pink": {
+     "purple": 40,
+     "gray": 18,
+     "green": 15,
+     "red": 13
+    },
+    "purple": {
+     "purple": 9,
+     "pink": 2,
+     "white": 1
+    },
+    "red": {
+     "red": 67,
+     "purple": 35,
+     "black": 11,
+     "green": 3
+    },
+    "white": {
+     "white": 55,
+     "purple": 39,
+     "blue": 11,
+     "gray": 7
+    },
+    "yellow": {
+     "yellow": 59,
+     "white": 17,
+     "blue": 13,
+     "black": 10
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    -0.017,
+    0.245
+   ],
+   "ms/장": 0.0
+  },
+  "N": {
+   "장": 3279,
+   "판정불가율": 0.0,
+   "1순위": 0.335,
+   "1·2순위": 0.539,
+   "판정된 것 1순위": 0.335,
+   "색 균형 1순위": 0.285,
+   "색 균형 1·2순위": 0.446,
+   "색별 1순위": {
+    "black": 0.595,
+    "blue": 0.393,
+    "gray": 0.236,
+    "green": 0.42,
+    "pink": 0.014,
+    "purple": 0.109,
+    "red": 0.271,
+    "white": 0.291,
+    "yellow": 0.233
+   },
+   "혼동": {
+    "black": {
+     "black": 260,
+     "blue": 61,
+     "green": 41,
+     "gray": 37
+    },
+    "blue": {
+     "blue": 268,
+     "black": 225,
+     "green": 197,
+     "purple": 115
+    },
+    "gray": {
+     "green": 194,
+     "black": 147,
+     "blue": 135,
+     "gray": 96
+    },
+    "green": {
+     "green": 131,
+     "black": 86,
+     "blue": 42,
+     "brown": 33
+    },
+    "pink": {
+     "black": 26,
+     "brown": 24,
+     "red": 9,
+     "green": 6
+    },
+    "purple": {
+     "black": 120,
+     "blue": 74,
+     "gray": 49,
+     "purple": 33
+    },
+    "red": {
+     "purple": 29,
+     "red": 23,
+     "black": 10,
+     "blue": 7
+    },
+    "white": {
+     "white": 87,
+     "purple": 57,
+     "gray": 55,
+     "blue": 43
+    },
+    "yellow": {
+     "black": 18,
+     "yellow": 14,
+     "gray": 12,
+     "white": 6
+    }
+   },
+   "누적 1순위": 0.368,
+   "찾는 사람 순위 중앙": 6.5,
+   "찾는 사람 3위 안": 0.262,
+   "V10 대비 (짝 · 95 %)": [
+    -0.066,
+    0.062
+   ],
+   "ms/장": 0.0
+  }
+ },
+ "C4×V10 0.7": {
+  "U48": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.411,
+   "1·2순위": 0.635,
+   "판정된 것 1순위": 0.411,
+   "색 균형 1순위": 0.464,
+   "색 균형 1·2순위": 0.668,
+   "색별 1순위": {
+    "black": 0.9,
+    "blue": 0.467,
+    "brown": 0.158,
+    "gray": 0.5,
+    "green": 0.025,
+    "pink": 0.342,
+    "purple": 1.0,
+    "red": 0.542,
+    "white": 0.2,
+    "yellow": 0.508
+   },
+   "혼동": {
+    "black": {
+     "black": 108,
+     "green": 6,
+     "navy": 3,
+     "purple": 1
+    },
+    "blue": {
+     "blue": 56,
+     "navy": 18,
+     "green": 17,
+     "purple": 12
+    },
+    "brown": {
+     "gray": 71,
+     "brown": 19,
+     "black": 13,
+     "yellow": 7
+    },
+    "gray": {
+     "gray": 60,
+     "brown": 23,
+     "blue": 17,
+     "black": 9
+    },
+    "green": {
+     "gray": 116,
+     "green": 3,
+     "red": 1
+    },
+    "pink": {
+     "gray": 48,
+     "pink": 41,
+     "brown": 14,
+     "red": 6
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 65,
+     "black": 27,
+     "pink": 14,
+     "purple": 12
+    },
+    "white": {
+     "gray": 40,
+     "blue": 24,
+     "white": 24,
+     "black": 8
+    },
+    "yellow": {
+     "yellow": 61,
+     "orange": 27,
+     "brown": 14,
+     "red": 6
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.096,
+    0.271
+   ],
+   "ms/장": 10.38
+  },
+  "U72": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.438,
+   "1·2순위": 0.637,
+   "판정된 것 1순위": 0.438,
+   "색 균형 1순위": 0.488,
+   "색 균형 1·2순위": 0.67,
+   "색별 1순위": {
+    "black": 0.933,
+    "blue": 0.575,
+    "brown": 0.175,
+    "gray": 0.525,
+    "green": 0.017,
+    "pink": 0.367,
+    "purple": 1.0,
+    "red": 0.575,
+    "white": 0.183,
+    "yellow": 0.533
+   },
+   "혼동": {
+    "black": {
+     "black": 112,
+     "green": 5,
+     "navy": 1,
+     "pink": 1
+    },
+    "blue": {
+     "blue": 69,
+     "navy": 21,
+     "green": 9,
+     "black": 8
+    },
+    "brown": {
+     "gray": 59,
+     "black": 23,
+     "brown": 21,
+     "yellow": 9
+    },
+    "gray": {
+     "gray": 63,
+     "brown": 16,
+     "blue": 15,
+     "green": 11
+    },
+    "green": {
+     "gray": 117,
+     "green": 2,
+     "red": 1
+    },
+    "pink": {
+     "gray": 46,
+     "pink": 44,
+     "brown": 9,
+     "black": 9
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 69,
+     "black": 30,
+     "pink": 9,
+     "purple": 5
+    },
+    "white": {
+     "gray": 40,
+     "blue": 24,
+     "white": 22,
+     "black": 9
+    },
+    "yellow": {
+     "yellow": 64,
+     "orange": 30,
+     "brown": 10,
+     "red": 6
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.123,
+    0.29
+   ],
+   "ms/장": 10.38
+  },
+  "U120": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.441,
+   "1·2순위": 0.608,
+   "판정된 것 1순위": 0.441,
+   "색 균형 1순위": 0.492,
+   "색 균형 1·2순위": 0.643,
+   "색별 1순위": {
+    "black": 0.925,
+    "blue": 0.567,
+    "brown": 0.167,
+    "gray": 0.533,
+    "green": 0.008,
+    "pink": 0.392,
+    "purple": 1.0,
+    "red": 0.608,
+    "white": 0.142,
+    "yellow": 0.575
+   },
+   "혼동": {
+    "black": {
+     "black": 111,
+     "green": 5,
+     "brown": 2,
+     "pink": 1
+    },
+    "blue": {
+     "blue": 68,
+     "navy": 20,
+     "purple": 9,
+     "green": 8
+    },
+    "brown": {
+     "gray": 55,
+     "black": 25,
+     "brown": 20,
+     "yellow": 15
+    },
+    "gray": {
+     "gray": 64,
+     "black": 16,
+     "brown": 14,
+     "blue": 11
+    },
+    "green": {
+     "gray": 118,
+     "green": 1,
+     "red": 1
+    },
+    "pink": {
+     "pink": 47,
+     "gray": 45,
+     "black": 14,
+     "brown": 5
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 73,
+     "black": 31,
+     "purple": 6,
+     "pink": 3
+    },
+    "white": {
+     "gray": 43,
+     "blue": 23,
+     "white": 17,
+     "black": 14
+    },
+    "yellow": {
+     "yellow": 69,
+     "orange": 30,
+     "brown": 10,
+     "red": 5
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.113,
+    0.296
+   ],
+   "ms/장": 10.38
+  },
+  "N": {
+   "장": 3279,
+   "판정불가율": 0.0,
+   "1순위": 0.421,
+   "1·2순위": 0.609,
+   "판정된 것 1순위": 0.421,
+   "색 균형 1순위": 0.332,
+   "색 균형 1·2순위": 0.497,
+   "색별 1순위": {
+    "black": 0.627,
+    "blue": 0.504,
+    "gray": 0.415,
+    "green": 0.362,
+    "pink": 0.181,
+    "purple": 0.136,
+    "red": 0.0,
+    "white": 0.411,
+    "yellow": 0.35
+   },
+   "혼동": {
+    "black": {
+     "black": 274,
+     "gray": 52,
+     "green": 41,
+     "brown": 37
+    },
+    "blue": {
+     "blue": 403,
+     "black": 122,
+     "green": 103,
+     "purple": 82
+    },
+    "gray": {
+     "gray": 187,
+     "black": 158,
+     "blue": 135,
+     "white": 121
+    },
+    "green": {
+     "green": 113,
+     "black": 113,
+     "brown": 72,
+     "gray": 8
+    },
+    "pink": {
+     "pink": 13,
+     "white": 13,
+     "brown": 12,
+     "purple": 11
+    },
+    "purple": {
+     "black": 141,
+     "brown": 42,
+     "purple": 41,
+     "gray": 33
+    },
+    "red": {
+     "purple": 51,
+     "pink": 24,
+     "blue": 9,
+     "black": 1
+    },
+    "white": {
+     "white": 123,
+     "gray": 81,
+     "blue": 42,
+     "brown": 26
+    },
+    "yellow": {
+     "brown": 27,
+     "yellow": 21,
+     "black": 6,
+     "white": 4
+    }
+   },
+   "누적 1순위": 0.471,
+   "찾는 사람 순위 중앙": 6.0,
+   "찾는 사람 3위 안": 0.381,
+   "V10 대비 (짝 · 95 %)": [
+    0.039,
+    0.132
+   ],
+   "ms/장": 4.88
+  }
+ },
+ "C8×V10 0.7": {
+  "U48": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.438,
+   "1·2순위": 0.641,
+   "판정된 것 1순위": 0.438,
+   "색 균형 1순위": 0.488,
+   "색 균형 1·2순위": 0.673,
+   "색별 1순위": {
+    "black": 0.933,
+    "blue": 0.5,
+    "brown": 0.058,
+    "gray": 0.575,
+    "green": 0.008,
+    "pink": 0.325,
+    "purple": 1.0,
+    "red": 0.608,
+    "white": 0.25,
+    "yellow": 0.625
+   },
+   "혼동": {
+    "black": {
+     "black": 112,
+     "navy": 3,
+     "blue": 3,
+     "pink": 1
+    },
+    "blue": {
+     "blue": 60,
+     "navy": 22,
+     "black": 18,
+     "green": 8
+    },
+    "brown": {
+     "gray": 83,
+     "black": 11,
+     "yellow": 7,
+     "brown": 7
+    },
+    "gray": {
+     "gray": 69,
+     "black": 31,
+     "blue": 17,
+     "green": 1
+    },
+    "green": {
+     "gray": 118,
+     "white": 1,
+     "green": 1
+    },
+    "pink": {
+     "gray": 56,
+     "pink": 39,
+     "red": 7,
+     "black": 5
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 73,
+     "black": 35,
+     "pink": 6,
+     "purple": 5
+    },
+    "white": {
+     "gray": 40,
+     "blue": 30,
+     "white": 30,
+     "purple": 5
+    },
+    "yellow": {
+     "yellow": 75,
+     "orange": 29,
+     "red": 7,
+     "black": 5
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.124,
+    0.298
+   ],
+   "ms/장": 13.2
+  },
+  "U72": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.44,
+   "1·2순위": 0.618,
+   "판정된 것 1순위": 0.44,
+   "색 균형 1순위": 0.491,
+   "색 균형 1·2순위": 0.653,
+   "색별 1순위": {
+    "black": 0.942,
+    "blue": 0.558,
+    "brown": 0.033,
+    "gray": 0.6,
+    "green": 0.0,
+    "pink": 0.333,
+    "purple": 1.0,
+    "red": 0.617,
+    "white": 0.217,
+    "yellow": 0.608
+   },
+   "혼동": {
+    "black": {
+     "black": 113,
+     "blue": 4,
+     "pink": 1,
+     "navy": 1
+    },
+    "blue": {
+     "blue": 67,
+     "navy": 21,
+     "black": 17,
+     "green": 6
+    },
+    "brown": {
+     "gray": 75,
+     "black": 34,
+     "yellow": 6,
+     "brown": 4
+    },
+    "gray": {
+     "gray": 72,
+     "black": 29,
+     "blue": 14,
+     "yellow": 2
+    },
+    "green": {
+     "gray": 119,
+     "blue": 1
+    },
+    "pink": {
+     "gray": 54,
+     "pink": 40,
+     "black": 12,
+     "red": 6
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 74,
+     "black": 34,
+     "pink": 4,
+     "purple": 4
+    },
+    "white": {
+     "gray": 36,
+     "blue": 34,
+     "white": 26,
+     "black": 8
+    },
+    "yellow": {
+     "yellow": 73,
+     "orange": 28,
+     "red": 8,
+     "black": 4
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.126,
+    0.295
+   ],
+   "ms/장": 13.2
+  },
+  "U120": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.443,
+   "1·2순위": 0.597,
+   "판정된 것 1순위": 0.443,
+   "색 균형 1순위": 0.493,
+   "색 균형 1·2순위": 0.633,
+   "색별 1순위": {
+    "black": 0.967,
+    "blue": 0.592,
+    "brown": 0.017,
+    "gray": 0.617,
+    "green": 0.0,
+    "pink": 0.317,
+    "purple": 1.0,
+    "red": 0.608,
+    "white": 0.217,
+    "yellow": 0.6
+   },
+   "혼동": {
+    "black": {
+     "black": 116,
+     "blue": 3,
+     "pink": 1
+    },
+    "blue": {
+     "blue": 71,
+     "navy": 19,
+     "black": 12,
+     "green": 7
+    },
+    "brown": {
+     "gray": 76,
+     "black": 36,
+     "yellow": 6,
+     "brown": 2
+    },
+    "gray": {
+     "gray": 74,
+     "black": 28,
+     "blue": 14,
+     "green": 2
+    },
+    "green": {
+     "gray": 120
+    },
+    "pink": {
+     "gray": 59,
+     "pink": 38,
+     "black": 12,
+     "purple": 3
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 73,
+     "black": 32,
+     "purple": 10,
+     "pink": 2
+    },
+    "white": {
+     "gray": 38,
+     "blue": 31,
+     "white": 26,
+     "purple": 6
+    },
+    "yellow": {
+     "yellow": 72,
+     "orange": 32,
+     "red": 6,
+     "black": 5
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.119,
+    0.295
+   ],
+   "ms/장": 13.2
+  },
+  "N": {
+   "장": 3279,
+   "판정불가율": 0.0,
+   "1순위": 0.442,
+   "1·2순위": 0.628,
+   "판정된 것 1순위": 0.442,
+   "색 균형 1순위": 0.349,
+   "색 균형 1·2순위": 0.507,
+   "색별 1순위": {
+    "black": 0.705,
+    "blue": 0.508,
+    "gray": 0.423,
+    "green": 0.356,
+    "pink": 0.097,
+    "purple": 0.046,
+    "red": 0.0,
+    "white": 0.605,
+    "yellow": 0.4
+   },
+   "혼동": {
+    "black": {
+     "black": 308,
+     "gray": 56,
+     "blue": 24,
+     "green": 22
+    },
+    "blue": {
+     "blue": 425,
+     "black": 173,
+     "white": 99,
+     "gray": 76
+    },
+    "gray": {
+     "gray": 191,
+     "white": 175,
+     "black": 147,
+     "blue": 147
+    },
+    "green": {
+     "black": 142,
+     "green": 111,
+     "gray": 20,
+     "brown": 20
+    },
+    "pink": {
+     "black": 24,
+     "green": 15,
+     "white": 11,
+     "pink": 7
+    },
+    "purple": {
+     "black": 170,
+     "gray": 60,
+     "blue": 28,
+     "brown": 17
+    },
+    "red": {
+     "pink": 47,
+     "purple": 22,
+     "blue": 11,
+     "black": 4
+    },
+    "white": {
+     "white": 181,
+     "gray": 57,
+     "blue": 36,
+     "green": 13
+    },
+    "yellow": {
+     "yellow": 24,
+     "white": 24,
+     "black": 6,
+     "gray": 3
+    }
+   },
+   "누적 1순위": 0.508,
+   "찾는 사람 순위 중앙": 5.0,
+   "찾는 사람 3위 안": 0.381,
+   "V10 대비 (짝 · 95 %)": [
+    0.051,
+    0.163
+   ],
+   "ms/장": 7.67
+  }
+ },
+ "C4+probe 0.5": {
+  "U48": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.525,
+   "1·2순위": 0.681,
+   "판정된 것 1순위": 0.525,
+   "색 균형 1순위": 0.568,
+   "색 균형 1·2순위": 0.71,
+   "색별 1순위": {
+    "black": 0.875,
+    "blue": 0.425,
+    "brown": 0.267,
+    "gray": 0.517,
+    "green": 0.425,
+    "pink": 0.333,
+    "purple": 1.0,
+    "red": 0.667,
+    "white": 0.45,
+    "yellow": 0.717
+   },
+   "혼동": {
+    "black": {
+     "black": 105,
+     "blue": 5,
+     "green": 5,
+     "gray": 2
+    },
+    "blue": {
+     "blue": 51,
+     "black": 28,
+     "purple": 23,
+     "green": 10
+    },
+    "brown": {
+     "gray": 45,
+     "brown": 32,
+     "black": 21,
+     "white": 11
+    },
+    "gray": {
+     "gray": 62,
+     "brown": 22,
+     "black": 16,
+     "blue": 13
+    },
+    "green": {
+     "gray": 66,
+     "green": 51,
+     "white": 3
+    },
+    "pink": {
+     "pink": 40,
+     "gray": 20,
+     "brown": 18,
+     "purple": 15
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 80,
+     "black": 21,
+     "purple": 15,
+     "blue": 3
+    },
+    "white": {
+     "white": 54,
+     "blue": 15,
+     "purple": 13,
+     "gray": 12
+    },
+    "yellow": {
+     "yellow": 86,
+     "green": 10,
+     "brown": 7,
+     "red": 6
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.145,
+    0.39
+   ],
+   "ms/장": 1.39
+  },
+  "U72": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.51,
+   "1·2순위": 0.701,
+   "판정된 것 1순위": 0.51,
+   "색 균형 1순위": 0.554,
+   "색 균형 1·2순위": 0.727,
+   "색별 1순위": {
+    "black": 0.908,
+    "blue": 0.442,
+    "brown": 0.292,
+    "gray": 0.542,
+    "green": 0.358,
+    "pink": 0.333,
+    "purple": 1.0,
+    "red": 0.642,
+    "white": 0.4,
+    "yellow": 0.625
+   },
+   "혼동": {
+    "black": {
+     "black": 109,
+     "purple": 4,
+     "red": 3,
+     "brown": 1
+    },
+    "blue": {
+     "blue": 53,
+     "black": 28,
+     "purple": 22,
+     "red": 11
+    },
+    "brown": {
+     "gray": 47,
+     "brown": 35,
+     "black": 24,
+     "yellow": 4
+    },
+    "gray": {
+     "gray": 65,
+     "brown": 22,
+     "black": 14,
+     "blue": 11
+    },
+    "green": {
+     "gray": 75,
+     "green": 43,
+     "white": 2
+    },
+    "pink": {
+     "pink": 40,
+     "purple": 24,
+     "brown": 18,
+     "black": 13
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 77,
+     "black": 23,
+     "purple": 16,
+     "green": 2
+    },
+    "white": {
+     "white": 48,
+     "purple": 20,
+     "blue": 17,
+     "gray": 13
+    },
+    "yellow": {
+     "yellow": 75,
+     "green": 13,
+     "orange": 13,
+     "brown": 9
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.112,
+    0.364
+   ],
+   "ms/장": 1.39
+  },
+  "U120": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.486,
+   "1·2순위": 0.679,
+   "판정된 것 1순위": 0.486,
+   "색 균형 1순위": 0.532,
+   "색 균형 1·2순위": 0.708,
+   "색별 1순위": {
+    "black": 0.9,
+    "blue": 0.508,
+    "brown": 0.208,
+    "gray": 0.575,
+    "green": 0.1,
+    "pink": 0.367,
+    "purple": 1.0,
+    "red": 0.617,
+    "white": 0.408,
+    "yellow": 0.642
+   },
+   "혼동": {
+    "black": {
+     "black": 108,
+     "purple": 4,
+     "brown": 2,
+     "blue": 2
+    },
+    "blue": {
+     "blue": 61,
+     "purple": 23,
+     "black": 19,
+     "green": 10
+    },
+    "brown": {
+     "gray": 50,
+     "black": 29,
+     "brown": 25,
+     "yellow": 7
+    },
+    "gray": {
+     "gray": 69,
+     "black": 16,
+     "brown": 13,
+     "blue": 10
+    },
+    "green": {
+     "gray": 107,
+     "green": 12,
+     "white": 1
+    },
+    "pink": {
+     "pink": 44,
+     "purple": 30,
+     "black": 15,
+     "brown": 12
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 74,
+     "purple": 25,
+     "black": 17,
+     "gray": 1
+    },
+    "white": {
+     "white": 49,
+     "purple": 26,
+     "blue": 17,
+     "gray": 8
+    },
+    "yellow": {
+     "yellow": 77,
+     "brown": 11,
+     "orange": 11,
+     "red": 8
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.101,
+    0.337
+   ],
+   "ms/장": 1.39
+  },
+  "N": {
+   "장": 3279,
+   "판정불가율": 0.0,
+   "1순위": 0.398,
+   "1·2순위": 0.581,
+   "판정된 것 1순위": 0.398,
+   "색 균형 1순위": 0.329,
+   "색 균형 1·2순위": 0.488,
+   "색별 1순위": {
+    "black": 0.526,
+    "blue": 0.489,
+    "gray": 0.288,
+    "green": 0.522,
+    "pink": 0.083,
+    "purple": 0.116,
+    "red": 0.094,
+    "white": 0.545,
+    "yellow": 0.3
+   },
+   "혼동": {
+    "black": {
+     "black": 230,
+     "green": 54,
+     "blue": 45,
+     "gray": 42
+    },
+    "blue": {
+     "blue": 331,
+     "green": 215,
+     "black": 134,
+     "purple": 83
+    },
+    "gray": {
+     "green": 174,
+     "black": 140,
+     "blue": 139,
+     "white": 131
+    },
+    "green": {
+     "green": 163,
+     "black": 74,
+     "brown": 42,
+     "blue": 19
+    },
+    "pink": {
+     "black": 25,
+     "brown": 22,
+     "green": 7,
+     "purple": 6
+    },
+    "purple": {
+     "black": 98,
+     "blue": 76,
+     "gray": 40,
+     "brown": 38
+    },
+    "red": {
+     "purple": 57,
+     "blue": 9,
+     "red": 8,
+     "pink": 6
+    },
+    "white": {
+     "white": 163,
+     "gray": 38,
+     "blue": 29,
+     "green": 21
+    },
+    "yellow": {
+     "yellow": 18,
+     "white": 16,
+     "brown": 16,
+     "black": 5
+    }
+   },
+   "누적 1순위": 0.456,
+   "찾는 사람 순위 중앙": 6.0,
+   "찾는 사람 3위 안": 0.357,
+   "V10 대비 (짝 · 95 %)": [
+    -0.005,
+    0.134
+   ],
+   "ms/장": 1.33
+  }
+ },
+ "C7 large 상의": {
+  "U48": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.448,
+   "1·2순위": 0.649,
+   "판정된 것 1순위": 0.448,
+   "색 균형 1순위": 0.49,
+   "색 균형 1·2순위": 0.681,
+   "색별 1순위": {
+    "black": 0.492,
+    "blue": 0.3,
+    "brown": 0.042,
+    "gray": 0.117,
+    "green": 0.558,
+    "pink": 0.492,
+    "purple": 0.917,
+    "red": 0.692,
+    "white": 0.467,
+    "yellow": 0.825
+   },
+   "혼동": {
+    "black": {
+     "black": 59,
+     "purple": 23,
+     "navy": 21,
+     "blue": 8
+    },
+    "blue": {
+     "navy": 46,
+     "blue": 36,
+     "purple": 28,
+     "red": 7
+    },
+    "brown": {
+     "white": 26,
+     "black": 24,
+     "gray": 22,
+     "yellow": 20
+    },
+    "gray": {
+     "blue": 32,
+     "black": 19,
+     "brown": 18,
+     "gray": 14
+    },
+    "green": {
+     "green": 67,
+     "blue": 18,
+     "white": 15,
+     "orange": 15
+    },
+    "pink": {
+     "pink": 59,
+     "purple": 38,
+     "white": 14,
+     "red": 4
+    },
+    "purple": {
+     "purple": 11,
+     "white": 1
+    },
+    "red": {
+     "red": 83,
+     "purple": 33,
+     "pink": 1,
+     "yellow": 1
+    },
+    "white": {
+     "white": 56,
+     "purple": 19,
+     "blue": 18,
+     "red": 10
+    },
+    "yellow": {
+     "yellow": 99,
+     "orange": 17,
+     "green": 3,
+     "white": 1
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.058,
+    0.301
+   ],
+   "ms/장": 7.23
+  },
+  "U72": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.451,
+   "1·2순위": 0.658,
+   "판정된 것 1순위": 0.451,
+   "색 균형 1순위": 0.5,
+   "색 균형 1·2순위": 0.688,
+   "색별 1순위": {
+    "black": 0.608,
+    "blue": 0.3,
+    "brown": 0.175,
+    "gray": 0.108,
+    "green": 0.333,
+    "pink": 0.508,
+    "purple": 1.0,
+    "red": 0.692,
+    "white": 0.483,
+    "yellow": 0.792
+   },
+   "혼동": {
+    "black": {
+     "black": 73,
+     "navy": 18,
+     "purple": 15,
+     "blue": 6
+    },
+    "blue": {
+     "navy": 44,
+     "blue": 36,
+     "purple": 24,
+     "red": 12
+    },
+    "brown": {
+     "gray": 26,
+     "black": 21,
+     "brown": 21,
+     "yellow": 19
+    },
+    "gray": {
+     "blue": 34,
+     "brown": 24,
+     "gray": 13,
+     "green": 12
+    },
+    "green": {
+     "green": 40,
+     "blue": 33,
+     "orange": 20,
+     "gray": 13
+    },
+    "pink": {
+     "pink": 61,
+     "purple": 33,
+     "white": 16,
+     "red": 4
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 83,
+     "purple": 32,
+     "navy": 2,
+     "yellow": 2
+    },
+    "white": {
+     "white": 58,
+     "blue": 24,
+     "purple": 12,
+     "yellow": 11
+    },
+    "yellow": {
+     "yellow": 95,
+     "orange": 22,
+     "white": 2,
+     "pink": 1
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.074,
+    0.308
+   ],
+   "ms/장": 7.23
+  },
+  "U120": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.439,
+   "1·2순위": 0.658,
+   "판정된 것 1순위": 0.439,
+   "색 균형 1순위": 0.489,
+   "색 균형 1·2순위": 0.689,
+   "색별 1순위": {
+    "black": 0.633,
+    "blue": 0.333,
+    "brown": 0.225,
+    "gray": 0.167,
+    "green": 0.158,
+    "pink": 0.517,
+    "purple": 1.0,
+    "red": 0.692,
+    "white": 0.425,
+    "yellow": 0.742
+   },
+   "혼동": {
+    "black": {
+     "black": 76,
+     "navy": 20,
+     "purple": 11,
+     "red": 5
+    },
+    "blue": {
+     "blue": 40,
+     "navy": 39,
+     "purple": 23,
+     "red": 15
+    },
+    "brown": {
+     "gray": 31,
+     "brown": 27,
+     "yellow": 20,
+     "red": 17
+    },
+    "gray": {
+     "blue": 30,
+     "brown": 27,
+     "gray": 20,
+     "green": 14
+    },
+    "green": {
+     "gray": 35,
+     "orange": 34,
+     "green": 19,
+     "white": 15
+    },
+    "pink": {
+     "pink": 62,
+     "purple": 29,
+     "white": 19,
+     "navy": 4
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 83,
+     "purple": 31,
+     "navy": 2,
+     "yellow": 2
+    },
+    "white": {
+     "white": 51,
+     "blue": 27,
+     "yellow": 12,
+     "purple": 10
+    },
+    "yellow": {
+     "yellow": 89,
+     "orange": 23,
+     "red": 3,
+     "white": 2
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.067,
+    0.29
+   ],
+   "ms/장": 7.23
+  },
+  "N": {
+   "장": 3279,
+   "판정불가율": 0.0,
+   "1순위": 0.387,
+   "1·2순위": 0.551,
+   "판정된 것 1순위": 0.387,
+   "색 균형 1순위": 0.372,
+   "색 균형 1·2순위": 0.548,
+   "색별 1순위": {
+    "black": 0.449,
+    "blue": 0.451,
+    "gray": 0.226,
+    "green": 0.696,
+    "pink": 0.208,
+    "purple": 0.232,
+    "red": 0.035,
+    "white": 0.455,
+    "yellow": 0.6
+   },
+   "혼동": {
+    "black": {
+     "black": 196,
+     "green": 77,
+     "navy": 56,
+     "brown": 35
+    },
+    "blue": {
+     "blue": 290,
+     "green": 264,
+     "purple": 93,
+     "navy": 90
+    },
+    "gray": {
+     "green": 181,
+     "white": 138,
+     "black": 120,
+     "blue": 108
+    },
+    "green": {
+     "green": 217,
+     "navy": 42,
+     "black": 20,
+     "white": 12
+    },
+    "pink": {
+     "green": 23,
+     "pink": 15,
+     "black": 10,
+     "brown": 8
+    },
+    "purple": {
+     "navy": 114,
+     "purple": 70,
+     "black": 42,
+     "green": 36
+    },
+    "red": {
+     "purple": 51,
+     "pink": 24,
+     "blue": 5,
+     "red": 3
+    },
+    "white": {
+     "white": 136,
+     "purple": 37,
+     "blue": 32,
+     "black": 27
+    },
+    "yellow": {
+     "yellow": 36,
+     "brown": 11,
+     "black": 7,
+     "white": 4
+    }
+   },
+   "누적 1순위": 0.422,
+   "찾는 사람 순위 중앙": 5.0,
+   "찾는 사람 3위 안": 0.357,
+   "V10 대비 (짝 · 95 %)": [
+    -0.043,
+    0.149
+   ],
+   "ms/장": 4.05
+  }
+ },
+ "C7 large 편향 상의": {
+  "U48": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.512,
+   "1·2순위": 0.713,
+   "판정된 것 1순위": 0.512,
+   "색 균형 1순위": 0.556,
+   "색 균형 1·2순위": 0.739,
+   "색별 1순위": {
+    "black": 0.6,
+    "blue": 0.475,
+    "brown": 0.258,
+    "gray": 0.358,
+    "green": 0.625,
+    "pink": 0.45,
+    "purple": 1.0,
+    "red": 0.642,
+    "white": 0.425,
+    "yellow": 0.725
+   },
+   "혼동": {
+    "black": {
+     "black": 72,
+     "purple": 21,
+     "blue": 9,
+     "navy": 7
+    },
+    "blue": {
+     "blue": 57,
+     "purple": 27,
+     "navy": 20,
+     "red": 6
+    },
+    "brown": {
+     "gray": 31,
+     "brown": 31,
+     "black": 22,
+     "white": 13
+    },
+    "gray": {
+     "gray": 43,
+     "brown": 27,
+     "blue": 20,
+     "black": 10
+    },
+    "green": {
+     "green": 75,
+     "gray": 31,
+     "white": 6,
+     "blue": 6
+    },
+    "pink": {
+     "pink": 54,
+     "purple": 40,
+     "white": 9,
+     "brown": 8
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 77,
+     "purple": 39,
+     "green": 3,
+     "pink": 1
+    },
+    "white": {
+     "white": 51,
+     "purple": 21,
+     "blue": 20,
+     "red": 7
+    },
+    "yellow": {
+     "yellow": 87,
+     "orange": 17,
+     "green": 8,
+     "brown": 3
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.105,
+    0.366
+   ],
+   "ms/장": 0.04
+  },
+  "U72": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.513,
+   "1·2순위": 0.725,
+   "판정된 것 1순위": 0.513,
+   "색 균형 1순위": 0.557,
+   "색 균형 1·2순위": 0.75,
+   "색별 1순위": {
+    "black": 0.708,
+    "blue": 0.617,
+    "brown": 0.383,
+    "gray": 0.342,
+    "green": 0.317,
+    "pink": 0.442,
+    "purple": 1.0,
+    "red": 0.667,
+    "white": 0.442,
+    "yellow": 0.65
+   },
+   "혼동": {
+    "black": {
+     "black": 85,
+     "purple": 13,
+     "blue": 5,
+     "brown": 5
+    },
+    "blue": {
+     "blue": 74,
+     "purple": 25,
+     "red": 7,
+     "navy": 6
+    },
+    "brown": {
+     "brown": 46,
+     "gray": 36,
+     "black": 14,
+     "yellow": 14
+    },
+    "gray": {
+     "gray": 41,
+     "brown": 34,
+     "blue": 21,
+     "green": 8
+    },
+    "green": {
+     "gray": 62,
+     "green": 38,
+     "orange": 6,
+     "white": 5
+    },
+    "pink": {
+     "pink": 53,
+     "purple": 34,
+     "brown": 13,
+     "white": 12
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 80,
+     "purple": 37,
+     "green": 2,
+     "blue": 1
+    },
+    "white": {
+     "white": 53,
+     "blue": 23,
+     "purple": 13,
+     "brown": 9
+    },
+    "yellow": {
+     "yellow": 78,
+     "orange": 22,
+     "brown": 10,
+     "green": 3
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.1,
+    0.361
+   ],
+   "ms/장": 0.04
+  },
+  "U120": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.49,
+   "1·2순위": 0.699,
+   "판정된 것 1순위": 0.49,
+   "색 균형 1순위": 0.536,
+   "색 균형 1·2순위": 0.726,
+   "색별 1순위": {
+    "black": 0.767,
+    "blue": 0.583,
+    "brown": 0.4,
+    "gray": 0.408,
+    "green": 0.067,
+    "pink": 0.475,
+    "purple": 1.0,
+    "red": 0.683,
+    "white": 0.358,
+    "yellow": 0.617
+   },
+   "혼동": {
+    "black": {
+     "black": 92,
+     "purple": 8,
+     "blue": 6,
+     "green": 5
+    },
+    "blue": {
+     "blue": 70,
+     "purple": 23,
+     "red": 9,
+     "black": 6
+    },
+    "brown": {
+     "brown": 48,
+     "gray": 39,
+     "yellow": 15,
+     "red": 9
+    },
+    "gray": {
+     "gray": 49,
+     "brown": 31,
+     "blue": 13,
+     "green": 9
+    },
+    "green": {
+     "gray": 93,
+     "green": 8,
+     "white": 6,
+     "orange": 5
+    },
+    "pink": {
+     "pink": 57,
+     "purple": 25,
+     "white": 14,
+     "gray": 12
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 82,
+     "purple": 31,
+     "green": 4,
+     "gray": 1
+    },
+    "white": {
+     "white": 43,
+     "blue": 27,
+     "gray": 15,
+     "purple": 8
+    },
+    "yellow": {
+     "yellow": 74,
+     "orange": 24,
+     "brown": 9,
+     "red": 5
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.096,
+    0.356
+   ],
+   "ms/장": 0.04
+  },
+  "N": {
+   "장": 3279,
+   "판정불가율": 0.0,
+   "1순위": 0.392,
+   "1·2순위": 0.56,
+   "판정된 것 1순위": 0.392,
+   "색 균형 1순위": 0.343,
+   "색 균형 1·2순위": 0.494,
+   "색별 1순위": {
+    "black": 0.51,
+    "blue": 0.435,
+    "gray": 0.29,
+    "green": 0.712,
+    "pink": 0.139,
+    "purple": 0.248,
+    "red": 0.024,
+    "white": 0.331,
+    "yellow": 0.4
+   },
+   "혼동": {
+    "black": {
+     "black": 223,
+     "brown": 79,
+     "green": 73,
+     "blue": 37
+    },
+    "blue": {
+     "green": 295,
+     "blue": 255,
+     "purple": 106,
+     "brown": 96
+    },
+    "gray": {
+     "green": 187,
+     "black": 143,
+     "brown": 108,
+     "blue": 105
+    },
+    "green": {
+     "green": 222,
+     "black": 39,
+     "brown": 29,
+     "blue": 9
+    },
+    "pink": {
+     "green": 22,
+     "brown": 15,
+     "black": 11,
+     "pink": 10
+    },
+    "purple": {
+     "black": 81,
+     "purple": 75,
+     "green": 43,
+     "brown": 35
+    },
+    "red": {
+     "purple": 61,
+     "pink": 9,
+     "brown": 5,
+     "black": 4
+    },
+    "white": {
+     "white": 99,
+     "brown": 63,
+     "blue": 30,
+     "purple": 28
+    },
+    "yellow": {
+     "brown": 25,
+     "yellow": 24,
+     "black": 8,
+     "green": 2
+    }
+   },
+   "누적 1순위": 0.426,
+   "찾는 사람 순위 중앙": 5.0,
+   "찾는 사람 3위 안": 0.357,
+   "V10 대비 (짝 · 95 %)": [
+    -0.021,
+    0.145
+   ],
+   "ms/장": 0.04
+  }
+ },
+ "C7 so400m 상의": {
+  "U48": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.436,
+   "1·2순위": 0.628,
+   "판정된 것 1순위": 0.436,
+   "색 균형 1순위": 0.487,
+   "색 균형 1·2순위": 0.662,
+   "색별 1순위": {
+    "black": 0.583,
+    "blue": 0.25,
+    "brown": 0.092,
+    "gray": 0.158,
+    "green": 0.075,
+    "pink": 0.508,
+    "purple": 1.0,
+    "red": 0.75,
+    "white": 0.508,
+    "yellow": 0.942
+   },
+   "혼동": {
+    "black": {
+     "black": 70,
+     "purple": 18,
+     "navy": 14,
+     "red": 6
+    },
+    "blue": {
+     "navy": 38,
+     "blue": 30,
+     "purple": 25,
+     "red": 14
+    },
+    "brown": {
+     "gray": 25,
+     "yellow": 25,
+     "black": 21,
+     "white": 20
+    },
+    "gray": {
+     "blue": 34,
+     "black": 22,
+     "gray": 19,
+     "brown": 15
+    },
+    "green": {
+     "orange": 47,
+     "blue": 47,
+     "gray": 15,
+     "green": 9
+    },
+    "pink": {
+     "pink": 61,
+     "purple": 25,
+     "gray": 9,
+     "white": 7
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 90,
+     "purple": 29,
+     "navy": 1
+    },
+    "white": {
+     "white": 61,
+     "yellow": 13,
+     "purple": 11,
+     "blue": 9
+    },
+    "yellow": {
+     "yellow": 113,
+     "orange": 7
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.11,
+    0.296
+   ],
+   "ms/장": 8.15
+  },
+  "U72": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.453,
+   "1·2순위": 0.629,
+   "판정된 것 1순위": 0.453,
+   "색 균형 1순위": 0.487,
+   "색 균형 1·2순위": 0.662,
+   "색별 1순위": {
+    "black": 0.667,
+    "blue": 0.325,
+    "brown": 0.242,
+    "gray": 0.175,
+    "green": 0.0,
+    "pink": 0.533,
+    "purple": 0.833,
+    "red": 0.742,
+    "white": 0.475,
+    "yellow": 0.883
+   },
+   "혼동": {
+    "black": {
+     "black": 80,
+     "purple": 15,
+     "navy": 11,
+     "red": 6
+    },
+    "blue": {
+     "blue": 39,
+     "navy": 34,
+     "purple": 25,
+     "red": 8
+    },
+    "brown": {
+     "gray": 29,
+     "brown": 29,
+     "yellow": 21,
+     "black": 17
+    },
+    "gray": {
+     "blue": 32,
+     "gray": 21,
+     "black": 18,
+     "brown": 15
+    },
+    "green": {
+     "orange": 80,
+     "blue": 30,
+     "gray": 7,
+     "brown": 2
+    },
+    "pink": {
+     "pink": 64,
+     "purple": 24,
+     "white": 13,
+     "red": 5
+    },
+    "purple": {
+     "purple": 10,
+     "pink": 1,
+     "white": 1
+    },
+    "red": {
+     "red": 89,
+     "purple": 23,
+     "navy": 3,
+     "black": 1
+    },
+    "white": {
+     "white": 57,
+     "yellow": 15,
+     "blue": 13,
+     "red": 9
+    },
+    "yellow": {
+     "yellow": 106,
+     "orange": 13,
+     "pink": 1
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.093,
+    0.31
+   ],
+   "ms/장": 8.15
+  },
+  "U120": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.488,
+   "1·2순위": 0.644,
+   "판정된 것 1순위": 0.488,
+   "색 균형 1순위": 0.527,
+   "색 균형 1·2순위": 0.676,
+   "색별 1순위": {
+    "black": 0.633,
+    "blue": 0.433,
+    "brown": 0.333,
+    "gray": 0.275,
+    "green": 0.025,
+    "pink": 0.575,
+    "purple": 0.917,
+    "red": 0.725,
+    "white": 0.483,
+    "yellow": 0.867
+   },
+   "혼동": {
+    "black": {
+     "black": 76,
+     "purple": 13,
+     "navy": 13,
+     "red": 6
+    },
+    "blue": {
+     "blue": 52,
+     "navy": 26,
+     "purple": 22,
+     "red": 8
+    },
+    "brown": {
+     "brown": 40,
+     "gray": 32,
+     "yellow": 24,
+     "red": 12
+    },
+    "gray": {
+     "gray": 33,
+     "brown": 29,
+     "blue": 22,
+     "yellow": 9
+    },
+    "green": {
+     "orange": 89,
+     "blue": 15,
+     "gray": 12,
+     "green": 3
+    },
+    "pink": {
+     "pink": 69,
+     "purple": 25,
+     "white": 9,
+     "gray": 7
+    },
+    "purple": {
+     "purple": 11,
+     "white": 1
+    },
+    "red": {
+     "red": 87,
+     "purple": 26,
+     "black": 3,
+     "navy": 2
+    },
+    "white": {
+     "white": 58,
+     "yellow": 14,
+     "blue": 13,
+     "navy": 11
+    },
+    "yellow": {
+     "yellow": 104,
+     "orange": 15,
+     "pink": 1
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.108,
+    0.354
+   ],
+   "ms/장": 8.15
+  },
+  "N": {
+   "장": 3279,
+   "판정불가율": 0.0,
+   "1순위": 0.4,
+   "1·2순위": 0.576,
+   "판정된 것 1순위": 0.4,
+   "색 균형 1순위": 0.438,
+   "색 균형 1·2순위": 0.615,
+   "색별 1순위": {
+    "black": 0.446,
+    "blue": 0.43,
+    "gray": 0.282,
+    "green": 0.516,
+    "pink": 0.583,
+    "purple": 0.305,
+    "red": 0.118,
+    "white": 0.478,
+    "yellow": 0.783
+   },
+   "혼동": {
+    "black": {
+     "black": 195,
+     "navy": 75,
+     "brown": 41,
+     "green": 38
+    },
+    "blue": {
+     "blue": 341,
+     "purple": 143,
+     "navy": 117,
+     "green": 104
+    },
+    "gray": {
+     "white": 134,
+     "gray": 117,
+     "purple": 116,
+     "navy": 114
+    },
+    "green": {
+     "green": 161,
+     "navy": 60,
+     "black": 37,
+     "brown": 21
+    },
+    "pink": {
+     "pink": 42,
+     "purple": 12,
+     "brown": 7,
+     "white": 5
+    },
+    "purple": {
+     "navy": 120,
+     "purple": 92,
+     "brown": 22,
+     "black": 21
+    },
+    "red": {
+     "purple": 58,
+     "pink": 12,
+     "red": 10,
+     "blue": 3
+    },
+    "white": {
+     "white": 143,
+     "purple": 81,
+     "blue": 32,
+     "gray": 10
+    },
+    "yellow": {
+     "yellow": 47,
+     "white": 6,
+     "purple": 2,
+     "black": 2
+    }
+   },
+   "누적 1순위": 0.474,
+   "찾는 사람 순위 중앙": 5.0,
+   "찾는 사람 3위 안": 0.429,
+   "V10 대비 (짝 · 95 %)": [
+    -0.025,
+    0.153
+   ],
+   "ms/장": 5.45
+  }
+ },
+ "C7 so400m 편향 상의": {
+  "U48": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.514,
+   "1·2순위": 0.682,
+   "판정된 것 1순위": 0.514,
+   "색 균형 1순위": 0.557,
+   "색 균형 1·2순위": 0.711,
+   "색별 1순위": {
+    "black": 0.683,
+    "blue": 0.542,
+    "brown": 0.217,
+    "gray": 0.358,
+    "green": 0.217,
+    "pink": 0.475,
+    "purple": 1.0,
+    "red": 0.733,
+    "white": 0.475,
+    "yellow": 0.875
+   },
+   "혼동": {
+    "black": {
+     "black": 82,
+     "purple": 17,
+     "brown": 7,
+     "red": 5
+    },
+    "blue": {
+     "blue": 65,
+     "purple": 25,
+     "green": 9,
+     "black": 8
+    },
+    "brown": {
+     "gray": 34,
+     "black": 26,
+     "brown": 26,
+     "yellow": 14
+    },
+    "gray": {
+     "gray": 43,
+     "blue": 23,
+     "black": 19,
+     "brown": 18
+    },
+    "green": {
+     "gray": 41,
+     "blue": 32,
+     "green": 26,
+     "orange": 16
+    },
+    "pink": {
+     "pink": 57,
+     "gray": 22,
+     "purple": 17,
+     "brown": 12
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 88,
+     "purple": 30,
+     "brown": 1,
+     "gray": 1
+    },
+    "white": {
+     "white": 57,
+     "blue": 13,
+     "purple": 13,
+     "gray": 8
+    },
+    "yellow": {
+     "yellow": 105,
+     "orange": 6,
+     "brown": 3,
+     "green": 2
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.15,
+    0.369
+   ],
+   "ms/장": 0.03
+  },
+  "U72": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.527,
+   "1·2순위": 0.705,
+   "판정된 것 1순위": 0.527,
+   "색 균형 1순위": 0.57,
+   "색 균형 1·2순위": 0.732,
+   "색별 1순위": {
+    "black": 0.767,
+    "blue": 0.533,
+    "brown": 0.383,
+    "gray": 0.35,
+    "green": 0.108,
+    "pink": 0.5,
+    "purple": 1.0,
+    "red": 0.733,
+    "white": 0.45,
+    "yellow": 0.875
+   },
+   "혼동": {
+    "black": {
+     "black": 92,
+     "purple": 11,
+     "brown": 7,
+     "red": 4
+    },
+    "blue": {
+     "blue": 64,
+     "purple": 25,
+     "black": 14,
+     "green": 12
+    },
+    "brown": {
+     "brown": 46,
+     "gray": 36,
+     "black": 15,
+     "yellow": 13
+    },
+    "gray": {
+     "gray": 42,
+     "blue": 24,
+     "brown": 16,
+     "black": 16
+    },
+    "green": {
+     "blue": 34,
+     "gray": 32,
+     "orange": 31,
+     "green": 13
+    },
+    "pink": {
+     "pink": 60,
+     "gray": 20,
+     "purple": 17,
+     "brown": 9
+    },
+    "purple": {
+     "purple": 12
+    },
+    "red": {
+     "red": 88,
+     "purple": 26,
+     "black": 3,
+     "gray": 2
+    },
+    "white": {
+     "white": 54,
+     "blue": 19,
+     "gray": 9,
+     "yellow": 8
+    },
+    "yellow": {
+     "yellow": 105,
+     "orange": 8,
+     "red": 3,
+     "brown": 2
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.149,
+    0.386
+   ],
+   "ms/장": 0.03
+  },
+  "U120": {
+   "장": 1092,
+   "판정불가율": 0.0,
+   "1순위": 0.547,
+   "1·2순위": 0.714,
+   "판정된 것 1순위": 0.547,
+   "색 균형 1순위": 0.58,
+   "색 균형 1·2순위": 0.74,
+   "색별 1순위": {
+    "black": 0.742,
+    "blue": 0.592,
+    "brown": 0.408,
+    "gray": 0.483,
+    "green": 0.1,
+    "pink": 0.533,
+    "purple": 0.917,
+    "red": 0.725,
+    "white": 0.45,
+    "yellow": 0.85
+   },
+   "혼동": {
+    "black": {
+     "black": 89,
+     "purple": 13,
+     "green": 6,
+     "red": 5
+    },
+    "blue": {
+     "blue": 71,
+     "purple": 23,
+     "black": 6,
+     "green": 6
+    },
+    "brown": {
+     "brown": 49,
+     "gray": 40,
+     "yellow": 14,
+     "red": 8
+    },
+    "gray": {
+     "gray": 58,
+     "brown": 30,
+     "blue": 11,
+     "green": 10
+    },
+    "green": {
+     "gray": 65,
+     "orange": 34,
+     "green": 12,
+     "blue": 4
+    },
+    "pink": {
+     "pink": 64,
+     "gray": 20,
+     "purple": 19,
+     "white": 5
+    },
+    "purple": {
+     "purple": 11,
+     "white": 1
+    },
+    "red": {
+     "red": 87,
+     "purple": 26,
+     "black": 4,
+     "gray": 3
+    },
+    "white": {
+     "white": 54,
+     "blue": 19,
+     "gray": 12,
+     "yellow": 8
+    },
+    "yellow": {
+     "yellow": 102,
+     "orange": 13,
+     "red": 2,
+     "brown": 1
+    }
+   },
+   "V10 대비 (짝 · 95 %)": [
+    0.138,
+    0.423
+   ],
+   "ms/장": 0.03
+  },
+  "N": {
+   "장": 3279,
+   "판정불가율": 0.0,
+   "1순위": 0.45,
+   "1·2순위": 0.624,
+   "판정된 것 1순위": 0.45,
+   "색 균형 1순위": 0.433,
+   "색 균형 1·2순위": 0.59,
+   "색별 1순위": {
+    "black": 0.551,
+    "blue": 0.474,
+    "gray": 0.371,
+    "green": 0.587,
+    "pink": 0.5,
+    "purple": 0.401,
+    "red": 0.071,
+    "white": 0.425,
+    "yellow": 0.517
+   },
+   "혼동": {
+    "black": {
+     "black": 241,
+     "brown": 48,
+     "green": 45,
+     "blue": 27
+    },
+    "blue": {
+     "blue": 364,
+     "purple": 150,
+     "green": 133,
+     "black": 91
+    },
+    "gray": {
+     "gray": 170,
+     "black": 121,
+     "purple": 108,
+     "blue": 105
+    },
+    "green": {
+     "green": 183,
+     "black": 56,
+     "brown": 28,
+     "gray": 20
+    },
+    "pink": {
+     "pink": 36,
+     "purple": 10,
+     "black": 9,
+     "brown": 7
+    },
+    "purple": {
+     "purple": 121,
+     "black": 55,
+     "brown": 33,
+     "blue": 31
+    },
+    "red": {
+     "purple": 61,
+     "pink": 11,
+     "red": 6,
+     "blue": 5
+    },
+    "white": {
+     "white": 127,
+     "purple": 69,
+     "blue": 39,
+     "gray": 34
+    },
+    "yellow": {
+     "yellow": 31,
+     "brown": 10,
+     "purple": 5,
+     "white": 5
+    }
+   },
+   "누적 1순위": 0.547,
+   "찾는 사람 순위 중앙": 5.0,
+   "찾는 사람 3위 안": 0.381,
+   "V10 대비 (짝 · 95 %)": [
+    0.039,
+    0.192
+   ],
+   "ms/장": 0.04
+  }
  }
 }
