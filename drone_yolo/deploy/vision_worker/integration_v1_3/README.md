@@ -1,4 +1,4 @@
-# 비전 worker 1.3 — 상의 색 판정 교체 (2026-10-29 · 10-30 잔디 문장 추가)
+# 비전 worker 1.3 — 상의 색 판정 교체 + 실비행 녹화 (2026-10-29 · 10-30 잔디 문장 · 녹화 추가)
 
 지금 배포 판 (SIM `drone-dev` · REAL `drone-real`) **위에** 상의 색 판정기만 바꿉니다. 탐지 · 추적 · 후보 · 좌표 · 이착륙 · 계약은 그대로입니다.
 근거 · 수치 원본: `obsidian/11 서버 학습 계획/_학습 큐.md` 「10-29 K」 · 결정 `obsidian/05 결정/결정 - 상의 색 SigLIP 2 제로샷 (worker 1.3).md`
@@ -28,17 +28,26 @@
 - 풀밭 위 「초록」 질의 (누운 사람 크롭에 풀) — 잔디 문장으로 **다른 사람 일치 UE 관측 0.13 → 0.06 · 배포 경로 S1_a16 누적 0.32 → 0.085** (규칙 0.002 · 대신 규칙의 「검정」 질의 오일치 0.29~0.39 는 0.01) · 실사진 5셋 손해 없음 · 진짜 초록 옷 찾기 그대로
 - 검정 ↔ 남색 · 흰 ↔ 회색 은 여전히 헷갈림 (남색 문턱으로 디관 사진 검정 → 남색 26 → 16)
 
+### 실비행 녹화 (10-30 · 기본 끔)
+
+- 기체가 실시간으로 올린 프레임을 worker 가 분석할 때 **그 입력 그대로** (JPEG 원본 · frame 메타 · pose) 를 `/scratch` 아래에 남김 → 비행 뒤 같은 worker 로 다시 돌려 평가 (`drone_yolo/real_flight_eval.py`)
+- `VISION_RECORD_DIR=/scratch/record` 일 때만 켜짐 · `VISION_RECORD_EVERY` (기본 1 = 모든 장) · `VISION_RECORD_MAX_MB` (기본 3000 · 넘으면 녹화만 멈춤 · 상태 `record_full`)
+- 형식: `<dir>/<mission_id>/frames/<frame_id>.jpg` + `poses.jsonl` (sha256 포함) · 상태 파일 `record_frames` · `record_mb` · 실패해도 분석은 계속 (`record_error`)
+- 용량: 1080p JPEG ≈ 0.8 MB/장 → 5 fps 10분 ≈ 2.4 GB · **출연 동의한 촬영 비행에만 켜고 평가 뒤 지움** (사람 얼굴)
+
 ## 2. 할 일 (통합 담당 · SIM · REAL 각각)
 
 1. **모델 꾸러미 복사** — 서버 `drone_yolo/runs_person/_pack_v12_sim/color_siglip2/` (SIM) · `_pack_v12_real/color_siglip2/` (REAL) → 각 vision 컨테이너의 `/models/color_siglip2/` (`$INGEST_MODEL_DIR/color_siglip2`)
    - `vision.pt` sha256 `3b809f9b23e678a7…` · `text.npy` `5becc31667d016f5…` · `grass.npy` `37f928db3c8be558…` · `color_model.json` `b5334e9721ca9643…` (worker 가 json 안 해시로 다시 확인)
-2. **`color.py` 덮어쓰기** — `integration_v1_3/app/vision_core/color.py` → `app/vision_core/color.py` (sha256 `069356e71c91b651…`)
+2. **`color.py` 덮어쓰기 · `record.py` 추가** — `integration_v1_3/app/vision_core/color.py` · `record.py` → `app/vision_core/`
+   - color.py (sha256 `069356e71c91b651…`)
    - 지금 배포 판 color.py 는 비전 10-05 판과 같음 (규칙 부분은 그대로 들어 있음 · `exp_clip` 인자만 추가)
-3. **`ingest.py` 패치** (파일을 바꾸지 않고 3줄만 — 통합 담당이 고친 부분 보존)
+3. **`ingest.py` 패치** (파일을 바꾸지 않고 몇 줄만 — 통합 담당이 고친 부분 보존)
    - SIM: `patch -p1 -d <SIM 배포 판 루트> -i ingest_dev.patch` (배포 판 sha256 앞 8자리 `a0fec6cc` 기준)
    - REAL: `patch -p1 -d <REAL 배포 판 루트> -i ingest_real.patch` (`ca6fbe81` 기준)
-   - 바뀌는 것: `ColorProfiler()` → `make_colorer(...)` · `stats["color_method"]` 추가
+   - 바뀌는 것: `ColorProfiler()` → `make_colorer(...)` · `stats["color_method"]` · `FrameRecorder` 만들기 · `process()` 끝에 `self.recorder.save(fr, data, obs)` 한 줄
 4. 재시작 → 상태 파일 `color_method` = `siglip2-zs` 확인
+5. (촬영 비행 때만) REAL vision 에 `VISION_RECORD_DIR=/scratch/record` → 비행 뒤 그 폴더를 비전 서버 `data/real_flight/<날짜>/` 로 복사 (git 밖)
 - 되돌리기: 환경 변수 `VISION_COLOR=rule` (재시작) — 파일 그대로 규칙 V10 · 꾸러미를 빼도 같음
 - `VISION_COLOR=siglip` 이면 꾸러미 문제 때 시작 실패 (조용히 규칙으로 가지 않게 하고 싶을 때)
 
@@ -56,13 +65,17 @@
 | 찾는 색 green — 대상 MATCH · 다른 사람 | 0.959 · **0.085** (잔디 문장 전 0.322 · 규칙 0.45 · 0.002) | 같음 |
 
 - 이착륙 막기 (`tests_low_agl.py`) · 가장자리 규칙 (`tests_edge_confirm.py`) 숫자 그대로
+- 녹화 (REAL `process()` 경로 · 746장 × 임무 2): 그림 · 줄 · pose 모두 남음 · 용량 상한 동작 · 시험 녹화는 끝나면 지움
+- 평가 도구 (`real_flight_eval.py`) 를 이 녹화 + UE 정답으로 시험: AP50 0.767 · 재현율@0.20 0.80 · 사람 없는 구간 오탐 0.26 건/장 · 출연자별 색 · 후보 수 (사람당 5~14 · 쪼개짐 과제 그대로) · 장당 51 ms
 
 ## 4. 파일
 
 | 파일 | 내용 |
 |---|---|
 | `app/vision_core/color.py` | 규칙 V10 (그대로) + `SiglipColorProfiler` (plain torch SigLIP 이미지 인코더 · 잔디 문장 · 남색 문턱) + `make_colorer` |
-| `ingest_dev.patch` · `ingest_real.patch` | 배포 판 ingest.py 3줄 |
+| `app/vision_core/record.py` | 실비행 녹화 `FrameRecorder` (기본 끔) |
+| `ingest_dev.patch` · `ingest_real.patch` | 배포 판 ingest.py 몇 줄 (색 판정기 · 녹화) |
+| 실비행 평가 | `drone_yolo/real_flight_eval.py` — 녹화 → 배포 worker 다시 돌림 → 오탐 · AP50 · 출연자별 색 · 등급 · 라벨 작업용 내보내기 |
 | `tests_color_siglip.py` | 위 시험 |
 | 꾸러미 만들기 | `drone_yolo/export_color_pack.py` (git 밖 `runs_person/_pack_color_siglip2/` · 평가판과 같은 판정인지 검사 포함) |
 | 평가 | `drone_yolo/color_lab.py` · `metrics/color_lab*.json` |

@@ -37,3 +37,4 @@ drone_yolo/runs_posture/
 
 # 발표 자료 모음 (디관 사진 · 사람이 찍힌 결과 이미지) — 공개 저장소에 올리지 않음
 /발표자료/
+_last_record_*.txt

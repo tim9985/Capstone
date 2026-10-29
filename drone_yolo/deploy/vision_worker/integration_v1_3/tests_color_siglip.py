@@ -6,8 +6,9 @@ tests_color_siglip.py — worker 1.3 상의 색 판정 교체 시험 (10-29 · S
   ① make_colorer 고르기: 꾸러미 있음 → siglip2-zs · VISION_COLOR=rule → rule-v10 · 꾸러미 없음 → rule-v10 · 해시 틀림 → auto 는 규칙 · siglip 은 오류
   ② profile 반환 형식이 규칙판과 같고 ColorAccumulator · match 그대로 · 아주 작은 박스 = 판정 불가
   ③ 판정이 평가판 (color_lab G2 잔디문장 1.0 = F1 + 잔디 문장) 과 같음 — 디관 영상 확인 셋 45명 1순위 일치 · 한 명 ms
+  ⑤ 녹화 (VISION_RECORD_DIR) — REAL 경로 프레임 · pose 가 파일로 남는지 (real_flight_eval 입력)
   ④ 배포 경로 끝까지 — `integration_v1_2/tests_v1_2.py` (UE S1_a16 · REAL · SIM · 백엔드 계약) 를 패치된 배포 판으로 · IngestWorker.stats color_method
-실행: /home/se/miniconda3/envs/drone/bin/python tests_color_siglip.py [--skip-e2e]   (transformers 없는 환경 = 배포 이미지와 같은 조건)
+실행: /home/se/miniconda3/envs/drone/bin/python tests_color_siglip.py [--skip-e2e]   (녹화를 남기려면 TEST_FLAGS=--keep-record)   (transformers 없는 환경 = 배포 이미지와 같은 조건)
 꾸러미: drone_yolo/runs_person/_pack_color_siglip2 (= _pack_v12_sim · _pack_v12_real 안 color_siglip2)
 """
 import json, os, pickle, shutil, subprocess, sys, tempfile, time
@@ -23,7 +24,8 @@ def overlay(env):
     """배포 판 vision_core 복사 + color.py + 패치 → 임시 폴더 (app/vision_core/…)"""
     tmp = Path(tempfile.mkdtemp(prefix=f"color13_{env}_"))
     shutil.copytree(SANDBOX[env] / "app" / "vision_core", tmp / "app" / "vision_core", ignore=shutil.ignore_patterns("*.bak-*", "__pycache__"))
-    shutil.copy2(HERE / "app" / "vision_core" / "color.py", tmp / "app" / "vision_core" / "color.py")
+    for f in ("color.py", "record.py"):
+        shutil.copy2(HERE / "app" / "vision_core" / f, tmp / "app" / "vision_core" / f)
     r = subprocess.run(["patch", "-p1", "-d", str(tmp), "-i", str(HERE / f"ingest_{env}.patch")], capture_output=True, text=True)
     assert r.returncode == 0, r.stdout + r.stderr
     return tmp
@@ -81,6 +83,8 @@ def e2e(env):
     keep = mpath.read_bytes() if mpath.exists() else None
     sys.argv = ["tests_v1_2.py", "--engine", "--backend", "/home/se/sandboxes/drone-real"]
     os.environ["VISION_COLOR"] = "siglip"; os.environ["VISION_COLOR_PACK"] = str(PACK)
+    rec = Path(tempfile.mkdtemp(prefix=f"rec_{env}_")); os.environ["VISION_RECORD_DIR"] = str(rec)   # ⑤ 녹화 (REAL process 경로)
+    os.environ["VISION_RECORD_MAX_MB"] = "150"                          # 용량 상한 동작도 확인 (넘으면 녹화만 멈춤)
     try:
         T.main()
         out = json.load(open(mpath))
@@ -89,6 +93,15 @@ def e2e(env):
             mpath.write_bytes(keep)                                  # 커밋된 1.2 기록은 그대로 둔다
     (REPO / "drone_yolo" / "metrics" / f"integration_v1_3_{env}_S1_a16.json").write_text(json.dumps(out, ensure_ascii=False, indent=1))
     assert all(v["frames_validated"] > 0 for v in out.values())
+    recs = [json.loads(l) for p in rec.glob("*/poses.jsonl") for l in open(p)]
+    jpg = list(rec.glob("*/frames/*.jpg"))
+    ok = sum(1 for p in rec.glob("*/poses.jsonl") for l in open(p) if (p.parent / "frames" / json.loads(l)["frame"]).exists())
+    print(env, "녹화", {"임무": len(list(rec.glob("*/poses.jsonl"))), "장": len(jpg), "줄": len(recs), "그림 있는 줄": ok, "pose 있음": sum(1 for r in recs if r.get("pose"))})
+    assert len(jpg) > 0 and ok == len(recs) and all(sum(f.stat().st_size for f in m.glob("frames/*.jpg")) <= 150e6 for m in rec.iterdir())   # 상한은 worker (임무) 마다
+    if "--keep-record" in os.environ.get("TEST_FLAGS", ""):
+        (HERE / f"_last_record_{env}.txt").write_text(str(rec))                   # real_flight_eval 시험용으로 남김
+    else:
+        shutil.rmtree(rec)                                                         # 시험이 만든 녹화 (사람 그림) 는 지움
     print(env, "e2e", {k: {kk: v[kk] for kk in ("frames_validated", "cand_per_actor", "query_green_match", "query_other_match")} for k, v in out.items()})
 
 

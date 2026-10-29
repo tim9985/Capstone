@@ -143,6 +143,7 @@
 | `bn_dist.py` · `make_v10_data.py` | 수프 재료끼리 BN · 가중치 거리 (붕괴 진단) · LADD 크롭 + `test_ladd_h` (번호 뒤 30 % 참고 평가) |
 | `deploy/vision_worker/` | **동료 서버 샌드박스 Vision worker 인계 꾸러미** — 탐지 · 좌표 · 후보 기억 · RTSP · sidecar · 패키지 한 층 Dockerfile · 인수 검증 |
 | `color_lab.py` · `export_color_pack.py` | 상의 색 방식 비교 (U · N · 확인 P · D · V · UE E · `metrics/color_lab*.json`) · worker 1.3 색 꾸러미 만들기 (SigLIP 2 제로샷 · 평가판과 같은 판정 검사) → `deploy/vision_worker/integration_v1_3/` |
+| `real_flight_eval.py` | 실비행 녹화 (worker `VISION_RECORD_DIR`) → 배포 worker 다시 돌림 → 오탐 · AP50 · 출연자별 색 · 등급 · 라벨 내보내기 (`--gt gt.json`) |
 | `ue_posture_capture.py` | UE (Cosys-AirSim) 자세 데이터 캡처 — 배우 이름 `Person_<자세>_<번호>` · 마운트 × 고도 × 방위 · 서버 자세 크롭 형식 (노트북) |
 
 결과: `runs_person/<이름>/` · `metrics/*.csv` · `metrics/AUTO_RESULT*.md` · 서버 진행 기록 `SERVER_PROGRESS.md`
