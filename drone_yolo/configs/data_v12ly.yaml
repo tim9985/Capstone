@@ -1,0 +1,5 @@
+# v12ly (10-30 L) — train_v12_f91 + 누운 사람 사진 2,040장 ×2 더 (링크) · val = val_v12
+train: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/train_v12ly.txt
+val: /home/se/JupyterLAB/Capstone/drone_yolo/configs/lists/val_v12.txt
+nc: 1
+names: ['person']

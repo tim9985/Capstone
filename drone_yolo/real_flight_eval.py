@@ -9,6 +9,7 @@ real_flight_eval.py — 실비행 녹화 평가 (11-25 최종발표 · 계획 ob
        "actors": {"이름": {"upper": "red", "pose": "lying"}, …}   출연자 옷 색 · 자세 기록 (12색 이름)
        "labels": "<YOLO 라벨 폴더>"   (프레임 이름.txt · 사람 0 · 정규화 cx cy w h) → AP50 · 재현율@0.20 (NFR-V03) · 크기별
        "actor_boxes": "<폴더>"       라벨 txt 의 6번째 칸 = 출연자 이름 → 후보 ↔ 출연자 이어 색 1순위 · 찾는 색 질의 · 등급
+       "segments": [{"i0": 0, "i1": 299, "code": "P8-O0-앞"}, …]   촬영 체크리스트 장면 (프레임 순번 · 끝 포함) → 장면 코드별 · 자세 묶음별 재현율 (P8~P10 = 누움)
   ④ 라벨 작업용 내보내기 (`--export N`): N 장마다 그림 + 모델 박스 (YOLO txt · 미리 채움) → FiftyOne · CVAT 로 고쳐 `labels` 로 씀
   출력 metrics/real_flight_<임무>.json (수치만 · git) · 그림 · 라벨은 git 밖 (사람 얼굴)
 실행  /home/se/miniconda3/envs/drone/bin/python real_flight_eval.py <녹화 임무 폴더> [--gt gt.json] [--export 10 --export-dir 경로] [--engine]
@@ -184,6 +185,19 @@ def main():
                 L = read_yolo(lab / (Path(f).stem + ".txt"), W, H)
                 gts[f] = [x[:4] for x in L]; who[f] = [x[4] for x in L]; dets[f] = dl
         out["탐지 (NFR-V03)"] = ap50(dets, gts)
+        if gt.get("segments"):                                           # 체크리스트 장면 코드별 재현율 (IoU ≥ 0.5 · 확신 ≥ 0.20)
+            names = [f for f, *_ in per_frame]; grp = defaultdict(lambda: [0, 0]); byc = defaultdict(lambda: [0, 0])
+            for sg in gt["segments"]:
+                for i in range(sg["i0"], min(sg["i1"], len(names) - 1) + 1):
+                    f = names[i]
+                    for gb in gts.get(f, []):
+                        hit = any(iou(b, gb) >= 0.5 and c >= 0.20 for b, c in dets.get(f, []))
+                        p = sg["code"].split("-")[0]
+                        key = "누움 (P8~P10)" if p in ("P8", "P9", "P10") else "앉음 · 쪼그림 · 무릎 (P3~P7)" if p in ("P3", "P4", "P5", "P6", "P7") else "서기 · 걷기 (P1 · P2)"
+                        for d_ in (grp[key], byc[sg["code"]]):
+                            d_[0] += hit; d_[1] += 1
+            out["장면 자세별 재현율@0.20"] = {k: f"{a / b:.3f} ({a}/{b})" for k, (a, b) in sorted(grp.items())}
+            out["장면 코드별 재현율@0.20"] = {k: f"{a / b:.3f} ({a}/{b})" for k, (a, b) in sorted(byc.items())}
         if gt.get("actors") and any(any(v) for v in who.values()):           # 후보 ↔ 출연자 (라벨 6번째 칸) → 색 · 등급
             vote = defaultdict(Counter)
             for cid, c in cand.items():
