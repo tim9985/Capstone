@@ -14,6 +14,7 @@ color.py — 상의 색상 12종 판정 · 누적 · 조건 비교 (UC-0707 · �
 
   1.3 (10-29 · obsidian `_학습 큐` 「10-29 K」) — **SiglipColorProfiler** (기본 · 꾸러미가 있으면)
     SigLIP 2 base (google/siglip2-base-patch16-224 · Apache 2.0) 제로샷 — 상의 크롭 (박스 위 10~62 %) ↔ 「a photo of a person wearing a {색} shirt.」 12문장
+    + 잔디 문장 (10-30 · 상의 크롭이 「a photo of green grass.」 에 「초록 셔츠」 보다 가까운 만큼 초록 로짓을 깎음 · 풀밭 위 누운 사람이 초록으로 잡히는 것)
     + 남색 문턱 (1순위가 남색인데 남색 − 검정 ≤ 0.95 면 검정 · UAV-Human 학습셋으로 정함)
     이미지 인코더는 이 파일의 plain torch 구현 (transformers 없이 · torch 2.x) · 문장 임베딩은 꾸러미에 미리 계산 (`text.npy`)
     평가 (색 균형 1순위 · 규칙 V10 → 제로샷): UAV-Human 드론 0.29 → 0.51 · NOMAD 0.34 → 0.41 · PETA 0.27 → 0.56 · 디관 사진 0.31 → 0.74 · 1.5 ms/명 (3090 · 묶음)
@@ -256,6 +257,8 @@ class SiglipColorProfiler:
         self.text = torch.tensor(np.load(pack / "text.npy"), dtype=torch.float32, device=self.dev)   # 12 × D (COLORS 순서 · 정규화)
         assert tuple(self.meta["colors"]) == COLORS
         self.scale, self.navy_delta = float(self.meta["logit_scale"]), float(self.meta["navy_delta"])
+        self.grass_alpha = float(self.meta.get("grass_alpha", 0.0))      # 10-30 · 꾸러미에 grass.npy 가 있을 때만
+        self.grass = torch.tensor(np.load(pack / "grass.npy"), dtype=torch.float32, device=self.dev) if self.grass_alpha else None
         self.size, self.region = int(self.meta["image_size"]), tuple(self.meta["upper_region"])
         self.min_w, self.min_h = 4, 6
 
@@ -271,12 +274,16 @@ class SiglipColorProfiler:
         return (np.asarray(im, np.float32) / 255.0 - 0.5) / 0.5
 
     def logits(self, crops):
-        """BGR 상의 크롭 목록 → (N, 12) 로짓 (남색 문턱 적용 전)"""
+        """BGR 상의 크롭 목록 → (N, 12) 로짓 (잔디 문장 적용 · 남색 문턱 적용 전)"""
         torch = self._torch
         x = torch.tensor(np.stack([self._prep(c) for c in crops]).transpose(0, 3, 1, 2), device=self.dev, dtype=self.dtype)
         with torch.no_grad():
             f = self.enc(x)
-        return (f @ self.text.T * self.scale).cpu().numpy()
+            lg = f @ self.text.T * self.scale
+            if self.grass is not None:                                   # 잔디 문장 — (잔디 − 초록 셔츠) 로짓이 양수인 만큼 초록을 깎음
+                g = COLORS.index("green")
+                lg[:, g] -= self.grass_alpha * torch.clamp((f @ self.grass - f @ self.text[g]) * self.scale, min=0)
+        return lg.cpu().numpy()
 
     def _probs(self, lg):
         n, b = COLORS.index("navy"), COLORS.index("black")

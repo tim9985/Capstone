@@ -7,7 +7,7 @@
   "geo_err_p50_m": null,
   "geo_err_p95_m": null,
   "query_green_match": 0.959,
-  "query_other_match": 0.322,
+  "query_other_match": 0.085,
   "backend": "tensorrt"
  },
  "REAL_claims1": {
@@ -18,7 +18,7 @@
   "geo_err_p50_m": 1.12,
   "geo_err_p95_m": 4.04,
   "query_green_match": 0.959,
-  "query_other_match": 0.322,
+  "query_other_match": 0.085,
   "backend": "tensorrt"
  },
  "SIM_claims0": {

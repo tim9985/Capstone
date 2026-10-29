@@ -5,7 +5,7 @@ tests_color_siglip.py — worker 1.3 상의 색 판정 교체 시험 (10-29 · S
     env = dev (SIM · drone-dev) · real (REAL · drone-real)
   ① make_colorer 고르기: 꾸러미 있음 → siglip2-zs · VISION_COLOR=rule → rule-v10 · 꾸러미 없음 → rule-v10 · 해시 틀림 → auto 는 규칙 · siglip 은 오류
   ② profile 반환 형식이 규칙판과 같고 ColorAccumulator · match 그대로 · 아주 작은 박스 = 판정 불가
-  ③ 판정이 평가판 (color_lab F1) 과 같음 — 디관 영상 확인 셋 45명 1순위 일치 · 한 명 ms
+  ③ 판정이 평가판 (color_lab G2 잔디문장 1.0 = F1 + 잔디 문장) 과 같음 — 디관 영상 확인 셋 45명 1순위 일치 · 한 명 ms
   ④ 배포 경로 끝까지 — `integration_v1_2/tests_v1_2.py` (UE S1_a16 · REAL · SIM · 백엔드 계약) 를 패치된 배포 판으로 · IngestWorker.stats color_method
 실행: /home/se/miniconda3/envs/drone/bin/python tests_color_siglip.py [--skip-e2e]   (transformers 없는 환경 = 배포 이미지와 같은 조건)
 꾸러미: drone_yolo/runs_person/_pack_color_siglip2 (= _pack_v12_sim · _pack_v12_real 안 color_siglip2)
@@ -63,7 +63,7 @@ def unit(env):
         A.add(p)
     assert match(A.result(), A.result()["top"][0][0])[0] == "일치"
     assert c.profile(V[0]["frame"], (0, 0, 3, 5))["status"] == "undetermined"
-    ref = pickle.load(open(REPO / "data" / "raw" / "color" / "_lab" / "preds" / "F1_B1+남색문턱_V.pkl", "rb"))[0]
+    ref = pickle.load(open(REPO / "data" / "raw" / "color" / "_lab" / "preds" / "G2_잔디문장_1.0_V.pkl", "rb"))[0]
     t0 = time.time(); got = [c.profile(x["frame"], x["box"]) for x in V]; ms = (time.time() - t0) * 1000 / len(V)
     agree = float(np.mean([max(g["probs"], key=g["probs"].get) == COLORS[int(np.argmax(rr))] for g, rr in zip(got, ref)]))
     res["평가판 1순위 일치"] = round(agree, 4); res["한 명 ms"] = round(ms, 1)

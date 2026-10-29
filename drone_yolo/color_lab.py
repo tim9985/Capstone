@@ -319,6 +319,16 @@ def person_rgb(it, part="person"):
         X1, Y1, X2, Y2 = int(max(0, x1 - bw)), int(max(0, y1 - bh)), int(min(fr.shape[1], x2 + bw)), int(min(fr.shape[0], y2 + bh))
         c = fr[Y1:Y2, X1:X2].copy(); c[int(y1 - Y1):int(y2 - Y1), int(x1 - X1):int(x2 - X1)] = 128
         return cv2.cvtColor(c, cv2.COLOR_BGR2RGB)
+    if part == "upper_widemask":                                         # G3 — 가로 ≥ 세로 박스 (누운 · 기어가는 사람) 만 박스 전체 · GrabCut 바깥 회색
+        if (x2 - x1) >= (y2 - y1):
+            cv2.setRNGSeed(0)
+            crop, rect = _crop(it)
+            m = _person_mask(crop, rect)
+            crop = crop.copy(); crop[m == 0] = 128
+            x, y, w, h = rect
+            c = crop[y:y + h, x:x + w]
+            return cv2.cvtColor(c, cv2.COLOR_BGR2RGB) if c.size else np.zeros((8, 8, 3), np.uint8)
+        part = "upper_nopose"
     if part == "upper_gtpose":                                           # E1 — 정답 자세 (누움 · 기어감 → 박스 전체)
         it = dict(it, pose=it.get("gt_pose")); part = "upper"
     if part == "upper_nopose":                                           # E0 — worker 지금 (자세 안 넘김)
@@ -411,12 +421,29 @@ def navy_delta(part="upper", model=SIGLIP, target=0.05):
     return 10.0
 
 
-def zero_shot(items, part="person", tmpl=None, tmpls=None, syn=False, model=SIGLIP, bias=False, navy=False, bg=0.0):
+def grass_text(model=SIGLIP):
+    import torch
+    proc, m = siglip(model)
+    inp = proc(text=["a photo of green grass."], padding="max_length", max_length=64, return_tensors="pt")
+    with torch.no_grad():
+        t = m.get_text_features(input_ids=inp["input_ids"].cuda())
+    return torch.nn.functional.normalize(getattr(t, "pooler_output", t).float(), dim=-1).cpu().numpy()[0]
+
+
+def zero_shot(items, part="person", tmpl=None, tmpls=None, syn=False, model=SIGLIP, bias=False, navy=False, bg=0.0, gbg=0.0, grass=0.0):
     tm = tmpls or ([tmpl] if tmpl else TMPL1)
     lg = zs_logits(siglip_feats(items, part, model=model), tm, syn, model)
     if bg:                                                              # E3 — 배경 로짓 (평균 뺀 것) × α 를 뺌
         lb = zs_logits(siglip_feats(items, "bg", model=model), tm, syn, model)
         lg = lg - bg * (lb - lb.mean(1, keepdims=True))
+    G = CI["green"]
+    if gbg:                                                             # G1 — 초록만 배경 빼기
+        lb = zs_logits(siglip_feats(items, "bg", model=model), tm, syn, model)
+        lg[:, G] = lg[:, G] - gbg * (lb[:, G] - lb.mean(1))
+    if grass:                                                           # G2 — 잔디 문장 로짓 − 초록 셔츠 로짓 (같은 눈금) 만큼 초록 깎기
+        f = siglip_feats(items, part, model=model); _, sc, b = siglip_text(tm, syn, model)
+        g = f @ grass_text(model) * sc + b - lg[:, G]
+        lg[:, G] = lg[:, G] - grass * np.maximum(0, g)
     if bias:
         lg = lg + zs_bias(part, tuple(tm), syn, model)
     if navy:
@@ -711,6 +738,13 @@ METHODS = {
     "E3 F1 자세없음+배경1.0": dict(kind="zs", part="upper_nopose", navy=True, bg=1.0),
     "E3 F1 정답자세+배경0.5": dict(kind="zs", part="upper_gtpose", navy=True, bg=0.5),
     "E3 F1 정답자세+배경1.0": dict(kind="zs", part="upper_gtpose", navy=True, bg=1.0),
+    # ── 5차 (풀밭 초록 질의) · 기준 = E0 (= 배포 1.3) ──
+    "G1 초록배경 0.5": dict(kind="zs", part="upper_nopose", navy=True, gbg=0.5),
+    "G1 초록배경 1.0": dict(kind="zs", part="upper_nopose", navy=True, gbg=1.0),
+    "G1 초록배경 2.0": dict(kind="zs", part="upper_nopose", navy=True, gbg=2.0),
+    "G2 잔디문장 0.5": dict(kind="zs", part="upper_nopose", navy=True, grass=0.5),
+    "G2 잔디문장 1.0": dict(kind="zs", part="upper_nopose", navy=True, grass=1.0),
+    "G3 넓은박스 마스크": dict(kind="zs", part="upper_widemask", navy=True),
 }
 
 

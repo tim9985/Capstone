@@ -31,29 +31,30 @@ def main(out):
     torch.save(sd, out / "vision.pt")
     T, scale, bias = L.siglip_text(L.TMPL1, False, L.SIGLIP)
     np.save(out / "text.npy", np.stack([T[c][0] for c in COLORS]).astype(np.float32))
+    np.save(out / "grass.npy", L.grass_text(L.SIGLIP).astype(np.float32))          # 10-30 G2 잔디 문장 (α 1.0)
     delta = L.navy_delta("upper", L.SIGLIP)
     vc = model.config.vision_config
     meta = {"name": "siglip2-zs-upper+navy", "source_model": L.SIGLIP, "license": "Apache-2.0", "created": time.strftime("%Y-%m-%d"),
             "colors": list(COLORS), "template": L.TMPL1[0], "prompt_names": {c: L.PROMPT[c] for c in COLORS},
-            "logit_scale": scale, "logit_bias": bias, "navy_delta": delta, "image_size": 224, "upper_region": [0.10, 0.62],
+            "logit_scale": scale, "logit_bias": bias, "navy_delta": delta, "grass_alpha": 1.0, "grass_text": "a photo of green grass.", "image_size": 224, "upper_region": [0.10, 0.62],
             "preprocess": "BGR→RGB · PIL BILINEAR 224×224 · /255 · (x−0.5)/0.5",
             "vision": {"hidden": vc.hidden_size, "layers": vc.num_hidden_layers, "heads": vc.num_attention_heads, "patch": vc.patch_size, "eps": vc.layer_norm_eps},
-            "eval_10_29": {"지표": "색 균형 1순위 (규칙 V10 → 이 꾸러미)", "UAV-Human 72px": "0.286 → 0.508", "NOMAD": "0.336 → 0.410 (한 장)",
+            "eval_10_30": "풀밭 초록 질의 오일치 (UE 20 m · 관측) 0.132 → 0.059 · 실사진 5셋 손해 없음 (_학습 큐 10-30 5차)", "eval_10_29": {"지표": "색 균형 1순위 (규칙 V10 → 이 꾸러미)", "UAV-Human 72px": "0.286 → 0.508", "NOMAD": "0.336 → 0.410 (한 장)",
                            "PETA": "0.270 → 0.558", "디관 사진": "0.314 → 0.744", "디관 영상": "0.422 → 0.885", "근거": "obsidian _학습 큐 10-29 K"},
             "sha256": {}}
-    meta["sha256"] = {fn: sha(out / fn) for fn in ("vision.pt", "text.npy")}
+    meta["sha256"] = {fn: sha(out / fn) for fn in ("vision.pt", "text.npy", "grass.npy")}
     (out / "color_model.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1))
     print("꾸러미", out, {k: round((out / k).stat().st_size / 1e6, 1) for k in ("vision.pt", "text.npy", "color_model.json")}, "MB · δ", delta)
     # ── 검사: 꾸러미 (plain torch) ↔ color_lab F1 (transformers) 같은 판정인가 ──
     prof = SiglipColorProfiler(out)
-    for s in ("N", "D", "V", "U"):
+    for s in ("N", "D", "V", "U", "E"):
         items = pickle.load(open(L.LAB / f"{s}.pkl", "rb"))[::3 if s in ("N", "U") else 1]
-        ref = L.zero_shot(items, part="upper", navy=True)
+        ref = L.zero_shot(items, part="upper_nopose", navy=True, grass=1.0)
         got, t0 = [], time.time()
         for i in range(0, len(items), 32):
             chunk = items[i:i + 32]
             for it in chunk:
-                got.append(prof.profile(it["frame"], it["box"], pose=it["pose"]))
+                got.append(prof.profile(it["frame"], it["box"]))           # 배포와 같게 자세 안 넘김
         ms = (time.time() - t0) * 1000 / len(items)
         agree = np.mean([g["status"] == "ok" and max(g["probs"], key=g["probs"].get) == COLORS[int(np.argmax(r))] for g, r in zip(got, ref)])
         dmax = max(abs(g["probs"][c] - float(r[k])) for g, r in zip(got, ref) if g["status"] == "ok" for k, c in enumerate(COLORS))
