@@ -1,0 +1,1133 @@
+{
+ "V10": {
+  "a16": {
+   "장": 1359,
+   "판정불가율": 0.0,
+   "1순위": 0.328,
+   "1·2순위": 0.483,
+   "판정된 것 1순위": 0.328,
+   "색 균형 1순위": 0.336,
+   "색 균형 1·2순위": 0.523,
+   "색별 1순위": {
+    "black": 0.277,
+    "blue": 0.425,
+    "green": 0.528,
+    "orange": 0.015,
+    "purple": 0.791,
+    "red": 0.176,
+    "white": 0.0,
+    "yellow": 0.478
+   },
+   "혼동": {
+    "black": {
+     "black": 26,
+     "gray": 25,
+     "purple": 25,
+     "navy": 9
+    },
+    "blue": {
+     "blue": 94,
+     "navy": 52,
+     "purple": 31,
+     "gray": 26
+    },
+    "green": {
+     "green": 104,
+     "black": 51,
+     "blue": 37,
+     "purple": 4
+    },
+    "orange": {
+     "black": 89,
+     "yellow": 38,
+     "gray": 3,
+     "purple": 2
+    },
+    "purple": {
+     "purple": 102,
+     "black": 18,
+     "gray": 5,
+     "green": 4
+    },
+    "red": {
+     "black": 123,
+     "red": 33,
+     "pink": 18,
+     "purple": 9
+    },
+    "white": {
+     "gray": 121,
+     "purple": 58,
+     "navy": 17,
+     "black": 16
+    },
+    "yellow": {
+     "yellow": 85,
+     "black": 83,
+     "purple": 5,
+     "gray": 4
+    }
+   },
+   "질의 MATCH": 0.373,
+   "질의 오일치": 0.058
+  },
+  "a20": {
+   "장": 1829,
+   "판정불가율": 0.003,
+   "1순위": 0.392,
+   "1·2순위": 0.55,
+   "판정된 것 1순위": 0.393,
+   "색 균형 1순위": 0.393,
+   "색 균형 1·2순위": 0.59,
+   "색별 1순위": {
+    "black": 0.298,
+    "blue": 0.51,
+    "green": 0.674,
+    "orange": 0.005,
+    "purple": 0.789,
+    "red": 0.22,
+    "white": 0.0,
+    "yellow": 0.647
+   },
+   "혼동": {
+    "black": {
+     "gray": 55,
+     "black": 31,
+     "green": 7,
+     "navy": 7
+    },
+    "blue": {
+     "blue": 154,
+     "navy": 58,
+     "gray": 39,
+     "purple": 31
+    },
+    "green": {
+     "green": 174,
+     "black": 55,
+     "blue": 19,
+     "gray": 8
+    },
+    "orange": {
+     "black": 100,
+     "yellow": 79,
+     "purple": 5,
+     "green": 3
+    },
+    "purple": {
+     "purple": 142,
+     "black": 24,
+     "green": 10,
+     "gray": 4
+    },
+    "red": {
+     "black": 150,
+     "red": 54,
+     "pink": 17,
+     "green": 10
+    },
+    "white": {
+     "gray": 173,
+     "purple": 58,
+     "navy": 35,
+     "black": 30
+    },
+    "yellow": {
+     "yellow": 161,
+     "black": 72,
+     "purple": 11,
+     "green": 4
+    }
+   },
+   "질의 MATCH": 0.441,
+   "질의 오일치": 0.048
+  }
+ },
+ "E0 F1 자세없음": {
+  "a16": {
+   "장": 1359,
+   "판정불가율": 0.0,
+   "1순위": 0.567,
+   "1·2순위": 0.759,
+   "판정된 것 1순위": 0.567,
+   "색 균형 1순위": 0.533,
+   "색 균형 1·2순위": 0.727,
+   "색별 1순위": {
+    "black": 0.138,
+    "blue": 0.887,
+    "green": 0.995,
+    "orange": 0.015,
+    "purple": 0.946,
+    "red": 0.202,
+    "white": 0.275,
+    "yellow": 0.803
+   },
+   "혼동": {
+    "black": {
+     "green": 39,
+     "white": 22,
+     "black": 13,
+     "blue": 10
+    },
+    "blue": {
+     "blue": 196,
+     "yellow": 17,
+     "green": 8
+    },
+    "green": {
+     "green": 196,
+     "black": 1
+    },
+    "orange": {
+     "yellow": 93,
+     "brown": 24,
+     "green": 10,
+     "orange": 2
+    },
+    "purple": {
+     "purple": 122,
+     "green": 5,
+     "orange": 1,
+     "red": 1
+    },
+    "red": {
+     "orange": 93,
+     "red": 38,
+     "green": 22,
+     "black": 17
+    },
+    "white": {
+     "red": 79,
+     "white": 60,
+     "yellow": 24,
+     "blue": 22
+    },
+    "yellow": {
+     "yellow": 143,
+     "green": 28,
+     "black": 6,
+     "gray": 1
+    }
+   },
+   "질의 MATCH": 0.595,
+   "질의 오일치": 0.065
+  },
+  "a20": {
+   "장": 1829,
+   "판정불가율": 0.0,
+   "1순위": 0.569,
+   "1·2순위": 0.76,
+   "판정된 것 1순위": 0.569,
+   "색 균형 1순위": 0.521,
+   "색 균형 1·2순위": 0.713,
+   "색별 1순위": {
+    "black": 0.019,
+    "blue": 0.924,
+    "green": 1.0,
+    "orange": 0.0,
+    "purple": 0.956,
+    "red": 0.252,
+    "white": 0.299,
+    "yellow": 0.715
+   },
+   "혼동": {
+    "black": {
+     "green": 42,
+     "white": 35,
+     "blue": 10,
+     "brown": 9
+    },
+    "blue": {
+     "blue": 279,
+     "yellow": 17,
+     "green": 5,
+     "gray": 1
+    },
+    "green": {
+     "green": 258
+    },
+    "orange": {
+     "yellow": 145,
+     "brown": 29,
+     "green": 11,
+     "blue": 2
+    },
+    "purple": {
+     "purple": 172,
+     "green": 5,
+     "black": 2,
+     "red": 1
+    },
+    "red": {
+     "orange": 102,
+     "red": 62,
+     "green": 34,
+     "gray": 16
+    },
+    "white": {
+     "red": 106,
+     "white": 90,
+     "blue": 47,
+     "green": 20
+    },
+    "yellow": {
+     "yellow": 178,
+     "green": 62,
+     "black": 7,
+     "gray": 2
+    }
+   },
+   "질의 MATCH": 0.607,
+   "질의 오일치": 0.063
+  }
+ },
+ "E1 F1 정답자세": {
+  "a16": {
+   "장": 1359,
+   "판정불가율": 0.0,
+   "1순위": 0.578,
+   "1·2순위": 0.77,
+   "판정된 것 1순위": 0.578,
+   "색 균형 1순위": 0.54,
+   "색 균형 1·2순위": 0.738,
+   "색별 1순위": {
+    "black": 0.096,
+    "blue": 0.86,
+    "green": 0.995,
+    "orange": 0.0,
+    "purple": 0.946,
+    "red": 0.367,
+    "white": 0.257,
+    "yellow": 0.803
+   },
+   "혼동": {
+    "black": {
+     "brown": 34,
+     "white": 22,
+     "green": 17,
+     "blue": 10
+    },
+    "blue": {
+     "blue": 190,
+     "yellow": 23,
+     "green": 8
+    },
+    "green": {
+     "green": 196,
+     "black": 1
+    },
+    "orange": {
+     "yellow": 98,
+     "brown": 21,
+     "green": 10,
+     "black": 2
+    },
+    "purple": {
+     "purple": 122,
+     "green": 5,
+     "orange": 1,
+     "red": 1
+    },
+    "red": {
+     "orange": 92,
+     "red": 69,
+     "green": 20,
+     "brown": 4
+    },
+    "white": {
+     "red": 79,
+     "white": 56,
+     "yellow": 27,
+     "blue": 23
+    },
+    "yellow": {
+     "yellow": 143,
+     "green": 28,
+     "black": 6,
+     "gray": 1
+    }
+   },
+   "질의 MATCH": 0.609,
+   "질의 오일치": 0.066
+  },
+  "a20": {
+   "장": 1829,
+   "판정불가율": 0.0,
+   "1순위": 0.584,
+   "1·2순위": 0.768,
+   "판정된 것 1순위": 0.584,
+   "색 균형 1순위": 0.537,
+   "색 균형 1·2순위": 0.722,
+   "색별 1순위": {
+    "black": 0.048,
+    "blue": 0.894,
+    "green": 1.0,
+    "orange": 0.0,
+    "purple": 0.956,
+    "red": 0.398,
+    "white": 0.289,
+    "yellow": 0.715
+   },
+   "혼동": {
+    "black": {
+     "white": 35,
+     "brown": 27,
+     "green": 21,
+     "blue": 10
+    },
+    "blue": {
+     "blue": 270,
+     "yellow": 27,
+     "green": 4,
+     "gray": 1
+    },
+    "green": {
+     "green": 258
+    },
+    "orange": {
+     "yellow": 149,
+     "brown": 26,
+     "green": 11,
+     "blue": 2
+    },
+    "purple": {
+     "purple": 172,
+     "green": 5,
+     "black": 2,
+     "red": 1
+    },
+    "red": {
+     "orange": 112,
+     "red": 98,
+     "green": 24,
+     "brown": 10
+    },
+    "white": {
+     "red": 106,
+     "white": 87,
+     "blue": 45,
+     "yellow": 24
+    },
+    "yellow": {
+     "yellow": 178,
+     "green": 62,
+     "black": 7,
+     "gray": 2
+    }
+   },
+   "질의 MATCH": 0.621,
+   "질의 오일치": 0.064
+  }
+ },
+ "E2 F1 사람박스": {
+  "a16": {
+   "장": 1359,
+   "판정불가율": 0.0,
+   "1순위": 0.589,
+   "1·2순위": 0.765,
+   "판정된 것 1순위": 0.589,
+   "색 균형 1순위": 0.548,
+   "색 균형 1·2순위": 0.733,
+   "색별 1순위": {
+    "black": 0.043,
+    "blue": 0.864,
+    "green": 1.0,
+    "orange": 0.0,
+    "purple": 0.93,
+    "red": 0.372,
+    "white": 0.243,
+    "yellow": 0.933
+   },
+   "혼동": {
+    "black": {
+     "brown": 32,
+     "white": 27,
+     "green": 15,
+     "blue": 10
+    },
+    "blue": {
+     "blue": 191,
+     "yellow": 23,
+     "green": 7
+    },
+    "green": {
+     "green": 197
+    },
+    "orange": {
+     "yellow": 105,
+     "brown": 17,
+     "green": 11,
+     "black": 1
+    },
+    "purple": {
+     "purple": 120,
+     "green": 4,
+     "orange": 4,
+     "red": 1
+    },
+    "red": {
+     "orange": 93,
+     "red": 70,
+     "green": 21,
+     "black": 2
+    },
+    "white": {
+     "red": 80,
+     "white": 53,
+     "yellow": 27,
+     "blue": 23
+    },
+    "yellow": {
+     "yellow": 166,
+     "green": 12
+    }
+   },
+   "질의 MATCH": 0.62,
+   "질의 오일치": 0.065
+  },
+  "a20": {
+   "장": 1829,
+   "판정불가율": 0.0,
+   "1순위": 0.604,
+   "1·2순위": 0.757,
+   "판정된 것 1순위": 0.604,
+   "색 균형 1순위": 0.555,
+   "색 균형 1·2순위": 0.713,
+   "색별 1순위": {
+    "black": 0.048,
+    "blue": 0.891,
+    "green": 1.0,
+    "orange": 0.0,
+    "purple": 0.928,
+    "red": 0.402,
+    "white": 0.282,
+    "yellow": 0.888
+   },
+   "혼동": {
+    "black": {
+     "white": 48,
+     "brown": 24,
+     "blue": 11,
+     "green": 9
+    },
+    "blue": {
+     "blue": 269,
+     "yellow": 27,
+     "green": 5,
+     "brown": 1
+    },
+    "green": {
+     "green": 258
+    },
+    "orange": {
+     "yellow": 150,
+     "brown": 23,
+     "green": 12,
+     "blue": 3
+    },
+    "purple": {
+     "purple": 167,
+     "green": 6,
+     "orange": 6,
+     "red": 1
+    },
+    "red": {
+     "orange": 116,
+     "red": 99,
+     "green": 28,
+     "black": 2
+    },
+    "white": {
+     "red": 114,
+     "white": 85,
+     "blue": 41,
+     "yellow": 24
+    },
+    "yellow": {
+     "yellow": 221,
+     "green": 25,
+     "black": 2,
+     "gray": 1
+    }
+   },
+   "질의 MATCH": 0.634,
+   "질의 오일치": 0.063
+  }
+ },
+ "E3 F1 자세없음+배경0.5": {
+  "a16": {
+   "장": 1359,
+   "판정불가율": 0.0,
+   "1순위": 0.57,
+   "1·2순위": 0.773,
+   "판정된 것 1순위": 0.57,
+   "색 균형 1순위": 0.544,
+   "색 균형 1·2순위": 0.753,
+   "색별 1순위": {
+    "black": 0.202,
+    "blue": 0.855,
+    "green": 0.904,
+    "orange": 0.06,
+    "purple": 0.961,
+    "red": 0.165,
+    "white": 0.303,
+    "yellow": 0.899
+   },
+   "혼동": {
+    "black": {
+     "white": 29,
+     "brown": 24,
+     "black": 19,
+     "blue": 10
+    },
+    "blue": {
+     "blue": 189,
+     "yellow": 24,
+     "green": 5,
+     "navy": 2
+    },
+    "green": {
+     "green": 178,
+     "black": 10,
+     "brown": 8,
+     "white": 1
+    },
+    "orange": {
+     "yellow": 87,
+     "brown": 25,
+     "orange": 8,
+     "black": 7
+    },
+    "purple": {
+     "purple": 124,
+     "green": 3,
+     "orange": 1,
+     "red": 1
+    },
+    "red": {
+     "orange": 107,
+     "red": 31,
+     "black": 22,
+     "green": 13
+    },
+    "white": {
+     "red": 76,
+     "white": 66,
+     "yellow": 29,
+     "blue": 22
+    },
+    "yellow": {
+     "yellow": 160,
+     "black": 10,
+     "green": 7,
+     "brown": 1
+    }
+   },
+   "질의 MATCH": 0.603,
+   "질의 오일치": 0.06
+  },
+  "a20": {
+   "장": 1829,
+   "판정불가율": 0.0,
+   "1순위": 0.577,
+   "1·2순위": 0.79,
+   "판정된 것 1순위": 0.577,
+   "색 균형 1순위": 0.529,
+   "색 균형 1·2순위": 0.755,
+   "색별 1순위": {
+    "black": 0.019,
+    "blue": 0.887,
+    "green": 0.911,
+    "orange": 0.032,
+    "purple": 0.967,
+    "red": 0.215,
+    "white": 0.346,
+    "yellow": 0.855
+   },
+   "혼동": {
+    "black": {
+     "white": 49,
+     "brown": 38,
+     "blue": 10,
+     "green": 3
+    },
+    "blue": {
+     "blue": 268,
+     "yellow": 29,
+     "green": 3,
+     "brown": 1
+    },
+    "green": {
+     "green": 235,
+     "brown": 11,
+     "black": 8,
+     "gray": 2
+    },
+    "orange": {
+     "yellow": 135,
+     "brown": 34,
+     "green": 9,
+     "orange": 6
+    },
+    "purple": {
+     "purple": 174,
+     "green": 4,
+     "orange": 1,
+     "black": 1
+    },
+    "red": {
+     "orange": 122,
+     "red": 53,
+     "brown": 27,
+     "green": 15
+    },
+    "white": {
+     "white": 104,
+     "red": 103,
+     "blue": 42,
+     "yellow": 21
+    },
+    "yellow": {
+     "yellow": 213,
+     "green": 16,
+     "black": 15,
+     "gray": 3
+    }
+   },
+   "질의 MATCH": 0.614,
+   "질의 오일치": 0.057
+  }
+ },
+ "E3 F1 자세없음+배경1.0": {
+  "a16": {
+   "장": 1359,
+   "판정불가율": 0.0,
+   "1순위": 0.487,
+   "1·2순위": 0.698,
+   "판정된 것 1순위": 0.487,
+   "색 균형 1순위": 0.476,
+   "색 균형 1·2순위": 0.69,
+   "색별 1순위": {
+    "black": 0.181,
+    "blue": 0.814,
+    "green": 0.325,
+    "orange": 0.187,
+    "purple": 0.969,
+    "red": 0.122,
+    "white": 0.307,
+    "yellow": 0.904
+   },
+   "혼동": {
+    "black": {
+     "brown": 30,
+     "white": 28,
+     "black": 17,
+     "blue": 10
+    },
+    "blue": {
+     "blue": 180,
+     "yellow": 25,
+     "navy": 10,
+     "black": 5
+    },
+    "green": {
+     "green": 64,
+     "orange": 29,
+     "white": 28,
+     "black": 27
+    },
+    "orange": {
+     "yellow": 78,
+     "orange": 25,
+     "brown": 18,
+     "black": 6
+    },
+    "purple": {
+     "purple": 125,
+     "green": 1,
+     "orange": 1,
+     "navy": 1
+    },
+    "red": {
+     "orange": 115,
+     "red": 23,
+     "black": 20,
+     "pink": 12
+    },
+    "white": {
+     "red": 69,
+     "white": 67,
+     "yellow": 25,
+     "blue": 22
+    },
+    "yellow": {
+     "yellow": 161,
+     "black": 11,
+     "navy": 3,
+     "brown": 2
+    }
+   },
+   "질의 MATCH": 0.518,
+   "질의 오일치": 0.066
+  },
+  "a20": {
+   "장": 1829,
+   "판정불가율": 0.0,
+   "1순위": 0.491,
+   "1·2순위": 0.706,
+   "판정된 것 1순위": 0.491,
+   "색 균형 1순위": 0.461,
+   "색 균형 1·2순위": 0.683,
+   "색별 1순위": {
+    "black": 0.038,
+    "blue": 0.785,
+    "green": 0.295,
+    "orange": 0.185,
+    "purple": 0.967,
+    "red": 0.195,
+    "white": 0.362,
+    "yellow": 0.863
+   },
+   "혼동": {
+    "black": {
+     "white": 46,
+     "brown": 42,
+     "blue": 5,
+     "black": 4
+    },
+    "blue": {
+     "blue": 237,
+     "yellow": 34,
+     "navy": 18,
+     "purple": 8
+    },
+    "green": {
+     "green": 76,
+     "white": 67,
+     "orange": 31,
+     "black": 28
+    },
+    "orange": {
+     "yellow": 113,
+     "orange": 35,
+     "brown": 31,
+     "green": 4
+    },
+    "purple": {
+     "purple": 174,
+     "green": 4,
+     "orange": 1,
+     "black": 1
+    },
+    "red": {
+     "orange": 133,
+     "red": 48,
+     "brown": 31,
+     "pink": 10
+    },
+    "white": {
+     "white": 109,
+     "red": 89,
+     "blue": 33,
+     "orange": 25
+    },
+    "yellow": {
+     "yellow": 215,
+     "black": 19,
+     "gray": 5,
+     "brown": 5
+    }
+   },
+   "질의 MATCH": 0.534,
+   "질의 오일치": 0.061
+  }
+ },
+ "E3 F1 정답자세+배경0.5": {
+  "a16": {
+   "장": 1359,
+   "판정불가율": 0.0,
+   "1순위": 0.568,
+   "1·2순위": 0.781,
+   "판정된 것 1순위": 0.568,
+   "색 균형 1순위": 0.535,
+   "색 균형 1·2순위": 0.765,
+   "색별 1순위": {
+    "black": 0.106,
+    "blue": 0.842,
+    "green": 0.904,
+    "orange": 0.03,
+    "purple": 0.961,
+    "red": 0.266,
+    "white": 0.275,
+    "yellow": 0.899
+   },
+   "혼동": {
+    "black": {
+     "brown": 35,
+     "white": 29,
+     "black": 10,
+     "blue": 10
+    },
+    "blue": {
+     "blue": 186,
+     "yellow": 27,
+     "green": 5,
+     "navy": 2
+    },
+    "green": {
+     "green": 178,
+     "black": 10,
+     "brown": 8,
+     "white": 1
+    },
+    "orange": {
+     "yellow": 94,
+     "brown": 23,
+     "black": 6,
+     "green": 5
+    },
+    "purple": {
+     "purple": 124,
+     "green": 3,
+     "orange": 1,
+     "red": 1
+    },
+    "red": {
+     "orange": 116,
+     "red": 50,
+     "green": 13,
+     "black": 6
+    },
+    "white": {
+     "red": 76,
+     "white": 60,
+     "yellow": 30,
+     "blue": 24
+    },
+    "yellow": {
+     "yellow": 160,
+     "black": 10,
+     "green": 7,
+     "brown": 1
+    }
+   },
+   "질의 MATCH": 0.606,
+   "질의 오일치": 0.064
+  },
+  "a20": {
+   "장": 1829,
+   "판정불가율": 0.0,
+   "1순위": 0.583,
+   "1·2순위": 0.794,
+   "판정된 것 1순위": 0.583,
+   "색 균형 1순위": 0.536,
+   "색 균형 1·2순위": 0.761,
+   "색별 1순위": {
+    "black": 0.029,
+    "blue": 0.874,
+    "green": 0.911,
+    "orange": 0.026,
+    "purple": 0.967,
+    "red": 0.317,
+    "white": 0.312,
+    "yellow": 0.855
+   },
+   "혼동": {
+    "black": {
+     "white": 49,
+     "brown": 37,
+     "blue": 10,
+     "black": 3
+    },
+    "blue": {
+     "blue": 264,
+     "yellow": 33,
+     "green": 3,
+     "brown": 1
+    },
+    "green": {
+     "green": 235,
+     "brown": 11,
+     "black": 8,
+     "gray": 2
+    },
+    "orange": {
+     "yellow": 140,
+     "brown": 31,
+     "green": 9,
+     "orange": 5
+    },
+    "purple": {
+     "purple": 174,
+     "green": 4,
+     "orange": 1,
+     "black": 1
+    },
+    "red": {
+     "orange": 135,
+     "red": 78,
+     "green": 15,
+     "brown": 9
+    },
+    "white": {
+     "red": 103,
+     "white": 94,
+     "blue": 38,
+     "yellow": 31
+    },
+    "yellow": {
+     "yellow": 213,
+     "green": 16,
+     "black": 15,
+     "gray": 3
+    }
+   },
+   "질의 MATCH": 0.616,
+   "질의 오일치": 0.061
+  }
+ },
+ "E3 F1 정답자세+배경1.0": {
+  "a16": {
+   "장": 1359,
+   "판정불가율": 0.0,
+   "1순위": 0.471,
+   "1·2순위": 0.693,
+   "판정된 것 1순위": 0.471,
+   "색 균형 1순위": 0.455,
+   "색 균형 1·2순위": 0.689,
+   "색별 1순위": {
+    "black": 0.085,
+    "blue": 0.774,
+    "green": 0.325,
+    "orange": 0.134,
+    "purple": 0.969,
+    "red": 0.181,
+    "white": 0.271,
+    "yellow": 0.904
+   },
+   "혼동": {
+    "black": {
+     "brown": 38,
+     "white": 29,
+     "blue": 10,
+     "black": 8
+    },
+    "blue": {
+     "blue": 171,
+     "yellow": 33,
+     "navy": 10,
+     "black": 5
+    },
+    "green": {
+     "green": 64,
+     "orange": 29,
+     "white": 28,
+     "black": 27
+    },
+    "orange": {
+     "yellow": 83,
+     "brown": 22,
+     "orange": 18,
+     "black": 6
+    },
+    "purple": {
+     "purple": 125,
+     "green": 1,
+     "orange": 1,
+     "navy": 1
+    },
+    "red": {
+     "orange": 132,
+     "red": 34,
+     "black": 12,
+     "navy": 3
+    },
+    "white": {
+     "red": 69,
+     "white": 59,
+     "yellow": 28,
+     "blue": 22
+    },
+    "yellow": {
+     "yellow": 161,
+     "black": 11,
+     "navy": 3,
+     "brown": 2
+    }
+   },
+   "질의 MATCH": 0.514,
+   "질의 오일치": 0.071
+  },
+  "a20": {
+   "장": 1829,
+   "판정불가율": 0.0,
+   "1순위": 0.481,
+   "1·2순위": 0.711,
+   "판정된 것 1순위": 0.481,
+   "색 균형 1순위": 0.452,
+   "색 균형 1·2순위": 0.689,
+   "색별 1순위": {
+    "black": 0.038,
+    "blue": 0.758,
+    "green": 0.295,
+    "orange": 0.148,
+    "purple": 0.967,
+    "red": 0.224,
+    "white": 0.326,
+    "yellow": 0.863
+   },
+   "혼동": {
+    "black": {
+     "white": 46,
+     "brown": 41,
+     "blue": 5,
+     "black": 4
+    },
+    "blue": {
+     "blue": 229,
+     "yellow": 41,
+     "navy": 16,
+     "purple": 12
+    },
+    "green": {
+     "green": 76,
+     "white": 67,
+     "orange": 31,
+     "black": 28
+    },
+    "orange": {
+     "yellow": 125,
+     "orange": 28,
+     "brown": 28,
+     "green": 4
+    },
+    "purple": {
+     "purple": 174,
+     "green": 4,
+     "orange": 1,
+     "black": 1
+    },
+    "red": {
+     "orange": 162,
+     "red": 55,
+     "brown": 10,
+     "green": 8
+    },
+    "white": {
+     "white": 98,
+     "red": 89,
+     "blue": 33,
+     "orange": 27
+    },
+    "yellow": {
+     "yellow": 215,
+     "black": 19,
+     "gray": 5,
+     "brown": 5
+    }
+   },
+   "질의 MATCH": 0.531,
+   "질의 오일치": 0.067
+  }
+ }
+}

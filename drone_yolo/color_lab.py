@@ -314,6 +314,15 @@ def siglip(name=SIGLIP):
 def person_rgb(it, part="person"):
     """part: person (박스) · upper (위 10~62 %) · upper_mask (사람 마스크 밖 회색 · C5) · upper_wb (프레임 무채색 화이트밸런스 + 노출 맞춤 · C6)"""
     fr, (x1, y1, x2, y2) = it["frame"], it["box"]
+    if part == "bg":                                                     # E3 배경 — 박스 둘레 (가로 · 세로 1배씩) · 사람 칸은 회색
+        bw, bh = x2 - x1, y2 - y1
+        X1, Y1, X2, Y2 = int(max(0, x1 - bw)), int(max(0, y1 - bh)), int(min(fr.shape[1], x2 + bw)), int(min(fr.shape[0], y2 + bh))
+        c = fr[Y1:Y2, X1:X2].copy(); c[int(y1 - Y1):int(y2 - Y1), int(x1 - X1):int(x2 - X1)] = 128
+        return cv2.cvtColor(c, cv2.COLOR_BGR2RGB)
+    if part == "upper_gtpose":                                           # E1 — 정답 자세 (누움 · 기어감 → 박스 전체)
+        it = dict(it, pose=it.get("gt_pose")); part = "upper"
+    if part == "upper_nopose":                                           # E0 — worker 지금 (자세 안 넘김)
+        it = dict(it, pose=None); part = "upper"
     x1, y1, x2, y2 = int(max(0, x1)), int(max(0, y1)), int(min(fr.shape[1], x2)), int(min(fr.shape[0], y2))
     if part == "upper_mask":
         cv2.setRNGSeed(0)
@@ -402,9 +411,12 @@ def navy_delta(part="upper", model=SIGLIP, target=0.05):
     return 10.0
 
 
-def zero_shot(items, part="person", tmpl=None, tmpls=None, syn=False, model=SIGLIP, bias=False, navy=False):
+def zero_shot(items, part="person", tmpl=None, tmpls=None, syn=False, model=SIGLIP, bias=False, navy=False, bg=0.0):
     tm = tmpls or ([tmpl] if tmpl else TMPL1)
     lg = zs_logits(siglip_feats(items, part, model=model), tm, syn, model)
+    if bg:                                                              # E3 — 배경 로짓 (평균 뺀 것) × α 를 뺌
+        lb = zs_logits(siglip_feats(items, "bg", model=model), tm, syn, model)
+        lg = lg - bg * (lb - lb.mean(1, keepdims=True))
     if bias:
         lg = lg + zs_bias(part, tuple(tm), syn, model)
     if navy:
@@ -552,6 +564,46 @@ def build_confirm(per_class=150, seed=0):
     print("D", len(D), Counter(x["primary"] for x in D), "사진 묶음", len({x["person"] for x in D}))
 
 
+def build_ue(every=4):
+    """E = UE S1~S4 (16 · 20 m) 정답 박스 · 잘림 없음 · 키 ≥ 20 px · every 장마다 · 크롭 = 박스 3배 (배경 빼기용 둘레 포함)"""
+    E = []
+    for run in sorted((BASE / "ue_flight").glob("S[1-4]_a[12][06]")):
+        A = json.load(open(run / "actors.json"))
+        for k, l in enumerate(open(run / "boxes.jsonl")):
+            r = json.loads(l)
+            if not r["boxes"] or k % every:
+                continue
+            fr = None
+            for a, b in r["boxes"].items():
+                x1, y1, x2, y2 = b["bb"]
+                if b.get("cut") or y2 - y1 < 20 or a not in A:
+                    continue
+                if fr is None:
+                    fr = cv2.imread(str(run / "frames" / f"{r['frame']}.jpg")); st = frame_stats(fr)
+                w, h = x2 - x1, y2 - y1
+                X1, Y1, X2, Y2 = int(max(0, x1 - w)), int(max(0, y1 - h)), int(min(fr.shape[1], x2 + w)), int(min(fr.shape[0], y2 + h))
+                c = A[a]["upper_color"]
+                E.append({"frame": fr[Y1:Y2, X1:X2].copy(), "box": (x1 - X1, y1 - Y1, x2 - X1, y2 - Y1), "stats": st, "pose": None,
+                          "gt_pose": "lying" if A[a]["pose_raw"] in ("lying", "crawling") else None, "truth": {c}, "primary": c,
+                          "person": f"{run.name}:{a}", "run": run.name, "h": round(h, 1)})
+    pickle.dump(E, open(LAB / "E.pkl", "wb"))
+    print("E", len(E), Counter(e["primary"] for e in E), Counter(e["run"] for e in E))
+
+
+def ue_query(items, preds):
+    """질의 — 배우마다 자기 색으로 질의할 때 같은 장면 (run) 다른 색 배우 관측의 「일치」 비율 (오일치) · 자기 색 배우의 일치 (MATCH)"""
+    by_run = defaultdict(set)
+    for it in items:
+        by_run[it["run"]].add(it["primary"])
+    hit, fa = [], []
+    for it, p in zip(items, preds):
+        r = {"status": "ok", "top": [(COLORS[i], float(p[i])) for i in np.argsort(-p)[:2]], "probs": {c: float(p[i]) for i, c in enumerate(COLORS)}, "n_obs": 1} if p is not None else {"status": "undetermined"}
+        for q in by_run[it["run"]]:
+            m = match(r, q)[0] == "일치"
+            (hit if q == it["primary"] else fa).append(m)
+    return round(float(np.mean(hit)), 3), round(float(np.mean(fa)), 3)
+
+
 # ───────────────────────── 지표 ─────────────────────────
 def metrics(items, preds, set_name):
     ok = [p is not None for p in preds]
@@ -651,6 +703,14 @@ METHODS = {
     "C7 large 편향 상의": dict(kind="zs", part="upper", model="google/siglip2-large-patch16-256", bias=True),
     "C7 so400m 편향 상의": dict(kind="zs", part="upper", model="google/siglip2-so400m-patch16-256", bias=True),
     "F1 B1+남색문턱": dict(kind="zs", part="upper", navy=True),
+    # ── 4차 (UE · 배포 경로 문제 보완) ──
+    "E0 F1 자세없음": dict(kind="zs", part="upper_nopose", navy=True),
+    "E1 F1 정답자세": dict(kind="zs", part="upper_gtpose", navy=True),
+    "E2 F1 사람박스": dict(kind="zs", part="person", navy=True),
+    "E3 F1 자세없음+배경0.5": dict(kind="zs", part="upper_nopose", navy=True, bg=0.5),
+    "E3 F1 자세없음+배경1.0": dict(kind="zs", part="upper_nopose", navy=True, bg=1.0),
+    "E3 F1 정답자세+배경0.5": dict(kind="zs", part="upper_gtpose", navy=True, bg=0.5),
+    "E3 F1 정답자세+배경1.0": dict(kind="zs", part="upper_gtpose", navy=True, bg=1.0),
 }
 
 
@@ -725,6 +785,24 @@ def run(names, set_names=("U", "N")):
         out_p.write_text(json.dumps(res, ensure_ascii=False, indent=1))
 
 
+def run_ue(names):
+    E = pickle.load(open(LAB / "E.pkl", "rb"))
+    out_p = BASE / "metrics" / "color_lab_ue.json"
+    res = json.load(open(out_p)) if out_p.exists() else {}
+    for name in names:
+        preds, ms = get_preds(name, E, "E")
+        res[name] = {}
+        for tag in ("a16", "a20"):
+            idx = [i for i, it in enumerate(E) if it["run"].endswith(tag)]
+            its, ps = [E[i] for i in idx], [preds[i] for i in idx]
+            o, _ = metrics(its, ps, "U")
+            o["질의 MATCH"], o["질의 오일치"] = ue_query(its, ps)
+            res[name][tag] = o
+        a, b = res[name]["a16"], res[name]["a20"]
+        print(f"{name:26s} a16 균형 {a['색 균형 1순위']:.3f} · 오일치 {a['질의 오일치']:.3f} · MATCH {a['질의 MATCH']:.3f} | a20 균형 {b['색 균형 1순위']:.3f} · 오일치 {b['질의 오일치']:.3f} · MATCH {b['질의 MATCH']:.3f}", flush=True)
+        out_p.write_text(json.dumps(res, ensure_ascii=False, indent=1))
+
+
 if __name__ == "__main__":
     if sys.argv[1] == "build":
         build()
@@ -734,5 +812,9 @@ if __name__ == "__main__":
         run(list(METHODS) if sys.argv[2:] == ["all"] else sys.argv[2:])
     elif sys.argv[1] == "confirm":                                      # 확인 셋 P · D (한 번만)
         run(sys.argv[2:], ("P", "D"))
+    elif sys.argv[1] == "build_ue":
+        build_ue()
+    elif sys.argv[1] == "ue":                                           # 4차 — UE a16 (고르기) · a20 (판정)
+        run_ue(sys.argv[2:])
     elif sys.argv[1] == "confirm_v":                                    # 3차 확인 셋 V (디관 영상 · 한 번만)
         run(sys.argv[2:], ("V",))

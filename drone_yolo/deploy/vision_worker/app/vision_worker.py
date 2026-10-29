@@ -92,7 +92,7 @@ def load_detector():
 def run_mission(det, ctl):
     import cv2
     import numpy as np
-    from app.vision_core.color import ColorAccumulator, ColorProfiler, frame_stats, match
+    from app.vision_core.color import ColorAccumulator, frame_stats, make_colorer, match
     from app.vision_core.geo import GeoResolver
     from app.vision_core.registry import CandidateRegistry
     from app.vision_core.sources import FileSource, LiveSource
@@ -106,7 +106,7 @@ def run_mission(det, ctl):
     live = src_s.startswith(("rtsp://", "srt://", "udp://"))
     src = LiveSource(src_s) if live else FileSource(src_s, FPS)
     tel, geo, reg = TelemetryStore(mdir), GeoResolver(), CandidateRegistry(mid)
-    colorer, query = ColorProfiler(), ctl.get("query_color")      # 찾는 사람 상의 색 (UC-0707 · 없으면 판정만)
+    colorer, query = make_colorer(log=print), ctl.get("query_color")      # 찾는 사람 상의 색 (UC-0707 · 없으면 판정만)
     det_f = open(mdir / "results" / "detections.jsonl", "a", encoding="utf-8")
     cand_f = open(mdir / "results" / "candidates.jsonl", "a", encoding="utf-8")
     log = open(mdir / "logs" / "vision.log", "a", encoding="utf-8")

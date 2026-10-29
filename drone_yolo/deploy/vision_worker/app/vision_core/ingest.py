@@ -24,7 +24,7 @@ import cv2
 import numpy as np
 
 from .appearance import AppearanceComparator
-from .color import ColorAccumulator, ColorProfiler, frame_stats
+from .color import ColorAccumulator, frame_stats, make_colorer
 from .geo import GeoResolver, Telemetry
 from .registry import CandidateRegistry
 from .reobserve import ReobservePlanner
@@ -112,7 +112,7 @@ class IngestWorker:
         self.model_config_id = str(model_config_id)
         self.session = str(uuid.uuid4())                 # producer_session_id — 실행마다 새로
         self.outbox, self.state = Outbox(scratch), State(scratch)
-        self.geo, self.colorer = GeoResolver(), ColorProfiler()
+        self.geo, self.colorer = GeoResolver(), make_colorer(log=lambda m: print(m, flush=True))   # 1.3 (10-29) SigLIP 2 제로샷 · 없으면 규칙
         self.upload_crops, self.color_every_s = upload_crops, color_every_s
         self.reg = {}                                     # 임무 → CandidateRegistry
         self.uid, self.rev = {}, {}                      # (임무, 후보 라벨) → uuid · uuid → revision
@@ -121,6 +121,7 @@ class IngestWorker:
         self.appear, self.planner, self.pending_reobs, self.known_cands = AppearanceComparator(), ReobservePlanner(), [], set()
         self.query_file = Path(os.environ.get("INGEST_APPEARANCE_FILE", str(Path(scratch) / "appearance_query.json")))
         self.stats = {"frames": 0, "observations": 0, "dropped": 0, "uploads": 0, "upload_fail": 0}
+        self.stats["color_method"] = getattr(self.colorer, "name", "rule-v10")       # 상태 파일에 보임 (siglip2-zs | rule-v10)
 
     def _h(self):
         return {"Authorization": "Bearer " + self.token()}
