@@ -382,11 +382,33 @@ def _softmax(lg):
     return e / e.sum(1, keepdims=True)
 
 
-def zero_shot(items, part="person", tmpl=None, tmpls=None, syn=False, model=SIGLIP, bias=False):
+def navy_rule(lg, delta):
+    """F1 — 1순위가 남색인데 (남색 − 검정) ≤ delta 이면 남색 · 검정 로짓을 맞바꿔 검정으로"""
+    lg = lg.copy(); n, b = CI["navy"], CI["black"]
+    sw = (lg.argmax(1) == n) & (lg[:, n] - lg[:, b] <= delta)
+    lg[sw, n], lg[sw, b] = lg[sw, b], lg[sw, n]
+    return lg
+
+
+def navy_delta(part="upper", model=SIGLIP, target=0.05):
+    """δ = UAV-Human 학습셋 검정 사진의 남색 판정률 ≤ target 이 되는 가장 작은 값 (확인 셋 안 봄)"""
+    X, y, _ = train_feats(part, model)
+    lg = zs_logits(X[y == CI["black"]], TMPL1, False, model)
+    for d in np.arange(0, 10.01, 0.05):
+        r = float(np.mean(navy_rule(lg, d).argmax(1) == CI["navy"]))
+        if r <= target:
+            print(f"  남색 문턱 δ={d:.2f} (학습셋 검정 {len(lg)}장 · 남색 판정 {np.mean(lg.argmax(1) == CI['navy']):.3f} → {r:.3f})", flush=True)
+            return float(d)
+    return 10.0
+
+
+def zero_shot(items, part="person", tmpl=None, tmpls=None, syn=False, model=SIGLIP, bias=False, navy=False):
     tm = tmpls or ([tmpl] if tmpl else TMPL1)
     lg = zs_logits(siglip_feats(items, part, model=model), tm, syn, model)
     if bias:
         lg = lg + zs_bias(part, tuple(tm), syn, model)
+    if navy:
+        lg = navy_rule(lg, navy_delta(part, model))
     return list(_softmax(lg))
 
 
@@ -628,6 +650,7 @@ METHODS = {
     "C4+probe 0.5": dict(kind="fuse", a="C4 편향 상의", b="B2 probe 상의", w=0.5, mode="lin"),
     "C7 large 편향 상의": dict(kind="zs", part="upper", model="google/siglip2-large-patch16-256", bias=True),
     "C7 so400m 편향 상의": dict(kind="zs", part="upper", model="google/siglip2-so400m-patch16-256", bias=True),
+    "F1 B1+남색문턱": dict(kind="zs", part="upper", navy=True),
 }
 
 
@@ -679,7 +702,7 @@ def run(names, set_names=("U", "N")):
     for s, items in sets.items():
         base_t[s] = metrics(items, get_preds("V10", items, s)[0], "N" if s == "N" else "U")[1]
     for name in names:
-        res[name] = {}
+        res.setdefault(name, {})
         for s, items in sets.items():
             preds, ms = get_preds(name, items, s)
             if s == "U":
@@ -711,3 +734,5 @@ if __name__ == "__main__":
         run(list(METHODS) if sys.argv[2:] == ["all"] else sys.argv[2:])
     elif sys.argv[1] == "confirm":                                      # 확인 셋 P · D (한 번만)
         run(sys.argv[2:], ("P", "D"))
+    elif sys.argv[1] == "confirm_v":                                    # 3차 확인 셋 V (디관 영상 · 한 번만)
+        run(sys.argv[2:], ("V",))
