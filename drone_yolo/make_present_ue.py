@@ -6,6 +6,7 @@ make_present_ue.py — 발표 자료용 UE 장면 그림 (10-17) — 추적 · �
   설정: v12_f91_swa TensorRT · 0.20 · 후보 묶기에 pose 위치 (VISION_GEO_GROUPING=1 · UE 평지 가정 VISION_GEO_AGL_FLAT=1 — tests_v1_2 와 같음)
 실행  /home/se/miniconda3/envs/drone/bin/python make_present_ue.py run <출력 폴더> S2_a16 S3_a16 S4_a20
       /home/se/miniconda3/envs/drone/bin/python make_present_ue.py draw <run 결과 폴더> <그림 폴더>
+      --v13 (10-30 · 페어) = worker 1.3 상의 색 (SigLIP 2) 로 S4_a20 만: run --v13 <폴더> S4_a20 → draw --v13 <폴더> <그림 폴더> → 09_UE_상의색_S4_v13.jpg
 """
 import json, os, shutil, sys, tempfile, uuid
 from datetime import datetime, timedelta, timezone
@@ -27,11 +28,16 @@ def iou(a, b):
     return ix / u if u > 0 else 0.0
 
 
-def run(out, runs):
+def run(out, runs, v13=False):
     stage = Path(tempfile.mkdtemp(prefix="present_ue_"))
     shutil.copytree(Path(BACKEND) / "app", stage / "app", ignore=shutil.ignore_patterns("*.bak-*", "__pycache__"))
-    for f in (HERE / "app").rglob("*.py"):
-        dst = stage / "app" / f.relative_to(HERE / "app"); dst.parent.mkdir(parents=True, exist_ok=True); shutil.copy2(f, dst)
+    src = HERE
+    if v13:   # worker 1.3 (상의 색 SigLIP 2) — 배포 판 SIM vision_core + color.py + 패치 (tests_color_siglip e2e 와 같은 덮기)
+        sys.path.insert(0, str(HERE.parent / "integration_v1_3"))
+        from tests_color_siglip import PACK, overlay
+        src = overlay("dev"); os.environ.update(VISION_COLOR="siglip", VISION_COLOR_PACK=str(PACK))
+    for f in (src / "app").rglob("*.py"):
+        dst = stage / "app" / f.relative_to(src / "app"); dst.parent.mkdir(parents=True, exist_ok=True); shutil.copy2(f, dst)
     sys.path.insert(0, str(stage)); sys.path.insert(0, str(HERE))
     os.environ.update(VISION_GEO_GROUPING="1", VISION_GEO_AGL_FLAT="1", VISION_GEO_CLAIMS="0", VISION_MIN_AGL_M="10")
     import cv2
@@ -209,18 +215,20 @@ def draw_track(src, out):
     canvas.save(out / "08_UE_추적_후보_S2.jpg", quality=90)
 
 
-def draw_color(src, out):
-    """S4 상의 색 — 8색 8명 · 정답 vs 후보 누적 1순위"""
+def draw_color(src, out, v13=False):
+    """S4 상의 색 — 8색 8명 · 정답 vs 후보 누적 1순위 (v13 = worker 1.3 SigLIP 2 · 틀림 줄은 결과에서)"""
     from PIL import Image, ImageDraw
     d = json.load(open(src / "S4_a20.json")); f = next(x for x in d["frames"] if x["frame"] == "00611")
     obs = [o for o in f["obs"] if o["actor"]]
     reg = _region([o["bbox"] for o in obs], margin=110)
     im, k = _crop("S4_a20", f["frame"], reg)
     dr = ImageDraw.Draw(im)
-    ok = 0
+    ok, wrong = 0, []
     for o in obs:
         truth = d["actors"][o["actor"]]["upper_color"]; pred = o["upper"]
         good = truth == pred; ok += good
+        if not good:
+            wrong.append(f"{COLOR_KO[truth]}→{COLOR_KO.get(pred, '판정 불가')}")
         x1, y1, x2, y2 = [(v - reg[i % 2]) * k for i, v in enumerate(o["bbox"])]
         col = (40, 160, 70) if good else (220, 40, 40)
         dr.rectangle([x1, y1, x2, y2], outline=col, width=5)
@@ -228,15 +236,25 @@ def draw_color(src, out):
         _label(dr, (x1, y2 + 44), f"추정 {COLOR_KO.get(pred, '판정 불가')} {'O' if good else 'X'}", col, 22)
     canvas = Image.new("RGB", (im.width, im.height + 110), (250, 250, 250)); canvas.paste(im, (0, 110))
     dc = ImageDraw.Draw(canvas)
+    if v13:
+        dc.text((20, 14), f"상의 색 추정 — SigLIP 2 (worker 1.3 · UE S4 · 20 m · 8색 8명 · 후보 누적 1순위) — 맞음 {ok}/{len(obs)}", font=_font(32), fill=(20, 20, 20))
+        dc.text((20, 60), ("틀림: " + " · ".join(wrong)) if wrong else "틀림 없음", font=_font(22), fill=(70, 70, 70))
+        canvas.save(out / "09_UE_상의색_S4_v13.jpg", quality=90)
+        print("S4 상의 색 (1.3)", ok, "/", len(obs), wrong)
+        return
     dc.text((20, 14), f"상의 색 추정 (UE S4 · 20 m · 8색 8명 · 후보 누적 1순위) — 맞음 {ok}/{len(obs)}", font=_font(32), fill=(20, 20, 20))
     dc.text((20, 60), "틀림: 빨강→검정 (밝은 풀밭에서 노출 보정이 상의를 어둡힘 · 10-14 원인 확인) · 흰→회 · 주황→노랑 · 검정→회 (이웃 색)", font=_font(22), fill=(70, 70, 70))
     canvas.save(out / "09_UE_상의색_S4.jpg", quality=90)
 
 
 if __name__ == "__main__":
-    if sys.argv[1] == "run":
-        out = Path(sys.argv[2]); out.mkdir(parents=True, exist_ok=True)
-        run(out, sys.argv[3:])
+    v13 = "--v13" in sys.argv; args = [a for a in sys.argv if a != "--v13"]   # --v13 = worker 1.3 상의 색 (S4 만 그림)
+    if args[1] == "run":
+        out = Path(args[2]); out.mkdir(parents=True, exist_ok=True)
+        run(out, args[3:], v13)
+    elif v13:
+        src, out = Path(args[2]), Path(args[3]); out.mkdir(parents=True, exist_ok=True)
+        draw_color(src, out, v13=True)
     else:
-        src, out = Path(sys.argv[2]), Path(sys.argv[3]); out.mkdir(parents=True, exist_ok=True)
+        src, out = Path(args[2]), Path(args[3]); out.mkdir(parents=True, exist_ok=True)
         draw_state(src, out); draw_track(src, out); draw_color(src, out)

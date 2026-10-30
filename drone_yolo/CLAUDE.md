@@ -159,6 +159,7 @@
 | `ue_reid_siglip.py` | 후보 잇기 외형 = SigLIP 2 임베딩 (R2 ❌) |
 | `camera_calib.py` | 실기체 화각 · 왜곡 실측 (체커보드 · `--selftest` 가상 카메라) → `configs/camera_<이름>.json` · `VISION_HFOV_DEG` |
 | `make_present_video.py` · `make_present_video_full.py` | 발표 영상 — 탐지만 · 비전 임무 전체 (등급 색 · 자세 · 움직임 · 상의 색 · 라벨 자리 고르기) |
+| `make_fair_figs.py` · `make_present_ue.py --v13` | 엔지니어링 페어 그림 — 흐름 · 숫자 카드 · 상의 색 · 재현율 (수치는 스크립트 안 · 10-30) · UE 상의 색 사례를 worker 1.3 으로 → `발표자료/엔지니어링페어_비전/` (git 밖) |
 | `real_flight_eval.py` | 실비행 녹화 (worker `VISION_RECORD_DIR`) → 배포 worker 다시 돌림 → 오탐 · AP50 · 출연자별 색 · 등급 · 라벨 내보내기 (`--gt gt.json`) |
 | `ue_posture_capture.py` | UE (Cosys-AirSim) 자세 데이터 캡처 — 배우 이름 `Person_<자세>_<번호>` · 마운트 × 고도 × 방위 · 서버 자세 크롭 형식 (노트북) |
 
