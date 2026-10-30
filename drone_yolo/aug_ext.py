@@ -30,3 +30,41 @@ def enable_ellipse_box(k=32):
 
     RandomPerspective.apply_bboxes = apply_bboxes
     print("  증강        : 회전 박스 = 타원 방식 (aug_ext · Kalra ICCV 2021)")
+
+
+def enable_degrade(p_resize=0.2, s_resize=(0.5, 0.9), p_blur=0.3, s_blur=(0.3, 1.2), p_noise=0.2, s_noise=(2, 8), p_jpeg=0.5, q_jpeg=(30, 95)):
+    """화질 열화 증강 (10-31 「C」) — 실기체 실시간 전송 (RunCam WiFiLink 2-G · H.264 4~8 Mbps) 흉내
+
+    근거: pose_bench (10-31) — 배포 v12 를 JPEG 30 으로 다시 저장하면 Okutama 누움 뜸 −9.8 · 앉음 −7.6 · 서기 −7.2 %p
+          (v12 학습 창은 「확대 금지 · 면적 평균 축소」 로 매끈 → 블록 · 잡음 · 흐림을 본 적 없음)
+    학습 증강 RandomHSV.apply_image 뒤에 차례대로: 축소 뒤 확대 → 흐림 → 노이즈 → JPEG 재압축 (마지막 = 카메라 → 인코더 순서)
+    검증 변환엔 RandomHSV 가 없어 안 걸림 · 판정은 학습에 안 쓴 WebP 로 (pose_bench w30)
+    train_person.py --degrade 로 켬 (데이터 로더 프로세스는 fork 라 같이 적용)
+    """
+    import random
+    import cv2
+    from ultralytics.data.augment import RandomHSV
+    orig = RandomHSV.apply_image
+
+    def apply_image(self, labels, params=None):
+        labels = orig(self, labels, params)
+        img = labels["img"]
+        if img.ndim != 3 or img.shape[-1] != 3:
+            return labels
+        h, w = img.shape[:2]
+        if random.random() < p_resize:
+            s = random.uniform(*s_resize)
+            img = cv2.resize(cv2.resize(img, (max(1, int(w * s)), max(1, int(h * s))), interpolation=cv2.INTER_AREA), (w, h), interpolation=cv2.INTER_LINEAR)
+        if random.random() < p_blur:
+            img = cv2.GaussianBlur(img, (0, 0), random.uniform(*s_blur))
+        if random.random() < p_noise:
+            img = np.clip(img.astype(np.float32) + np.random.normal(0.0, random.uniform(*s_noise), img.shape), 0, 255).astype(np.uint8)
+        if random.random() < p_jpeg:
+            ok, buf = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, int(random.uniform(*q_jpeg))])
+            if ok:
+                img = cv2.imdecode(buf, cv2.IMREAD_COLOR)
+        labels["img"] = np.ascontiguousarray(img)
+        return labels
+
+    RandomHSV.apply_image = apply_image
+    print(f"  증강        : 화질 열화 (aug_ext · 축소 확대 p {p_resize} · 흐림 p {p_blur} · 노이즈 p {p_noise} · JPEG {q_jpeg[0]}~{q_jpeg[1]} p {p_jpeg})")
