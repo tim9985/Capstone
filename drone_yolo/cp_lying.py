@@ -2,6 +2,8 @@
 cp_lying.py — 누운 사람 복사-붙여넣기 증강 (10-30 CP · 근거: 비스듬 드론 사람 복사-붙여넣기 (Drones 2026) · 합성 자세 다양성 (Shen 2024) · 회전 박스 (Kalra ICCV 2021))
 
   재료  data/lying_bank (lying_bank.py · SAM 마스크 · Archangel lying down · crawling + NOMAD 배우 1~95 Laying)
+        v2 (10-30 · 1판 눈 확인 뒤): 품질 기준 — Archangel 긴 변 ≥ 28 px · SAM ≥ 0.85 · 마스크 비율 0.25~0.85 / NOMAD SAM ≥ 0.80 · 0.20~0.90
+        · **원본보다 1.3 배 넘게 키우지 않음** (작은 원본을 키우면 번진 검은 얼룩) · 색 맞춤 0~20 %
   대상  v12_f91 학습 창 중 **비스듬** 출처 (visdrone_obl · unicamp · niicu · nomad · sard · archangel) — 수직 창엔 안 붙임 (시점 안 맞음)
   붙이기 창마다 1~3명
     크기   창 안 사람 박스 (긴 변) 를 y 에 대해 직선 맞춤 (≥ 2명) → 그 자리 크기 × U(0.8, 1.3) · 사람 없으면 긴 변 log-U(14, 110) px × 원근 (위쪽 작게)
@@ -75,7 +77,7 @@ def paste(img, inst, x, y, rng):
     roi = img[y:y + h, x:x + w].astype(np.float32)
     ring = img[max(0, y - h // 2):y + h + h // 2, max(0, x - w // 2):x + w + w // 2].reshape(-1, 3).astype(np.float32)
     m_in = (rgb * a[..., None]).sum((0, 1)) / max(a.sum(), 1e-3); m_bg = ring.mean(0)
-    rgb = rgb + rng.uniform(0, 0.35) * (m_bg - m_in)                  # 밝기 · 색 맞춤 (일부만)
+    rgb = rgb + rng.uniform(0, 0.20) * (m_bg - m_in)                  # 밝기 · 색 맞춤 (일부만 · v2 0.35 → 0.20)
     rgb = rgb * rng.uniform(0.85, 1.15)
     s = rng.uniform(0, 0.8)
     if s > 0.2:
@@ -89,7 +91,11 @@ def main():
     rng = random.Random(a.seed); nrng = np.random.default_rng(a.seed)
     bank = [json.loads(l) for l in open(BANK / "meta.jsonl")]
     insts = [(m, cv2.imread(str(BANK / m["file"]), cv2.IMREAD_UNCHANGED)) for m in bank]
-    insts = [(m, x) for m, x in insts if x is not None and x.shape[2] == 4]
+    def good(m):
+        if m["src"] == "archangel":
+            return max(m["w"], m["h"]) >= 28 and m["sam"] >= 0.85 and 0.25 <= m["mask_ratio"] <= 0.85
+        return m["sam"] >= 0.80 and 0.20 <= m["mask_ratio"] <= 0.90
+    insts = [(m, x) for m, x in insts if x is not None and x.shape[2] == 4 and good(m)]
     base = [l.strip() for l in open(BASE / "configs/lists/train_v12_f91.txt") if l.strip()]
     cand = [p for p in base if src_of(p) in OBL]
     pick = rng.sample(cand, min(a.n, len(cand)))
@@ -112,7 +118,7 @@ def main():
                 if r is None:
                     continue
                 k = tgt / max(r.shape[:2])
-                if k <= 0 or max(r.shape[:2]) * k < 8:
+                if k <= 0 or max(r.shape[:2]) * k < 8 or k > 1.3:            # v2: 1.3 배 넘게 키우지 않음
                     continue
                 r = cv2.resize(r, (max(2, round(r.shape[1] * k)), max(2, round(r.shape[0] * k))), interpolation=cv2.INTER_AREA if k < 1 else cv2.INTER_LINEAR)
                 h, w = r.shape[:2]; x0 = rng.uniform(0, W - w); y0 = y - h

@@ -9,7 +9,7 @@ rescue_eval.py — 약한 탐지 살리기 (10-30 · 누운 사람 강건성 · 
     Okutama 비스듬 23편 (10 fps · 3장마다) — 1초 표본 정답마다 내보낸 박스가 사람 위에 뜸 (박스 중심 ↔ 정답) · 누움 (Lying) · 전체
     빈 장면 오탐 — UE S5_a16 · S5_a20 (배우 0) · route_132434 (노트북 캠퍼스 비행 · 사람 없음) — 내보낸 박스 / 장
 출력 metrics/rescue_eval_<모델>.json
-실행  python rescue_eval.py v12_f91_swa
+실행  python rescue_eval.py v12_f91_swa [rb]
 """
 import glob, json, os, sys
 from collections import defaultdict
@@ -24,6 +24,10 @@ from lying_rescue_check import hit  # noqa: E402
 
 POST = os.path.join(BASE, "runs_person", "_pack_v12", "posture.json")
 RULES = {"base": None, "Ra_T1": 1, "Ra_T2": 2}
+#  Rb (10-30 · Ra 효과 0 확인 뒤 추가) — 약한 탐지 (≥ 0.08) 로도 추적 시작 · 0.20 밑 탐지는 관찰 ≥ T 초인 추적일 때만 내보냄
+TRACK_RB = dict(track_high_thresh=0.08, new_track_thresh=0.08, track_low_thresh=0.05)
+if len(sys.argv) > 2 and sys.argv[2] == "rb":
+    RULES = {"base": None, "Rb_T2": 2, "Rb_T3": 3}
 
 
 def emit(rule, confs, out):
@@ -42,12 +46,15 @@ def run_seq(det, frames, fps, per_tick=None):
     res = {r: [] for r in RULES}
     trk = {}
     for r in RULES:
+        keep = dict(ST.TRACK_ARGS)
         if r == "base":
             ST.TRACK_ARGS.update(track_low_thresh=0.1)
+        elif r.startswith("Rb"):
+            ST.TRACK_ARGS.update(**TRACK_RB)
         else:
             ST.TRACK_ARGS.update(track_low_thresh=0.05)
         trk[r] = ST.StateTracker(POST)
-    ST.TRACK_ARGS.update(track_low_thresh=0.1)
+        ST.TRACK_ARGS.clear(); ST.TRACK_ARGS.update(keep)
     for t, img in frames:
         bx, cf, _ = det.detect(img)
         bx = [tuple(float(v) for v in b) for b in bx]; cf = [float(c) for c in cf]
@@ -105,7 +112,7 @@ def main(name):
             fp[r] += [len(B) for _, B, _ in res[r]]
     out = {r: {k: round(float(np.mean(v)), 3) for k, v in acc[r].items()} | {"빈 장면 오탐 건/장": round(float(np.mean(fp[r])), 3)} for r in RULES}
     print(json.dumps(out, ensure_ascii=False, indent=1))
-    json.dump(out, open(os.path.join(BASE, "metrics", f"rescue_eval_{name}.json"), "w"), ensure_ascii=False, indent=1)
+    json.dump(out, open(os.path.join(BASE, "metrics", f"rescue_eval_{name}{'_rb' if 'Rb_T2' in RULES else ''}.json"), "w"), ensure_ascii=False, indent=1)
 
 
 if __name__ == "__main__":
