@@ -24,6 +24,9 @@ for r in csv.DictReader(open(BASE / "metrics" / "bench_all.csv")):
 sets = [s for s in SETS if any((m, s) in R for m in OURS + list(EXTS))]
 
 
+LEAK = {"vd_11m", "l1_11l_1280", "m2_11m_1280_sard"}   # 장소 분리 전 (data_fov · WiSARD 전체 · NOMAD 배치) → WiSARD · NOMAD 값 부풀림
+
+
 def row(m, mark=""):
     cells = []
     for s in sets:
@@ -33,11 +36,12 @@ def row(m, mark=""):
     return f"| {mark}{m} | " + " | ".join(cells) + " |"
 
 
+print("⚠ 모델 = 장소 분리 전 학습 (WiSARD 전체 · NOMAD) → WiSARD · NOMAD 값 부풀림 · ⚠ 셋 = v12 가 그 셋을 학습에 씀\n")
 print("AP50 (IoU 0.5) · 같은 추론 틀 (가로 1920 → 1280×720 창 · NMS 0.6) · 기성 모델 괄호 = 고른 imgsz · **굵게** = 그 데이터셋 전용 모델의 자기 셋\n")
 print("| 모델 | " + " | ".join(LABEL[s] for s in sets) + " |"); print("|---|" + "---|" * len(sets))
 for m in OURS:
     if any((m, s) in R for s in sets):
-        print(row(m, "우리 "))
+        print(row(m, "우리 ⚠" if m in LEAK else "우리 "))
 for m in EXTS:
     if any((m, s) in R for s in sets):
         print(row(m, "기성 "))
