@@ -92,7 +92,7 @@ flowchart LR
 | `media.snapshot` | str | `crops/<candidate_id>.jpg` (확신도 최고 장) | `first_asset_id` → DB-11 |
 | `media.clip` | str \| null | 근거 클립 전후 3초 (W1-6 뒤) | |
 | `latest` | obj | 최근 근거 — 프레임 · 박스 · 확신도 | `latest_observation_id` |
-| `model` | obj | `detector` (`soup_v7r2`) · `conf_threshold` (0.15) · `pipeline` | `coordinate_config_id` 등 |
+| `model` | obj | `detector` (초안 당시 `soup_v7r2` · **지금 `v12_f91_swa`**) · `conf_threshold` (초안 0.15 · **지금 0.20**) · `pipeline` | `coordinate_config_id` 등 |
 
 ## 4. `geo` — 좌표
 
