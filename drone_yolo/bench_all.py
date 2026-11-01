@@ -8,7 +8,7 @@ bench_all.py — 데이터셋 × 모델 (우리 + 기성) 을 같은 방식으�
   채점  IoU 0.5 · 101점 AP50 · 재현율 · 정밀도 @0.20 · 사람 없는 장 오탐 @0.20 (eval_external_det 함수 그대로)
   셋    장수가 MAXN 넘으면 고르게 뽑음
   출력  metrics/bench_all.csv (줄마다 덧붙임 · 이미 한 (모델, imgsz, 셋) 은 건너뜀 → 끊겨도 다시 실행)
-실행  python bench_all.py [--models a,b] [--sets x,y]
+실행  python bench_all.py [--models a,b] [--sets x,y] [--blur σ]   (--blur = 11-01 C0 추론 전 흐림 · 1920 맞춘 뒤 가우시안 · 모델 이름 뒤에 +g<σ×10>)
 """
 import argparse, csv, time
 from pathlib import Path
@@ -40,8 +40,8 @@ def tiles(W, H, tw=1280, th=720):
 
 
 class Model:
-    def __init__(self, path, imgsz):
-        self.m = YOLO(str(path)); self.imgsz = imgsz
+    def __init__(self, path, imgsz, blur=0.0):
+        self.m = YOLO(str(path)); self.imgsz = imgsz; self.blur = blur
         names = {v.lower(): k for k, v in self.m.names.items()}
         self.cls = [names[c] for c in ("person", "pedestrian", "people") if c in names]
         assert self.cls, f"사람 클래스 없음: {self.m.names}"
@@ -49,6 +49,8 @@ class Model:
     def __call__(self, img):
         h, w = img.shape[:2]; s = 1920 / w
         im = cv2.resize(img, (1920, max(1, round(h * s))), interpolation=cv2.INTER_AREA if s < 1 else cv2.INTER_LINEAR)
+        if self.blur > 0:
+            im = cv2.GaussianBlur(im, (0, 0), self.blur)
         H = im.shape[0]; T = tiles(1920, H)
         crops = [im[y:y + 720, x:x + 1280] for x, y in T]
         res = self.m.predict(crops, imgsz=self.imgsz, conf=0.01, classes=self.cls, half=True, verbose=False, batch=len(crops))
@@ -87,12 +89,14 @@ def score(model, data):
 
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--models"); ap.add_argument("--sets"); a = ap.parse_args()
+    ap = argparse.ArgumentParser(); ap.add_argument("--models"); ap.add_argument("--sets"); ap.add_argument("--blur", type=float, default=0.0); a = ap.parse_args()
     sets = a.sets.split(",") if a.sets else SETS
     jobs = [(m, "ours", BASE / "runs_person" / m / "weights" / "best.pt", 1280) for m in OURS] + \
            [(m, "ext", p, z) for m, p in EXTS.items() for z in (1280, 640)]
     if a.models:
-        jobs = [j for j in jobs if j[0] in a.models.split(",")]
+        want = a.models.split(",")
+        jobs = [j for j in jobs if j[0] in want] + [(m, "ours", BASE / "runs_person" / m / "weights" / "best.pt", 1280)
+                                                   for m in want if m not in OURS and m not in EXTS]   # 표 밖 우리 모델 (예: d0_sar90)
     done = set()
     if OUT.exists():
         done = {(r["model"], int(r["imgsz"]), r["set"]) for r in csv.DictReader(open(OUT))}
@@ -100,11 +104,13 @@ def main():
     f = open(OUT, "a", newline=""); w = csv.DictWriter(f, fieldnames=["model", "kind", "imgsz", "set", "imgs", "n_gt", "AP50", "R@0.2", "P@0.2", "neg_imgs", "FP/neg@0.2", "ms"])
     if new:
         w.writeheader()
+    sfx = f"+g{round(a.blur * 10):02d}" if a.blur > 0 else ""
+    jobs = [(n + sfx, k, p, z) for n, k, p, z in jobs]
     for name, kind, path, z in jobs:
         todo = [s for s in sets if (name, z, s) not in done and (BASE / "data" / s / "images").exists()]
         if not todo or not path.exists():
             continue
-        m = Model(path, z)
+        m = Model(path, z, a.blur)
         for s in todo:
             r = {"model": name, "kind": kind, "imgsz": z, "set": s} | score(m, BASE / "data" / s)
             w.writerow(r); f.flush(); print(name, z, s, r["AP50"], r["R@0.2"], flush=True)
