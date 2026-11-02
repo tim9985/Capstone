@@ -26,6 +26,7 @@ MAXN = 500
 SETS = ["test_sar", "test_obl", "test_v2", "test_kr", "test_ladd_h", "test_visdrone", "test_nomad", "test_nii", "test_auair",
         "test_sard", "test_heridal", "test_cy"]
 OURS = ["v12_f91_swa", "v12_f92_swa", "v12_f93_swa", "soup_v7r2", "v12ly_swa", "v12cp_swa", "v12el_swa", "v13o_f91_swa", "v15pl_f91_swa",
+        "v12mq_swa", "v12mq92_swa", "v12mqn_swa", "v12mqn92_swa", "v12dg_swa", "v12dg92_swa",
         "soup_v9x2", "v9_s31", "v10_f61", "v11s_f71", "v8", "v7", "v6_obl", "v3_place", "y26_s31", "vd_11m", "l1_11l_1280", "m2_11m_1280_sard"]
 EXTS = {f"ap_{d}_26{s}": EXT / "aerialperson" / f"{d}_yolo26{s}.pt" for d in ("heridal", "ladd", "nomad", "sard") for s in ("l", "m")}
 EXTS |= {"ap_mix_26l": EXT / "aerialperson" / "mix_yolo26l.pt", "aeronova": EXT / "siddh10" / "aeronova.pt",
