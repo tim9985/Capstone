@@ -119,8 +119,73 @@ def fig2():
     im.save(OUT / "판넬_비전_2_비교.png", dpi=(680, 680)); print("②", im.size, round(R_o, 3), round(R_e, 3), s_o, s_e, ms, round(pipe, 1))
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" and "--table" not in sys.argv:
     fig1(sys.argv[1]); fig2()
     old = OUT / "판넬_비전_2_숫자.png"
     if old.exists():
         old.rename(OUT / "지난판_판넬_비전_2_숫자.png")
+
+
+def fig_table():
+    """③ 판넬_비전_3_비교표.png · .csv — 기성 모델 × 데이터셋 AP50 (metrics/fair_table.json · fair_table.py)"""
+    import csv
+    T = json.load(open(BASE / "metrics" / "fair_table.json")); Us, Bs = T["groups"]["U"], T["groups"]["B"]; sets = Us + Bs
+    head = {"test_sar": ("UAV-SAR", "드론 수색"), "test_v2": ("WiSARD", "숲"), "test_obl": ("Okutama", "비스듬히"), "test_kr": ("AI-Hub", "한국"),
+            "test_cy": ("Cyprus", "아주 작은 사람"), "test_visdrone": ("VisDrone", "도시"), "test_nomad": ("NOMAD", "가림"), "test_ladd_h": ("LADD", "숲 수색")}
+    rows = T["rows"]; avg = {f: sum(r[s]["AP50"] for s in Us) / len(Us) for f, r in rows.items()}
+    order = ["우리 팀 (v12)"] + sorted([f for f in rows if f != "우리 팀 (v12)"], key=lambda f: -avg[f])
+    best = {s: max(rows[f][s]["AP50"] for f in rows) for s in sets}; best_avg = max(avg.values())
+    W = 3000; NC = 640; AC = 260; cw = (W - NC - AC) / len(sets); RH = 92; top = 400
+    H = top + RH * len(order) + 260
+    im = Image.new("RGB", (W, H), BG); dr = ImageDraw.Draw(im)
+    dr.text((0, 14), "공개된 사람 탐지 AI 모델과 데이터셋별 비교 (AP50)", font=F(66, True), fill=INK)
+    dr.text((0, 106), "AP50: 사람을 빠짐없이, 정확하게 찾는 정도 (1이 만점)", font=F(50), fill=INK2)
+    # 묶음 머리
+    y0 = 190; dr.line([0, y0, W, y0], fill=INK, width=4)
+    gx = lambda i: NC + cw * i
+    for g, ss, t in (("U", Us, "처음 보는 장소 (우리도, 기성 모델도 학습에 안 씀)"), ("B", Bs, "같은 데이터셋의 다른 사진")):
+        i0 = sets.index(ss[0]); x0, x1 = gx(i0), gx(i0 + len(ss))
+        dr.text(((x0 + x1) / 2, y0 + 34), t, font=F(42, True), fill=INK, anchor="mm"); dr.line([x0 + 12, y0 + 64, x1 - 12, y0 + 64], fill=INK2, width=2)
+    dr.text((W - AC / 2, y0 + 34), "처음 보는", font=F(42, True), fill=INK, anchor="mm")
+    for i, s in enumerate(sets):
+        a, b = head[s]; cx = gx(i) + cw / 2
+        dr.text((cx, y0 + 100), a, font=F(44, True), fill=INK, anchor="mm"); dr.text((cx, y0 + 146), b, font=F(40), fill=INK2, anchor="mm")
+    dr.text((W - AC / 2, y0 + 100), "5곳 평균", font=F(44, True), fill=INK, anchor="mm")
+    dr.text((0, y0 + 122), "모델", font=F(46, True), fill=INK, anchor="lm")
+    dr.line([0, top - 8, W, top - 8], fill=INK, width=3)
+    for r, f in enumerate(order):
+        y = top + r * RH; ours = f == "우리 팀 (v12)"
+        if ours:
+            dr.rectangle([0, y - 6, W, y + RH - 6], fill=(234, 240, 247))
+        dr.text((12, y + RH / 2 - 6), f, font=F(48, ours), fill=INK, anchor="lm")
+        for i, s in enumerate(sets):
+            c = rows[f][s]; v = c["AP50"]; cx = gx(i) + cw / 2; isb = round(v, 2) == round(best[s], 2)   # 두 자리로 같으면 함께 굵게
+            txt = f"{v:.2f}"
+            dr.text((cx, y + RH / 2 - 6), txt, font=F(50, isb), fill=INK if (isb or ours) else INK2, anchor="mm")
+            if isb:
+                w = dr.textlength(txt, font=F(50, True)); dr.line([cx - w / 2, y + RH / 2 + 26, cx + w / 2, y + RH / 2 + 26], fill=INK, width=3)
+            if c["trained"] and not ours:
+                w = dr.textlength(txt, font=F(50, isb)); dr.text((cx + w / 2 + 4, y + RH / 2 - 30), "*", font=F(44, True), fill=INK, anchor="lm")
+        a = avg[f]; isb = round(a, 2) == round(best_avg, 2); t2 = f"{a:.2f}"
+        dr.text((W - AC / 2, y + RH / 2 - 6), t2, font=F(50, isb or ours), fill=INK if (isb or ours) else INK2, anchor="mm")
+        if isb:
+            w = dr.textlength(t2, font=F(50, True)); dr.line([W - AC / 2 - w / 2, y + RH / 2 + 26, W - AC / 2 + w / 2, y + RH / 2 + 26], fill=INK, width=3)
+        if r < len(order) - 1:
+            dr.line([0, y + RH - 6, W, y + RH - 6], fill=(225, 225, 225), width=2)
+    yb = top + RH * len(order) - 6; dr.line([0, yb, W, yb], fill=INK, width=4)
+    dr.line([NC - 16, y0 + 70, NC - 16, yb], fill=(225, 225, 225), width=2); dr.line([W - AC + 8, y0, W - AC + 8, yb], fill=INK2, width=2)
+    notes = ["굵은 글씨와 밑줄은 그 평가셋 최고 점수(소수 둘째 자리까지 같으면 함께), *는 그 데이터셋의 다른 사진으로 학습한 기성 모델 (우리 팀은 오른쪽 3곳 모두 학습에 씀)",
+             "우리 팀 모델은 실제 운용 방식(1080p 화면을 4조각으로 나눠 처리) 그대로, 기성 모델은 크기와 처리 방식 중 가장 잘 나온 값",
+             "평가셋마다 최대 500장. SARD, HERIDAL, NII-CU는 우리 학습에 같은 사진이나 장소가 들어 있어 표에서 뺐습니다"]
+    for k, t in enumerate(notes):
+        dr.text((0, yb + 40 + k * 66), t, font=F(42), fill=INK2)
+    im.save(OUT / "판넬_비전_3_비교표.png", dpi=(450, 450))
+    with open(OUT / "판넬_비전_3_비교표.csv", "w", newline="", encoding="utf-8-sig") as fh:
+        w = csv.writer(fh); w.writerow(["모델"] + [f"{head[s][0]} ({head[s][1]})" for s in sets] + ["처음 보는 5곳 평균"])
+        for f in order:
+            w.writerow([f] + [f"{rows[f][s]['AP50']:.2f}" + ("*" if rows[f][s]["trained"] and f != "우리 팀 (v12)" else "") for s in sets] + [f"{avg[f]:.2f}"])
+    print("③", im.size, {f: round(avg[f], 3) for f in order})
+
+
+if __name__ == "__main__" and "--table" in sys.argv:
+    fig_table()

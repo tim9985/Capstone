@@ -1,0 +1,448 @@
+{
+ "sets": {
+  "test_sar": "UAV-SAR",
+  "test_v2": "WiSARD 숲",
+  "test_obl": "Okutama 비스듬",
+  "test_kr": "AI-Hub 한국",
+  "test_cy": "Cyprus",
+  "test_visdrone": "VisDrone",
+  "test_nomad": "NOMAD",
+  "test_ladd_h": "LADD"
+ },
+ "groups": {
+  "U": [
+   "test_sar",
+   "test_v2",
+   "test_obl",
+   "test_kr",
+   "test_cy"
+  ],
+  "B": [
+   "test_visdrone",
+   "test_nomad",
+   "test_ladd_h"
+  ]
+ },
+ "rows": {
+  "우리 팀 (v12)": {
+   "test_sar": {
+    "AP50": 0.9478,
+    "tag": "v12_f91_swa@tile1280",
+    "trained": false
+   },
+   "test_v2": {
+    "AP50": 0.6562,
+    "tag": "v12_f91_swa@tile1280",
+    "trained": false
+   },
+   "test_obl": {
+    "AP50": 0.6087,
+    "tag": "v12_f91_swa@tile1280",
+    "trained": false
+   },
+   "test_kr": {
+    "AP50": 0.983,
+    "tag": "v12_f91_swa@tile1280",
+    "trained": false
+   },
+   "test_cy": {
+    "AP50": 0.4986,
+    "tag": "v12_f91_swa@tile1280",
+    "trained": false
+   },
+   "test_visdrone": {
+    "AP50": 0.7246,
+    "tag": "v12_f91_swa@tile1280",
+    "trained": true
+   },
+   "test_nomad": {
+    "AP50": 0.5839,
+    "tag": "v12_f91_swa@tile1280",
+    "trained": true
+   },
+   "test_ladd_h": {
+    "AP50": 0.8194,
+    "tag": "v12_f91_swa@tile1280",
+    "trained": true
+   }
+  },
+  "AeroNova": {
+   "test_sar": {
+    "AP50": 0.9052,
+    "tag": "aeronova@full1280",
+    "trained": false
+   },
+   "test_v2": {
+    "AP50": 0.5207,
+    "tag": "aeronova@tile1280",
+    "trained": false
+   },
+   "test_obl": {
+    "AP50": 0.6345,
+    "tag": "aeronova@full1280",
+    "trained": false
+   },
+   "test_kr": {
+    "AP50": 0.6616,
+    "tag": "aeronova@tile640",
+    "trained": false
+   },
+   "test_cy": {
+    "AP50": 0.3789,
+    "tag": "aeronova@tile1280",
+    "trained": false
+   },
+   "test_visdrone": {
+    "AP50": 0.5686,
+    "tag": "aeronova@tile1280",
+    "trained": false
+   },
+   "test_nomad": {
+    "AP50": 0.2578,
+    "tag": "aeronova@tile1280",
+    "trained": false
+   },
+   "test_ladd_h": {
+    "AP50": 0.6452,
+    "tag": "aeronova@tile1280",
+    "trained": false
+   }
+  },
+  "AerialPerson 혼합": {
+   "test_sar": {
+    "AP50": 0.829,
+    "tag": "ap_mix_26l@tile640",
+    "trained": false
+   },
+   "test_v2": {
+    "AP50": 0.5439,
+    "tag": "ap_mix_26l@full1280",
+    "trained": false
+   },
+   "test_obl": {
+    "AP50": 0.349,
+    "tag": "ap_mix_26l@tile640",
+    "trained": false
+   },
+   "test_kr": {
+    "AP50": 0.3674,
+    "tag": "ap_mix_26l@tile640",
+    "trained": false
+   },
+   "test_cy": {
+    "AP50": 0.1985,
+    "tag": "ap_mix_26l@tile1280",
+    "trained": false
+   },
+   "test_visdrone": {
+    "AP50": 0.1497,
+    "tag": "ap_mix_26l@full1280",
+    "trained": false
+   },
+   "test_nomad": {
+    "AP50": 0.4525,
+    "tag": "ap_mix_26l@full1280",
+    "trained": true
+   },
+   "test_ladd_h": {
+    "AP50": 0.9001,
+    "tag": "ap_mix_26l@tile640",
+    "trained": true
+   }
+  },
+  "HERIDAL 전용": {
+   "test_sar": {
+    "AP50": 0.5451,
+    "tag": "ap_heridal_26m@tile640",
+    "trained": false
+   },
+   "test_v2": {
+    "AP50": 0.4203,
+    "tag": "ap_heridal_26m@full1280",
+    "trained": false
+   },
+   "test_obl": {
+    "AP50": 0.3448,
+    "tag": "ap_heridal_26l@tile640",
+    "trained": false
+   },
+   "test_kr": {
+    "AP50": 0.2098,
+    "tag": "ap_heridal_26l@tile640",
+    "trained": false
+   },
+   "test_cy": {
+    "AP50": 0.1689,
+    "tag": "ap_heridal_26m@tile1280",
+    "trained": false
+   },
+   "test_visdrone": {
+    "AP50": 0.0763,
+    "tag": "ap_heridal_26m@tile640",
+    "trained": false
+   },
+   "test_nomad": {
+    "AP50": 0.1479,
+    "tag": "ap_heridal_26m@tile640",
+    "trained": false
+   },
+   "test_ladd_h": {
+    "AP50": 0.7362,
+    "tag": "ap_heridal_26m@tile640",
+    "trained": false
+   }
+  },
+  "LADD 전용": {
+   "test_sar": {
+    "AP50": 0.1455,
+    "tag": "ap_ladd_26m@tile640",
+    "trained": false
+   },
+   "test_v2": {
+    "AP50": 0.3595,
+    "tag": "ap_ladd_26m@tile640",
+    "trained": false
+   },
+   "test_obl": {
+    "AP50": 0.2615,
+    "tag": "ap_ladd_26l@tile640",
+    "trained": false
+   },
+   "test_kr": {
+    "AP50": 0.264,
+    "tag": "ap_ladd_26m@tile640",
+    "trained": false
+   },
+   "test_cy": {
+    "AP50": 0.1161,
+    "tag": "ap_ladd_26l@tile1280",
+    "trained": false
+   },
+   "test_visdrone": {
+    "AP50": 0.0542,
+    "tag": "ap_ladd_26l@tile640",
+    "trained": false
+   },
+   "test_nomad": {
+    "AP50": 0.1325,
+    "tag": "ap_ladd_26l@full1280",
+    "trained": false
+   },
+   "test_ladd_h": {
+    "AP50": 0.9224,
+    "tag": "ap_ladd_26l@tile640",
+    "trained": true
+   }
+  },
+  "NOMAD 전용": {
+   "test_sar": {
+    "AP50": 0.7225,
+    "tag": "ap_nomad_26l@tile640",
+    "trained": false
+   },
+   "test_v2": {
+    "AP50": 0.3053,
+    "tag": "ap_nomad_26l@full1280",
+    "trained": false
+   },
+   "test_obl": {
+    "AP50": 0.2869,
+    "tag": "ap_nomad_26m@tile1280",
+    "trained": false
+   },
+   "test_kr": {
+    "AP50": 0.2022,
+    "tag": "ap_nomad_26l@tile640",
+    "trained": false
+   },
+   "test_cy": {
+    "AP50": 0.0308,
+    "tag": "ap_nomad_26m@full1280",
+    "trained": false
+   },
+   "test_visdrone": {
+    "AP50": 0.0771,
+    "tag": "ap_nomad_26m@tile1280",
+    "trained": false
+   },
+   "test_nomad": {
+    "AP50": 0.4048,
+    "tag": "ap_nomad_26m@full1280",
+    "trained": true
+   },
+   "test_ladd_h": {
+    "AP50": 0.4764,
+    "tag": "ap_nomad_26m@tile1280",
+    "trained": false
+   }
+  },
+  "SARD 전용": {
+   "test_sar": {
+    "AP50": 0.7256,
+    "tag": "ap_sard_26m@tile640",
+    "trained": false
+   },
+   "test_v2": {
+    "AP50": 0.4137,
+    "tag": "ap_sard_26l@full1280",
+    "trained": false
+   },
+   "test_obl": {
+    "AP50": 0.3105,
+    "tag": "ap_sard_26m@tile1280",
+    "trained": false
+   },
+   "test_kr": {
+    "AP50": 0.2593,
+    "tag": "ap_sard_26m@tile640",
+    "trained": false
+   },
+   "test_cy": {
+    "AP50": 0.0647,
+    "tag": "ap_sard_26l@tile1280",
+    "trained": false
+   },
+   "test_visdrone": {
+    "AP50": 0.1035,
+    "tag": "ap_sard_26l@tile1280",
+    "trained": false
+   },
+   "test_nomad": {
+    "AP50": 0.2098,
+    "tag": "ap_sard_26m@tile640",
+    "trained": false
+   },
+   "test_ladd_h": {
+    "AP50": 0.5538,
+    "tag": "ap_sard_26m@tile640",
+    "trained": false
+   }
+  },
+  "VisDrone YOLOv9e": {
+   "test_sar": {
+    "AP50": 0.8237,
+    "tag": "visdrone_yolov9e@tile640",
+    "trained": false
+   },
+   "test_v2": {
+    "AP50": 0.5413,
+    "tag": "visdrone_yolov9e@tile640",
+    "trained": false
+   },
+   "test_obl": {
+    "AP50": 0.6016,
+    "tag": "visdrone_yolov9e@full1280",
+    "trained": false
+   },
+   "test_kr": {
+    "AP50": 0.0781,
+    "tag": "visdrone_yolov9e@tile640",
+    "trained": false
+   },
+   "test_cy": {
+    "AP50": 0.4909,
+    "tag": "visdrone_yolov9e@tile1280",
+    "trained": false
+   },
+   "test_visdrone": {
+    "AP50": 0.7063,
+    "tag": "visdrone_yolov9e@full1280",
+    "trained": true
+   },
+   "test_nomad": {
+    "AP50": 0.2826,
+    "tag": "visdrone_yolov9e@tile1280",
+    "trained": false
+   },
+   "test_ladd_h": {
+    "AP50": 0.4927,
+    "tag": "visdrone_yolov9e@tile640",
+    "trained": false
+   }
+  },
+  "VisDrone YOLO11x": {
+   "test_sar": {
+    "AP50": 0.8411,
+    "tag": "visdrone_yolo11x@tile640",
+    "trained": false
+   },
+   "test_v2": {
+    "AP50": 0.5651,
+    "tag": "visdrone_yolo11x@tile640",
+    "trained": false
+   },
+   "test_obl": {
+    "AP50": 0.5878,
+    "tag": "visdrone_yolo11x@full1280",
+    "trained": false
+   },
+   "test_kr": {
+    "AP50": 0.038,
+    "tag": "visdrone_yolo11x@tile640",
+    "trained": false
+   },
+   "test_cy": {
+    "AP50": 0.4806,
+    "tag": "visdrone_yolo11x@tile1280",
+    "trained": false
+   },
+   "test_visdrone": {
+    "AP50": 0.6967,
+    "tag": "visdrone_yolo11x@full1280",
+    "trained": true
+   },
+   "test_nomad": {
+    "AP50": 0.2489,
+    "tag": "visdrone_yolo11x@tile640",
+    "trained": false
+   },
+   "test_ladd_h": {
+    "AP50": 0.4109,
+    "tag": "visdrone_yolo11x@full1280",
+    "trained": false
+   }
+  },
+  "VisDrone YOLO26x": {
+   "test_sar": {
+    "AP50": 0.7906,
+    "tag": "visdrone_yolo26x@tile640",
+    "trained": false
+   },
+   "test_v2": {
+    "AP50": 0.5457,
+    "tag": "visdrone_yolo26x@tile640",
+    "trained": false
+   },
+   "test_obl": {
+    "AP50": 0.5947,
+    "tag": "visdrone_yolo26x@full1280",
+    "trained": false
+   },
+   "test_kr": {
+    "AP50": 0.1003,
+    "tag": "visdrone_yolo26x@tile640",
+    "trained": false
+   },
+   "test_cy": {
+    "AP50": 0.503,
+    "tag": "visdrone_yolo26x@tile1280",
+    "trained": false
+   },
+   "test_visdrone": {
+    "AP50": 0.7019,
+    "tag": "visdrone_yolo26x@full1280",
+    "trained": true
+   },
+   "test_nomad": {
+    "AP50": 0.3095,
+    "tag": "visdrone_yolo26x@tile640",
+    "trained": false
+   },
+   "test_ladd_h": {
+    "AP50": 0.4624,
+    "tag": "visdrone_yolo26x@tile640",
+    "trained": false
+   }
+  }
+ }
+}
