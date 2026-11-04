@@ -1,0 +1,571 @@
+<meta name="dash-one-writer">
+<style>
+  #dash-root { --dash-gutter: clamp(16px, 4vw, 48px); }
+  .sv { max-width: 1240px; margin-inline: auto; font-family: var(--font-anthropic-sans); color: var(--color-fg); display: grid; gap: var(--cds-gap-xl); font-variant-numeric: tabular-nums; }
+  .sv-head { display: grid; gap: var(--cds-gap-sm); padding-block: var(--cds-pad-lg) 0; }
+  .sv-eyebrow { font-size: var(--cds-font-size-caption); letter-spacing: .08em; text-transform: uppercase; color: var(--color-fg-muted); }
+  .sv-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: clamp(2rem, 4.2vw, 3.1rem); line-height: 1.08; margin: 0; text-wrap: balance; }
+  .sv-lede { font-size: var(--cds-font-size-heading); line-height: 1.5; max-width: 62ch; margin: 0; color: var(--color-fg); }
+  .sv-lede b, .sv-tile b, .sv-note b { font-weight: 600; }
+  .sv-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: var(--cds-gap-md); }
+  .sv-tile { border-top: 2px solid var(--color-fg); padding-top: var(--cds-pad-md); display: grid; gap: var(--cds-gap-xs); align-content: start; }
+  .sv-tile .k { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); letter-spacing: .02em; }
+  .sv-big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: clamp(2.2rem, 4vw, 2.9rem); line-height: 1; display: flex; align-items: baseline; gap: .4rem; flex-wrap: wrap; }
+  .sv-big small { font-family: var(--font-anthropic-sans); font-size: var(--cds-font-size-body); color: var(--color-fg-muted); }
+  .sv-tile .vs { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .sv-sec { display: grid; gap: var(--cds-gap-md); }
+  .sv-sec > header { display: grid; gap: var(--cds-gap-xs); max-width: 70ch; }
+  .sv-sec h2 { font-size: var(--cds-font-size-title); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+  .sv-sec header p { margin: 0; color: var(--color-fg-muted); line-height: 1.55; }
+  .sv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: var(--cds-gap-md); }
+  .sv-grid.wide { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); }
+  @media (max-width: 860px) { .sv-grid.wide { grid-template-columns: minmax(0, 1fr); } }
+  .sv-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-sm); align-content: start; min-width: 0; }
+  .sv-card h3 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; }
+  .sv-card .note { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; line-height: 1.5; }
+  .sv-chart { position: relative; min-height: 220px; width: 100%; }
+  .sv-chart.tall { min-height: 360px; }
+  .sv-chart svg { display: block; overflow: visible; }
+  .sv-chart text { fill: var(--color-fg-muted); font-size: 11px; font-family: var(--font-anthropic-sans); }
+  .sv-chart .lab { fill: var(--color-fg); font-size: 12px; }
+  .sv-chart .strong { fill: var(--color-fg); font-weight: 600; }
+  .sv-chart .grid line { stroke: var(--cds-chart-grid); }
+  .sv-chart .axis path, .sv-chart .axis line { stroke: var(--cds-chart-axis); }
+  .sv-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); line-height: 1.45; white-space: nowrap; z-index: 3; }
+  .sv-tip .t { color: var(--cds-text-secondary); }
+  .sv-tip i { display: inline-block; width: .55rem; height: .55rem; border-radius: 2px; margin-right: .35rem; vertical-align: baseline; }
+  .sv-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .sv-legend span { display: inline-flex; align-items: center; gap: .4rem; }
+  .sv-legend i { width: .7rem; height: .7rem; border-radius: 50%; display: inline-block; }
+  .sv-legend .ours { background: var(--sv-ours); }
+  .sv-legend .ext { background: var(--cds-chart-muted); }
+  .sv-legend .dash { width: 1.2rem; height: 0; border-radius: 0; border-top: 2px dashed var(--color-fg-muted); }
+  .sv-legend .solid { width: 1.2rem; height: 0; border-radius: 0; border-top: 2px solid var(--color-fg-muted); }
+  .sv-ctrl { display: flex; align-items: center; gap: var(--cds-gap-sm); flex-wrap: wrap; font-size: var(--cds-font-size-body); }
+  .sv-ctrl select { font: inherit; padding: .35rem .6rem; border-radius: var(--cds-radius); border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); }
+  .sv-ctrl select:focus-visible { outline: 2px solid var(--sv-ours); outline-offset: 2px; }
+  .sv-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-body); }
+  .sv-table th { text-align: left; font-weight: var(--cds-font-weight-medium); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); padding: .4rem .5rem; border-bottom: 1px solid var(--color-border-line); }
+  .sv-table td { padding: .45rem .5rem; border-bottom: 1px solid var(--color-border-line); }
+  .sv-table td.n, .sv-table th.n { text-align: right; }
+  .sv-tablebox { overflow-x: auto; }
+  .sv-foot { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.6; border-top: 1px solid var(--color-border-line); padding-top: var(--cds-pad-md); padding-bottom: var(--cds-pad-xl); display: grid; gap: var(--cds-gap-xs); max-width: 90ch; }
+  .sv-foot p { margin: 0; }
+  [data-dash-source-state=empty] { color: transparent; }
+  [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+  .sv-fail { display: flex; align-items: center; justify-content: center; gap: .45rem; min-height: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .sv-fail::before { content: ""; width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+  @media (prefers-reduced-motion: no-preference) {
+    .sv-chart .grow { animation: sv-grow var(--cds-dur-slow) var(--cds-ease-out) both; transform-origin: left center; }
+    @keyframes sv-grow { from { opacity: 0; transform: scaleX(.6); } to { opacity: 1; transform: none; } }
+  }
+</style>
+
+<div class="sv">
+  <header class="sv-head">
+    <div class="sv-eyebrow">자율 정찰 드론 · 비전 파트 · 엔지니어링 페어 2026</div>
+    <h1 class="sv-title">하늘에서 사람을 찾는 눈, 숫자로 보기</h1>
+    <p class="sv-lede">공개된 드론 사람 탐지 모델 가운데 평가셋마다 <b>가장 잘 나온 것</b>을 골라 같은 사진으로 겨뤘습니다. 9개 평가셋 중 <b data-draw="winsTxt" data-source="headline" data-field="wins" data-row="0">—</b>곳에서 우리 모델이 앞섰고, 사람 없는 도로에서 헛탐지는 <b data-draw="roadOursTxt" data-source="road" data-field="fp" data-where="model=ours">—</b>건/장입니다.</p>
+  </header>
+
+  <div class="sv-tiles">
+    <div class="sv-tile">
+      <span class="k">사람 찾기 정확도 · 9개 평가셋 평균 AP50</span>
+      <span class="sv-big"><span data-draw="apOurs" data-source="headline" data-field="ours_ap" data-row="0">—</span><small>우리</small></span>
+      <span class="vs">셋마다 가장 좋은 기성 모델 평균 <b data-draw="apExt" data-source="headline" data-field="ext_ap" data-row="0">—</b></span>
+    </div>
+    <div class="sv-tile">
+      <span class="k">사람 없는 도로 헛탐지 · 건/장 (기준 ≤ 1)</span>
+      <span class="sv-big"><span data-draw="roadOurs" data-source="road" data-field="fp" data-where="model=ours">—</span><small>우리</small></span>
+      <span class="vs">기성 최고 모델들 <b data-draw="roadExt" data-source="roadrange" data-field="range" data-row="0">—</b></span>
+    </div>
+    <div class="sv-tile">
+      <span class="k">누운 사람 가려내기 · AUROC (1 = 완벽)</span>
+      <span class="sv-big"><span data-draw="aucOku" data-source="posture" data-field="AUROC" data-where="set=okutama_obl">—</span><small>실제 드론 영상</small></span>
+      <span class="vs">처음 보는 촬영장 <b data-draw="aucArc" data-source="posture" data-field="AUROC" data-where="set=archangel_real">—</b></span>
+    </div>
+    <div class="sv-tile">
+      <span class="k">1080p 한 장 사람 찾기 · 중앙값</span>
+      <span class="sv-big"><span data-draw="msDet" data-source="latency" data-field="median" data-where="stage=탐지">—</span><small>ms</small></span>
+      <span class="vs">추적 · 상태까지 한 장 <b data-draw="msPipe" data-source="pipeline" data-field="ms" data-row="0">—</b> ms · 초당 약 <b data-draw="fpsPipe" data-source="pipeline" data-field="fps" data-row="0">—</b>장</span>
+    </div>
+  </div>
+
+  <section class="sv-sec" id="vs-ext">
+    <header>
+      <h2>기성 모델과 겨루기</h2>
+      <p>각 평가셋에서 공개 모델 13개 중 가장 높은 것 하나를, 그 모델에 가장 유리한 방식(사진 통째 또는 4조각)으로 돌렸습니다. 우리 모델은 실제 운용과 같은 방식(1080p를 4조각)입니다. 모든 평가셋은 학습에 쓰지 않은 장소입니다.</p>
+    </header>
+    <div class="sv-grid wide">
+      <div class="sv-card">
+        <h3>평가셋별 AP50 — 오른쪽일수록 좋음</h3>
+        <p class="note">AP50: 박스가 사람과 절반 이상 겹치면 맞음으로 세어, 빠짐없이 · 정확히 찾는 정도를 0~1 한 숫자로</p>
+        <div class="sv-legend"><span><i class="ours"></i>우리 (v12)</span><span><i class="ext"></i>셋마다 기성 최고</span></div>
+        <div class="sv-chart tall dash-skeleton" data-draw="dumbbell" data-source="det"></div>
+      </div>
+      <div class="sv-card">
+        <h3>사람 없는 도로에서 헛탐지</h3>
+        <p class="note">AU-AIR 도로 영상 중 사람이 없는 장 · 확신 0.20 이상 박스 수 · 짧을수록 좋음</p>
+        <div class="sv-chart tall dash-skeleton" data-draw="road" data-source="road"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sv-sec" id="curves">
+    <header>
+      <h2>얼마나 빠짐없이, 얼마나 정확히</h2>
+      <p>정밀도-재현율 곡선은 문턱을 바꿔 가며 「찾은 비율」과 「맞은 비율」을 함께 그린 것입니다. 곡선 아래 넓이가 AP입니다. 수색에서는 놓치는 것이 더 위험해서, 헛탐지 기준을 지키는 가장 낮은 문턱 0.20에서 운용합니다.</p>
+    </header>
+    <div class="sv-ctrl"><label for="sv-set">평가셋</label><select id="sv-set" data-draw="setpick" data-source="det" aria-label="평가셋"></select></div>
+    <div class="sv-grid">
+      <div class="sv-card">
+        <h3>정밀도-재현율 곡선</h3>
+        <p class="note">오른쪽 위로 갈수록 좋음 · 점 = 운용 문턱 0.20</p>
+        <div class="sv-legend"><span><i class="ours"></i>우리</span><span><i class="ext"></i>기성 최고</span></div>
+        <div class="sv-chart dash-skeleton" data-draw="pr" data-source="pr det"></div>
+      </div>
+      <div class="sv-card">
+        <h3>혼동표 — 문턱 0.20</h3>
+        <p class="note">실제 사람 중 찾은 수 · 놓친 수, 사람이라 했는데 아닌 수 · 사람 없는 배경은 셀 수 없어 비움</p>
+        <div class="sv-chart dash-skeleton" data-draw="cm" data-source="det"></div>
+      </div>
+      <div class="sv-card">
+        <h3>문턱에 따른 재현율 · 정밀도</h3>
+        <p class="note">문턱을 낮추면 더 찾고(재현율 ↑) 헛탐지가 섞임(정밀도 ↓)</p>
+        <div class="sv-legend"><span><i class="solid"></i>재현율</span><span><i class="dash"></i>정밀도</span><span><i class="ours"></i>우리</span><span><i class="ext"></i>기성 최고</span></div>
+        <div class="sv-chart dash-skeleton" data-draw="thr" data-source="thr"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sv-sec" id="small">
+    <header>
+      <h2>작은 사람일수록 차이가 커진다</h2>
+      <p>16~20 m 상공에서 사람은 키 50~100 px, 멀리 있으면 24 px도 안 됩니다. 9개 평가셋을 모두 합쳐 사람 키(1080p 기준)별로 문턱 0.20에서 찾은 비율입니다.</p>
+    </header>
+    <div class="sv-card">
+      <h3>사람 키별 재현율 (9개 평가셋 합)</h3>
+      <div class="sv-legend"><span><i class="ours"></i>우리</span><span><i class="ext"></i>셋마다 기성 최고</span></div>
+      <div class="sv-chart dash-skeleton" data-draw="height" data-source="height"></div>
+    </div>
+  </section>
+
+  <section class="sv-sec" id="lying">
+    <header>
+      <h2>누운 사람을 위로 올리기</h2>
+      <p>박스 모양(가로세로 비 · 크기)만으로 누움 확률을 내고, 드론 움직임을 뺀 멈춘 시간과 합쳐 위급 순서를 정합니다. 자세를 딱 잘라 분류하면 앉음 · 서기가 섞이기 때문에, 사람을 거르지 않고 순위만 바꿉니다.</p>
+    </header>
+    <div class="sv-grid">
+      <div class="sv-card">
+        <h3>ROC 곡선 — 누움 vs 나머지</h3>
+        <p class="note">정답 박스 기준 · 대각선 = 아무렇게나 고름 · 위쪽 왼편일수록 좋음</p>
+        <div class="sv-legend"><span><i class="ours"></i>Okutama 비스듬 (실제 드론)</span><span><i class="ext"></i>Archangel 실사람 (처음 보는 곳)</span></div>
+        <div class="sv-chart dash-skeleton" data-draw="roc" data-source="roc posture"></div>
+      </div>
+      <div class="sv-card">
+        <h3>자세 혼동행렬 — Okutama 비스듬</h3>
+        <p class="note">행 = 실제 자세 · 칸 색 = 그 행에서 차지하는 비율</p>
+        <div class="sv-chart dash-skeleton" data-draw="pcm1" data-source="pcm"></div>
+      </div>
+      <div class="sv-card">
+        <h3>자세 혼동행렬 — Archangel 실사람</h3>
+        <p class="note">무릎 꿇음은 앉음으로, 기어감은 누움으로 묶음</p>
+        <div class="sv-chart dash-skeleton" data-draw="pcm2" data-source="pcm"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sv-sec" id="color">
+    <header>
+      <h2>「빨간 옷」으로 찾기 — 상의 색</h2>
+      <p>손으로 정한 색 규칙을 그림과 글을 함께 배운 모델(SigLIP 2)로 바꿨습니다. 추가 학습 없이 12색 중 고릅니다. 6개 평가셋 모두 올랐고, 그중 3개는 고를 때 보지 않은 셋입니다.</p>
+    </header>
+    <div class="sv-card">
+      <h3>색 균형 정확도 (12색 · 색마다 정확도 평균)</h3>
+      <div class="sv-legend"><span><i class="ext"></i>이전 — 색 규칙</span><span><i class="ours"></i>지금 — SigLIP 2</span></div>
+      <div class="sv-chart dash-skeleton" data-draw="color" data-source="color"></div>
+      <p class="note">디지털관 사진 · 영상은 라벨 검수 전(잠정)</p>
+    </div>
+  </section>
+
+  <section class="sv-sec" id="speed">
+    <header>
+      <h2>실시간으로 도는가</h2>
+      <p>배포한 코드 그대로 RTX 3090에서 시뮬레이션 비행 영상 300장을 돌려 단계마다 잰 값입니다. 추적 · 상태는 1초에 한 번 드론 움직임을 빼는 장에서 오래 걸립니다(P95).</p>
+    </header>
+    <div class="sv-grid wide">
+      <div class="sv-card">
+        <h3>단계별 처리 시간 — 막대 = 중앙값 · 선 끝 = P95</h3>
+        <div class="sv-chart dash-skeleton" data-draw="lat" data-source="latency"></div>
+      </div>
+      <div class="sv-card">
+        <h3>메모리 (worker 한 개)</h3>
+        <div class="sv-tablebox">
+          <table class="sv-table" data-source="memory" data-row-key="stage">
+            <thead><tr><th data-field="stage">시점</th><th class="n" data-field="gpu_gb">GPU (GB)</th><th class="n" data-field="ram_gb">RAM (GB)</th></tr></thead>
+            <tbody data-draw="memrows" data-source="memory"></tbody>
+          </table>
+        </div>
+        <p class="note">RTX 3090 24 GB · 요구명세 최소 사양 GPU 8 GB에도 들어감</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="sv-foot">
+    <p><b>재는 방법</b> — 평가셋마다 최대 500장 · IoU 0.5 · 101점 AP · 모든 모델 같은 채점. 우리 모델은 v12 (YOLO11m · 공개 드론 데이터 10종 18,601장을 장소가 겹치지 않게 다시 짬). 기성 모델: AerialPerson 전용 · 혼합, AeroNova, VisDrone 학습 YOLOv9e · 11x · 26x.</p>
+    <p><b>주의</b> — 배포 판정 수치(경계 합치기 · 무시 영역 적용)와 조금 다릅니다. 숲 0.66 · 비스듬 0.62는 요구명세 0.80에 못 미칩니다. 학습에 안 쓴 장소로만 쟀기 때문이며, 실기체 수치는 11월 비행 뒤 채웁니다.</p>
+  </footer>
+</div>
+
+<script>
+  window.SV = (() => {
+    const css = (n) => getComputedStyle(document.querySelector('#dash-root') || document.documentElement).getPropertyValue(n).trim();
+    const ours = () => dash.colors[0];
+    const ext = () => css('--cds-chart-muted') || '#9aa0a6';
+    const f2 = d3.format('.2f'), f3 = d3.format('.3f'), pct = d3.format('.0%');
+    const ok = (...ids) => ids.every((i) => dash.data(i).status === 'ok');
+    const failed = (...ids) => ids.some((i) => ['error', 'connect', 'declined', 'missing'].includes(dash.data(i).status));
+    function frame(el, ids) {
+      if (!ok(...ids)) {
+        el.replaceChildren();
+        if (failed(...ids)) { el.classList.remove('dash-skeleton'); const d = document.createElement('div'); d.className = 'sv-fail'; d.textContent = 'Failed to load'; el.append(d); }
+        else el.classList.add('dash-skeleton');
+        return false;
+      }
+      el.classList.remove('dash-skeleton'); el.replaceChildren(); return true;
+    }
+    function tip(el) {
+      const t = document.createElement('div'); t.className = 'sv-tip'; t.hidden = true; el.append(t);
+      return {
+        show(ev, rows) {
+          t.replaceChildren();
+          rows.forEach(([txt, color, cls]) => { const line = document.createElement('div'); if (cls) line.className = cls; if (color) { const i = document.createElement('i'); i.style.background = color; line.append(i); } line.append(document.createTextNode(txt)); t.append(line); });
+          t.hidden = false;
+          const b = el.getBoundingClientRect(), [x, y] = [ev.clientX - b.left, ev.clientY - b.top];
+          const w = t.offsetWidth, h = t.offsetHeight;
+          t.style.left = Math.max(0, Math.min(b.width - w, x + 12)) + 'px';
+          t.style.top = Math.max(0, y - h - 10) + 'px';
+        },
+        hide() { t.hidden = true; }
+      };
+    }
+    function textW(svg, s, cls) { const n = svg.append('text').attr('class', cls || null).text(s); const w = n.node().getComputedTextLength(); n.remove(); return w; }
+    const state = { set: 'test_v2' };
+    document.querySelectorAll('.sv').forEach((e) => e.style.setProperty('--sv-ours', dash.colors[0]));
+    return { css, ours, ext, f2, f3, pct, frame, tip, textW, state };
+  })();
+
+  dash.calc('headline', {
+    title: '9개 평가셋 평균 · 이긴 수', description: '평가셋 9개에서 우리와 기성 최고의 AP50 평균, 우리가 높은 평가셋 수',
+    inputs: ['det'],
+    fn: (det) => {
+      const by = d3.group(det.filter((r) => r.set !== 'test_auair'), (r) => r.set);
+      let w = 0, so = 0, se = 0, n = 0;
+      for (const [, rs] of by) { const o = rs.find((r) => r.model === 'ours'), e = rs.find((r) => r.model === 'ext'); if (!o || !e) continue; n++; so += o.AP50; se += e.AP50; if (o.AP50 > e.AP50) w++; }
+      return [{ ours_ap: so / n, ext_ap: se / n, wins: w, nsets: n }];
+    }
+  });
+  dash.calc('roadrange', {
+    title: '기성 도로 헛탐지 범위', description: '셋마다 기성 최고 모델들의 도로 헛탐지 최소~최대',
+    inputs: ['road'],
+    fn: (road) => { const v = road.filter((r) => r.model !== 'ours').map((r) => r.fp); return [{ range: `${d3.min(v).toFixed(2)}~${d3.max(v).toFixed(2)}` }]; }
+  });
+  dash.calc('pipeline', {
+    title: '탐지 + 추적 · 상태 + 좌표', description: '보통 장의 중앙값 합 (영상 풀기 · 색 제외) 과 그 초당 장수',
+    inputs: ['latency'],
+    fn: (latency) => { const g = (s) => (latency.find((r) => r.stage === s) || { median: 0 }).median; const ms = g('탐지') + g('추적 + 상태') + g('좌표'); return [{ ms, fps: 1000 / ms }]; }
+  });
+
+  const val = (id, pick, fmt) => (el) => {
+    const d = dash.data(id);
+    if (d.status !== 'ok') { el.textContent = '—'; return; }
+    const r = pick(d.data); el.textContent = r == null ? '—' : fmt(r);
+  };
+  dash.draw('winsTxt', val('headline', (d) => d[0] && d[0].wins, (v) => String(v)));
+  dash.draw('apOurs', val('headline', (d) => d[0] && d[0].ours_ap, SV.f3));
+  dash.draw('apExt', val('headline', (d) => d[0] && d[0].ext_ap, SV.f3));
+  const roadOurs = val('road', (d) => (d.find((r) => r.model === 'ours') || {}).fp, SV.f2);
+  dash.draw('roadOurs', roadOurs); dash.draw('roadOursTxt', roadOurs);
+  dash.draw('roadExt', val('roadrange', (d) => d[0] && d[0].range, (v) => v));
+  dash.draw('aucOku', val('posture', (d) => (d.find((r) => r.set === 'okutama_obl') || {}).AUROC, SV.f2));
+  dash.draw('aucArc', val('posture', (d) => (d.find((r) => r.set === 'archangel_real') || {}).AUROC, SV.f2));
+  dash.draw('msDet', val('latency', (d) => (d.find((r) => r.stage === '탐지') || {}).median, d3.format('.1f')));
+  dash.draw('msPipe', val('pipeline', (d) => d[0] && d[0].ms, d3.format('.0f')));
+  dash.draw('fpsPipe', val('pipeline', (d) => d[0] && d[0].fps, d3.format('.0f')));
+</script>
+
+<script>
+  // 기성 대비 덤벨
+  dash.draw('dumbbell', (el) => {
+    if (!SV.frame(el, ['det'])) return;
+    const rows = dash.data('det').data.filter((r) => r.set !== 'test_auair');
+    const sets = Array.from(d3.group(rows, (r) => r.set), ([set, rs]) => ({ set, label: rs[0].label, o: rs.find((r) => r.model === 'ours'), e: rs.find((r) => r.model === 'ext') }))
+      .filter((d) => d.o && d.e).sort((a, b) => (b.o.AP50 - b.e.AP50) - (a.o.AP50 - a.e.AP50));
+    const W = el.clientWidth || 600, rowH = 36, top = 22, H = top + sets.length * rowH + 10;
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+    const lw = d3.max(sets, (d) => SV.textW(svg, d.label, 'lab')) + 12, rw = 64;
+    const x = d3.scaleLinear([0.4, 1], [lw, W - rw]);
+    svg.append('g').attr('class', 'grid').selectAll('line').data(x.ticks(6)).join('line').attr('x1', x).attr('x2', x).attr('y1', top - 6).attr('y2', H - 6);
+    svg.append('g').selectAll('text').data(x.ticks(6)).join('text').attr('x', x).attr('y', top - 10).attr('text-anchor', 'middle').text(d3.format('.1f'));
+    svg.append('text').attr('x', W).attr('y', top - 10).attr('text-anchor', 'end').text('차이');
+    const t = SV.tip(el);
+    const g = svg.append('g').selectAll('g').data(sets).join('g').attr('transform', (d, i) => `translate(0,${top + i * rowH + rowH / 2})`);
+    g.append('text').attr('class', 'lab').attr('x', lw - 12).attr('dy', '.35em').attr('text-anchor', 'end').text((d) => d.label);
+    g.append('line').attr('class', 'grow').attr('x1', (d) => x(Math.min(d.o.AP50, d.e.AP50))).attr('x2', (d) => x(Math.max(d.o.AP50, d.e.AP50)))
+      .attr('stroke', (d) => d.o.AP50 >= d.e.AP50 ? SV.ours() : SV.ext()).attr('stroke-width', 3).attr('stroke-linecap', 'round').attr('stroke-opacity', .45);
+    g.append('circle').attr('cx', (d) => x(d.e.AP50)).attr('r', 6).attr('fill', SV.ext()).attr('stroke', 'var(--color-panel)').attr('stroke-width', 2);
+    g.append('circle').attr('cx', (d) => x(d.o.AP50)).attr('r', 7).attr('fill', SV.ours()).attr('stroke', 'var(--color-panel)').attr('stroke-width', 2);
+    g.append('text').attr('x', W).attr('dy', '.35em').attr('text-anchor', 'end').attr('class', (d) => d.o.AP50 >= d.e.AP50 ? 'strong' : null)
+      .text((d) => `${d.o.AP50 >= d.e.AP50 ? '+' : '−'}${Math.abs((d.o.AP50 - d.e.AP50) * 100).toFixed(1)} %p`);
+    g.append('rect').attr('x', 0).attr('y', -rowH / 2).attr('width', W).attr('height', rowH).attr('fill', 'transparent')
+      .on('pointermove', (ev, d) => t.show(ev, [[d.label, null, 't'], [`우리 ${SV.f3(d.o.AP50)}`, SV.ours()], [`${d.e.name} ${SV.f3(d.e.AP50)} (${d.e.mode === 'full' ? '통째' : '4조각'} ${d.e.imgsz})`, SV.ext()]]))
+      .on('pointerleave', () => t.hide());
+  });
+
+  // 도로 헛탐지
+  dash.draw('road', (el) => {
+    if (!SV.frame(el, ['road'])) return;
+    const rows = dash.data('road').data.slice().sort((a, b) => a.fp - b.fp);
+    const W = el.clientWidth || 360, rowH = 34, top = 24, H = top + rows.length * rowH + 4;
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+    const lw = d3.max(rows, (d) => SV.textW(svg, d.label, 'lab')) + 12, rw = 44;
+    const x = d3.scaleLinear([0, Math.max(1.2, d3.max(rows, (d) => d.fp))], [lw, W - rw]).nice();
+    svg.append('g').attr('class', 'grid').selectAll('line').data(x.ticks(4)).join('line').attr('x1', x).attr('x2', x).attr('y1', top - 6).attr('y2', H);
+    svg.append('g').selectAll('text').data(x.ticks(4)).join('text').attr('x', x).attr('y', top - 10).attr('text-anchor', 'middle').text(d3.format('~g'));
+    svg.append('line').attr('x1', x(1)).attr('x2', x(1)).attr('y1', top - 6).attr('y2', H).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3');
+    svg.append('text').attr('x', x(1) + 4).attr('y', H - 4).text('기준 1건');
+    const t = SV.tip(el);
+    const g = svg.append('g').selectAll('g').data(rows).join('g').attr('transform', (d, i) => `translate(0,${top + i * rowH})`);
+    g.append('text').attr('class', (d) => d.model === 'ours' ? 'lab strong' : 'lab').attr('x', lw - 12).attr('y', rowH / 2).attr('dy', '.35em').attr('text-anchor', 'end').text((d) => d.label);
+    g.append('rect').attr('class', 'grow').attr('x', lw).attr('y', 7).attr('height', rowH - 14).attr('rx', 3).attr('width', (d) => Math.max(2, x(d.fp) - lw)).attr('fill', (d) => d.model === 'ours' ? SV.ours() : SV.ext());
+    g.append('text').attr('x', (d) => x(d.fp) + 6).attr('y', rowH / 2).attr('dy', '.35em').attr('class', 'lab').text((d) => SV.f2(d.fp));
+    g.append('rect').attr('width', W).attr('height', rowH).attr('fill', 'transparent')
+      .on('pointermove', (ev, d) => t.show(ev, [[d.label, null, 't'], [`${SV.f2(d.fp)} 건/장`, d.model === 'ours' ? SV.ours() : SV.ext()]])).on('pointerleave', () => t.hide());
+  });
+</script>
+
+<script>
+  // 평가셋 고르기
+  dash.draw('setpick', (sel) => {
+    const d = dash.data('det');
+    const sets = d.status === 'ok' ? Array.from(d3.group(d.data.filter((r) => r.set !== 'test_auair'), (r) => r.set), ([set, rs]) => ({ set, label: rs[0].label })) : [];
+    sel.replaceChildren(...sets.map((s) => new Option(s.label, s.set)));
+    if (sets.length && !sets.some((s) => s.set === SV.state.set)) SV.state.set = sets[0].set;
+    sel.value = SV.state.set;
+    sel.onchange = () => { SV.state.set = sel.value; ['pr', 'cm', 'thr'].forEach((n) => dash.draw(n)); };
+  });
+
+  dash.draw('pr', (el) => {
+    if (!SV.frame(el, ['pr', 'det'])) return;
+    const s = SV.state.set, pr = dash.data('pr').data.filter((r) => r.set === s), det = dash.data('det').data.filter((r) => r.set === s);
+    const W = el.clientWidth || 360, H = Math.min(320, Math.max(220, W * .72)), m = { l: 38, r: 12, t: 10, b: 32 };
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+    const x = d3.scaleLinear([0, 1], [m.l, W - m.r]), y = d3.scaleLinear([0, 1], [H - m.b, m.t]);
+    svg.append('g').attr('class', 'grid').selectAll('line').data(y.ticks(5)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y);
+    svg.append('g').attr('class', 'axis').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(5).tickSizeOuter(0)).attr('font-size', null).attr('font-family', null);
+    svg.append('g').attr('class', 'axis').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSizeOuter(0)).attr('font-size', null).attr('font-family', null);
+    svg.append('text').attr('x', W - m.r).attr('y', H - 2).attr('text-anchor', 'end').text('재현율 (찾은 비율) →');
+    svg.append('text').attr('x', m.l + 4).attr('y', m.t + 10).text('↑ 정밀도 (맞은 비율)');
+    const line = d3.line().x((d) => x(d.recall)).y((d) => y(d.precision)).curve(d3.curveLinear);
+    const t = SV.tip(el);
+    for (const mod of ['ext', 'ours']) {
+      const pts = pr.filter((r) => r.model === mod).sort((a, b) => a.recall - b.recall), c = mod === 'ours' ? SV.ours() : SV.ext();
+      svg.append('path').datum(pts).attr('d', line).attr('fill', 'none').attr('stroke', c).attr('stroke-width', mod === 'ours' ? 2.5 : 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+      const r = det.find((q) => q.model === mod);
+      if (r) svg.append('circle').attr('cx', x(r.R)).attr('cy', y(r.P)).attr('r', 5).attr('fill', c).attr('stroke', 'var(--color-panel)').attr('stroke-width', 2);
+    }
+    const o = det.find((q) => q.model === 'ours'), e = det.find((q) => q.model === 'ext');
+    svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).attr('fill', 'transparent')
+      .on('pointermove', (ev) => {
+        const rc = Math.max(0, Math.min(1, x.invert(d3.pointer(ev)[0])));
+        const at = (mod) => { const p = pr.filter((q) => q.model === mod && q.recall >= rc - 1e-9).sort((a, b) => a.recall - b.recall)[0]; return p ? SV.f3(p.precision) : '— (여기까지 못 찾음)'; };
+        t.show(ev, [[`재현율 ${SV.pct(rc)}에서 정밀도`, null, 't'], [`우리 ${at('ours')}${o ? ` · AP ${SV.f3(o.AP50)}` : ''}`, SV.ours()], [`${e ? e.name : '기성'} ${at('ext')}${e ? ` · AP ${SV.f3(e.AP50)}` : ''}`, SV.ext()]]);
+      }).on('pointerleave', () => t.hide());
+  });
+
+  dash.draw('cm', (el) => {
+    if (!SV.frame(el, ['det'])) return;
+    const det = dash.data('det').data.filter((r) => r.set === SV.state.set);
+    const W = el.clientWidth || 360, H = 250;
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+    const mods = [['ours', '우리'], ['ext', '기성 최고']].map(([k, n]) => [det.find((r) => r.model === k), n, k]).filter((d) => d[0]);
+    const pw = (W - 70) / mods.length, cell = Math.min((pw - 16) / 2, 78), t = SV.tip(el);
+    svg.append('text').attr('x', 0).attr('y', 64 + cell / 2).attr('dy', '.35em').attr('class', 'lab').text('실제 사람');
+    svg.append('text').attr('x', 0).attr('y', 64 + cell * 1.5 + 6).attr('dy', '.35em').attr('class', 'lab').text('배경');
+    mods.forEach(([r, name, k], i) => {
+      const ox = 70 + i * pw, c = k === 'ours' ? SV.ours() : SV.ext(), g = svg.append('g').attr('transform', `translate(${ox},0)`);
+      g.append('text').attr('x', cell).attr('y', 14).attr('text-anchor', 'middle').attr('class', 'lab strong').text(name);
+      g.append('text').attr('x', cell / 2).attr('y', 50).attr('text-anchor', 'middle').text('사람이라 함');
+      g.append('text').attr('x', cell * 1.5 + 6).attr('y', 50).attr('text-anchor', 'middle').text('못 찾음');
+      const cells = [[0, 0, r.TP, '맞게 찾음', 1], [1, 0, r.FN, '놓침', .35], [0, 1, r.FP, '헛탐지', .35], [1, 1, null, '셀 수 없음', 0]];
+      const max = d3.max([r.TP, r.FN, r.FP]);
+      const cg = g.selectAll('g').data(cells).join('g').attr('transform', (d) => `translate(${d[0] * (cell + 6)},${60 + d[1] * (cell + 6)})`);
+      cg.append('rect').attr('width', cell).attr('height', cell).attr('rx', 4)
+        .attr('fill', (d) => d[2] == null ? 'transparent' : c).attr('fill-opacity', (d) => d[2] == null ? 0 : .15 + .7 * d[2] / max)
+        .attr('stroke', 'var(--color-border-line)');
+      cg.append('text').attr('x', cell / 2).attr('y', cell / 2 - 4).attr('text-anchor', 'middle').attr('class', 'lab strong').text((d) => d[2] == null ? '—' : d3.format(',')(d[2]));
+      cg.append('text').attr('x', cell / 2).attr('y', cell / 2 + 13).attr('text-anchor', 'middle').text((d) => d[3]);
+      cg.on('pointermove', (ev, d) => d[2] != null && t.show(ev, [[`${name} · ${d[3]}`, null, 't'], [`${d3.format(',')(d[2])}명 / 실제 ${d3.format(',')(r.n_gt)}명`, c]])).on('pointerleave', () => t.hide());
+      g.append('text').attr('x', 0).attr('y', 60 + 2 * cell + 26).text(`재현율 ${SV.pct(r.R)} · 정밀도 ${SV.pct(r.P)}`);
+    });
+  });
+
+  dash.draw('thr', (el) => {
+    if (!SV.frame(el, ['thr'])) return;
+    const rows = dash.data('thr').data.filter((r) => r.set === SV.state.set);
+    const W = el.clientWidth || 360, H = Math.min(320, Math.max(220, W * .72)), m = { l: 38, r: 12, t: 10, b: 32 };
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+    const x = d3.scaleLinear([0, 0.8], [m.l, W - m.r]), y = d3.scaleLinear([0, 1], [H - m.b, m.t]);
+    svg.append('g').attr('class', 'grid').selectAll('line').data(y.ticks(5)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y);
+    svg.append('g').attr('class', 'axis').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(5).tickSizeOuter(0)).attr('font-size', null).attr('font-family', null);
+    svg.append('g').attr('class', 'axis').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSizeOuter(0)).attr('font-size', null).attr('font-family', null);
+    svg.append('text').attr('x', W - m.r).attr('y', H - 2).attr('text-anchor', 'end').text('확신 문턱 →');
+    svg.append('line').attr('x1', x(0.2)).attr('x2', x(0.2)).attr('y1', m.t).attr('y2', H - m.b).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3');
+    svg.append('text').attr('x', x(0.2) + 4).attr('y', m.t + 10).text('운용 0.20');
+    const t = SV.tip(el);
+    for (const mod of ['ext', 'ours']) {
+      const pts = rows.filter((r) => r.model === mod).sort((a, b) => a.thr - b.thr), c = mod === 'ours' ? SV.ours() : SV.ext();
+      for (const [k, dashArr] of [['R', null], ['P', '5 4']]) {
+        svg.append('path').datum(pts).attr('d', d3.line().x((d) => x(d.thr)).y((d) => y(d[k]))).attr('fill', 'none').attr('stroke', c).attr('stroke-width', 2).attr('stroke-dasharray', dashArr).attr('stroke-linecap', dashArr ? 'butt' : 'round');
+      }
+    }
+    svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).attr('fill', 'transparent')
+      .on('pointermove', (ev) => {
+        const tv = x.invert(d3.pointer(ev)[0]); const near = (mod) => d3.least(rows.filter((r) => r.model === mod), (r) => Math.abs(r.thr - tv));
+        const o = near('ours'), e = near('ext'); if (!o) return;
+        t.show(ev, [[`문턱 ${o.thr.toFixed(2)}`, null, 't'], [`우리 재현율 ${SV.pct(o.R)} · 정밀도 ${SV.pct(o.P)}`, SV.ours()], ...(e ? [[`기성 재현율 ${SV.pct(e.R)} · 정밀도 ${SV.pct(e.P)}`, SV.ext()]] : [])]);
+      }).on('pointerleave', () => t.hide());
+  });
+</script>
+
+<script>
+  // 사람 키별 재현율
+  dash.draw('height', (el) => {
+    if (!SV.frame(el, ['height'])) return;
+    const rows = dash.data('height').data, bins = Array.from(new Set(rows.map((r) => r.bin)));
+    const W = el.clientWidth || 600, H = 250, m = { l: 38, r: 10, t: 16, b: 44 };
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+    const x0 = d3.scaleBand(bins, [m.l, W - m.r]).paddingInner(.3).paddingOuter(.1), x1 = d3.scaleBand(['ext', 'ours'], [0, x0.bandwidth()]).padding(.08), y = d3.scaleLinear([0, 1], [H - m.b, m.t]);
+    svg.append('g').attr('class', 'grid').selectAll('line').data(y.ticks(5)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y);
+    svg.append('g').attr('class', 'axis').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5, '.0%').tickSizeOuter(0)).attr('font-size', null).attr('font-family', null);
+    const t = SV.tip(el);
+    const g = svg.append('g').selectAll('g').data(bins).join('g').attr('transform', (b) => `translate(${x0(b)},0)`);
+    g.append('text').attr('class', 'lab').attr('x', x0.bandwidth() / 2).attr('y', H - m.b + 18).attr('text-anchor', 'middle').text((b) => (rows.find((r) => r.bin === b) || {}).label);
+    g.append('text').attr('x', x0.bandwidth() / 2).attr('y', H - m.b + 34).attr('text-anchor', 'middle').text((b) => `${d3.format(',')((rows.find((r) => r.bin === b && r.model === 'ours') || {}).n || 0)}명`);
+    const bw = Math.min(32, x1.bandwidth());
+    g.selectAll('rect').data((b) => rows.filter((r) => r.bin === b)).join('rect')
+      .attr('x', (d) => x1(d.model) + (x1.bandwidth() - bw) / 2).attr('width', bw).attr('y', (d) => y(d.R)).attr('height', (d) => y(0) - y(d.R)).attr('rx', 3)
+      .attr('fill', (d) => d.model === 'ours' ? SV.ours() : SV.ext())
+      .on('pointermove', (ev, d) => t.show(ev, [[`키 ${d.label}`, null, 't'], [`${d.model === 'ours' ? '우리' : '기성 최고'} ${SV.pct(d.R)}`, d.model === 'ours' ? SV.ours() : SV.ext()]])).on('pointerleave', () => t.hide());
+    g.selectAll('text.v').data((b) => rows.filter((r) => r.bin === b)).join('text').attr('class', (d) => d.model === 'ours' ? 'v strong' : 'v')
+      .attr('x', (d) => x1(d.model) + x1.bandwidth() / 2).attr('y', (d) => y(d.R) - 5).attr('text-anchor', 'middle').text((d) => SV.pct(d.R));
+  });
+
+  // ROC
+  dash.draw('roc', (el) => {
+    if (!SV.frame(el, ['roc', 'posture'])) return;
+    const rows = dash.data('roc').data, post = dash.data('posture').data;
+    const W = el.clientWidth || 360, H = Math.min(320, Math.max(220, W * .8)), m = { l: 38, r: 12, t: 10, b: 32 };
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+    const x = d3.scaleLinear([0, 1], [m.l, W - m.r]), y = d3.scaleLinear([0, 1], [H - m.b, m.t]);
+    svg.append('g').attr('class', 'grid').selectAll('line').data(y.ticks(5)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y);
+    svg.append('g').attr('class', 'axis').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(5).tickSizeOuter(0)).attr('font-size', null).attr('font-family', null);
+    svg.append('g').attr('class', 'axis').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSizeOuter(0)).attr('font-size', null).attr('font-family', null);
+    svg.append('line').attr('x1', x(0)).attr('y1', y(0)).attr('x2', x(1)).attr('y2', y(1)).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3');
+    svg.append('text').attr('x', W - m.r).attr('y', H - 2).attr('text-anchor', 'end').text('다른 자세를 누움으로 고른 비율 →');
+    svg.append('text').attr('x', m.l + 4).attr('y', m.t + 10).text('↑ 누운 사람을 고른 비율');
+    const sets = [['okutama_obl', SV.ours()], ['archangel_real', SV.ext()]];
+    sets.forEach(([s, c], i) => {
+      const pts = rows.filter((r) => r.set === s).sort((a, b) => a.fpr - b.fpr || a.tpr - b.tpr), p = post.find((q) => q.set === s);
+      const area = d3.area().x((d) => x(d.fpr)).y0(y(0)).y1((d) => y(d.tpr));
+      if (i === 0) svg.append('path').datum(pts).attr('d', area).attr('fill', c).attr('fill-opacity', .08);
+      svg.append('path').datum(pts).attr('d', d3.line().x((d) => x(d.fpr)).y((d) => y(d.tpr))).attr('fill', 'none').attr('stroke', c).attr('stroke-width', 2.2).attr('stroke-linejoin', 'round');
+      if (p) svg.append('text').attr('class', 'lab strong').attr('x', x(0.42)).attr('y', y(0.2 + i * 0.12)).text(`AUROC ${SV.f3(p.AUROC)}`).attr('fill', c);
+    });
+    const t = SV.tip(el);
+    svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).attr('fill', 'transparent')
+      .on('pointermove', (ev) => {
+        const f = x.invert(d3.pointer(ev)[0]);
+        const at = (s) => { const pts = rows.filter((r) => r.set === s && r.fpr <= f); return pts.length ? d3.max(pts, (r) => r.tpr) : 0; };
+        t.show(ev, [[`다른 자세 ${SV.pct(Math.max(0, f))}를 감수하면`, null, 't'], [`Okutama 누움 ${SV.pct(at('okutama_obl'))}`, SV.ours()], [`Archangel 누움 ${SV.pct(at('archangel_real'))}`, SV.ext()]]);
+      }).on('pointerleave', () => t.hide());
+  });
+
+  const pcm = (setId) => (el) => {
+    if (!SV.frame(el, ['pcm'])) return;
+    const rows = dash.data('pcm').data.filter((r) => r.set === setId), cls = ['누움', '앉음 · 무릎', '서기'];
+    const W = el.clientWidth || 360, lw = 78, top = 34, cell = Math.min((W - lw) / 3 - 4, 86), H = top + 3 * (cell + 4) + 8;
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+    svg.append('text').attr('x', lw + (3 * (cell + 4)) / 2).attr('y', 12).attr('text-anchor', 'middle').text('판정한 자세 →');
+    cls.forEach((c, j) => svg.append('text').attr('class', 'lab').attr('x', lw + j * (cell + 4) + cell / 2).attr('y', top - 8).attr('text-anchor', 'middle').text(c));
+    cls.forEach((c, i) => svg.append('text').attr('class', 'lab').attr('x', lw - 8).attr('y', top + i * (cell + 4) + cell / 2).attr('dy', '.35em').attr('text-anchor', 'end').text(c));
+    const t = SV.tip(el), color = d3.interpolateRgb(SV.css('--color-panel') || '#fff', SV.ours());
+    cls.forEach((a, i) => {
+      const rs = rows.filter((r) => r.actual === a), tot = d3.sum(rs, (r) => r.n) || 1;
+      cls.forEach((p, j) => {
+        const n = (rs.find((r) => r.pred === p) || { n: 0 }).n, share = n / tot;
+        const g = svg.append('g').attr('transform', `translate(${lw + j * (cell + 4)},${top + i * (cell + 4)})`);
+        g.append('rect').attr('width', cell).attr('height', cell).attr('rx', 4).attr('fill', color(0.08 + 0.85 * share)).attr('stroke', i === j ? 'var(--color-fg)' : 'none').attr('stroke-width', 1.5);
+        g.append('text').attr('x', cell / 2).attr('y', cell / 2 - 3).attr('text-anchor', 'middle').attr('class', 'strong').style('fill', share > .55 ? 'var(--color-bg)' : 'var(--color-fg)').text(SV.pct(share));
+        g.append('text').attr('x', cell / 2).attr('y', cell / 2 + 13).attr('text-anchor', 'middle').style('fill', share > .55 ? 'var(--color-bg)' : null).text(d3.format(',')(n));
+        g.on('pointermove', (ev) => t.show(ev, [[`실제 ${a} → ${p}`, null, 't'], [`${d3.format(',')(n)}명 (${SV.pct(share)})`, SV.ours()]])).on('pointerleave', () => t.hide());
+      });
+    });
+  };
+  dash.draw('pcm1', pcm('okutama_obl'));
+  dash.draw('pcm2', pcm('archangel_real'));
+</script>
+
+<script>
+  // 상의 색 — 이전 → 지금
+  dash.draw('color', (el) => {
+    if (!SV.frame(el, ['color'])) return;
+    const rows = dash.data('color').data;
+    const W = el.clientWidth || 600, rowH = 38, top = 24, H = top + rows.length * rowH + 6;
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+    const lw = d3.max(rows, (d) => SV.textW(svg, d.label, 'lab')) + 14, rw = 70;
+    const x = d3.scaleLinear([0, 1], [lw, W - rw]);
+    svg.append('g').attr('class', 'grid').selectAll('line').data(x.ticks(5)).join('line').attr('x1', x).attr('x2', x).attr('y1', top - 6).attr('y2', H);
+    svg.append('g').selectAll('text').data(x.ticks(5)).join('text').attr('x', x).attr('y', top - 10).attr('text-anchor', 'middle').text(d3.format('.1f'));
+    svg.append('text').attr('x', W).attr('y', top - 10).attr('text-anchor', 'end').text('배수');
+    const t = SV.tip(el);
+    const g = svg.append('g').selectAll('g').data(rows).join('g').attr('transform', (d, i) => `translate(0,${top + i * rowH + rowH / 2})`);
+    g.append('text').attr('class', 'lab').attr('x', lw - 14).attr('dy', '.35em').attr('text-anchor', 'end').text((d) => d.label);
+    g.append('line').attr('class', 'grow').attr('x1', (d) => x(d.rule)).attr('x2', (d) => x(d.siglip) - 8).attr('stroke', SV.ours()).attr('stroke-opacity', .5).attr('stroke-width', 2.5);
+    g.append('path').attr('d', 'M0,-5L8,0L0,5Z').attr('transform', (d) => `translate(${x(d.siglip) - 8},0)`).attr('fill', SV.ours()).attr('fill-opacity', .5);
+    g.append('circle').attr('cx', (d) => x(d.rule)).attr('r', 5.5).attr('fill', SV.ext());
+    g.append('circle').attr('cx', (d) => x(d.siglip)).attr('r', 7).attr('fill', SV.ours()).attr('stroke', 'var(--color-panel)').attr('stroke-width', 2);
+    g.append('text').attr('x', W).attr('dy', '.35em').attr('text-anchor', 'end').attr('class', 'strong').text((d) => `×${(d.siglip / d.rule).toFixed(2)}`);
+    g.append('rect').attr('y', -rowH / 2).attr('width', W).attr('height', rowH).attr('fill', 'transparent')
+      .on('pointermove', (ev, d) => t.show(ev, [[`${d.label} · ${d.role}`, null, 't'], [`색 규칙 ${SV.f3(d.rule)}`, SV.ext()], [`SigLIP 2 ${SV.f3(d.siglip)}`, SV.ours()]])).on('pointerleave', () => t.hide());
+  });
+
+  // 단계별 시간
+  dash.draw('lat', (el) => {
+    if (!SV.frame(el, ['latency'])) return;
+    const rows = dash.data('latency').data;
+    const W = el.clientWidth || 600, rowH = 40, top = 26, H = top + rows.length * rowH + 6;
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`);
+    const lw = d3.max(rows, (d) => SV.textW(svg, d.label, 'lab')) + 14, rw = 90;
+    const x = d3.scaleLinear([0, Math.max(100, d3.max(rows, (d) => d.p95))], [lw, W - rw]).nice();
+    svg.append('g').attr('class', 'grid').selectAll('line').data(x.ticks(5)).join('line').attr('x1', x).attr('x2', x).attr('y1', top - 6).attr('y2', H);
+    svg.append('g').selectAll('text').data(x.ticks(5)).join('text').attr('x', x).attr('y', top - 10).attr('text-anchor', 'middle').text((d) => `${d} ms`);
+    svg.append('line').attr('x1', x(30)).attr('x2', x(30)).attr('y1', top - 6).attr('y2', H).attr('stroke', 'var(--cds-chart-status-critical)').attr('stroke-dasharray', '4 3');
+    svg.append('text').attr('x', x(30) + 4).attr('y', H - 4).style('fill', 'var(--cds-chart-status-critical)').text('탐지 기준 30 ms');
+    const t = SV.tip(el);
+    const g = svg.append('g').selectAll('g').data(rows).join('g').attr('transform', (d, i) => `translate(0,${top + i * rowH})`);
+    g.append('text').attr('class', (d) => d.stage === '탐지' ? 'lab strong' : 'lab').attr('x', lw - 14).attr('y', rowH / 2).attr('dy', '.35em').attr('text-anchor', 'end').text((d) => d.label);
+    g.append('line').attr('x1', (d) => x(d.median)).attr('x2', (d) => x(d.p95)).attr('y1', rowH / 2).attr('y2', rowH / 2).attr('stroke', 'var(--color-fg-muted)').attr('stroke-width', 1.5);
+    g.append('line').attr('x1', (d) => x(d.p95)).attr('x2', (d) => x(d.p95)).attr('y1', rowH / 2 - 6).attr('y2', rowH / 2 + 6).attr('stroke', 'var(--color-fg-muted)').attr('stroke-width', 1.5);
+    g.append('rect').attr('class', 'grow').attr('x', lw).attr('y', 9).attr('height', rowH - 18).attr('rx', 3).attr('width', (d) => Math.max(2, x(d.median) - lw)).attr('fill', (d) => d.stage === '탐지' ? SV.ours() : SV.ext());
+    g.append('text').attr('x', (d) => x(d.p95) + 8).attr('y', rowH / 2).attr('dy', '.35em').attr('class', 'lab').text((d) => `${d.median.toFixed(1)} · ${d.p95.toFixed(1)}`);
+    g.append('rect').attr('width', W).attr('height', rowH).attr('fill', 'transparent')
+      .on('pointermove', (ev, d) => t.show(ev, [[d.label, null, 't'], [`중앙 ${d.median.toFixed(2)} ms · P95 ${d.p95.toFixed(2)} ms`, d.stage === '탐지' ? SV.ours() : SV.ext()], ...(d.note ? [[d.note, null, 't']] : [])])).on('pointerleave', () => t.hide());
+  });
+
+  dash.draw('memrows', (tb) => {
+    const d = dash.data('memory');
+    if (d.status !== 'ok') { tb.replaceChildren(); return; }
+    tb.replaceChildren(...d.data.map((r) => { const tr = document.createElement('tr'); [[r.stage, ''], [r.gpu_gb.toFixed(2), 'n'], [r.ram_gb.toFixed(2), 'n']].forEach(([v, c]) => { const td = document.createElement('td'); td.textContent = v; if (c) td.className = c; tr.append(td); }); return tr; }));
+  });
+</script>
