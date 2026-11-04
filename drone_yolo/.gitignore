@@ -80,3 +80,5 @@ yolo26s-reid.onnx
 # 10-17 통합 담당 전달물 (연결기 소스 · SIM worker 신원 — 비밀) · 공개 저장소에 올리지 않음
 10.17 UE/
 *-private.zip
+# runs_fair = 공정 비교 검출 저장 (데이터셋 파생 · 11-04)
+runs_fair/
