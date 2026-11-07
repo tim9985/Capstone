@@ -1,0 +1,742 @@
+{
+ "road_negatives": 233,
+ "ours_road_fp": 0.515,
+ "sets": {
+  "test_sar": {
+   "ours": 0.9478,
+   "rivals": {
+    "YOLO11m COCO (우리 출발점)": {
+     "tag": "coco_yolo11m@tile1280",
+     "AP50": 0.7162,
+     "diff": 0.2316,
+     "CI": [
+      0.1073,
+      0.3772
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.7602
+    },
+    "YOLO11x (COCO)": {
+     "tag": "sota_yolo11x@full1280",
+     "AP50": 0.8082,
+     "diff": 0.1396,
+     "CI": [
+      0.0502,
+      0.2502
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.8492
+    },
+    "RT-DETR-x (COCO)": {
+     "tag": "sota_rtdetrx@tile1280",
+     "AP50": 0.8474,
+     "diff": 0.1004,
+     "CI": [
+      0.0397,
+      0.1724
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.7858
+    },
+    "YOLO-World v2 (개방형)": {
+     "tag": "sota_yoloworld@full1280",
+     "AP50": 0.9496,
+     "diff": -0.0017,
+     "CI": [
+      -0.0359,
+      0.046
+     ],
+     "verdict": "구분 안 됨",
+     "R_at_our_road_fp": 0.8854
+    },
+    "Grounding DINO (개방형)": {
+     "tag": "sota_gdino@tile",
+     "AP50": 0.9792,
+     "diff": -0.0314,
+     "CI": [
+      -0.064,
+      0.0012
+     ],
+     "verdict": "구분 안 됨",
+     "R_at_our_road_fp": 0.9789
+    },
+    "AeroNova (항공)": {
+     "tag": "aeronova@full1280",
+     "AP50": 0.9052,
+     "diff": 0.0426,
+     "CI": [
+      -0.001,
+      0.094
+     ],
+     "verdict": "구분 안 됨",
+     "R_at_our_road_fp": 0.9065
+    },
+    "VisDrone YOLOv9e (항공)": {
+     "tag": "visdrone_yolov9e@tile640",
+     "AP50": 0.8237,
+     "diff": 0.1241,
+     "CI": [
+      0.0538,
+      0.2292
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.7195
+    }
+   },
+   "ours_R_at_020": 0.997
+  },
+  "test_obl": {
+   "ours": 0.6087,
+   "rivals": {
+    "YOLO11m COCO (우리 출발점)": {
+     "tag": "coco_yolo11m@full1280",
+     "AP50": 0.5503,
+     "diff": 0.0584,
+     "CI": [
+      0.0334,
+      0.0826
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.6641
+    },
+    "YOLO11x (COCO)": {
+     "tag": "sota_yolo11x@full1280",
+     "AP50": 0.5794,
+     "diff": 0.0293,
+     "CI": [
+      0.0074,
+      0.0478
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.6884
+    },
+    "RT-DETR-x (COCO)": {
+     "tag": "sota_rtdetrx@tile640",
+     "AP50": 0.5506,
+     "diff": 0.0581,
+     "CI": [
+      0.0309,
+      0.0838
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.605
+    },
+    "YOLO-World v2 (개방형)": {
+     "tag": "sota_yoloworld@full1280",
+     "AP50": 0.5599,
+     "diff": 0.0487,
+     "CI": [
+      0.023,
+      0.0766
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.5721
+    },
+    "Grounding DINO (개방형)": {
+     "tag": "sota_gdino@full",
+     "AP50": 0.5789,
+     "diff": 0.0298,
+     "CI": [
+      0.0051,
+      0.0496
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.6119
+    },
+    "AeroNova (항공)": {
+     "tag": "aeronova@full1280",
+     "AP50": 0.6345,
+     "diff": -0.0258,
+     "CI": [
+      -0.0558,
+      0.0021
+     ],
+     "verdict": "구분 안 됨",
+     "R_at_our_road_fp": 0.6101
+    },
+    "VisDrone YOLOv9e (항공)": {
+     "tag": "visdrone_yolov9e@full1280",
+     "AP50": 0.6016,
+     "diff": 0.007,
+     "CI": [
+      -0.0247,
+      0.0374
+     ],
+     "verdict": "구분 안 됨",
+     "R_at_our_road_fp": 0.6326
+    }
+   },
+   "ours_R_at_020": 0.6772
+  },
+  "test_cy": {
+   "ours": 0.4986,
+   "rivals": {
+    "YOLO11m COCO (우리 출발점)": {
+     "tag": "coco_yolo11m@tile1280",
+     "AP50": 0.3048,
+     "diff": 0.1938,
+     "CI": [
+      0.1643,
+      0.2227
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.34
+    },
+    "YOLO11x (COCO)": {
+     "tag": "sota_yolo11x@tile1280",
+     "AP50": 0.3175,
+     "diff": 0.1811,
+     "CI": [
+      0.1496,
+      0.2132
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.3558
+    },
+    "RT-DETR-x (COCO)": {
+     "tag": "sota_rtdetrx@tile1280",
+     "AP50": 0.2824,
+     "diff": 0.2162,
+     "CI": [
+      0.2008,
+      0.2314
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.2614
+    },
+    "YOLO-World v2 (개방형)": {
+     "tag": "sota_yoloworld@tile1280",
+     "AP50": 0.239,
+     "diff": 0.2596,
+     "CI": [
+      0.2395,
+      0.2784
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.1528
+    },
+    "Grounding DINO (개방형)": {
+     "tag": "sota_gdino@tile",
+     "AP50": 0.2735,
+     "diff": 0.2252,
+     "CI": [
+      0.204,
+      0.2467
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.0712
+    },
+    "AeroNova (항공)": {
+     "tag": "aeronova@tile1280",
+     "AP50": 0.3789,
+     "diff": 0.1197,
+     "CI": [
+      0.1029,
+      0.1374
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": null
+    },
+    "VisDrone YOLOv9e (항공)": {
+     "tag": "visdrone_yolov9e@tile1280",
+     "AP50": 0.4909,
+     "diff": 0.0077,
+     "CI": [
+      -0.0074,
+      0.0219
+     ],
+     "verdict": "구분 안 됨",
+     "R_at_our_road_fp": null
+    }
+   },
+   "ours_R_at_020": 0.5323
+  },
+  "test_v2": {
+   "ours": 0.6562,
+   "rivals": {
+    "YOLO11m COCO (우리 출발점)": {
+     "tag": "coco_yolo11m@tile1280",
+     "AP50": 0.4387,
+     "diff": 0.2174,
+     "CI": [
+      0.1339,
+      0.2996
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.4925
+    },
+    "YOLO11x (COCO)": {
+     "tag": "sota_yolo11x@tile1280",
+     "AP50": 0.4507,
+     "diff": 0.2055,
+     "CI": [
+      0.1387,
+      0.2811
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.5011
+    },
+    "RT-DETR-x (COCO)": {
+     "tag": "sota_rtdetrx@tile1280",
+     "AP50": 0.5399,
+     "diff": 0.1162,
+     "CI": [
+      0.0585,
+      0.1789
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.4832
+    },
+    "YOLO-World v2 (개방형)": {
+     "tag": "sota_yoloworld@full1280",
+     "AP50": 0.6236,
+     "diff": 0.0326,
+     "CI": [
+      -0.0318,
+      0.0987
+     ],
+     "verdict": "구분 안 됨",
+     "R_at_our_road_fp": 0.556
+    },
+    "Grounding DINO (개방형)": {
+     "tag": "sota_gdino@full",
+     "AP50": 0.6297,
+     "diff": 0.0265,
+     "CI": [
+      -0.0244,
+      0.076
+     ],
+     "verdict": "구분 안 됨",
+     "R_at_our_road_fp": 0.5939
+    },
+    "AeroNova (항공)": {
+     "tag": "aeronova@tile1280",
+     "AP50": 0.5207,
+     "diff": 0.1355,
+     "CI": [
+      0.0674,
+      0.2196
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": null
+    },
+    "VisDrone YOLOv9e (항공)": {
+     "tag": "visdrone_yolov9e@tile640",
+     "AP50": 0.5413,
+     "diff": 0.1149,
+     "CI": [
+      0.0742,
+      0.1741
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.4297
+    }
+   },
+   "ours_R_at_020": 0.7338
+  },
+  "test_kr": {
+   "ours": 0.983,
+   "rivals": {
+    "YOLO11m COCO (우리 출발점)": {
+     "tag": "coco_yolo11m@tile1280",
+     "AP50": 0.1005,
+     "diff": 0.8825,
+     "CI": [
+      0.7946,
+      0.9554
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.092
+    },
+    "YOLO11x (COCO)": {
+     "tag": "sota_yolo11x@tile1280",
+     "AP50": 0.0662,
+     "diff": 0.9168,
+     "CI": [
+      0.8544,
+      0.9757
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.06
+    },
+    "RT-DETR-x (COCO)": {
+     "tag": "sota_rtdetrx@tile640",
+     "AP50": 0.5668,
+     "diff": 0.4163,
+     "CI": [
+      0.3457,
+      0.4916
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.028
+    },
+    "YOLO-World v2 (개방형)": {
+     "tag": "sota_yoloworld@tile1280",
+     "AP50": 0.8825,
+     "diff": 0.1005,
+     "CI": [
+      0.0663,
+      0.136
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.386
+    },
+    "Grounding DINO (개방형)": {
+     "tag": "sota_gdino@full",
+     "AP50": 0.9907,
+     "diff": -0.0077,
+     "CI": [
+      -0.0247,
+      0.0062
+     ],
+     "verdict": "구분 안 됨",
+     "R_at_our_road_fp": 0.868
+    },
+    "AeroNova (항공)": {
+     "tag": "aeronova@tile640",
+     "AP50": 0.6616,
+     "diff": 0.3214,
+     "CI": [
+      0.2428,
+      0.4038
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.07
+    },
+    "VisDrone YOLOv9e (항공)": {
+     "tag": "visdrone_yolov9e@tile640",
+     "AP50": 0.0781,
+     "diff": 0.9049,
+     "CI": [
+      0.8402,
+      0.9516
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.002
+    }
+   },
+   "ours_R_at_020": 1.0
+  },
+  "test_visdrone": {
+   "ours": 0.7246,
+   "rivals": {
+    "YOLO11m COCO (우리 출발점)": {
+     "tag": "coco_yolo11m@tile1280",
+     "AP50": 0.5556,
+     "diff": 0.1689,
+     "CI": [
+      0.1402,
+      0.1967
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.6042
+    },
+    "YOLO11x (COCO)": {
+     "tag": "sota_yolo11x@tile1280",
+     "AP50": 0.5796,
+     "diff": 0.145,
+     "CI": [
+      0.1169,
+      0.1748
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.6657
+    },
+    "RT-DETR-x (COCO)": {
+     "tag": "sota_rtdetrx@tile640",
+     "AP50": 0.4926,
+     "diff": 0.232,
+     "CI": [
+      0.2008,
+      0.2621
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.378
+    },
+    "YOLO-World v2 (개방형)": {
+     "tag": "sota_yoloworld@tile1280",
+     "AP50": 0.5312,
+     "diff": 0.1934,
+     "CI": [
+      0.1628,
+      0.2221
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.3863
+    },
+    "Grounding DINO (개방형)": {
+     "tag": "sota_gdino@tile",
+     "AP50": 0.5909,
+     "diff": 0.1336,
+     "CI": [
+      0.1032,
+      0.1627
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.1481
+    },
+    "AeroNova (항공)": {
+     "tag": "aeronova@tile1280",
+     "AP50": 0.5686,
+     "diff": 0.156,
+     "CI": [
+      0.1411,
+      0.1695
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": null
+    },
+    "VisDrone YOLOv9e (항공)": {
+     "tag": "visdrone_yolov9e@full1280",
+     "AP50": 0.7063,
+     "diff": 0.0183,
+     "CI": [
+      0.0079,
+      0.0291
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.685
+    }
+   },
+   "ours_R_at_020": 0.763
+  },
+  "test_nomad": {
+   "ours": 0.5839,
+   "rivals": {
+    "YOLO11m COCO (우리 출발점)": {
+     "tag": "coco_yolo11m@tile1280",
+     "AP50": 0.3843,
+     "diff": 0.1996,
+     "CI": [
+      0.1585,
+      0.2379
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.368
+    },
+    "YOLO11x (COCO)": {
+     "tag": "sota_yolo11x@tile1280",
+     "AP50": 0.3042,
+     "diff": 0.2796,
+     "CI": [
+      0.2117,
+      0.3462
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.318
+    },
+    "RT-DETR-x (COCO)": {
+     "tag": "sota_rtdetrx@tile1280",
+     "AP50": 0.4466,
+     "diff": 0.1372,
+     "CI": [
+      0.093,
+      0.1821
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.37
+    },
+    "YOLO-World v2 (개방형)": {
+     "tag": "sota_yoloworld@tile1280",
+     "AP50": 0.4743,
+     "diff": 0.1095,
+     "CI": [
+      0.0675,
+      0.1513
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.4
+    },
+    "Grounding DINO (개방형)": {
+     "tag": "sota_gdino@tile",
+     "AP50": 0.5149,
+     "diff": 0.069,
+     "CI": [
+      0.0205,
+      0.1113
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.366
+    },
+    "AeroNova (항공)": {
+     "tag": "aeronova@tile1280",
+     "AP50": 0.2578,
+     "diff": 0.3261,
+     "CI": [
+      0.2605,
+      0.3908
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": null
+    },
+    "VisDrone YOLOv9e (항공)": {
+     "tag": "visdrone_yolov9e@tile1280",
+     "AP50": 0.2826,
+     "diff": 0.3012,
+     "CI": [
+      0.223,
+      0.3822
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": null
+    }
+   },
+   "ours_R_at_020": 0.55
+  },
+  "test_ladd_h": {
+   "ours": 0.8194,
+   "rivals": {
+    "YOLO11m COCO (우리 출발점)": {
+     "tag": "coco_yolo11m@tile1280",
+     "AP50": 0.4764,
+     "diff": 0.343,
+     "CI": [
+      0.2956,
+      0.3996
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.4587
+    },
+    "YOLO11x (COCO)": {
+     "tag": "sota_yolo11x@tile1280",
+     "AP50": 0.4814,
+     "diff": 0.338,
+     "CI": [
+      0.2841,
+      0.412
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.4826
+    },
+    "RT-DETR-x (COCO)": {
+     "tag": "sota_rtdetrx@tile1280",
+     "AP50": 0.6188,
+     "diff": 0.2006,
+     "CI": [
+      0.1679,
+      0.2381
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.3392
+    },
+    "YOLO-World v2 (개방형)": {
+     "tag": "sota_yoloworld@tile1280",
+     "AP50": 0.804,
+     "diff": 0.0154,
+     "CI": [
+      -0.0078,
+      0.0404
+     ],
+     "verdict": "구분 안 됨",
+     "R_at_our_road_fp": 0.63
+    },
+    "Grounding DINO (개방형)": {
+     "tag": "sota_gdino@tile",
+     "AP50": 0.8588,
+     "diff": -0.0394,
+     "CI": [
+      -0.0605,
+      -0.0216
+     ],
+     "verdict": "우리 뒤짐",
+     "R_at_our_road_fp": 0.6048
+    },
+    "AeroNova (항공)": {
+     "tag": "aeronova@tile1280",
+     "AP50": 0.6452,
+     "diff": 0.1742,
+     "CI": [
+      0.1387,
+      0.2221
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": null
+    },
+    "VisDrone YOLOv9e (항공)": {
+     "tag": "visdrone_yolov9e@tile640",
+     "AP50": 0.4927,
+     "diff": 0.3267,
+     "CI": [
+      0.2758,
+      0.3934
+     ],
+     "verdict": "우리 앞섬",
+     "R_at_our_road_fp": 0.327
+    }
+   },
+   "ours_R_at_020": 0.8396
+  }
+ },
+ "pooled_U3": {
+  "YOLO11m COCO (우리 출발점)": {
+   "ours": 0.685,
+   "rival": 0.5238,
+   "diff": 0.1613,
+   "CI": [
+    0.1169,
+    0.2116
+   ],
+   "verdict": "우리 앞섬"
+  },
+  "YOLO11x (COCO)": {
+   "ours": 0.685,
+   "rival": 0.5684,
+   "diff": 0.1167,
+   "CI": [
+    0.0838,
+    0.1541
+   ],
+   "verdict": "우리 앞섬"
+  },
+  "RT-DETR-x (COCO)": {
+   "ours": 0.685,
+   "rival": 0.5601,
+   "diff": 0.1249,
+   "CI": [
+    0.1018,
+    0.1526
+   ],
+   "verdict": "우리 앞섬"
+  },
+  "YOLO-World v2 (개방형)": {
+   "ours": 0.685,
+   "rival": 0.5828,
+   "diff": 0.1022,
+   "CI": [
+    0.0868,
+    0.1219
+   ],
+   "verdict": "우리 앞섬"
+  },
+  "Grounding DINO (개방형)": {
+   "ours": 0.685,
+   "rival": 0.6105,
+   "diff": 0.0745,
+   "CI": [
+    0.0601,
+    0.089
+   ],
+   "verdict": "우리 앞섬"
+  },
+  "AeroNova (항공)": {
+   "ours": 0.685,
+   "rival": 0.6395,
+   "diff": 0.0455,
+   "CI": [
+    0.0265,
+    0.0669
+   ],
+   "verdict": "우리 앞섬"
+  },
+  "VisDrone YOLOv9e (항공)": {
+   "ours": 0.685,
+   "rival": 0.6387,
+   "diff": 0.0463,
+   "CI": [
+    0.019,
+    0.0835
+   ],
+   "verdict": "우리 앞섬"
+  }
+ }
+}
