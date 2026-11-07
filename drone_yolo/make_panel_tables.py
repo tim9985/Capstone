@@ -3,7 +3,8 @@ make_panel_tables.py — 엔지니어링 페어 판넬 표 후보 (11-07 · 사�
 
   원자료  metrics/fair_metrics.json (fair_metrics.py · 검출 = fair_eval.py) · posture_fair.json · profile_worker.json · 상의 색 결정 노트 값
   모델    우리 v12 (운용 4조각 · 문턱 0.20) + 기성 13개 (각각 · 평가셋마다 크기 · 방식 중 AP50 최고)
-  평가셋  처음 보는 5곳 + 같은 데이터셋 다른 사진 3곳 (SARD · HERIDAL · NII-CU 는 우리 학습과 겹쳐 뺌)
+  평가셋  모든 모델이 처음 보는 3곳 (UAV-SAR · Okutama · Cyprus) · 우리만 같은 데이터셋 다른 장소 학습 2곳 (WiSARD · AI-Hub — 평가 장소는 학습에서 뺌 · make_v12_data)
+          · 같은 데이터셋 다른 사진 3곳 (VisDrone · NOMAD · LADD) · SARD · HERIDAL · NII-CU 는 평가 사진 · 장소가 학습과 겹쳐 뺌 (11-07 검토 반영)
   후보    A 전체 AP50 표 · B 지표별 평균 표 · C 데이터셋별 상세 · D 순위 점그림 · E 우리 모델 성능 카드
   출력    발표자료/엔지니어링페어_비전/판넬/후보_{A..E}_*.png (git 밖) · 회색조 · 우리 행만 진한 테두리
 실행  /home/se/miniconda3/envs/drone/bin/python make_panel_tables.py
@@ -22,7 +23,8 @@ ACC = (40, 52, 66)                       # 우리 행 테두리 · 점 (짙은 �
 M = json.load(open(BASE / "metrics" / "fair_metrics.json"))
 PF = json.load(open(BASE / "metrics" / "posture_fair.json"))
 PW = json.load(open(BASE / "metrics" / "profile_worker.json"))
-U = ["test_sar", "test_v2", "test_obl", "test_kr", "test_cy"]; B = ["test_visdrone", "test_nomad", "test_ladd_h"]; SETS = U + B
+U = ["test_sar", "test_obl", "test_cy"]; W = ["test_v2", "test_kr"]; B = ["test_visdrone", "test_nomad", "test_ladd_h"]; SETS = U + W + B
+GROUPS = ((U, "모든 모델이 처음 보는 데이터셋"), (W, "같은 데이터셋 · 안 쓴 장소 (우리만 다른 장소 학습)"), (B, "같은 데이터셋 · 다른 사진"))
 SN = {"test_sar": ("UAV-SAR", "드론 수색"), "test_v2": ("WiSARD", "숲"), "test_obl": ("Okutama", "비스듬히"), "test_kr": ("AI-Hub", "한국"),
       "test_cy": ("Cyprus", "아주 작은 사람"), "test_visdrone": ("VisDrone", "도시"), "test_nomad": ("NOMAD", "가림"), "test_ladd_h": ("LADD", "숲 수색")}
 MODELS = [("v12_f91_swa", "우리 팀 (YOLO11m)"), ("aeronova", "AeroNova"), ("visdrone_yolov9e", "VisDrone YOLOv9e"), ("visdrone_yolo11x", "VisDrone YOLO11x"),
@@ -68,9 +70,9 @@ def notes(dr, y, lines):
         dr.text((0, y + k * 60), t, font=F(40), fill=INK2)
 
 
-COMMON = ["AP50: 박스가 사람과 절반 이상 겹치면 맞음으로 셈, 1이 만점 · 평가셋마다 최대 500장, 모든 모델 같은 채점",
+COMMON = ["AP50: 박스가 사람과 절반 이상 겹치면 맞음으로 셈, 1이 만점 · 평가셋마다 최대 500장, 모든 모델 같은 채점 · 같은 사진이 학습에 들어간 평가셋은 없음",
           "우리 팀 = 실제 운용 방식(1080p를 4조각, 문턱 0.20) 그대로 · 기성 모델 = 크기와 처리 방식 중 가장 잘 나온 값",
-          "SARD · HERIDAL · NII-CU 는 우리 학습에 같은 사진이나 장소가 들어 있어 뺐음 · * = 그 데이터셋의 다른 사진으로 학습한 기성 모델"]
+          "SARD · HERIDAL · NII-CU 는 우리 학습에 같은 사진이나 장소가 들어 있어 뺐음 · * = 그 데이터셋으로 학습한 기성 모델 · 우리 운용값 (문턱 0.20) 은 성능 카드에"]
 
 
 # ───────── A. 전체 AP50 표 (회색 칸) ─────────
@@ -81,13 +83,13 @@ def cand_a():
     title(dr, "공개 사람 탐지 모델 13개와 데이터셋별 비교", "AP50 (1이 만점) · 칸이 진할수록 높음 · 굵은 글씨 = 그 평가셋 최고")
     y0 = 200; dr.line([0, y0, W, y0], fill=INK, width=4)
     gx = lambda i: NC + cw * i
-    for ss, t in ((U, "처음 보는 장소 (우리도, 기성 모델도 학습에 안 씀)"), (B, "같은 데이터셋의 다른 사진")):
+    for ss, t in GROUPS:
         i0 = SETS.index(ss[0]); x0, x1 = gx(i0), gx(i0 + len(ss))
-        dr.text(((x0 + x1) / 2, y0 + 34), t, font=F(40, True), fill=INK, anchor="mm"); dr.line([x0 + 10, y0 + 62, x1 - 10, y0 + 62], fill=INK2, width=2)
+        dr.text(((x0 + x1) / 2, y0 + 34), t, font=F(34, True), fill=INK, anchor="mm"); dr.line([x0 + 10, y0 + 62, x1 - 10, y0 + 62], fill=INK2, width=2)
     for i, s in enumerate(SETS):
         a, b = SN[s]; cx = gx(i) + cw / 2
         dr.text((cx, y0 + 100), a, font=F(42, True), fill=INK, anchor="mm"); dr.text((cx, y0 + 146), b, font=F(36), fill=INK2, anchor="mm")
-    dr.text((W - AC / 2, y0 + 100), "처음 보는", font=F(42, True), fill=INK, anchor="mm"); dr.text((W - AC / 2, y0 + 146), "5곳 평균", font=F(42, True), fill=INK, anchor="mm")
+    dr.text((W - AC / 2, y0 + 100), "처음 보는", font=F(42, True), fill=INK, anchor="mm"); dr.text((W - AC / 2, y0 + 146), "3곳 평균", font=F(42, True), fill=INK, anchor="mm")
     dr.text((10, y0 + 122), "모델", font=F(44, True), fill=INK, anchor="lm"); dr.line([0, top - 6, W, top - 6], fill=INK, width=3)
     best = {s: max(pick(m, s)["AP50"] for m, _ in MODELS) for s in SETS}; bavg = max(avg(m, "AP50") for m, _ in MODELS)
     name = dict(MODELS)
@@ -116,7 +118,7 @@ def cand_b():
     order = [OURS] + sorted([m for m, _ in MODELS if m != OURS], key=lambda m: -avg(m, "AP50"))
     W, NC, RH, top = 3000, 640, 84, 330; cw = (W - NC) / len(cols)
     H = top + RH * len(order) + 300; im = Image.new("RGB", (W, H), BG); dr = ImageDraw.Draw(im)
-    title(dr, "지표별 비교 — 처음 보는 장소 5곳 평균", "P · R · F1 은 모델마다 F1 이 가장 높은 문턱에서 · 도로 헛탐지는 같은 문턱에서 사람 없는 도로 사진 한 장당 잘못 찾은 수")
+    title(dr, "지표별 비교 — 모든 모델이 처음 보는 데이터셋 3곳 평균", "P · R · F1 은 모델마다 F1 이 가장 높은 문턱에서 · 도로 헛탐지는 같은 문턱에서 사람 없는 도로 사진 한 장당 잘못 찾은 수")
     y0 = 196; dr.line([0, y0, W, y0], fill=INK, width=4)
     for j, (_, h, _, sub) in enumerate(cols):
         cx = NC + cw * j + cw / 2; dr.text((cx, y0 + 40), h, font=F(44, True), fill=INK, anchor="mm"); dr.text((cx, y0 + 92), sub, font=F(34), fill=INK2, anchor="mm")
@@ -137,7 +139,7 @@ def cand_b():
             dr.rectangle([0, y, W - 1, y + RH], outline=ACC, width=6)
         dr.line([0, y + RH, W, y + RH], fill=RULE, width=1)
     yb = top + RH * len(order) + 10; dr.line([0, yb, W, yb], fill=INK, width=4)
-    notes(dr, yb + 30, COMMON[:2] + ["처음 보는 5곳 = UAV-SAR · WiSARD · Okutama · AI-Hub · Cyprus (모든 모델이 학습에 안 쓴 사진)"])
+    notes(dr, yb + 30, COMMON[:2] + ["3곳 = UAV-SAR · Okutama · Cyprus (어느 모델도 학습에 안 쓴 데이터셋) · 도로 헛탐지 = AU-AIR 사람 없는 사진 233장"])
     im.save(OUT / "후보_B_지표별_평균_표.png", dpi=(450, 450)); return im.size
 
 
@@ -168,7 +170,7 @@ def cand_c():
         if k == 0:
             dr.text((X, Y - 0), "", font=F(10))
     yb = top + rows_n * (ph + 60) - 20
-    dr.text((0, yb - 10), "위 4개 = 처음 보는 장소 (모든 모델 학습에 안 씀) · 아래 4개 중 VisDrone · NOMAD · LADD = 같은 데이터셋의 다른 사진 (우리 팀도 학습에 씀)", font=F(40, True), fill=INK)
+    dr.text((0, yb - 10), "UAV-SAR · Okutama · Cyprus = 모든 모델이 처음 봄 · WiSARD · AI-Hub = 우리만 같은 데이터셋의 다른 장소 학습 · VisDrone · NOMAD · LADD = 같은 데이터셋 다른 사진", font=F(40, True), fill=INK)
     notes(dr, yb + 60, COMMON)
     im.save(OUT / "후보_C_데이터셋별_상세.png", dpi=(450, 450)); return im.size
 
@@ -178,9 +180,9 @@ def cand_d():
     order = sorted([m for m, _ in MODELS], key=lambda m: -avg(m, "AP50")); name = dict(MODELS)
     W, NC, RH, top = 3000, 620, 92, 300; X0, X1 = NC + 40, W - 120
     H = top + RH * len(order) + 330; im = Image.new("RGB", (W, H), BG); dr = ImageDraw.Draw(im)
-    title(dr, "처음 보는 장소 5곳에서의 AP50 — 모델 순위", "막대 = 5곳 평균 · 점 = 평가셋 하나 (모양으로 구분) · 오른쪽일수록 좋음")
+    title(dr, "모든 모델이 처음 보는 데이터셋 3곳의 AP50 — 모델 순위", "막대 = 3곳 평균 · 점 = 평가셋 하나 (모양으로 구분) · 오른쪽일수록 좋음")
     xs = lambda v: X0 + (X1 - X0) * v
-    shapes = {"test_sar": "o", "test_v2": "s", "test_obl": "^", "test_kr": "d", "test_cy": "x"}
+    shapes = {"test_sar": "o", "test_obl": "^", "test_cy": "x"}
     for t in [0, 0.2, 0.4, 0.6, 0.8, 1.0]:
         dr.line([xs(t), top - 20, xs(t), top + RH * len(order)], fill=RULE, width=2); dr.text((xs(t), top - 40), f"{t:.1f}", font=F(36), fill=INK2, anchor="mm")
     dr.line([xs(0.8), top - 20, xs(0.8), top + RH * len(order)], fill=INK2, width=3)
@@ -201,7 +203,7 @@ def cand_d():
         dr.text((xs(a) + 0, y - 38), f"{a:.2f}", font=F(34, m == OURS), fill=INK, anchor="mm")
     ly = top + RH * len(order) + 100; lx = 10
     for s in U:
-        mark(lx + 16, ly + 20, shapes[s], INK); dr.text((lx + 46, ly + 20), f"{SN[s][0]} ({SN[s][1]})", font=F(38), fill=INK, anchor="lm"); lx += 560
+        mark(lx + 16, ly + 20, shapes[s], INK); dr.text((lx + 46, ly + 20), f"{SN[s][0]} ({SN[s][1]})", font=F(38), fill=INK, anchor="lm"); lx += 700
     notes(dr, ly + 80, COMMON[:2])
     im.save(OUT / "후보_D_순위_점그림.png", dpi=(450, 450)); return im.size
 
@@ -215,7 +217,7 @@ def cand_e():
     for j, h in enumerate(heads):
         dr.text(((xs[j] + 20) if j == 0 else (xs[j] + xs[j + 1]) / 2, y + 50), h, font=F(44, True), fill=INK, anchor="lm" if j == 0 else "mm")
     y += 100; dr.line([0, y, W, y], fill=INK, width=2)
-    for grp, ss in (("처음 보는 장소", U), ("같은 데이터셋의 다른 사진", B)):
+    for ss, grp in GROUPS:
         dr.text((20, y + 34), grp, font=F(38, True), fill=INK2, anchor="lm"); y += 68
         for s in ss:
             d = pick(OURS, s); P, R = d["P20"], d["R20"]; F1 = 2 * P * R / (P + R) if P + R else 0
