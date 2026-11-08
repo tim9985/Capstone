@@ -458,8 +458,8 @@ def beforeafter():
                font=F(38), fill=INK2)
         im.save(fname, dpi=(300, 300)); print(fname.name, im.size)
     OUT_COM.mkdir(parents=True, exist_ok=True)
-    draw_rows(keep[:3], OUT_COM / "같은사진_학습전후_1.png", "같은 사진, 다른 결과 — 학습 전과 후", "같은 모델 구조 (YOLO11m) · 학습 전 = 공개 COCO 가중치 · 학습 후 = 우리가 드론 사진 11종으로 학습")
-    draw_rows(keep[3:6], OUT_COM / "같은사진_학습전후_2.png", "같은 사진, 다른 결과 — 학습 전과 후 (계속)", "같은 모델 구조 (YOLO11m) · 학습 전 = 공개 COCO 가중치 · 학습 후 = 우리가 드론 사진 11종으로 학습")
+    draw_rows(keep[:3], OUT_COM / "같은사진_학습전후_1.png", "같은 사진, 다른 결과 — 학습 전과 후", "같은 모델 구조 (YOLO11m) · 학습 전 = 공개 COCO 가중치 · 학습 후 = 우리가 공개 드론 사진 10종으로 학습")
+    draw_rows(keep[3:6], OUT_COM / "같은사진_학습전후_2.png", "같은 사진, 다른 결과 — 학습 전과 후 (계속)", "같은 모델 구조 (YOLO11m) · 학습 전 = 공개 COCO 가중치 · 학습 후 = 우리가 공개 드론 사진 10종으로 학습")
 
 
 
