@@ -15,7 +15,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 BASE = Path(__file__).resolve().parent
 TOOLS = BASE.parent / "발표자료" / "_도구"
-OUT = BASE.parent / "발표자료" / "엔지니어링페어_비전" / "판넬"
+OUT = BASE.parent / "발표자료" / "_작업_엔지니어링페어_판넬후보" / "판넬"
 FB, FR = str(TOOLS / "NanumGothicBold.ttf"), str(TOOLS / "NanumGothic.ttf")
 INK, INK2, RULE, BG = (20, 20, 20), (90, 90, 90), (200, 200, 200), (255, 255, 255)
 # 상자 색 = 관제 화면 · worker 표시와 같은 위급도 색

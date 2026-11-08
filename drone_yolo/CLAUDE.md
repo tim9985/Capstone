@@ -2,7 +2,7 @@
 
 「자율 정찰 드론 관제 시스템」의 비전 코드 — **사람 1클래스 탐지 · 좌표 산정 · 상의 색상 비교**.
 경로는 Capstone 저장소 루트 기준. **수치·경위의 원본은 볼트(`obsidian/`)** 이고, 여기에는 작업 규칙과 함정만 둔다.
-갱신 2026-11-01
+갱신 2026-11-08
 
 ## 1. 먼저 볼 곳
 
@@ -15,6 +15,7 @@
 | 할 일 | `obsidian/09 기록/다음 할 일.md` |
 | 실험 · 결정 색인 | `obsidian/04 실험/_실험 색인.md` · `obsidian/05 결정/_결정 색인.md` |
 | 서버 설정 · 가중치 · 데이터 받는 법 | `SERVER.md` · `WEIGHTS.md` · `DATASETS.md` |
+| **폴더 지도 · 발표** | `obsidian/09 기록/문서와 코드 위치.md` (11-08) · 발표 그림 `발표자료/최종발표/` (캡스톤) · `발표자료/엔지니어링 페어 발표/` (페어) · `발표자료/비전_공통그림/` — 모두 git 밖 |
 
 ## 2. 고정된 전제 — 다시 논의하지 않는다
 
@@ -114,6 +115,8 @@
 - 기성 가중치 채택 (11-01 · AerialPerson 전용 · 혼합 · AeroNova · VisDrone) — 12셋 중 v12 를 이긴 건 LADD 하나 · 도로 오탐 0.87~12.9
 - 후보 잇기 외형 — 규칙 G (−26 %) · 색 + DINOv2 R (−28.5 % · 아슬) · **SigLIP 2 임베딩 R2 (−19.7 % · 섞임 ↑)** · BoT-SORT ReID (+0.01) — 다음은 실기체 영상에서 R 다시
 - 상의 색 규칙 계열 (10-29) — 색 이름표 w2c · 국소 화이트밸런스 · YOLO-seg · SegFormer 마스크 · **Lab** · 노출 끄기: 검정 ↔ 흰 문턱만 맞바꿈 · 선형 학습 (UAV-Human) · 문장 묶음 · 동의어 · 배경 지우기 · 큰 모델 (so400m 8.2 ms) 도 제로샷을 못 넘음 · **배경 빼기 (12색)** 는 영상 손해 · **초록만 배경 빼기** 는 진짜 초록 옷도 깎음 → 채택 = 제로샷 + 잔디 문장 + 남색 문턱
+- 학습 없이 고치기 (11-08) — **현장 영상으로 BN 통계 맞추기 (AdaBN)** 숲 −7.7~−18 %p · **SigLIP 2차 확인** (사람 모양 물체 거르기) 헛탐지 −18 % 에 재현율 −3.6 %p · **라벨 초안에 GDINO 합치기** 고칠 것 ↑ · **1080p 원본 Okutama** 0.607 vs 720p 0.623 (평가셋은 공정) → 남은 길은 데이터 (실기체 D1 · 새 출처) · 근거 [[실험 - 성능 향상 여지 진단 (11-08)]]
+- ⚠ **공개 평가셋 AP50 은 정답 박스 습관이 섞인다** — 중심 일치로 숲 0.82 · 비스듬 0.86 (AP50 0.64 · 0.62) · 숲 Karen 정답은 사람의 2배 · 소수 조건 (누움 98명) 을 AP 로 재면 남의 헛탐지가 분모를 채움 → 조건별은 **재현율 @ 모델마다 F1 최고 문턱** (`robust_eval.py`)
 - 자세 분류기 (10-03 · `chain_p.sh`): 합성 C2A 로 비스듬 앉음 메우기 (**앉음 F1 −0.47**) · 같은 장면 상대 키 (전부 손해) · DINOv2 부분 미세조정 (한국 수직만 오르고 Okutama 앉음 재현율 0.07~0.13) — 앉음은 진짜 비스듬 앉음 데이터가 생길 때까지 손대지 않는다
 
 ## 8. 지켜야 할 규칙
@@ -163,12 +166,17 @@
 | `ue_reid_siglip.py` | 후보 잇기 외형 = SigLIP 2 임베딩 (R2 ❌) |
 | `camera_calib.py` | 실기체 화각 · 왜곡 실측 (체커보드 · `--selftest` 가상 카메라) → `configs/camera_<이름>.json` · `VISION_HFOV_DEG` |
 | `make_present_video.py` · `make_present_video_full.py` | 발표 영상 — 탐지만 · 비전 임무 전체 (등급 색 · 자세 · 움직임 · 상의 색 · 라벨 자리 고르기) |
-| `make_fair_figs.py` · `make_present_ue.py --v13` | 엔지니어링 페어 그림 — 흐름 · 숫자 카드 · 상의 색 · 재현율 (수치는 스크립트 안 · 10-30) · UE 상의 색 사례를 worker 1.3 으로 → `발표자료/엔지니어링페어_비전/` (git 밖) |
+| `make_fair_figs.py` · `make_present_ue.py --v13` | 엔지니어링 페어 그림 — 흐름 · 숫자 카드 · 상의 색 · 재현율 (수치는 스크립트 안 · 10-30) · UE 상의 색 사례를 worker 1.3 으로 → `발표자료/_작업_엔지니어링페어_판넬후보/` (git 밖) |
 | `real_flight_eval.py` | 실비행 녹화 (worker `VISION_RECORD_DIR`) → 배포 worker 다시 돌림 → 오탐 · AP50 · 출연자별 색 · 등급 · 라벨 내보내기 (`--gt gt.json`) |
 | `bench_all.py` · `bench_table.py` · `make_testsets_ext.py` · `make_testset_sar.py` | **같은 틀 비교** (우리 · 기성 · 12셋 · `--blur`) → `metrics/bench_all.csv` · 표 · 평가셋 VisDrone val · NOMAD 097~100 · SARD · HERIDAL test · UAV-SAR (11-01) |
 | `pose_bench.py` · `mannequin_bench.py` | 자세별 뜸 · 뜸곡선 · 전송 화질 (JPEG · WebP · 720p · 흐림) · Archangel-Mannequin 자세 · 누움 탐지 (11-01) |
 | `download_uavsar.py` · `rf_get.py` | Roboflow 받기 (키 파일만 · 출력 안 함 · 옛 프로젝트는 `coco` 형식) |
 | `chain_c0.sh` · `c0_judge.py` · `chain_d0.sh` · `chain_c.sh` · `chain_lying4.sh` · `launch_ac.sh` | 추론 흐림 판정 · 현장 적응 연습 · 화질 증강 × 2 · 누움 묶음 × 2 (안 돌림) · 체인 잇기 |
+| `fair_eval.py` · `fair_eval_report.py` · `fair_metrics.py` · `fair_eval_sota.py` · `gdino_eval.py` · `sota_compare.py` | **공정 비교** (11-04 · 11-07) — 처음 보는 3곳 · 블록 부트스트랩 · 같은 헛탐지 · 최신 모델 (YOLO11x · RT-DETR-x · YOLO-World · GDINO · COCO 출발점) → `runs_fair/` (git 밖) · `metrics/fair_*.json` · `sota_compare.json` |
+| `robust_eval.py` · `make_robust_fig.py` · `make_robust_table.py` | 조건 16개 강건성 (재현율 @ F1 최고 · 판정 2갈래) · 학습 전후 (같은 헛탐지) → 판넬 후보 F · G (11-08) |
+| `diag_headroom.py` · `adabn_probe.py` · `verify_probe.py` · `make_testset_obl1080.py` · `ens_probe.py` | 성능 향상 여지 진단 (놓침 나누기 · 중심 일치 · 합치기 상한) · AdaBN ❌ · SigLIP 확인기 ❌ · 1080p Okutama ❌ · 개방형 합침 (11-07~08) |
+| `make_d1_data.py` · `chain_d1.sh` · `label_draft.py` | **실기체 D1** — 비행 목록 json → v12 + 실기체 창 20 % · C 장소 평가셋 · 반복 2 · 판정 [[_학습 큐]] 「11-08 D1」 · 라벨 초안 (우리 모델만 · GDINO 선택) |
+| `make_panel_tables.py` · `make_present_figs.py` | 판넬 후보 A~E · 발표 그림 (데이터셋 시트 · 동작 방식 쉬운/상세 · 같은 사진 학습 전후 · 향상 과정 · 약한 곳 · Pretendard) → `발표자료/` |
 | `ue_posture_capture.py` | UE (Cosys-AirSim) 자세 데이터 캡처 — 배우 이름 `Person_<자세>_<번호>` · 마운트 × 고도 × 방위 · 서버 자세 크롭 형식 (노트북) |
 
 결과: `runs_person/<이름>/` · `metrics/*.csv` · `metrics/AUTO_RESULT*.md` · 서버 진행 기록 `SERVER_PROGRESS.md`

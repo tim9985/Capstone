@@ -1,0 +1,208 @@
+{
+ "run": "S3_a16",
+ "frame": 373,
+ "fps": 10.0,
+ "detector": "v12_f91_swa TensorRT FP16 · 0.20",
+ "color": "siglip2-zs",
+ "detect_ms_median": 22.39337284117937,
+ "people": [
+  {
+   "box": [
+    1224.5,
+    957.25,
+    1287.5,
+    1052.75
+   ],
+   "conf": 0.865234375,
+   "tid": "254.0",
+   "grade": "NORMAL",
+   "observed_s": 18,
+   "posture": "lying",
+   "p": {
+    "lying": 0.374,
+    "sitting": 0.253,
+    "standing": 0.373
+   },
+   "still_s": 0,
+   "moving": true,
+   "color": "yellow",
+   "color_ko": "노랑"
+  },
+  {
+   "box": [
+    472.5,
+    824.375,
+    520.5,
+    870.625
+   ],
+   "conf": 0.8427734375,
+   "tid": "255.0",
+   "grade": "HIGH",
+   "observed_s": 18,
+   "posture": "lying",
+   "p": {
+    "lying": 0.548,
+    "sitting": 0.417,
+    "standing": 0.034
+   },
+   "still_s": 17,
+   "moving": false,
+   "color": "green",
+   "color_ko": "초록"
+  },
+  {
+   "box": [
+    1719.5,
+    796.5,
+    1836.5,
+    883.0
+   ],
+   "conf": 0.83349609375,
+   "tid": "461.0",
+   "grade": "CHECK",
+   "observed_s": 1,
+   "posture": "lying",
+   "p": {
+    "lying": 0.761,
+    "sitting": 0.196,
+    "standing": 0.043
+   },
+   "still_s": 0,
+   "moving": false,
+   "color": "purple",
+   "color_ko": "보라"
+  },
+  {
+   "box": [
+    671.140625,
+    198.75,
+    715.859375,
+    233.0
+   ],
+   "conf": 0.8115234375,
+   "tid": "278.0",
+   "grade": "HIGH",
+   "observed_s": 16,
+   "posture": "lying",
+   "p": {
+    "lying": 0.663,
+    "sitting": 0.331,
+    "standing": 0.007
+   },
+   "still_s": 13,
+   "moving": false,
+   "color": "blue",
+   "color_ko": "파랑"
+  },
+  {
+   "box": [
+    908.0,
+    517.375,
+    997.5,
+    550.125
+   ],
+   "conf": 0.806640625,
+   "tid": "433.0",
+   "grade": "CHECK",
+   "observed_s": 4,
+   "posture": "lying",
+   "p": {
+    "lying": 0.928,
+    "sitting": 0.072,
+    "standing": 0.0
+   },
+   "still_s": 1,
+   "moving": false,
+   "color": "orange",
+   "color_ko": "주황"
+  },
+  {
+   "box": [
+    701.984375,
+    122.625,
+    733.515625,
+    186.125
+   ],
+   "conf": 0.7744140625,
+   "tid": "371.0",
+   "grade": "NORMAL",
+   "observed_s": 9,
+   "posture": "standing",
+   "p": {
+    "lying": 0.013,
+    "sitting": 0.042,
+    "standing": 0.945
+   },
+   "still_s": 0,
+   "moving": true,
+   "color": "red",
+   "color_ko": "빨강"
+  },
+  {
+   "box": [
+    58.75,
+    408.625,
+    110.125,
+    457.875
+   ],
+   "conf": 0.6435546875,
+   "tid": null,
+   "grade": "CHECK",
+   "observed_s": 0,
+   "posture": "lying",
+   "p": {
+    "lying": 0.547,
+    "sitting": 0.413,
+    "standing": 0.04
+   },
+   "still_s": 0,
+   "moving": false,
+   "color": null,
+   "color_ko": null
+  },
+  {
+   "box": [
+    79.53125,
+    452.625,
+    165.96875,
+    498.375
+   ],
+   "conf": 0.56103515625,
+   "tid": null,
+   "grade": "CHECK",
+   "observed_s": 0,
+   "posture": "lying",
+   "p": {
+    "lying": 0.881,
+    "sitting": 0.117,
+    "standing": 0.002
+   },
+   "still_s": 0,
+   "moving": false,
+   "color": null,
+   "color_ko": null
+  },
+  {
+   "box": [
+    70.375,
+    420.875,
+    165.75,
+    499.375
+   ],
+   "conf": 0.50390625,
+   "tid": "431.0",
+   "grade": "CHECK",
+   "observed_s": 5,
+   "posture": "lying",
+   "p": {
+    "lying": 0.728,
+    "sitting": 0.22,
+    "standing": 0.052
+   },
+   "still_s": 2,
+   "moving": false,
+   "color": "yellow",
+   "color_ko": "노랑"
+  }
+ ]
+}

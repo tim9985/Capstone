@@ -5,7 +5,7 @@ make_robust_table.py — 판넬 그림: 강건성 종류별 학습 전 → 후 (
   기준    한 가지로 통일 — **사람 없는 사진 헛탐지를 같게 맞춘 뒤** 그 조건의 사람 중 찾은 비율
           우리 = 운용 문턱 0.20 (AU-AIR 사람 없는 233장에서 0.515 건/장) · 학습 전 = 같은 헛탐지가 되는 문턱 (평가셋마다 가장 잘 나온 처리 방식)
   강건성  조도 · 가림 · 자세 · 시점 · 사람 크기 · 배경 (숲) · 지역 (한국 산지) · 헛탐지 — 종류마다 대표 조건 하나 (자세히는 후보 F)
-  출력    발표자료/엔지니어링페어_비전/판넬/후보_G_학습전후_강건성.png (git 밖) · metrics/robust_beforeafter.json
+  출력    발표자료/_작업_엔지니어링페어_판넬후보/판넬/후보_G_학습전후_강건성.png (git 밖) · metrics/robust_beforeafter.json
 실행  /home/se/miniconda3/envs/drone/bin/python make_robust_table.py
 """
 import json

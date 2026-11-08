@@ -6,7 +6,7 @@ make_panel_tables.py — 엔지니어링 페어 판넬 표 후보 (11-07 · 사�
   평가셋  모든 모델이 처음 보는 3곳 (UAV-SAR · Okutama · Cyprus) · 우리만 같은 데이터셋 다른 장소 학습 2곳 (WiSARD · AI-Hub — 평가 장소는 학습에서 뺌 · make_v12_data)
           · 같은 데이터셋 다른 사진 3곳 (VisDrone · NOMAD · LADD) · SARD · HERIDAL · NII-CU 는 평가 사진 · 장소가 학습과 겹쳐 뺌 (11-07 검토 반영)
   후보    A 전체 AP50 표 · B 지표별 평균 표 · C 데이터셋별 상세 · D 순위 점그림 · E 우리 모델 성능 카드
-  출력    발표자료/엔지니어링페어_비전/판넬/후보_{A..E}_*.png (git 밖) · 회색조 · 우리 행만 진한 테두리
+  출력    발표자료/_작업_엔지니어링페어_판넬후보/판넬/후보_{A..E}_*.png (git 밖) · 회색조 · 우리 행만 진한 테두리
 실행  /home/se/miniconda3/envs/drone/bin/python make_panel_tables.py
 """
 import json
@@ -16,7 +16,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 BASE = Path(__file__).resolve().parent
 TOOLS = BASE.parent / "발표자료" / "_도구"
-OUT = BASE.parent / "발표자료" / "엔지니어링페어_비전" / "판넬"
+OUT = BASE.parent / "발표자료" / "_작업_엔지니어링페어_판넬후보" / "판넬"
 FB, FR = str(TOOLS / "NanumGothicBold.ttf"), str(TOOLS / "NanumGothic.ttf")
 INK, INK2, MUTE, RULE, BG = (24, 24, 24), (95, 95, 95), (150, 150, 150), (215, 215, 215), (255, 255, 255)
 ACC = (40, 52, 66)                       # 우리 행 테두리 · 점 (짙은 회청)

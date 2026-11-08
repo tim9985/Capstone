@@ -5,7 +5,7 @@ make_fair_summary.py — 엔지니어링 페어 「결과 몇 장」 (11-04 · �
   2_탐지          정밀도-재현율 곡선 3곳 · 같은 헛탐지에서 사람 키별 재현율 · 혼동표
   3_상태_색_속도  누움 ROC (정답 박스 · 탐지까지) · 자세 혼동 · 상의 색 · 단계별 처리 시간
   원자료  metrics/fair_eval.json (fair_eval_report.py) · posture_fair.json · profile_worker.json · 상의 색 결정 노트 표 (아래 COLOR)
-  출력    발표자료/엔지니어링페어_비전/그림/요약_{1,2,3}_*.png (git 밖) · 데이터셋 사진은 넣지 않음 (숫자 · 그래프만)
+  출력    발표자료/_작업_엔지니어링페어_판넬후보/그림/요약_{1,2,3}_*.png (git 밖) · 데이터셋 사진은 넣지 않음 (숫자 · 그래프만)
 실행  /home/se/miniconda3/envs/drone/bin/python make_fair_summary.py
 """
 import json
@@ -20,7 +20,7 @@ import numpy as np
 
 BASE = Path(__file__).resolve().parent
 TOOLS = BASE.parent / "발표자료" / "_도구"
-OUT = BASE.parent / "발표자료" / "엔지니어링페어_비전" / "그림"
+OUT = BASE.parent / "발표자료" / "_작업_엔지니어링페어_판넬후보" / "그림"
 for f in ("NanumGothic.ttf", "NanumGothicBold.ttf"):
     fm.fontManager.addfont(str(TOOLS / f))
 SURF, INK, INK2, MUTED, GRID, AXIS = "#fcfcfb", "#0b0b0b", "#52514e", "#898781", "#e1e0d9", "#c3c2b7"

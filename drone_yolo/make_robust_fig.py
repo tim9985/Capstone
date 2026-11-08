@@ -3,7 +3,7 @@ make_robust_fig.py — 판넬 그림: 조도 · 가림 · 자세 · 시점별 �
 
   원자료  metrics/robust_conditions.json (robust_eval.py · 같은 사진 · 같은 채점 · 재현율 @ 모델마다 F1 최고 문턱 · 블록 부트스트랩 판정)
   그림    조건 16줄 × 점그림 (우리 · 학습 전 YOLO11m · 실시간 기성 최고 · Grounding DINO) + 수치 · 판정 칸 · 판넬 B · E 와 같은 회색조
-  출력    발표자료/엔지니어링페어_비전/판넬/후보_F_조건별_강건성.png (git 밖)
+  출력    발표자료/_작업_엔지니어링페어_판넬후보/판넬/후보_F_조건별_강건성.png (git 밖)
 실행  /home/se/miniconda3/envs/drone/bin/python make_robust_fig.py
 """
 import json
