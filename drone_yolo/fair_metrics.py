@@ -36,11 +36,15 @@ def prf(S, T, NG, thr):
     sel = S >= thr; tp = int(T[sel].sum()); p = tp / max(sel.sum(), 1); r = tp / max(NG, 1)
     return p, r, (2 * p * r / (p + r) if p + r else 0.0)
 
-out = {}
+OUTF = BASE / "metrics" / "fair_metrics.json"
+out = json.load(open(OUTF)) if OUTF.exists() else {}   # 11-08 이어서 계산 — 이미 있는 모델은 건너뜀
 road_cache = {}
 for s in list(U) + list(B):
     for p in sorted((RUN / s).glob("*@*.npz")):
-        tag = p.stem; S, T, NG, _ = match(s, tag); T5 = T[0.5]
+        tag = p.stem
+        if tag in out.get(s, {}):
+            continue
+        S, T, NG, _ = match(s, tag); T5 = T[0.5]
         ap50 = ap101(S, T5, NG); ap5095 = float(np.mean([ap101(S, T[t], NG) for t in IOUS]))
         ths = np.round(np.arange(0.05, 0.96, 0.01), 2); f1s = [prf(S, T5, NG, t)[2] for t in ths]; tb = float(ths[int(np.argmax(f1s))])
         pb, rb, fb = prf(S, T5, NG, tb); p25, r25, f25 = prf(S, T5, NG, 0.25); p20, r20, f20 = prf(S, T5, NG, 0.20)
@@ -54,4 +58,4 @@ for s in list(U) + list(B):
                                       "P25": round(p25, 4), "R25": round(r25, 4), "P20": round(p20, 4), "R20": round(r20, 4), "n_gt": NG,
                                       "road_fp_best": None if fp is None else round(fp(tb), 3), "road_fp25": None if fp is None else round(fp(0.25), 3), "road_fp20": None if fp is None else round(fp(0.20), 3)}
         print(s, tag, out[s][tag]["AP50"], out[s][tag]["AP50_95"], out[s][tag]["F1_best"], flush=True)
-    json.dump(out, open(BASE / "metrics" / "fair_metrics.json", "w"), ensure_ascii=False, indent=1)
+    json.dump(out, open(OUTF, "w"), ensure_ascii=False, indent=1)

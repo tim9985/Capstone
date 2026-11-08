@@ -31,6 +31,9 @@ MODELS = [("v12_f91_swa", "우리 팀 (YOLO11m)"), ("aeronova", "AeroNova"), ("v
           ("visdrone_yolo26x", "VisDrone YOLO26x"), ("ap_mix_26l", "AerialPerson 혼합"), ("ap_sard_26l", "SARD 전용 L"), ("ap_sard_26m", "SARD 전용 M"),
           ("ap_heridal_26l", "HERIDAL 전용 L"), ("ap_heridal_26m", "HERIDAL 전용 M"), ("ap_nomad_26l", "NOMAD 전용 L"), ("ap_nomad_26m", "NOMAD 전용 M"),
           ("ap_ladd_26l", "LADD 전용 L"), ("ap_ladd_26m", "LADD 전용 M")]
+SOTA = [("sota_gdino", "Grounding DINO (대형 개방형)"), ("sota_yoloworld", "YOLO-World v2 (개방형)"), ("sota_yolo11x", "YOLO11x (COCO)"),
+        ("sota_rtdetrx", "RT-DETR-x (COCO)"), ("coco_yolo11m", "YOLO11m COCO (출발점)")]   # 11-08 A · D 에만 (sota_compare.py)
+ALL = MODELS + SOTA
 TRAINED = {"visdrone": {"test_visdrone"}, "ap_mix": {"test_nomad", "test_ladd_h"}, "ap_nomad": {"test_nomad"}, "ap_ladd": {"test_ladd_h"}}
 OURS = "v12_f91_swa"
 
@@ -75,12 +78,15 @@ COMMON = ["AP50: 박스가 사람과 절반 이상 겹치면 맞음으로 셈, 1
           "SARD · HERIDAL · NII-CU 는 우리 학습에 같은 사진이나 장소가 들어 있어 뺐음 · * = 그 데이터셋으로 학습한 기성 모델 · 우리 운용값 (문턱 0.20) 은 성능 카드에"]
 
 
+SOTA_NOTE = "기성 13개 = 항공 사람 탐지 전용 가중치 · 그 밖 5개 = 일반 최신 모델 (COCO 학습 · 문장으로 찾는 개방형 「person」) · YOLO11m COCO = 우리가 학습을 시작한 모델"
+
+
 # ───────── A. 전체 AP50 표 (회색 칸) ─────────
 def cand_a():
     W, NC, AC, RH, top = 3000, 620, 300, 84, 380; cw = (W - NC - AC) / len(SETS)
-    order = [OURS] + sorted([m for m, _ in MODELS if m != OURS], key=lambda m: -avg(m, "AP50"))
-    H = top + RH * len(order) + 260; im = Image.new("RGB", (W, H), BG); dr = ImageDraw.Draw(im)
-    title(dr, "공개 사람 탐지 모델 13개와 데이터셋별 비교", "AP50 (1이 만점) · 칸이 진할수록 높음 · 굵은 글씨 = 그 평가셋 최고")
+    order = [OURS] + sorted([m for m, _ in ALL if m != OURS], key=lambda m: -avg(m, "AP50"))
+    H = top + RH * len(order) + 330; im = Image.new("RGB", (W, H), BG); dr = ImageDraw.Draw(im)
+    title(dr, "공개 사람 탐지 모델 18개와 데이터셋별 비교", "AP50 (1이 만점) · 칸이 진할수록 높음 · 굵은 글씨 = 그 평가셋 최고")
     y0 = 200; dr.line([0, y0, W, y0], fill=INK, width=4)
     gx = lambda i: NC + cw * i
     for ss, t in GROUPS:
@@ -91,8 +97,8 @@ def cand_a():
         dr.text((cx, y0 + 100), a, font=F(42, True), fill=INK, anchor="mm"); dr.text((cx, y0 + 146), b, font=F(36), fill=INK2, anchor="mm")
     dr.text((W - AC / 2, y0 + 100), "처음 보는", font=F(42, True), fill=INK, anchor="mm"); dr.text((W - AC / 2, y0 + 146), "3곳 평균", font=F(42, True), fill=INK, anchor="mm")
     dr.text((10, y0 + 122), "모델", font=F(44, True), fill=INK, anchor="lm"); dr.line([0, top - 6, W, top - 6], fill=INK, width=3)
-    best = {s: max(pick(m, s)["AP50"] for m, _ in MODELS) for s in SETS}; bavg = max(avg(m, "AP50") for m, _ in MODELS)
-    name = dict(MODELS)
+    best = {s: max(pick(m, s)["AP50"] for m, _ in ALL) for s in SETS}; bavg = max(avg(m, "AP50") for m, _ in ALL)
+    name = dict(ALL)
     for r, m in enumerate(order):
         y = top + r * RH
         for i, s in enumerate(SETS):
@@ -107,7 +113,7 @@ def cand_a():
         if m == OURS:
             dr.rectangle([0, y, W - 1, y + RH], outline=ACC, width=6)
     yb = top + RH * len(order) + 10; dr.line([0, yb, W, yb], fill=INK, width=4)
-    notes(dr, yb + 30, COMMON)
+    notes(dr, yb + 30, COMMON + [SOTA_NOTE])
     im.save(OUT / "후보_A_전체_AP50_표.png", dpi=(450, 450)); return im.size
 
 
@@ -177,9 +183,9 @@ def cand_c():
 
 # ───────── D. 순위 점그림 (처음 보는 5곳) ─────────
 def cand_d():
-    order = sorted([m for m, _ in MODELS], key=lambda m: -avg(m, "AP50")); name = dict(MODELS)
+    order = sorted([m for m, _ in ALL], key=lambda m: -avg(m, "AP50")); name = dict(ALL)
     W, NC, RH, top = 3000, 620, 92, 300; X0, X1 = NC + 40, W - 120
-    H = top + RH * len(order) + 330; im = Image.new("RGB", (W, H), BG); dr = ImageDraw.Draw(im)
+    H = top + RH * len(order) + 400; im = Image.new("RGB", (W, H), BG); dr = ImageDraw.Draw(im)
     title(dr, "모든 모델이 처음 보는 데이터셋 3곳의 AP50 — 모델 순위", "막대 = 3곳 평균 · 점 = 평가셋 하나 (모양으로 구분) · 오른쪽일수록 좋음")
     xs = lambda v: X0 + (X1 - X0) * v
     shapes = {"test_sar": "o", "test_obl": "^", "test_cy": "x"}
@@ -204,7 +210,7 @@ def cand_d():
     ly = top + RH * len(order) + 100; lx = 10
     for s in U:
         mark(lx + 16, ly + 20, shapes[s], INK); dr.text((lx + 46, ly + 20), f"{SN[s][0]} ({SN[s][1]})", font=F(38), fill=INK, anchor="lm"); lx += 700
-    notes(dr, ly + 80, COMMON[:2])
+    notes(dr, ly + 80, COMMON[:2] + [SOTA_NOTE])
     im.save(OUT / "후보_D_순위_점그림.png", dpi=(450, 450)); return im.size
 
 
